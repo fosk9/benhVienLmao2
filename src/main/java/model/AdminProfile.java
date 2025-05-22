@@ -3,6 +3,7 @@ package model;
 import lombok.*;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminProfile {
@@ -11,6 +12,4 @@ public class AdminProfile {
     private String email;
     private String phone;
     private String note;
-
-    private User user;
 }

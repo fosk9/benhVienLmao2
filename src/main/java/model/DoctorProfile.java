@@ -2,15 +2,16 @@ package model;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DoctorProfile {
     private int doctorId;
     private String fullName;
-    private LocalDate dob;
+    private Date dob;
     private String gender;
     private String email;
     private String phone;
