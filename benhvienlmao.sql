@@ -1,5 +1,5 @@
 ﻿-- DROP & CREATE DATABASE
-Use master
+USE master
 GO
 
 IF DB_ID('benhvienlmao') IS NOT NULL
@@ -11,15 +11,6 @@ CREATE DATABASE benhvienlmao;
 GO
 
 USE benhvienlmao;
-GO
-
--- Users (base authentication table, with login_as)
-CREATE TABLE Users (
-    user_id INT PRIMARY KEY IDENTITY(1,1),
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    login_as VARCHAR(50) NOT NULL CHECK (login_as IN ('Employee', 'Patient'))
-);
 GO
 
 -- Roles (for access control)
@@ -46,24 +37,39 @@ CREATE TABLE RoleFeatures (
 );
 GO
 
--- Employees (updated to use role_id)
+-- Specializations (with status)
+CREATE TABLE Specializations (
+    specialization_id INT PRIMARY KEY IDENTITY(1,1),
+    name NVARCHAR(100) NOT NULL,
+    status NVARCHAR(50) CHECK (status IN ('Active', 'Inactive'))
+);
+GO
+
+-- Employees (with login attributes and specialization_id)
 CREATE TABLE Employees (
-    employee_id INT PRIMARY KEY,
+    employee_id INT PRIMARY KEY IDENTITY(1,1),
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     full_name NVARCHAR(255),
     dob DATE,
     gender CHAR(1),
     email VARCHAR(100),
     phone VARCHAR(20),
     role_id INT NOT NULL,
-    FOREIGN KEY (employee_id) REFERENCES Users(user_id),
-    FOREIGN KEY (role_id) REFERENCES Roles(role_id)
+    specialization_id INT,
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id),
+    FOREIGN KEY (specialization_id) REFERENCES Specializations(specialization_id)
 );
 GO
 
--- Specializations (for DoctorDetails dependency)
-CREATE TABLE Specializations (
-    specialization_id INT PRIMARY KEY IDENTITY(1,1),
-    name NVARCHAR(100) NOT NULL
+-- EmployeeHistory (for role history)
+CREATE TABLE EmployeeHistory (
+    history_id INT PRIMARY KEY IDENTITY(1,1),
+    employee_id INT,
+    role_id INT,
+    date DATE,
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 GO
 
@@ -71,11 +77,9 @@ GO
 CREATE TABLE DoctorDetails (
     doctor_id INT PRIMARY KEY,
     license_number VARCHAR(100),
-    specialization_id INT,
     work_schedule TEXT,
     rating DECIMAL(3,2) CHECK (rating BETWEEN 1.00 AND 5.00),
-    FOREIGN KEY (doctor_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (specialization_id) REFERENCES Specializations(specialization_id)
+    FOREIGN KEY (doctor_id) REFERENCES Employees(employee_id)
 );
 GO
 
@@ -95,9 +99,11 @@ CREATE TABLE ReceptionistDetails (
 );
 GO
 
--- Patients
+-- Patients (with login attributes)
 CREATE TABLE Patients (
-    patient_id INT PRIMARY KEY,
+    patient_id INT PRIMARY KEY IDENTITY(1,1),
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     full_name NVARCHAR(255),
     dob DATE,
     gender CHAR(1),
@@ -105,12 +111,44 @@ CREATE TABLE Patients (
     phone VARCHAR(20),
     address NVARCHAR(255),
     insurance_number VARCHAR(100),
-    emergency_contact NVARCHAR(255),
-    FOREIGN KEY (patient_id) REFERENCES Users(user_id)
+    emergency_contact NVARCHAR(255)
 );
 GO
 
--- Appointments (without type column)
+-- BlogType (for blog categorization)
+CREATE TABLE BlogType (
+    type_id TINYINT PRIMARY KEY,
+    type_name NVARCHAR(10)
+);
+GO
+
+-- Blog (for health education content)
+CREATE TABLE Blog (
+    blog_id INT PRIMARY KEY IDENTITY(1,1),
+    blog_name NVARCHAR(255),
+    content NVARCHAR(MAX),
+    image NVARCHAR(MAX),
+    author NVARCHAR(255),
+    date DATE,
+    type_id TINYINT,
+    selected_banner TINYINT CHECK (selected_banner IN (0, 1)) DEFAULT 0,
+    FOREIGN KEY (type_id) REFERENCES BlogType(type_id)
+);
+GO
+
+-- Comment (for patient comments on blogs)
+CREATE TABLE Comment (
+    comment_id INT PRIMARY KEY IDENTITY(1,1),
+    content NVARCHAR(MAX),
+    date DATE,
+    blog_id INT,
+    patient_id INT,
+    FOREIGN KEY (blog_id) REFERENCES Blog(blog_id),
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
+);
+GO
+
+-- Appointments
 CREATE TABLE Appointments (
     appointment_id INT PRIMARY KEY IDENTITY(1,1),
     patient_id INT,
@@ -155,6 +193,17 @@ CREATE TABLE Diagnoses (
 );
 GO
 
+-- Invoices (for diagnoses)
+CREATE TABLE Invoices (
+    invoice_id INT PRIMARY KEY IDENTITY(1,1),
+    diagnosis_id INT,
+    amount DECIMAL(10,2),
+    status VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded')),
+    payment_date DATETIME,
+    FOREIGN KEY (diagnosis_id) REFERENCES Diagnoses(diagnosis_id)
+);
+GO
+
 -- Prescriptions
 CREATE TABLE Prescriptions (
     prescription_id INT PRIMARY KEY IDENTITY(1,1),
@@ -187,16 +236,16 @@ CREATE TABLE Results (
 );
 GO
 
--- Feedbacks
+-- Feedbacks (linked to Employees)
 CREATE TABLE Feedbacks (
     feedback_id INT PRIMARY KEY IDENTITY(1,1),
-    appointment_id INT,
+    employee_id INT,
     patient_id INT,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     comments TEXT,
     created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id),
-    FOREIGN KEY (patient_id) REFERENCES Users(user_id)
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
 );
 GO
 
@@ -263,4 +312,11 @@ GO
 -- Insert sample Features
 INSERT INTO Features (feature_name) VALUES 
 ('Book Appointment'), ('View Prescription'), ('Manage Users'), ('View Statistics');
+GO
+
+-- Insert sample BlogType
+INSERT INTO BlogType (type_id, type_name) VALUES
+(0, N'Blog'),
+(1, N'Banner'),
+(2, N'Footer');
 GO

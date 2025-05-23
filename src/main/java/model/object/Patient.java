@@ -3,14 +3,17 @@ package model.object;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patient {
     private int patientId;
+    private String username;
+    private String passwordHash;
     private String fullName;
-    private String dob;
+    private LocalDate dob;
     private String gender;
     private String email;
     private String phone;

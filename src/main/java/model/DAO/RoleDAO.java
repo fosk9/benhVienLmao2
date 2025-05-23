@@ -1,6 +1,5 @@
 package model.DAO;
 
-import model.object.DBContext;
 import model.object.Role;
 
 import java.sql.Connection;

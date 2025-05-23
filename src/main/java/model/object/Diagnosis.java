@@ -3,18 +3,14 @@ package model.object;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Appointment {
+public class Diagnosis {
+    private int diagnosisId;
     private int appointmentId;
-    private int patientId;
-    private int doctorId;
-    private LocalDateTime appointmentDate;
-    private String status;
+    private String notes;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

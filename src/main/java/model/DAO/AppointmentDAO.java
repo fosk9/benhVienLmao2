@@ -1,6 +1,5 @@
 package model.DAO;
 
-import model.object.DBContext;
 import model.object.Appointment;
 
 import java.sql.Connection;

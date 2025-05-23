@@ -1,6 +1,5 @@
 package model.DAO;
 
-import model.object.DBContext;
 import model.object.Feature;
 
 import java.sql.Connection;
