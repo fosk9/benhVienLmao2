@@ -193,17 +193,6 @@ CREATE TABLE Diagnoses (
 );
 GO
 
--- Invoices (for diagnoses)
-CREATE TABLE Invoices (
-    invoice_id INT PRIMARY KEY IDENTITY(1,1),
-    diagnosis_id INT,
-    amount DECIMAL(10,2),
-    status VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded')),
-    payment_date DATETIME,
-    FOREIGN KEY (diagnosis_id) REFERENCES Diagnoses(diagnosis_id)
-);
-GO
-
 -- Prescriptions
 CREATE TABLE Prescriptions (
     prescription_id INT PRIMARY KEY IDENTITY(1,1),
@@ -215,24 +204,13 @@ CREATE TABLE Prescriptions (
 GO
 
 -- TestRequests
-CREATE TABLE TestRequests (
-    test_id INT PRIMARY KEY IDENTITY(1,1),
+CREATE TABLE Treatment (
+    treatment_id INT PRIMARY KEY IDENTITY(1,1),
     appointment_id INT,
-    test_type VARCHAR(100),
-    request_notes TEXT,
+    treatment_type VARCHAR(100),
+    treatment_notes TEXT,
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id)
-);
-GO
-
--- Results
-CREATE TABLE Results (
-    result_id INT PRIMARY KEY IDENTITY(1,1),
-    test_id INT,
-    result_text TEXT,
-    conclusion TEXT,
-    created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (test_id) REFERENCES TestRequests(test_id)
 );
 GO
 
