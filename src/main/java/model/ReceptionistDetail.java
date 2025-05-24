@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Specialization {
-    private int specializationId;
-    private String name;
-    private String status;
+public class ReceptionistDetail {
+    private int receptionistId;
+    private String description;
 }

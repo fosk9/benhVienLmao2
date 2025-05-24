@@ -61,3 +61,4 @@ public abstract class DBContext<E> {
 
     public abstract int delete(int... id);
 }
+
