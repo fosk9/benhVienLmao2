@@ -7,6 +7,23 @@ import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
 
+    public Employee login(String username, String password) {
+        String sql = "SELECT * FROM Employees WHERE username = ? AND password_hash = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToEmployee(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public List<Employee> select() {
         List<Employee> list = new ArrayList<>();
