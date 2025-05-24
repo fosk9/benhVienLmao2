@@ -48,7 +48,7 @@ public class RegisterServlet extends HttpServlet {
                 .username(username)
                 .passwordHash(password)  // Tạm thời chưa hash
                 .fullName(fullName)
-                .dob(dob != null ? dob.toLocalDate() : null)
+                .dob(dob)
                 .gender(gender)
                 .email(email)
                 .phone(phone)

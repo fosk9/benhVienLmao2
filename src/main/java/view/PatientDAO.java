@@ -1,6 +1,7 @@
 package view;
 
 import model.Patient;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +107,7 @@ public class PatientDAO extends DBContext<Patient> {
                 .username(rs.getString("username"))
                 .passwordHash(rs.getString("password_hash"))
                 .fullName(rs.getString("full_name"))
-                .dob(rs.getDate("dob") != null ? rs.getDate("dob").toLocalDate() : null)
+                .dob(rs.getDate("dob"))
                 .gender(rs.getString("gender"))
                 .email(rs.getString("email"))
                 .phone(rs.getString("phone"))
@@ -116,12 +117,13 @@ public class PatientDAO extends DBContext<Patient> {
                 .build();
     }
 
+
     private void setPreparedStatementFromPatient(PreparedStatement ps, Patient p) throws SQLException {
         ps.setString(1, p.getUsername());
         ps.setString(2, p.getPasswordHash());
         ps.setString(3, p.getFullName());
         if (p.getDob() != null) {
-            ps.setDate(4, Date.valueOf(p.getDob()));
+            ps.setDate(4, p.getDob());
         } else {
             ps.setNull(4, Types.DATE);
         }
@@ -132,4 +134,5 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(9, p.getInsuranceNumber());
         ps.setString(10, p.getEmergencyContact());
     }
+
 }
