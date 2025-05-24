@@ -7,6 +7,23 @@ import java.util.List;
 
 public class PatientDAO extends DBContext<Patient> {
 
+    public Patient login(String username, String password) {
+        String sql = "SELECT * FROM Patients WHERE username = ? AND password_hash = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToPatient(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public List<Patient> select() {
         List<Patient> patients = new ArrayList<>();
