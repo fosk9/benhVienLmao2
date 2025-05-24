@@ -1,6 +1,7 @@
 package view;
 
 import model.Employee;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +107,7 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .username(rs.getString("username"))
                 .passwordHash(rs.getString("password_hash"))
                 .fullName(rs.getString("full_name"))
-                .dob(rs.getDate("dob") != null ? rs.getDate("dob").toLocalDate() : null)
+                .dob(rs.getDate("dob"))
                 .gender(rs.getString("gender"))
                 .email(rs.getString("email"))
                 .phone(rs.getString("phone"))
@@ -115,12 +116,13 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .build();
     }
 
+
     private void setPreparedStatementFromEmployee(PreparedStatement ps, Employee e) throws SQLException {
         ps.setString(1, e.getUsername());
         ps.setString(2, e.getPasswordHash());
         ps.setString(3, e.getFullName());
         if (e.getDob() != null) {
-            ps.setDate(4, Date.valueOf(e.getDob()));
+            ps.setDate(4, e.getDob());
         } else {
             ps.setNull(4, Types.DATE);
         }
@@ -134,4 +136,5 @@ public class EmployeeDAO extends DBContext<Employee> {
             ps.setNull(9, Types.INTEGER);
         }
     }
+
 }
