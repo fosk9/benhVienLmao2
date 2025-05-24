@@ -1,143 +1,118 @@
 package view;
 
-import model.DAO.DBContext;
 import model.Patient;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientDAO {
-    // Find patient by ID
-    public Patient findById(int patientId) throws SQLException {
-        String sql = "SELECT * FROM Patients WHERE patient_id = ?";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, patientId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Patient(
-                            rs.getInt("patient_id"),
-                            rs.getString("username"),
-                            rs.getString("password_hash"),
-                            rs.getString("full_name"),
-                            rs.getObject("dob", LocalDate.class),
-                            rs.getString("gender"),
-                            rs.getString("email"),
-                            rs.getString("phone"),
-                            rs.getString("address"),
-                            rs.getString("insurance_number"),
-                            rs.getString("emergency_contact")
-                    );
-                }
-            }
-        }
-        return null;
-    }
+public class PatientDAO extends DBContext<Patient> {
 
-    // Find patient by username
-    public Patient findByUsername(String username) throws SQLException {
-        String sql = "SELECT * FROM Patients WHERE username = ?";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, username);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Patient(
-                            rs.getInt("patient_id"),
-                            rs.getString("username"),
-                            rs.getString("password_hash"),
-                            rs.getString("full_name"),
-                            rs.getObject("dob", LocalDate.class),
-                            rs.getString("gender"),
-                            rs.getString("email"),
-                            rs.getString("phone"),
-                            rs.getString("address"),
-                            rs.getString("insurance_number"),
-                            rs.getString("emergency_contact")
-                    );
-                }
-            }
-        }
-        return null;
-    }
-
-    // Find all patients
-    public List<Patient> findAll() throws SQLException {
+    @Override
+    public List<Patient> select() {
         List<Patient> patients = new ArrayList<>();
         String sql = "SELECT * FROM Patients";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                patients.add(new Patient(
-                        rs.getInt("patient_id"),
-                        rs.getString("username"),
-                        rs.getString("password_hash"),
-                        rs.getString("full_name"),
-                        rs.getObject("dob", LocalDate.class),
-                        rs.getString("gender"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getString("address"),
-                        rs.getString("insurance_number"),
-                        rs.getString("emergency_contact")
-                ));
+                patients.add(mapResultSetToPatient(rs));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return patients;
     }
 
-    // Save new patient
-    public void save(Patient patient) throws SQLException {
-        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, patient.getUsername());
-            stmt.setString(2, patient.getPasswordHash());
-            stmt.setString(3, patient.getFullName());
-            stmt.setObject(4, patient.getDob());
-            stmt.setString(5, patient.getGender());
-            stmt.setString(6, patient.getEmail());
-            stmt.setString(7, patient.getPhone());
-            stmt.setString(8, patient.getAddress());
-            stmt.setString(9, patient.getInsuranceNumber());
-            stmt.setString(10, patient.getEmergencyContact());
-            stmt.executeUpdate();
+    @Override
+    public Patient select(int... id) {
+        if (id.length == 0) return null;
+        String sql = "SELECT * FROM Patients WHERE patient_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id[0]);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToPatient(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    // Update existing patient
-    public void update(Patient patient) throws SQLException {
-        String sql = "UPDATE Patients SET username = ?, password_hash = ?, full_name = ?, dob = ?, gender = ?, email = ?, phone = ?, address = ?, insurance_number = ?, emergency_contact = ? WHERE patient_id = ?";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, patient.getUsername());
-            stmt.setString(2, patient.getPasswordHash());
-            stmt.setString(3, patient.getFullName());
-            stmt.setObject(4, patient.getDob());
-            stmt.setString(5, patient.getGender());
-            stmt.setString(6, patient.getEmail());
-            stmt.setString(7, patient.getPhone());
-            stmt.setString(8, patient.getAddress());
-            stmt.setString(9, patient.getInsuranceNumber());
-            stmt.setString(10, patient.getEmergencyContact());
-            stmt.setInt(11, patient.getPatientId());
-            stmt.executeUpdate();
+    @Override
+    public int insert(Patient patient) {
+        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            setPreparedStatementFromPatient(ps, patient);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return 0;
     }
 
-    // Delete patient
-    public void delete(int patientId) throws SQLException {
+    @Override
+    public int update(Patient patient) {
+        String sql = "UPDATE Patients SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, address=?, insurance_number=?, emergency_contact=? WHERE patient_id=?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            setPreparedStatementFromPatient(ps, patient);
+            ps.setInt(11, patient.getPatientId());
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public int delete(int... id) {
+        if (id.length == 0) return 0;
         String sql = "DELETE FROM Patients WHERE patient_id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, patientId);
-            stmt.executeUpdate();
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id[0]);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return 0;
+    }
+
+    private Patient mapResultSetToPatient(ResultSet rs) throws SQLException {
+        return Patient.builder()
+                .patientId(rs.getInt("patient_id"))
+                .username(rs.getString("username"))
+                .passwordHash(rs.getString("password_hash"))
+                .fullName(rs.getString("full_name"))
+                .dob(rs.getDate("dob") != null ? rs.getDate("dob").toLocalDate() : null)
+                .gender(rs.getString("gender"))
+                .email(rs.getString("email"))
+                .phone(rs.getString("phone"))
+                .address(rs.getString("address"))
+                .insuranceNumber(rs.getString("insurance_number"))
+                .emergencyContact(rs.getString("emergency_contact"))
+                .build();
+    }
+
+    private void setPreparedStatementFromPatient(PreparedStatement ps, Patient p) throws SQLException {
+        ps.setString(1, p.getUsername());
+        ps.setString(2, p.getPasswordHash());
+        ps.setString(3, p.getFullName());
+        if (p.getDob() != null) {
+            ps.setDate(4, Date.valueOf(p.getDob()));
+        } else {
+            ps.setNull(4, Types.DATE);
+        }
+        ps.setString(5, p.getGender());
+        ps.setString(6, p.getEmail());
+        ps.setString(7, p.getPhone());
+        ps.setString(8, p.getAddress());
+        ps.setString(9, p.getInsuranceNumber());
+        ps.setString(10, p.getEmergencyContact());
     }
 }

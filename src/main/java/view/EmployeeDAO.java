@@ -1,138 +1,120 @@
 package view;
 
-import model.DAO.DBContext;
 import model.Employee;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeDAO {
-    // Find employee by ID
-    public Employee findById(int employeeId) throws SQLException {
-        String sql = "SELECT * FROM Employees WHERE employee_id = ?";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, employeeId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Employee(
-                            rs.getInt("employee_id"),
-                            rs.getString("username"),
-                            rs.getString("password_hash"),
-                            rs.getString("full_name"),
-                            rs.getObject("dob", LocalDate.class),
-                            rs.getString("gender"),
-                            rs.getString("email"),
-                            rs.getString("phone"),
-                            rs.getInt("role_id"),
-                            rs.getObject("specialization_id", Integer.class)
-                    );
-                }
-            }
-        }
-        return null;
-    }
+public class EmployeeDAO extends DBContext<Employee> {
 
-    // Find employee by username
-    public Employee findByUsername(String username) throws SQLException {
-        String sql = "SELECT * FROM Employees WHERE username = ?";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, username);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Employee(
-                            rs.getInt("employee_id"),
-                            rs.getString("username"),
-                            rs.getString("password_hash"),
-                            rs.getString("full_name"),
-                            rs.getObject("dob", LocalDate.class),
-                            rs.getString("gender"),
-                            rs.getString("email"),
-                            rs.getString("phone"),
-                            rs.getInt("role_id"),
-                            rs.getObject("specialization_id", Integer.class)
-                    );
-                }
-            }
-        }
-        return null;
-    }
-
-    // Find all employees
-    public List<Employee> findAll() throws SQLException {
-        List<Employee> employees = new ArrayList<>();
+    @Override
+    public List<Employee> select() {
+        List<Employee> list = new ArrayList<>();
         String sql = "SELECT * FROM Employees";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                employees.add(new Employee(
-                        rs.getInt("employee_id"),
-                        rs.getString("username"),
-                        rs.getString("password_hash"),
-                        rs.getString("full_name"),
-                        rs.getObject("dob", LocalDate.class),
-                        rs.getString("gender"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getInt("role_id"),
-                        rs.getObject("specialization_id", Integer.class)
-                ));
+                list.add(mapResultSetToEmployee(rs));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return employees;
+        return list;
     }
 
-    // Save new employee
-    public void save(Employee employee) throws SQLException {
-        String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, specialization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, employee.getUsername());
-            stmt.setString(2, employee.getPasswordHash());
-            stmt.setString(3, employee.getFullName());
-            stmt.setObject(4, employee.getDob());
-            stmt.setString(5, employee.getGender());
-            stmt.setString(6, employee.getEmail());
-            stmt.setString(7, employee.getPhone());
-            stmt.setInt(8, employee.getRoleId());
-            stmt.setObject(9, employee.getSpecializationId());
-            stmt.executeUpdate();
+    @Override
+    public Employee select(int... id) {
+        if (id.length == 0) return null;
+        String sql = "SELECT * FROM Employees WHERE employee_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id[0]);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToEmployee(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    // Update existing employee
-    public void update(Employee employee) throws SQLException {
-        String sql = "UPDATE Employees SET username = ?, password_hash = ?, full_name = ?, dob = ?, gender = ?, email = ?, phone = ?, role_id = ?, specialization_id = ? WHERE employee_id = ?";
-        try (Connection conn = model.DAO.DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, employee.getUsername());
-            stmt.setString(2, employee.getPasswordHash());
-            stmt.setString(3, employee.getFullName());
-            stmt.setObject(4, employee.getDob());
-            stmt.setString(5, employee.getGender());
-            stmt.setString(6, employee.getEmail());
-            stmt.setString(7, employee.getPhone());
-            stmt.setInt(8, employee.getRoleId());
-            stmt.setObject(9, employee.getSpecializationId());
-            stmt.setInt(10, employee.getEmployeeId());
-            stmt.executeUpdate();
+    @Override
+    public int insert(Employee e) {
+        String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, specialization_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            setPreparedStatementFromEmployee(ps, e);
+            return ps.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
+        return 0;
     }
 
-    // Delete employee
-    public void delete(int employeeId) throws SQLException {
+    @Override
+    public int update(Employee e) {
+        String sql = "UPDATE Employees SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, role_id=?, specialization_id=? WHERE employee_id=?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            setPreparedStatementFromEmployee(ps, e);
+            ps.setInt(10, e.getEmployeeId());
+            return ps.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public int delete(int... id) {
+        if (id.length == 0) return 0;
         String sql = "DELETE FROM Employees WHERE employee_id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, employeeId);
-            stmt.executeUpdate();
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id[0]);
+            return ps.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    private Employee mapResultSetToEmployee(ResultSet rs) throws SQLException {
+        return Employee.builder()
+                .employeeId(rs.getInt("employee_id"))
+                .username(rs.getString("username"))
+                .passwordHash(rs.getString("password_hash"))
+                .fullName(rs.getString("full_name"))
+                .dob(rs.getDate("dob") != null ? rs.getDate("dob").toLocalDate() : null)
+                .gender(rs.getString("gender"))
+                .email(rs.getString("email"))
+                .phone(rs.getString("phone"))
+                .roleId(rs.getInt("role_id"))
+                .specializationId(rs.getObject("specialization_id") != null ? rs.getInt("specialization_id") : null)
+                .build();
+    }
+
+    private void setPreparedStatementFromEmployee(PreparedStatement ps, Employee e) throws SQLException {
+        ps.setString(1, e.getUsername());
+        ps.setString(2, e.getPasswordHash());
+        ps.setString(3, e.getFullName());
+        if (e.getDob() != null) {
+            ps.setDate(4, Date.valueOf(e.getDob()));
+        } else {
+            ps.setNull(4, Types.DATE);
+        }
+        ps.setString(5, e.getGender());
+        ps.setString(6, e.getEmail());
+        ps.setString(7, e.getPhone());
+        ps.setInt(8, e.getRoleId());
+        if (e.getSpecializationId() != null) {
+            ps.setInt(9, e.getSpecializationId());
+        } else {
+            ps.setNull(9, Types.INTEGER);
         }
     }
 }
