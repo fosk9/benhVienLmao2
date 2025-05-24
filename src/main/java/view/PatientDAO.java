@@ -4,7 +4,6 @@ import model.Patient;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Date;
 
 public class PatientDAO extends DBContext<Patient> {
 
@@ -133,37 +132,4 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(9, p.getInsuranceNumber());
         ps.setString(10, p.getEmergencyContact());
     }
-
-    public List<Patient> getPatientsByDoctorId(int doctorId) throws SQLException {
-        List<Patient> list = new ArrayList<>();
-        String sql = "SELECT DISTINCT p.patient_id, p.insurance_number, p.full_name, p.dob, p.gender, p.phone, p.emergency_contact " +
-                "FROM Appointments a " +
-                "JOIN Patients p ON a.patient_id = p.patient_id " +
-                "WHERE a.doctor_id = ?";
-        try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, doctorId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Patient p = new Patient();
-                p.setPatientId(rs.getInt("patient_id"));
-                p.setInsuranceNumber(rs.getString("insurance_number"));   // thêm
-                p.setFullName(rs.getString("full_name"));
-                java.sql.Date sqlDate = rs.getDate("dob");
-                if (sqlDate != null) {
-                    p.setDob(sqlDate.toLocalDate());
-                } else {
-                    p.setDob(null);
-                }                               // thêm
-                p.setGender(rs.getString("gender"));                       // thêm
-                p.setPhone(rs.getString("phone"));                         // thêm
-                p.setEmergencyContact(rs.getString("emergency_contact")); // thêm
-                list.add(p);
-            }
-        }
-        return list;
-    }
-
-
-
 }
