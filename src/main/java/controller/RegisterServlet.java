@@ -38,7 +38,7 @@ public class RegisterServlet extends HttpServlet {
             try {
                 dob = Date.valueOf(dobStr);
             } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "Invalid date of birth format.");
+                request.setAttribute("error", "Ngày sinh không hợp lệ! Vui lòng nhập lại.");
                 request.getRequestDispatcher("register.jsp").forward(request, response);
                 return;
             }
@@ -59,7 +59,7 @@ public class RegisterServlet extends HttpServlet {
         int result = patientDAO.insert(patient);
 
         if (result > 0) {
-            request.setAttribute("success", "Registration successful! You can now log in.");
+            request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Registration failed. Username might already exist or there was a DB error.");
