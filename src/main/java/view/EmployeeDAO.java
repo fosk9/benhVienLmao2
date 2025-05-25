@@ -1,6 +1,7 @@
 package view;
 
 import model.Employee;
+import model.Patient;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,6 +24,33 @@ public class EmployeeDAO extends DBContext<Employee> {
             e.printStackTrace();
         }
         return null;
+    }
+    public Employee getEmployeeByUsername(String username) {
+        String sql = "SELECT * FROM Employees WHERE username = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToEmployee(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public int updatePasswordByUsername(String username, String newPasswordHash) {
+        String sql = "UPDATE Employees SET password_hash=? WHERE username=?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPasswordHash);
+            ps.setString(2, username);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override

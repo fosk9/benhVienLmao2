@@ -60,6 +60,7 @@ public class RegisterServlet extends HttpServlet {
 
         if (result > 0) {
             request.setAttribute("success", "Registration successful! You can now log in.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Registration failed. Username might already exist or there was a DB error.");
         }
