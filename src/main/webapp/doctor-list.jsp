@@ -5,19 +5,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Patient List</title>
+    <title>Doctor List</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
-    <h2 class="mb-4">Patient List</h2>
+    <h2 class="mb-4">Doctor List</h2>
 
-    <!-- Filter/Search/Sort Form -->
-    <form method="get" action="PatientList" class="row g-3 mb-4">
+    <!-- Search / Filter / Sort Form -->
+    <form method="get" action="DoctorList" class="row g-3 mb-4">
         <div class="col-md-3">
             <input type="text" name="search" class="form-control" placeholder="Search by name or email...">
         </div>
@@ -29,6 +28,14 @@
             </select>
         </div>
         <div class="col-md-3">
+            <select name="specialization" class="form-select">
+                <option value="">Filter by specialization</option>
+                <c:forEach var="spec" items="${specializations}">
+                    <option value="${spec.specializationId}">${spec.name}</option>
+                </c:forEach>
+            </select>
+        </div>
+        <div class="col-md-2">
             <select name="sortBy" class="form-select">
                 <option value="">Sort by</option>
                 <option value="full_name">Full Name</option>
@@ -42,12 +49,12 @@
                 <option value="desc">Descending</option>
             </select>
         </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Apply</button>
+        <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary">Apply</button>
         </div>
     </form>
 
-    <!-- Patient Table -->
+    <!-- Doctor Table -->
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle text-center">
             <thead class="table-light">
@@ -58,26 +65,34 @@
                 <th>Gender</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Specialization</th>
                 <th>Details</th>
             </tr>
             </thead>
             <tbody>
-            <c:forEach var="p" items="${patients}">
+            <c:forEach var="doc" items="${doctors}">
                 <tr>
-                    <td>${p.patientId}</td>
-                    <td>${p.fullName}</td>
-                    <td><fmt:formatDate value="${p.dob}" pattern="dd/MM/yyyy"/></td>
+                    <td>${doc.employeeId}</td>
+                    <td>${doc.fullName}</td>
+                    <td><fmt:formatDate value="${doc.dob}" pattern="dd/MM/yyyy"/></td>
                     <td>
                         <c:choose>
-                            <c:when test="${p.gender == 'M'}">Male</c:when>
-                            <c:when test="${p.gender == 'F'}">Female</c:when>
+                            <c:when test="${doc.gender == 'M'}">Male</c:when>
+                            <c:when test="${doc.gender == 'F'}">Female</c:when>
                             <c:otherwise>Other</c:otherwise>
                         </c:choose>
                     </td>
-                    <td>${p.email}</td>
-                    <td>${p.phone}</td>
+                    <td>${doc.email}</td>
+                    <td>${doc.phone}</td>
                     <td>
-                        <a href="PatientDetails?id=${p.patientId}" class="btn btn-sm btn-outline-info">View</a>
+                        <c:forEach var="spec" items="${specializations}">
+                            <c:if test="${spec.specializationId == doc.specializationId}">
+                                ${spec.name}
+                            </c:if>
+                        </c:forEach>
+                    </td>
+                    <td>
+                        <a href="DoctorDetails?id=${doc.employeeId}" class="btn btn-sm btn-outline-info">View</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -87,7 +102,6 @@
 </div>
 
 <jsp:include page="footer.jsp"/>
-
 <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
