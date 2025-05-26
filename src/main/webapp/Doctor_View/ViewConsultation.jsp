@@ -130,8 +130,19 @@
             </tr>
             <tr>
               <th style="padding: 20px 25px;">Status</th>
-              <td style="padding: 20px 25px;">${appointment.status}</td>
+              <td style="padding: 20px 25px;">
+                <form action="${pageContext.request.contextPath}/change-status" method="post" style="margin:0;">
+                  <input type="hidden" name="appointmentId" value="${appointment.appointmentId}" />
+                  <select name="status" onchange="this.form.submit()" style="font-size:1.5rem; padding:6px;">
+                    <option value="Pending" ${appointment.status == 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Confirmed" ${appointment.status == 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="Completed" ${appointment.status == 'Completed' ? 'selected' : ''}>Completed</option>
+                    <option value="Cancelled" ${appointment.status == 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                  </select>
+                </form>
+              </td>
             </tr>
+
           </table>
           <div class="text-center mt-4">
             <a href="${pageContext.request.contextPath}/doctor-home" class="btn btn-outline-primary">← Back to Dashboard</a>

@@ -81,4 +81,15 @@ public  class AppointmentDAO  {
         }
         return null;
     }
+
+    public boolean updateStatus(int appointmentId, String newStatus) throws SQLException {
+        String sql = "UPDATE appointments SET status = ? WHERE appointment_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setInt(2, appointmentId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        }
+    }
+
 }

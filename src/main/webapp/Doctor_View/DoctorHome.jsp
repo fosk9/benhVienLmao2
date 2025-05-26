@@ -180,7 +180,17 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td style="padding: 12px 18px;">${a.status}</td>
+                                <td style="padding: 12px 18px;">
+                                    <form action="${pageContext.request.contextPath}/change-status" method="post" style="display:inline;">
+                                        <input type="hidden" name="appointmentId" value="${a.appointmentId}" />
+                                        <select name="status" onchange="this.form.submit()" style="font-size:1.3rem; padding:4px;">
+                                            <option value="Pending" ${a.status == 'Pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="Confirmed" ${a.status == 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                                            <option value="Completed" ${a.status == 'Completed' ? 'selected' : ''}>Completed</option>
+                                            <option value="Cancelled" ${a.status == 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                        </select>
+                                    </form>
+                                </td>
                                 <td style="padding: 12px 18px;">
                                     <a href="${pageContext.request.contextPath}/consultation?id=${a.appointmentId}"
                                        class="btn btn-primary"
