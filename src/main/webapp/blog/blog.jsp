@@ -108,7 +108,6 @@
       background-color: #ccc;
     }
 
-    /* Modal styles */
     .modal {
       display: none;
       position: fixed;
@@ -175,7 +174,6 @@
 </header>
 
 <div class="container">
-  <!-- Danh sách blog chính -->
   <div class="sidebar">
     <h3>Danh sách bài viết</h3>
     <%
@@ -188,6 +186,11 @@
       <p style="margin: 5px 0;"><strong>Tác giả:</strong> <%= b.getAuthor() %></p>
       <p style="margin: 5px 0;"><strong>Ngày:</strong> <%= b.getDate() %></p>
       <p style="font-size: 14px; color: #444;"><%= b.getSummary() %></p>
+
+      <form action="delete_blog" method="get" onsubmit="return confirm('Bạn có chắc muốn xóa bài viết này không?')" style="margin-top: 10px;">
+        <input type="hidden" name="id" value="<%= b.getId() %>">
+        <button type="submit" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">Xóa</button>
+      </form>
       <hr/>
     </div>
     <%

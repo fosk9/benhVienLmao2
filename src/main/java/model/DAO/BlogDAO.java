@@ -98,4 +98,14 @@ public class BlogDAO {
         }
         return null;
     }
+    public void deleteBlog(int id) throws Exception {
+        String sql = "DELETE FROM Blog WHERE blog_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
