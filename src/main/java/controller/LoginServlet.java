@@ -41,13 +41,14 @@ public class LoginServlet extends HttpServlet {
             Employee employee = employeeDAO.login(username, password);
             if (employee != null) {
                 session.setAttribute("account", employee);
-                session.setAttribute("login-as", "employee");
-                response.sendRedirect("index.html");
+                if (employee.getRoleId() == 1) {
+                    session.setAttribute("login-as", "Doctor");
+                    response.sendRedirect(request.getContextPath() + "/doctor-home");
+                } else {
+                    session.setAttribute("login-as", "Employee");
+                    response.sendRedirect("index.html");
+                }
                 return;
-            } else {
-                request.setAttribute("username", username);
-                request.setAttribute("password", password);
-                request.setAttribute("error", "Invalid employee credentials!");
             }
         } else {
             request.setAttribute("username", username);
