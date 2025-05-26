@@ -1,13 +1,14 @@
 package view;
 
 import model.Appointment;
+import model.Patient;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppointmentDAO {
+public  class AppointmentDAO  {
     private final Connection conn;
 
     public AppointmentDAO(Connection conn) {
@@ -54,5 +55,30 @@ public class AppointmentDAO {
             list.add(a);
         }
         return list;
+    }
+
+    public Appointment getAppointmentsDetailById(int appointmentId) throws SQLException {
+        String sql = "SELECT a.*, p.full_name, p.email, p.phone FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id WHERE a.appointment_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Appointment a = new Appointment();
+                a.setAppointmentId(rs.getInt("appointment_id"));
+                a.setPatientId(rs.getInt("patient_id"));
+                a.setDoctorId(rs.getInt("doctor_id"));
+
+                Timestamp ts = rs.getTimestamp("appointment_date");
+                a.setAppointmentDate(ts != null ? ts.toLocalDateTime() : null);
+
+                a.setStatus(rs.getString("status"));
+                a.setPatientName(rs.getString("full_name"));
+                a.setPatientEmail(rs.getString("email"));
+                a.setPatientPhone(rs.getString("phone"));
+                return a;
+            }
+        }
+        return null;
     }
 }
