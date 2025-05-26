@@ -1,7 +1,6 @@
-package model.DAO;
+package view;
 
 import model.object.Blog;
-import view.DBContext;
 
 import java.sql.*;
 import java.util.ArrayList;
