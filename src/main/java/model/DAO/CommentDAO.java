@@ -1,7 +1,7 @@
 package model.DAO;
 
-import model.Comment;
-import utils.DBContext;
+import model.object.Comment;
+import view.DBContext;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -49,3 +49,4 @@ public class CommentDAO {
         return list;
     }
 }
+
