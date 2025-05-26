@@ -1,6 +1,6 @@
 package controller;
 
-import dao.BlogDAO;
+import DAO.BlogDAO;
 import model.Blog;
 
 import jakarta.servlet.ServletException;
@@ -52,22 +52,20 @@ public class AddBlogServlet extends HttpServlet {
             // Đường dẫn ảnh để lưu vào DB (tương đối, dùng để hiển thị sau này)
             String imagePath = UPLOAD_DIR + "/" + fileName;
 
-            // Tạo Blog object
             Blog blog = new Blog();
             blog.setBlogName(blogName);
-            blog.setImage(imagePath); // đường dẫn tương đối
+            blog.setImage(imagePath);
             blog.setAuthor(author);
             blog.setContent(content);
             blog.setDate(date);
             blog.setTypeId(typeId);
             blog.setSelectedBanner(selectedBanner);
 
-            // Thêm vào DB
+
             BlogDAO dao = new BlogDAO();
             dao.insertBlog(blog);
 
-            // Redirect sau khi thêm thành công
-            response.sendRedirect("blog");
+                        response.sendRedirect("blog");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi xử lý blog: " + e.getMessage());
