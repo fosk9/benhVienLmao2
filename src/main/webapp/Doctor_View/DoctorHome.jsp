@@ -45,6 +45,17 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@16/dist/smooth-scroll.polyfills.min.js"></script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var scroll = new SmoothScroll('a.smooth-scroll', {
+            speed: 1200,
+            speedAsDuration: true
+        });
+    });
+</script>
 <!-- Preloader Start -->
 <header>
     <!--? Header Start -->
@@ -55,7 +66,7 @@
                     <!-- Logo -->
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a>
+                            <a href="${pageContext.request.contextPath}/doctor-home"><img src="assets/img/logo/logo.png" alt=""></a>
                         </div>
                     </div>
                     <div class="col-xl-10 col-lg-10 col-md-10">
@@ -64,10 +75,10 @@
                             <div class="main-menu f-right d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="index.html">Home</a></li>
-                                        <li><a href="about.html">About</a></li>
-                                        <li><a href="services.html">Services</a></li>
-                                        <li><a href="blog.html">Blog</a>
+                                        <li><a href="${pageContext.request.contextPath}/doctor-home">Home</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/doctor-home#appointment-section"class="smooth-scroll">Appointment</a></li>
+                                        <li><a href="services.html">Create</a></li>
+                                        <li><a href="blog.html">History</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
                                                 <li><a href="blog_details.html">Blog Details</a></li>
@@ -79,8 +90,7 @@
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <a href="Login.jsp" class="btn header-btn">Login</a>
-                                <a href="register.jsp" class="btn header-btn">Register</a>
+                                <a href="index.html" class="btn header-btn">Logout</a>
                             </div>
                         </div>
                     </div>

@@ -32,6 +32,18 @@
   <link rel="stylesheet" href="assets/css/slick.css">
   <link rel="stylesheet" href="assets/css/nice-select.css">
   <link rel="stylesheet" href="assets/css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/smooth-scroll@16/dist/smooth-scroll.polyfills.min.js"></script>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var scroll = new SmoothScroll('a.smooth-scroll', {
+        speed: 1200,
+        speedAsDuration: true
+      });
+    });
+  </script>
 </head>
 <body>
 <!-- ? Preloader Start -->
@@ -55,7 +67,7 @@
           <!-- Logo -->
           <div class="col-xl-2 col-lg-2 col-md-1">
             <div class="logo">
-              <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a>
+              <a href="${pageContext.request.contextPath}/doctor-home"><img src="assets/img/logo/logo.png" alt=""></a>
             </div>
           </div>
           <div class="col-xl-10 col-lg-10 col-md-10">
@@ -64,10 +76,10 @@
               <div class="main-menu f-right d-none d-lg-block">
                 <nav>
                   <ul id="navigation">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="services.html">Services</a></li>
-                    <li><a href="blog.html">Blog</a>
+                    <li><a href="${pageContext.request.contextPath}/doctor-home">Home</a></li>
+                    <li><a href="${pageContext.request.contextPath}/consultation#appointment-section"class="smooth-scroll">Appointment Detail</a></li>
+                    <li><a href="services.html">Create</a></li>
+                    <li><a href="blog.html">History</a>
                       <ul class="submenu">
                         <li><a href="blog.html">Blog</a></li>
                         <li><a href="blog_details.html">Blog Details</a></li>
@@ -79,8 +91,7 @@
                 </nav>
               </div>
               <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                <a href="Login.jsp" class="btn header-btn">Login</a>
-                <a href="register.jsp" class="btn header-btn">Register</a>
+                <a href="index.html" class="btn header-btn">Logout</a>
               </div>
             </div>
           </div>
@@ -95,7 +106,58 @@
   <!-- Header End -->
 </header>
 <main>
-  <section class="about-area2 section-padding40">
+  <!--? Slider Area Start-->
+  <div class="slider-area">
+    <div class="slider-active dot-style">
+      <!-- Slider Single -->
+      <div class="single-slider d-flex align-items-center slider-height">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-xl-7 col-lg-8 col-md-10 ">
+              <div class="hero-wrapper">
+                <!-- Video icon -->
+                <div class="video-icon">
+                  <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0" data-animation="bounceIn" data-delay=".4s">
+                    <i class="fas fa-play"></i>
+                  </a>
+                </div>
+                <div class="hero__caption">
+                  <h1 data-animation="fadeInUp" data-delay=".3s">Health is wealth  keep it healthy </h1>
+                  <p data-animation="fadeInUp" data-delay=".6s">Almost before we knew it, we<br> had left the ground</p>
+                  <a href="services.html" class="btn" data-animation="fadeInLeft" data-delay=".3s">Take a Service</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slider Single -->
+      <div class="single-slider d-flex align-items-center slider-height">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-xl-7 col-lg-8 col-md-10 ">
+              <div class="hero-wrapper">
+                <!-- Video icon -->
+                <div class="video-icon">
+                  <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0" data-animation="bounceIn" data-delay=".4s">
+                    <i class="fas fa-play"></i>
+                  </a>
+                </div>
+                <div class="hero__caption">
+                  <h1 data-animation="fadeInUp" data-delay=".3s">Health is wealth  keep it healthy </h1>
+                  <p data-animation="fadeInUp" data-delay=".6s">Almost before we knew it, we<br> had left the ground</p>
+                  <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Take a Service</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Slider Area End -->
+  <!-- Doctor Appointment Section Start -->
+  <section class="about-area2 section-padding40" id="appointment-section">
     <div class="container">
       <div class="section-tittle text-center mb-30">
         <h2>Appointment Details</h2>
@@ -142,7 +204,6 @@
                 </form>
               </td>
             </tr>
-
           </table>
           <div class="text-center mt-4">
             <a href="${pageContext.request.contextPath}/doctor-home" class="btn btn-outline-primary">← Back to Dashboard</a>
@@ -151,6 +212,7 @@
       </div>
     </div>
   </section>
+  <!-- Doctor Appointment Section End -->
 </main>
 <footer>
   <div class="footer-wrappr section-bg3" data-background="assets/img/gallery/footer-bg.png">
