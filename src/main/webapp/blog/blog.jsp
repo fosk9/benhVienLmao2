@@ -15,7 +15,7 @@
     }
 
     header {
-      background: linear-gradient(to right, green, green);
+      background: linear-gradient(to right, green, purple);
       color: white;
       padding: 30px;
       text-align: center;
