@@ -1,7 +1,7 @@
 package controller;
 
-import DAO.BlogDAO;
-import model.Blog;
+import model.DAO.BlogDAO;
+import model.object.Blog;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

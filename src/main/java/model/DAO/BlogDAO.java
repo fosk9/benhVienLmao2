@@ -1,6 +1,6 @@
-package DAO;
+package model.DAO;
 
-import model.Blog;
+import model.object.Blog;
 import view.DBContext;
 
 import java.sql.*;

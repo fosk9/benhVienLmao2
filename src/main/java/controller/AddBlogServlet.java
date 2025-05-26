@@ -1,7 +1,7 @@
 package controller;
 
-import DAO.BlogDAO;
-import model.Blog;
+import model.DAO.BlogDAO;
+import model.object.Blog;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -33,11 +33,10 @@ public class AddBlogServlet extends HttpServlet {
             int typeId = Integer.parseInt(request.getParameter("typeId"));
             boolean selectedBanner = request.getParameter("selectedBanner") != null;
 
-            // Lấy ảnh từ file upload
-            Part filePart = request.getPart("imageFile"); // 'imageFile' là tên input type="file"
+
+            Part filePart = request.getPart("imageFile");
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
-            // Đường dẫn thư mục upload trong server
             String appPath = request.getServletContext().getRealPath("");
             String uploadPath = appPath + File.separator + UPLOAD_DIR;
             File uploadDir = new File(uploadPath);
@@ -45,11 +44,10 @@ public class AddBlogServlet extends HttpServlet {
                 uploadDir.mkdirs();
             }
 
-            // Đường dẫn tuyệt đối lưu file
-            String filePath = uploadPath + File.separator + fileName;
-            filePart.write(filePath); // Ghi file lên server
 
-            // Đường dẫn ảnh để lưu vào DB (tương đối, dùng để hiển thị sau này)
+            String filePath = uploadPath + File.separator + fileName;
+            filePart.write(filePath);
+
             String imagePath = UPLOAD_DIR + "/" + fileName;
 
             Blog blog = new Blog();
