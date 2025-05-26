@@ -22,7 +22,7 @@ public class BookAppointmentServlet extends HttpServlet {
         if (type != null) {
             request.setAttribute("appointmentType", type);
         }
-        request.getRequestDispatcher("/WEB-INF/Pact/book-appointment.jsp").forward(request, response);
+        request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response); // Correct path
     }
 
     @Override

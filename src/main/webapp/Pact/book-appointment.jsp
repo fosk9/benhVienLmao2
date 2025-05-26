@@ -1,18 +1,18 @@
 <%--
   Created by IntelliJ IDEA.
   User: Fosk Jesky
-  Date: 5/26/2025
-  Time: 4:12 PM
+  Date: 5/27/2025
+  Time: 1:08 AM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html class="no-js" lang="en">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Edit Appointment</title>
+  <title>Book Appointment</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="<c:url value='/assets/css/bootstrap.min.css'/>">
@@ -47,7 +47,6 @@
                   <ul id="navigation">
                     <li><a href="<c:url value='/pactHome'/>">Home</a></li>
                     <li><a href="<c:url value='/services'/>">Services</a></li>
-                    <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>
                     <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>
                     <li><a href="<c:url value='/logout'/>">Logout</a></li>
                   </ul>
@@ -65,24 +64,18 @@
 </header>
 <main>
   <div class="container mt-5">
-    <h2>Edit Appointment</h2>
-    <div class="card">
-      <div class="card-body">
-        <form action="<c:url value='/appointments/edit'/>" method="post">
-          <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
-          <div class="form-group">
-            <label for="appointmentType">Appointment Type:</label>
-            <input type="text" class="form-control" id="appointmentType" name="appointmentType" value="${appointment.appointmentType}" required>
-          </div>
-          <div class="form-group">
-            <label for="appointmentDate">Appointment Date:</label>
-            <input type="datetime-local" class="form-control" id="appointmentDate" name="appointmentDate" value="${appointment.appointmentDate.format(formatter)}" required>
-          </div>
-          <button type="submit" class="btn btn-primary mt-3">Update Appointment</button>
-          <a href="<c:url value='/appointments'/>" class="btn btn-secondary mt-3">Cancel</a>
-        </form>
+    <h2>Book Appointment</h2>
+    <form action="<c:url value='/book-appointment'/>" method="post">
+      <div class="form-group">
+        <label for="appointmentType">Appointment Type:</label>
+        <input type="text" class="form-control" id="appointmentType" name="appointmentType" value="${appointmentType}" required>
       </div>
-    </div>
+      <div class="form-group">
+        <label for="appointmentDate">Appointment Date:</label>
+        <input type="datetime-local" class="form-control" id="appointmentDate" name="appointmentDate" required>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Submit Appointment</button>
+    </form>
   </div>
 </main>
 <footer>

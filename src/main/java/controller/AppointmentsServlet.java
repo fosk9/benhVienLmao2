@@ -2,6 +2,7 @@ package controller;
 
 import view.AppointmentDAO;
 import view.EmployeeDAO;
+import view.SpecializationDAO;
 import model.Appointment;
 import model.Employee;
 
@@ -34,13 +35,16 @@ public class AppointmentsServlet extends HttpServlet {
         if ("/appointments".equals(path)) {
             List<Appointment> appointments = appointmentDAO.getAppointmentsByPatientId(patientId);
             request.setAttribute("appointments", appointments);
-            request.getRequestDispatcher("/WEB-INF/Pact/appointments.jsp").forward(request, response);
+            request.getRequestDispatcher("/Pact/appointments.jsp").forward(request, response);
         } else if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("id"));
             Appointment appointment = appointmentDAO.select(appointmentId);
             if (appointment != null && appointment.getPatientId() == patientId) {
+                // Set the formatter for JSP
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                request.setAttribute("formatter", formatter);
                 request.setAttribute("appointment", appointment);
-                request.getRequestDispatcher("/WEB-INF/Pact/edit-appointment.jsp").forward(request, response);
+                request.getRequestDispatcher("/Pact/edit-appointment.jsp").forward(request, response);
             } else {
                 response.sendRedirect(request.getContextPath() + "/appointments");
             }
@@ -51,10 +55,20 @@ public class AppointmentsServlet extends HttpServlet {
                 if ("Confirmed".equals(appointment.getStatus()) && appointment.getDoctorId() != 0) {
                     EmployeeDAO employeeDAO = new EmployeeDAO();
                     Employee doctor = employeeDAO.select(appointment.getDoctorId());
-                    request.setAttribute("doctor", doctor);
+                    if (doctor != null) {
+                        request.setAttribute("doctor", doctor);
+                        // Fetch the doctor's specialization
+                        if (doctor.getSpecializationId() != null) {
+                            SpecializationDAO specializationDAO = new SpecializationDAO();
+                            String specialization = specializationDAO.getSpecializationName(doctor.getSpecializationId());
+                            request.setAttribute("doctorSpecialization", specialization != null ? specialization : "N/A");
+                        } else {
+                            request.setAttribute("doctorSpecialization", "N/A");
+                        }
+                    }
                 }
                 request.setAttribute("appointment", appointment);
-                request.getRequestDispatcher("/WEB-INF/Pact/appointment-details.jsp").forward(request, response);
+                request.getRequestDispatcher("/Pact/appointment-details.jsp").forward(request, response);
             } else {
                 response.sendRedirect(request.getContextPath() + "/appointments");
             }

@@ -55,7 +55,7 @@
                     <!-- Logo -->
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="<c:url value='/home'/>"><img src="<c:url value='/assets/img/logo/logo.png'/>"
+                            <a href="<c:url value='/pactHome'/>"><img src="<c:url value='/assets/img/logo/logo.png'/>"
                                                                   alt=""></a>
                         </div>
                     </div>
@@ -65,17 +65,17 @@
                             <div class="main-menu f-right d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="<c:url value='/home'/>">Home</a></li>
-                                        <li><a href="<c:url value='/about'/>">About</a></li>
+                                        <li><a href="<c:url value='/appointments'/>">Appointments</a></li>
+                                        <li><a href="<c:url value='/payment'/>">Payment</a></li>
                                         <li><a href="<c:url value='/services'/>">Services</a></li>
-                                        <li><a href="<c:url value='/blog'/>">Blog</a>
+                                        <li><a href="<c:url value='/pactDetails'/>">Account</a>
                                             <ul class="submenu">
-                                                <li><a href="<c:url value='/blog'/>">Blog</a></li>
-                                                <li><a href="<c:url value='/blog/details'/>">Blog Details</a></li>
+                                                <li><a href="<c:url value='/logout '/>">Logout</a></li>
+                                                <li><a href="<c:url value='/unknow'/>">Unknows</a></li>
                                                 <li><a href="<c:url value='/elements'/>">Elements</a></li>
                                             </ul>
                                         </li>
-                                        <li><a href="<c:url value='/contact'/>">Contact</a></li>
+                                        <li><a href="<c:url value='/blog'/>">Blog</a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -105,9 +105,8 @@
                         <div class="col-xl-7 col-lg-8 col-md-10">
                             <div class="hero-wrapper">
                                 <div class="hero__caption">
-                                    <h1 data-animation="fadeInUp" data-delay=".3s">Hello {user}</h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Register for a health check-up<br> to
-                                        receive exclusive offers</p>
+                                    <h1 data-animation="fadeInUp" data-delay=".3s">Hello ${patient.firstName}</h1>
+                                    <p data-animation="fadeInUp" data-delay=".6s">Register for a health check-up to receive exclusive offers</p>
                                 </div>
                             </div>
                         </div>
@@ -129,7 +128,7 @@
                         </div>
                     </div>
                     <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="<c:url value='/services'/>" class="btn f-right sm-left">Use Services</a>
+                        <a href="<c:url value='/appointments'/>" class="btn f-right sm-left">Use Services</a>
                     </div>
                 </div>
             </div>
@@ -145,9 +144,9 @@
                             <img src="<c:url value='/assets/img/icon/services1.svg'/>" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/services'/>">Physical Activity</a></h5>
+                            <h5><a href="<c:url value='/book-appointment?type=Full Body Scan'/>">Physical Activity</a></h5>
                             <p>Sudden decline in physical strength? It could be related to cardiovascular issues</p>
-                            <a href="<c:url value='/services'/>" class="plus-btn"><i class="ti-plus"></i></a>
+                            <a href="<c:url value='/book-appointment?type=Full Body Scan'/>" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -157,9 +156,9 @@
                             <img src="<c:url value='/assets/img/icon/services2.svg'/>" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/services'/>">Mental Fog</a></h5>
+                            <h5><a href="<c:url value='/book-appointment?type=Meet Psychiatrist'/>">Mental Fog</a></h5>
                             <p>Forgetfulness, frequent headaches, insomnia...?</p>
-                            <a href="<c:url value='/services'/>" class="plus-btn"><i class="ti-plus"></i></a>
+                            <a href="<c:url value='/book-appointment?type=Meet Psychiatrist'/>" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -169,10 +168,9 @@
                             <img src="<c:url value='/assets/img/icon/services3.svg'/>" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/services'/>">Anxious about not having a health check-up in a
-                                while?</a></h5>
+                            <h5><a href="<c:url value='/book-appointment?type=General Examination'/>">Anxious about not having a health check-up in a while?</a></h5>
                             <p>Register for a check-up now to secure the earliest appointment slot</p>
-                            <a href="<c:url value='/services'/>" class="plus-btn"><i class="ti-plus"></i></a>
+                            <a href="<c:url value='/book-appointment?type=General Examination'/>" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -285,7 +283,7 @@
                         <div class="single-footer-caption mb-50">
                             <!-- Logo -->
                             <div class="footer-logo mb-25">
-                                <a href="<c:url value='/home'/>"><img
+                                <a href="<c:url value='/pactHome'/>"><img
                                         src="<c:url value='/assets/img/logo/logo2_footer.png'/>" alt=""></a>
                             </div>
                             <div class="header-area">
@@ -295,7 +293,7 @@
                                         <div class="main-menu main-menu2">
                                             <nav>
                                                 <ul>
-                                                    <li><a href="<c:url value='/home'/>">Home</a></li>
+                                                    <li><a href="<c:url value='/pactHome'/>">Home</a></li>
                                                     <li><a href="<c:url value='/about'/>">About</a></li>
                                                     <li><a href="<c:url value='/services'/>">Services</a></li>
                                                     <li><a href="<c:url value='/blog'/>">Blog</a></li>
