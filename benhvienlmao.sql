@@ -293,10 +293,3 @@ VALUES
 ('phamthutrang', 'pass123', N'Phạm Thu Trang', '1999-07-22', 'F', 'trangpham@example.com', '0911223344', N'99 Trần Hưng Đạo, Nha Trang', 'INS99887', N'Phạm Đức Anh - 0933445566');
 GO
 
-INSERT INTO DoctorDetails (doctor_id, license_number, work_schedule, rating)
-VALUES
-(1, 'LIC12345', 'Mon-Fri 08:00-12:00', 4.5),
-(2, 'LIC23456', 'Mon-Wed 13:00-17:00', 4.7),
-(3, 'LIC34567', 'Tue-Thu 08:00-12:00', 4.3),
-(4, 'LIC45678', 'Fri-Sun 08:00-11:00', 4.8);
-GO
