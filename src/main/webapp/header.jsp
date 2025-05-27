@@ -52,7 +52,7 @@
                     <li><a href="blog.html">Information</a>
                       <ul class="submenu">
                         <li><a href="blog.html">Profile</a></li>
-                        <li><a href="blog_details.html">History</a></li>
+                        <li><a href="${pageContext.request.contextPath}/completed-history">History</a></li>
                         <li><a href="elements.html">Unknown</a></li>
                       </ul>
                     </li>

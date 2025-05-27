@@ -89,10 +89,7 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
             return;
         }
 
-        // Chuyển sang java.sql.Date
         java.sql.Date appointmentDate = new java.sql.Date(parsedDate.getTime());
-
-        // Tạo đối tượng Appointment
         Appointment appointment = Appointment.builder()
                 .patientId(patientId)
                 .doctorId(doctor.getEmployeeId())

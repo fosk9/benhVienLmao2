@@ -167,4 +167,26 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return null;
     }
+
+    public List<Appointment> getCompletedAppointmentsByDoctor(int doctorId) {
+        List<Appointment> completedAppointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? AND a.status = 'Completed' " +
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, doctorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    completedAppointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return completedAppointments;
+    }
+
 }

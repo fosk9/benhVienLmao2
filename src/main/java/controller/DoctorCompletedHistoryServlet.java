@@ -11,8 +11,8 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/doctor-home")
-public class DoctorHomeServlet extends HttpServlet {
+@WebServlet("/completed-history")
+public class DoctorCompletedHistoryServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,11 +30,12 @@ public class DoctorHomeServlet extends HttpServlet {
 
         try {
             AppointmentDAO dao = new AppointmentDAO();
-            List<Appointment> list = dao.getAppointmentsByDoctorId(doctor.getEmployeeId());
+            List<Appointment> completedList = dao.getCompletedAppointmentsByDoctor(doctor.getEmployeeId());
 
             request.setAttribute("doctor", doctor);
-            request.setAttribute("appointments", list);
-            request.getRequestDispatcher("doctor-home.jsp").forward(request, response);
+            request.setAttribute("completedAppointments", completedList);
+
+            request.getRequestDispatcher("doctor-completed-history.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
