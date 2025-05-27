@@ -73,34 +73,30 @@ public class PatientDAO extends DBContext<Patient> {
     }
 
     public Patient getPatientByUsername(String username) {
-        String sql = "SELECT * FROM Patients WHERE username = ?";
-        try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
+        String query = "SELECT * FROM Patients WHERE username = ?";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToPatient(rs);
+                return Patient.builder()
+                        .patientId(rs.getInt("patient_id"))
+                        .username(rs.getString("username"))
+                        .passwordHash(rs.getString("password_hash"))
+                        .fullName(rs.getString("full_name"))
+                        .dob(rs.getDate("dob"))
+                        .gender(rs.getString("gender"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getString("phone"))
+                        .address(rs.getString("address"))
+                        .insuranceNumber(rs.getString("insurance_number"))
+                        .emergencyContact(rs.getString("emergency_contact"))
+                        .build();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
-
-    public int updatePasswordByUsername(String username, String newPasswordHash) {
-        String sql = "UPDATE Patients SET password_hash=? WHERE username=?";
-        try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newPasswordHash);
-            ps.setString(2, username);
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-
 
     @Override
     public List<Patient> select() {

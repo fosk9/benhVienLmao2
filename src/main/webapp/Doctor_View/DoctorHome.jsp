@@ -1,6 +1,14 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!doctype html>
-<html class="no-js" lang="zxx">
+<%--
+  Created by IntelliJ IDEA.
+  User: ADMIN
+  Date: 5/26/2025
+  Time: 11:28 PM
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -37,6 +45,17 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@16/dist/smooth-scroll.polyfills.min.js"></script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var scroll = new SmoothScroll('a.smooth-scroll', {
+            speed: 1200,
+            speedAsDuration: true
+        });
+    });
+</script>
 <!-- Preloader Start -->
 <header>
     <!--? Header Start -->
@@ -47,7 +66,7 @@
                     <!-- Logo -->
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a>
+                            <a href="${pageContext.request.contextPath}/doctor-home"><img src="assets/img/logo/logo.png" alt=""></a>
                         </div>
                     </div>
                     <div class="col-xl-10 col-lg-10 col-md-10">
@@ -56,10 +75,10 @@
                             <div class="main-menu f-right d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="index.html">Home</a></li>
-                                        <li><a href="about.html">About</a></li>
-                                        <li><a href="services.html">Services</a></li>
-                                        <li><a href="blog.html">Blog</a>
+                                        <li><a href="${pageContext.request.contextPath}/doctor-home">Home</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/doctor-home#appointment-section"class="smooth-scroll">Appointment</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/create-appointment">Create</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/history-examination">History</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
                                                 <li><a href="blog_details.html">Blog Details</a></li>
@@ -71,7 +90,7 @@
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <a href="#" class="btn header-btn">Make an Appointment</a>
+                                <a href="index.html" class="btn header-btn">Logout</a>
                             </div>
                         </div>
                     </div>
@@ -136,245 +155,69 @@
         </div>
     </div>
     <!-- Slider Area End -->
-    <!--? About-2 Area Start -->
-    <div class="about-area2 section-padding40">
+    <!-- Doctor Appointment Section Start -->
+    <section class="about-area2 section-padding40" id="appointment-section">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-7 col-md-12">
-                    <!-- about-img -->
-                    <div class="about-img ">
-                        <img src="assets/img/gallery/about.png" alt="">
-                    </div>
-                </div>
-                <div class="col-lg-5 col-md-12">
-                    <div class="about-caption">
-                        <!-- Section Tittle -->
-                        <div class="section-tittle mb-35">
-                            <h2>Create a healthy
-                                life you love!</h2>
-                        </div>
-                        <p class="pera-top mb-40">Almost before we knew it, we had left the ground</p>
-                        <p class="pera-bottom mb-30">Praesent porttitor, nulla vitae posuere iaculis, arcu nisl
-                            dignissim dolor, a pretium mi sem ut ipsum. Fusce
-                            fermentum. Pellentesque libero tortor, tincidunt et.</p>
-                        <div class="icon-about">
-                            <img src="assets/img/icon/about1.svg" alt="" class=" mr-20">
-                            <img src="assets/img/icon/about2.svg" alt="">
-                        </div>
-                    </div>
-                </div>
+            <div class="section-tittle mb-30 text-center">
+                <h2>Today's Appointments</h2>
+                <p>Hello, Dr. ${doctor.fullName} </p>
             </div>
-        </div>
-    </div>
-    <!-- About-2 Area End -->
-    <section class="wantToWork-area section-bg3" data-background="assets/img/gallery/section_bg01.png">
-        <div class="container">
-            <div class="wants-wrapper w-padding2">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-xl-7 col-lg-9 col-md-8">
-                        <div class="wantToWork-caption wantToWork-caption2">
-                            <h2>Happy mind <br>healthy life</h2>
-                            <p>Almost before we knew it, we<br> had left the ground</p>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="services.html" class="btn f-right sm-left">Take a Service</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--? Services Area Start -->
-    <div class="service-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services1.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="services.html">Physical Activity</a></h5>
-                            <p>Praesent porttitor, nulla vitae  posuere iaculis, arcu nisl dignissim dolor, a pretium mi  sem ut ipsum.</p>
-                            <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services2.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="services.html">Physical Activity</a></h5>
-                            <p>Praesent porttitor, nulla vitae  posuere iaculis, arcu nisl dignissim dolor, a pretium mi  sem ut ipsum.</p>
-                            <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services3.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="services.html">Physical Activity</a></h5>
-                            <p>Praesent porttitor, nulla vitae  posuere iaculis, arcu nisl dignissim dolor, a pretium mi  sem ut ipsum.</p>
-                            <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Services Area End -->
-    <!--? Testimonial Area Start -->
-    <section class="testimonial-area testimonial-padding fix">
-        <div class="container">
-            <div class="row align-items-center justify-content-center">
-                <div class=" col-lg-9">
-                    <div class="about-caption">
-                        <!-- Testimonial Start -->
-                        <div class="h1-testimonial-active dot-style">
-                            <!-- Single Testimonial -->
-                            <div class="single-testimonial position-relative">
-                                <div class="testimonial-caption">
-                                    <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"The automated process starts as soon as your clothe go into the machine. This site outcome is gleaming clothe. Placeholder text commonly used. In publishing and graphic.</p>
-                                </div>
-                                <!-- founder -->
-                                <div class="testimonial-founder d-flex align-items-center">
-                                    <div class="founder-img">
-                                        <img src="assets/img/icon/testimonial.png" alt="">
-                                    </div>
-                                    <div class="founder-text">
-                                        <span>Robart Brown</span>
-                                        <p>Creative designer at Colorlib</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Single Testimonial -->
-                            <div class="single-testimonial position-relative">
-                                <div class="testimonial-caption">
-                                    <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"The automated process starts as soon as your clothe go into the machine. This site outcome is gleaming clothe. Placeholder text commonly used. In publishing and graphic.</p>
-                                </div>
-                                <!-- founder -->
-                                <div class="testimonial-founder d-flex align-items-center">
-                                    <div class="founder-img">
-                                        <img src="assets/img/icon/testimonial.png" alt="">
-                                    </div>
-                                    <div class="founder-text">
-                                        <span>Robart Brown</span>
-                                        <p>Creative designer at Colorlib</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Testimonial End -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--? Testimonial Area End -->
-    <!--? video_start -->
-    <div class="container">
-        <div class="video-area section-bg2 d-flex align-items-center"  data-background="assets/img/gallery/video-bg.png">
-            <div class="video-wrap position-relative">
-                <div class="video-icon" >
-                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i class="fas fa-play"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- video_end -->
-    <!--? Blog Area Start -->
-    <section class="home-blog-area section-padding30">
-        <div class="container">
-            <!-- Section Tittle -->
             <div class="row justify-content-center">
-                <div class="col-lg-7 col-md-9 col-sm-10">
-                    <div class="section-tittle text-center mb-100">
-                        <h2>Latest Blog</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="home-blog-single mb-40">
-                        <div class="blog-img-cap">
-                            <div class="blog-img">
-                                <img src="assets/img/gallery/blog1.png" alt="">
-                            </div>
-                            <div class="blog-cap">
-                                <h3><a href="blog_details.html">Your daily meal plan</a></h3>
-                                <P>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium mi
-                                    sem ut ipsum.</P>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="home-blog-single mb-40">
-                        <div class="blog-img-cap">
-                            <div class="blog-img">
-                                <img src="assets/img/gallery/blog2.png" alt="">
-                            </div>
-                            <div class="blog-cap">
-                                <h3><a href="blog_details.html">Food is a great source of  medicine</a></h3>
-                                <P>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium mi
-                                    sem ut ipsum.</P>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="home-blog-single mb-40">
-                        <div class="blog-img-cap">
-                            <div class="blog-img">
-                                <img src="assets/img/gallery/blog3.png" alt="">
-                            </div>
-                            <div class="blog-cap">
-                                <h3><a href="blog_details.html">Everyday diet plan</a></h3>
-                                <P>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium mi
-                                    sem ut ipsum.</P>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Blog Area End -->
-    <!--? About Law Start-->
-    <section class="about-low-area mt-30">
-        <div class="container">
-            <div class="about-cap-wrapper">
-                <div class="row">
-                    <div class="col-xl-5  col-lg-6 col-md-10 offset-xl-1">
-                        <div class="about-caption mb-50">
-                            <!-- Section Tittle -->
-                            <div class="section-tittle mb-35">
-                                <h2>100% satisfaction guaranteed.</h2>
-                            </div>
-                            <p>Almost before we knew it, we had left the ground</p>
-                            <a href="about.html" class="border-btn">Make an Appointment</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <!-- about-img -->
-                        <div class="about-img">
-                            <div class="about-font-img">
-                                <img src="assets/img/gallery/about2.png" alt="">
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-lg-10">
+                    <table class="table table-hover table-bordered text-center"
+                           style="width: 75%; font-size: 1.5rem; margin: 0 auto;">
+                        <thead class="thead-dark" style="font-weight: 600;">
+                        <tr>
+                            <th style="padding: 12px 18px;">#</th>
+                            <th style="padding: 12px 18px;">Patient Name</th>
+                            <th style="padding: 12px 18px;">Appointment Time</th>
+                            <th style="padding: 12px 18px;">Status</th>
+                            <th style="padding: 12px 18px;">Details</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach var="a" items="${appointments}" varStatus="loop">
+                            <tr style="text-align: center;">
+                                <td style="padding: 12px 18px;">${loop.index + 1}</td>
+                                <td style="padding: 12px 18px;">${a.patientName}</td>
+                                <td style="padding: 12px 18px;">
+                                    <c:choose>
+                                        <c:when test="${not empty a.appointmentDate}">
+                                            ${a.formattedAppointmentDate}
+                                        </c:when>
+                                        <c:otherwise>
+                                            Not scheduled
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td style="padding: 12px 18px;">
+                                    <form action="${pageContext.request.contextPath}/change-status" method="post" style="display:inline;">
+                                        <input type="hidden" name="appointmentId" value="${a.appointmentId}" />
+                                        <select name="status" onchange="this.form.submit()" style="font-size:1.3rem; padding:4px;">
+                                            <option value="Pending" ${a.status == 'Pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="Confirmed" ${a.status == 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                                            <option value="Completed" ${a.status == 'Completed' ? 'selected' : ''}>Completed</option>
+                                            <option value="Cancelled" ${a.status == 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td style="padding: 12px 18px;">
+                                    <a href="${pageContext.request.contextPath}/consultation?id=${a.appointmentId}"
+                                       class="btn btn-primary"
+                                       style="font-size: 1.5rem; padding: 12px 24px;">View</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                    <c:if test="${empty appointments}">
+                        <p class="text-center text-muted">No appointments scheduled today.</p>
+                    </c:if>
                 </div>
             </div>
         </div>
     </section>
-    <!-- About Law End-->
+    <!-- Doctor Appointment Section End -->
 </main>
 <footer>
     <div class="footer-wrappr section-bg3" data-background="assets/img/gallery/footer-bg.png">

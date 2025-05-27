@@ -151,7 +151,7 @@
 
             <button type="submit" class="btn btn-primary">Register</button>
             <div class="link-group">
-                <a href="login.jsp">Already have an account? Login</a>
+                <a href="Login.jsp">Already have an account? Login</a>
             </div>
         </form>
 

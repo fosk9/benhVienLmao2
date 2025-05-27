@@ -27,9 +27,12 @@ public class LoginServlet extends HttpServlet {
             PatientDAO patientDAO = new PatientDAO();
             Patient patient = patientDAO.login(username, password);
             if (patient != null) {
+                session.setAttribute("username", username);
+                session.setAttribute("patientId", patient.getPatientId());
+                session.setAttribute("role", "Patient"); // Hardcoded role for patients
                 session.setAttribute("account", patient);
                 session.setAttribute("login-as", "patient");
-                response.sendRedirect("index.html");
+                response.sendRedirect(request.getContextPath() + "/pactHome");
                 return;
             } else {
                 request.setAttribute("username", username);
@@ -56,11 +59,11 @@ public class LoginServlet extends HttpServlet {
         }
         request.setAttribute("username", username);
         request.setAttribute("password", password);
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        request.getRequestDispatcher("Login.jsp").forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        request.getRequestDispatcher("Login.jsp").forward(request, response);
     }
 }

@@ -37,7 +37,7 @@ CREATE TABLE RoleFeatures (
 );
 GO
 
--- Specializations (with status)
+-- Specializations
 CREATE TABLE Specializations (
     specialization_id INT PRIMARY KEY IDENTITY(1,1),
     name NVARCHAR(100) NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE Specializations (
 );
 GO
 
--- Employees (with login attributes and specialization_id)
+-- Employees
 CREATE TABLE Employees (
     employee_id INT PRIMARY KEY IDENTITY(1,1),
     username VARCHAR(100) UNIQUE NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE Employees (
 );
 GO
 
--- EmployeeHistory (for role history)
+-- Employee History
 CREATE TABLE EmployeeHistory (
     history_id INT PRIMARY KEY IDENTITY(1,1),
     employee_id INT,
@@ -73,7 +73,7 @@ CREATE TABLE EmployeeHistory (
 );
 GO
 
--- DoctorDetails
+-- Doctor Details
 CREATE TABLE DoctorDetails (
     doctor_id INT PRIMARY KEY,
     license_number VARCHAR(100),
@@ -83,23 +83,7 @@ CREATE TABLE DoctorDetails (
 );
 GO
 
--- AdminDetails
-CREATE TABLE AdminDetails (
-    admin_id INT PRIMARY KEY,
-    note NVARCHAR(255),
-    FOREIGN KEY (admin_id) REFERENCES Employees(employee_id)
-);
-GO
-
--- ReceptionistDetails
-CREATE TABLE ReceptionistDetails (
-    receptionist_id INT PRIMARY KEY,
-    description NVARCHAR(255),
-    FOREIGN KEY (receptionist_id) REFERENCES Employees(employee_id)
-);
-GO
-
--- Patients (with login attributes)
+-- Patients
 CREATE TABLE Patients (
     patient_id INT PRIMARY KEY IDENTITY(1,1),
     username VARCHAR(100) UNIQUE NOT NULL,
@@ -115,14 +99,14 @@ CREATE TABLE Patients (
 );
 GO
 
--- BlogType (for blog categorization)
+-- Blog Types
 CREATE TABLE BlogType (
     type_id TINYINT PRIMARY KEY,
     type_name NVARCHAR(10)
 );
 GO
 
--- Blog (for health education content)
+-- Blogs
 CREATE TABLE Blog (
     blog_id INT PRIMARY KEY IDENTITY(1,1),
     blog_name NVARCHAR(255),
@@ -136,7 +120,7 @@ CREATE TABLE Blog (
 );
 GO
 
--- Comment (for patient comments on blogs)
+-- Comments
 CREATE TABLE Comment (
     comment_id INT PRIMARY KEY IDENTITY(1,1),
     content NVARCHAR(MAX),
@@ -153,6 +137,7 @@ CREATE TABLE Appointments (
     appointment_id INT PRIMARY KEY IDENTITY(1,1),
     patient_id INT,
     doctor_id INT,
+	appointment_type NVARCHAR(100) NOT NULL,
     appointment_date DATETIME,
     status VARCHAR(50) CHECK (status IN ('Pending', 'Confirmed', 'Completed', 'Cancelled')),
     created_at DATETIME DEFAULT GETDATE(),
@@ -162,7 +147,7 @@ CREATE TABLE Appointments (
 );
 GO
 
--- Trigger for Appointments to enforce doctor_id role
+-- Trigger: Validate doctor_id has 'Doctor' role
 CREATE TRIGGER TRG_CheckDoctorRole_Appointments
 ON Appointments
 AFTER INSERT, UPDATE
@@ -203,7 +188,7 @@ CREATE TABLE Prescriptions (
 );
 GO
 
--- TestRequests
+-- Treatment
 CREATE TABLE Treatment (
     treatment_id INT PRIMARY KEY IDENTITY(1,1),
     appointment_id INT,
@@ -214,7 +199,7 @@ CREATE TABLE Treatment (
 );
 GO
 
--- Feedbacks (linked to Employees)
+-- Feedbacks
 CREATE TABLE Feedbacks (
     feedback_id INT PRIMARY KEY IDENTITY(1,1),
     employee_id INT,
@@ -250,7 +235,7 @@ CREATE TABLE DoctorShifts (
 );
 GO
 
--- Trigger for DoctorShifts to enforce doctor_id role
+-- Trigger: Validate doctor_id in DoctorShifts
 CREATE TRIGGER TRG_CheckDoctorRole_DoctorShifts
 ON DoctorShifts
 AFTER INSERT, UPDATE
@@ -271,7 +256,7 @@ BEGIN
 END;
 GO
 
--- Consultation Registrations (for guests, no foreign keys)
+-- Consultation Registrations (no FK)
 CREATE TABLE ConsultationRegistrations (
     registration_id INT PRIMARY KEY IDENTITY(1,1),
     full_name NVARCHAR(255) NOT NULL,
@@ -292,9 +277,19 @@ INSERT INTO Features (feature_name) VALUES
 ('Book Appointment'), ('View Prescription'), ('Manage Users'), ('View Statistics');
 GO
 
--- Insert sample BlogType
+-- Insert sample Blog Types
 INSERT INTO BlogType (type_id, type_name) VALUES
 (0, N'Blog'),
 (1, N'Banner'),
 (2, N'Footer');
 GO
+
+INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact)
+VALUES 
+('john_doe', '123456', N'John Doe', '1990-05-10', 'M', 'john@example.com', '0901234567', N'123 Nguyễn Trãi, Hà Nội', 'INS12345', N'Jane Doe - 0912345678'),
+('nguyenlan', 'abcdef', N'Nguyễn Lan', '1995-08-15', 'F', 'lan@example.com', '0987654321', N'456 Lê Lợi, Đà Nẵng', 'INS67890', N'Nguyễn Văn An - 0909876543'),
+('tranbaominh', '654321', N'Trần Bảo Minh', '1988-03-25', 'M', 'minhtran@example.com', '0938123456', N'789 Phan Đình Phùng, TP.HCM', 'INS11223', N'Lê Thị Hoa - 0922334455'),
+('lethanhha', '112233', N'Lê Thanh Hà', '1992-12-05', 'F', 'ha.le@example.com', '0944556677', N'101 Lý Thường Kiệt, Huế', 'INS44556', N'Ngô Quốc Dũng - 0977998855'),
+('phamthutrang', 'pass123', N'Phạm Thu Trang', '1999-07-22', 'F', 'trangpham@example.com', '0911223344', N'99 Trần Hưng Đạo, Nha Trang', 'INS99887', N'Phạm Đức Anh - 0933445566');
+GO
+

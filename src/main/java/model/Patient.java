@@ -23,4 +23,12 @@ public class Patient {
     private String address;
     private String insuranceNumber;
     private String emergencyContact;
+
+    public String getFirstName() {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "";
+        }
+        String[] parts = fullName.trim().split("\\s+");
+        return parts[parts.length - 1]; // Last part is the first name in Vietnamese naming convention
+    }
 }
