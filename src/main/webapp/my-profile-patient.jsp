@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>My Profile - Patient</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <jsp:include page="common-css.jsp"/>
 </head>
 <body>
 
@@ -77,6 +77,6 @@
 </div>
 
 <jsp:include page="footer.jsp"/>
-<script src="js/bootstrap.bundle.min.js"></script>
+<jsp:include page="common-scripts.jsp"/>
 </body>
 </html>

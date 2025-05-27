@@ -2,11 +2,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html>
+<html class="no-js" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>My Profile - Employee</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <jsp:include page="common-css.jsp"/>
 </head>
 <body>
 
@@ -62,6 +62,6 @@
 </div>
 
 <jsp:include page="footer.jsp"/>
-<script src="js/bootstrap.bundle.min.js"></script>
+<jsp:include page="common-scripts.jsp" />
 </body>
 </html>

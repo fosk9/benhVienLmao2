@@ -6,8 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Patient List</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <jsp:include page="common-css.jsp"/>
 </head>
 <body>
 
@@ -87,7 +86,7 @@
 </div>
 
 <jsp:include page="footer.jsp"/>
+<jsp:include page="common-scripts.jsp"/>
 
-<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
