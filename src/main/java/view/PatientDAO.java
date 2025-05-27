@@ -25,6 +25,32 @@ public class PatientDAO extends DBContext<Patient> {
         return null;
     }
 
+    public Patient getPatientByUsername(String username) {
+        String query = "SELECT * FROM Patients WHERE username = ?";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Patient.builder()
+                        .patientId(rs.getInt("patient_id"))
+                        .username(rs.getString("username"))
+                        .passwordHash(rs.getString("password_hash"))
+                        .fullName(rs.getString("full_name"))
+                        .dob(rs.getDate("dob"))
+                        .gender(rs.getString("gender"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getString("phone"))
+                        .address(rs.getString("address"))
+                        .insuranceNumber(rs.getString("insurance_number"))
+                        .emergencyContact(rs.getString("emergency_contact"))
+                        .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public List<Patient> select() {
         List<Patient> patients = new ArrayList<>();
