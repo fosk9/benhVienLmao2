@@ -1,6 +1,6 @@
 package controller;
 
-import model.DAO.BlogDAO;
+import view.BlogDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -16,7 +16,7 @@ public class DeleteBlogServlet extends HttpServlet {
 
         BlogDAO dao = new BlogDAO();
         try {
-            dao.deleteBlog(id);
+            dao.delete(id);
         } catch (Exception ex) {
             Logger.getLogger(DeleteBlogServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -1,7 +1,7 @@
 package controller;
 
-import model.DAO.CommentDAO;
-import model.object.Comment;
+import view.CommentDAO;
+import model.Comment;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,7 +31,7 @@ public class CommentServlet extends HttpServlet {
         comment.setPatientId(patientId);
         comment.setDate(LocalDate.now());
 
-        commentDAO.addComment(comment);
+        commentDAO.insert(comment);
         response.sendRedirect("blog-detail?id=" + blogId);
     }
 }
