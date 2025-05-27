@@ -182,4 +182,23 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(10, p.getEmergencyContact());
     }
 
+    public List<Patient> getPatientsByDoctorId(int doctorId) {
+        List<Patient> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT p.* FROM Patients p JOIN Appointments a ON p.patient_id = a.patient_id WHERE a.doctor_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Patient p = mapResultSetToPatient(rs);
+                    list.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

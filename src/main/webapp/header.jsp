@@ -46,22 +46,22 @@
               <div class="main-menu f-right d-none d-lg-block">
                 <nav>
                   <ul id="navigation">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="services.html">Services</a></li>
-                    <li><a href="blog.html">Blog</a>
+                    <li><a href="${pageContext.request.contextPath}/doctor-home">Appointment</a></li>
+                    <li><a href="${pageContext.request.contextPath}/create-appointment">Create An Appointment</a></li>
+                    <li><a href="services.html">Schedul</a></li>
+                    <li><a href="blog.html">Information</a>
                       <ul class="submenu">
-                        <li><a href="blog.html">Blog</a></li>
-                        <li><a href="blog_details.html">Blog Details</a></li>
-                        <li><a href="elements.html">Element</a></li>
+                        <li><a href="blog.html">Profile</a></li>
+                        <li><a href="blog_details.html">History</a></li>
+                        <li><a href="elements.html">Unknown</a></li>
                       </ul>
                     </li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="contact.html">Unknown</a></li>
                   </ul>
                 </nav>
               </div>
               <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                <a href="#" class="btn header-btn">Make an Appointment</a>
+                <a href="#" class="btn header-btn">Unknown</a>
               </div>
             </div>
           </div>
