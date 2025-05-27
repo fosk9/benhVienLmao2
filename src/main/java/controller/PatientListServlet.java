@@ -18,14 +18,31 @@ public class PatientListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Lấy danh sách tất cả bệnh nhân từ DAO
+        String search = request.getParameter("search");
+        String gender = request.getParameter("gender");
+        String sortBy = request.getParameter("sortBy");
+        String sortDir = request.getParameter("sortDir");
+
         PatientDAO patientDAO = new PatientDAO();
-        List<Patient> patients = patientDAO.select();
+        List<Patient> patients;
 
-        // Đưa danh sách vào request scope
+        boolean hasFilter = (search != null && !search.isEmpty()) ||
+                (gender != null && !gender.isEmpty()) ||
+                (sortBy != null && !sortBy.isEmpty());
+
+        if (hasFilter) {
+            patients = patientDAO.searchFilterSort(search, gender, sortBy, sortDir);
+        } else {
+            patients = patientDAO.select();
+        }
+
         request.setAttribute("patients", patients);
+        request.setAttribute("search", search);
+        request.setAttribute("gender", gender);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("sortDir", sortDir);
 
-        // Forward tới trang JSP
         request.getRequestDispatcher("patient-list.jsp").forward(request, response);
     }
+
 }

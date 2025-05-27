@@ -8,6 +8,53 @@ import java.util.List;
 
 public class PatientDAO extends DBContext<Patient> {
 
+    public List<Patient> searchFilterSort(String search, String gender, String sortBy, String sortDir) {
+        List<Patient> patients = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM Patients WHERE 1=1");
+
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (full_name LIKE ? OR email LIKE ?)");
+        }
+
+        if (gender != null && !gender.isEmpty()) {
+            sql.append(" AND gender = ?");
+        }
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            sql.append(" ORDER BY ").append(sortBy);
+            if (sortDir != null && !sortDir.isEmpty()) {
+                sql.append(" ").append(sortDir);
+            }
+        }
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+
+            if (search != null && !search.isEmpty()) {
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
+            }
+
+            if (gender != null && !gender.isEmpty()) {
+                ps.setString(paramIndex++, gender);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    patients.add(mapResultSetToPatient(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return patients;
+    }
+
     public Patient login(String username, String password) {
         String sql = "SELECT * FROM Patients WHERE username = ? AND password_hash = ?";
         try (Connection conn = getConn();
