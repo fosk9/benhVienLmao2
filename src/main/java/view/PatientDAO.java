@@ -199,6 +199,4 @@ public class PatientDAO extends DBContext<Patient> {
         }
         return list;
     }
-
-
 }
