@@ -78,7 +78,7 @@
                                         <li><a href="${pageContext.request.contextPath}/doctor-home">Home</a></li>
                                         <li><a href="${pageContext.request.contextPath}/doctor-home#appointment-section"class="smooth-scroll">Appointment</a></li>
                                         <li><a href="${pageContext.request.contextPath}/create-appointment">Create</a></li>
-                                        <li><a href="blog.html">History</a>
+                                        <li><a href="${pageContext.request.contextPath}/history-examination">History</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
                                                 <li><a href="blog_details.html">Blog Details</a></li>

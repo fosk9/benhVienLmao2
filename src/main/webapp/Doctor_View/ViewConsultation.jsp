@@ -79,7 +79,7 @@
                     <li><a href="${pageContext.request.contextPath}/doctor-home">Home</a></li>
                     <li><a href="${pageContext.request.contextPath}/consultation#appointment-section"class="smooth-scroll">Appointment Detail</a></li>
                     <li><a href="${pageContext.request.contextPath}/create-appointment#patient-section"class="smooth-scroll">Create</a></li>
-                    <li><a href="blog.html">History</a>
+                    <li><a href="${pageContext.request.contextPath}/history-examination">History</a>
                       <ul class="submenu">
                         <li><a href="blog.html">Blog</a></li>
                         <li><a href="blog_details.html">Blog Details</a></li>

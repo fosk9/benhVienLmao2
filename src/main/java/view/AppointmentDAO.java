@@ -105,4 +105,35 @@ public  class AppointmentDAO  {
             ps.executeUpdate();
         }
     }
+
+    public List<Appointment> getCompletedAppointmentsByDoctor(int doctorId) throws SQLException {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT p.patient_id, p.full_name, p.email AS patient_email, p.phone AS patient_phone, " +
+                "a.doctor_id, a.appointment_date, a.status, a.appointment_id " +
+                "FROM Patients p JOIN Appointments a ON p.patient_id = a.patient_id " +
+                "WHERE a.doctor_id = ? AND a.status = 'Completed' " +
+                "ORDER BY p.full_name ASC, a.appointment_date DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Appointment appt = new Appointment();
+                    appt.setPatientId(rs.getInt("patient_id"));
+                    appt.setPatientName(rs.getString("full_name"));
+                    appt.setPatientEmail(rs.getString("patient_email"));
+                    appt.setPatientPhone(rs.getString("patient_phone"));
+                    appt.setDoctorId(rs.getInt("doctor_id"));
+                    Timestamp ts = rs.getTimestamp("appointment_date");
+                    if (ts != null) appt.setAppointmentDate(ts.toLocalDateTime());
+                    appt.setStatus(rs.getString("status"));
+                    appt.setAppointmentId(rs.getInt("appointment_id"));
+                    list.add(appt);
+                }
+            }
+        }
+        return list;
+    }
+
+
 }
