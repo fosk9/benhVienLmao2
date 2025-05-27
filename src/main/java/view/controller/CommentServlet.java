@@ -1,7 +1,7 @@
-package controller;
+package view.controller;
 
-import view.CommentDAO;
-import model.object.Comment;
+import view.DAO.CommentDAO;
+import view.object.Comment;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -1,6 +1,6 @@
-package view;
+package view.DAO;
 
-import model.object.Blog;
+import view.object.Blog;
 
 import java.sql.*;
 import java.util.ArrayList;

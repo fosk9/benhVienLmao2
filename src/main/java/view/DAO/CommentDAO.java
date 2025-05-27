@@ -1,6 +1,6 @@
-package view;
+package view.DAO;
 
-import model.object.Comment;
+import view.object.Comment;
 
 import java.sql.*;
 import java.util.ArrayList;

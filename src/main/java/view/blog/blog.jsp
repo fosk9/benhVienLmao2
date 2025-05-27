@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
-<%@page import="model.object.Blog"%>
+<%@page import="view.object.Blog"%>
 
 <!DOCTYPE html>
 <html>
