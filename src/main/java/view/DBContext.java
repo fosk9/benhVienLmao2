@@ -1,63 +1,56 @@
-package view;
+package model.DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.sql.Statement;
 
-public abstract class DBContext<E> {
+public class DBContext {
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=benhvienlmao;encrypt=true;trustServerCertificate=true";
+    private static final String USER = "sa"; // Replace with your SQL Server username
+    private static final String PASSWORD = "123"; // Replace with your SQL Server password
 
-    private final String url;
-    private final String user;
-    private final String pass;
-
-    public DBContext() {
-        this("jdbc:sqlserver://localhost:1433;databaseName=benhvienlmao;encrypt=false",
-                "sa", "sa");
+    public static Connection getConnection() throws SQLException, ClassNotFoundException {
+        // Load SQL Server JDBC driver
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        // Establish connection
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    public DBContext(String url, String user, String pass) {
-        this.url = url;
-        this.user = user;
-        this.pass = pass;
-    }
+    public static void main(String[] args) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
 
-    /**
-     * Opens and returns a new connection to the database.
-     */
-    public Connection getConn() throws SQLException {
         try {
-            // Load the driver (optional since JDBC 4.0, but kept here for clarity)
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        // Open a new connection every time getConn() is called
-        return DriverManager.getConnection(url, user, pass);
-    }
+            conn = getConnection();
+            System.out.println("Connection to benhvienlmao database successful!");
 
-    /**
-     * Closes the provided connection to the database.
-     */
-    public void closeConnection(Connection conn) {
-        if (conn != null) {
+            // Execute a simple test query
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT 1 AS test");
+            if (rs.next()) {
+                System.out.println("Query executed successfully. Result: " + rs.getInt("test"));
+            }
+        } catch (ClassNotFoundException e) {
+            System.err.println("SQL Server JDBC Driver not found!");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Database connection failed!");
+            System.err.println("SQL Error: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            e.printStackTrace();
+        } finally {
+            // Close resources
             try {
-                conn.close();
-                System.out.println("Connection closed.");
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
             }
         }
     }
-
-    // Abstract methods for CRUD operations
-    public abstract List<E> select();
-
-    public abstract E select(int... id);
-
-    public abstract int insert(E obj);
-
-    public abstract int update(E obj);
-
-    public abstract int delete(int... id);
 }
