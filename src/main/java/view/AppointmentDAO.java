@@ -3,13 +3,13 @@ package view;
 import model.Appointment;
 import model.Patient;
 
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.sql.Timestamp;
 
 public  class AppointmentDAO  {
     private final Connection conn;
