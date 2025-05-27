@@ -1,24 +1,26 @@
 package view;
 
-import model.Role;
+import model.Specialization;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoleDAO extends DBContext<Role> {
+public class SpecializationDAO extends DBContext<Specialization> {
 
     @Override
-    public List<Role> select() {
-        List<Role> list = new ArrayList<>();
-        String sql = "SELECT * FROM Roles";
+    public List<Specialization> select() {
+        List<Specialization> list = new ArrayList<>();
+        String sql = "SELECT * FROM Specializations";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(Role.builder()
-                        .roleId(rs.getInt("role_id"))
-                        .roleName(rs.getString("role_name"))
-                        .build());
+                Specialization sp = Specialization.builder()
+                        .specializationId(rs.getInt("specialization_id"))
+                        .name(rs.getString("name"))
+                        .build();
+                list.add(sp);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -27,17 +29,17 @@ public class RoleDAO extends DBContext<Role> {
     }
 
     @Override
-    public Role select(int... id) {
-        if (id.length == 0) return null;
-        String sql = "SELECT * FROM Roles WHERE role_id = ?";
+    public Specialization select(int... id) {
+        if (id.length < 1) return null;
+        String sql = "SELECT * FROM Specializations WHERE specialization_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id[0]);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return Role.builder()
-                            .roleId(rs.getInt("role_id"))
-                            .roleName(rs.getString("role_name"))
+                    return Specialization.builder()
+                            .specializationId(rs.getInt("specialization_id"))
+                            .name(rs.getString("name"))
                             .build();
                 }
             }
@@ -48,11 +50,11 @@ public class RoleDAO extends DBContext<Role> {
     }
 
     @Override
-    public int insert(Role r) {
-        String sql = "INSERT INTO Roles (role_name) VALUES (?)";
+    public int insert(Specialization obj) {
+        String sql = "INSERT INTO Specializations (name) VALUES (?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, r.getRoleName());
+            ps.setString(1, obj.getName());
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,12 +63,12 @@ public class RoleDAO extends DBContext<Role> {
     }
 
     @Override
-    public int update(Role r) {
-        String sql = "UPDATE Roles SET role_name = ? WHERE role_id = ?";
+    public int update(Specialization obj) {
+        String sql = "UPDATE Specializations SET name = ? WHERE specialization_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, r.getRoleName());
-            ps.setInt(2, r.getRoleId());
+            ps.setString(1, obj.getName());
+            ps.setInt(2, obj.getSpecializationId());
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,8 +78,8 @@ public class RoleDAO extends DBContext<Role> {
 
     @Override
     public int delete(int... id) {
-        if (id.length == 0) return 0;
-        String sql = "DELETE FROM Roles WHERE role_id = ?";
+        if (id.length < 1) return 0;
+        String sql = "DELETE FROM Specializations WHERE specialization_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id[0]);

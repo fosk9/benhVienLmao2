@@ -2,49 +2,62 @@ package view;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 
-public class DBContext {
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=benhvienlmao;encrypt=false";
-    private static final String USER = "sa"; // Replace with your SQL Server username
-    private static final String PASSWORD = "sa"; // Replace with your SQL Server password
+public abstract class DBContext<E> {
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    private final String url;
+    private final String user;
+    private final String pass;
+
+    public DBContext() {
+        this("jdbc:sqlserver://localhost:1433;databaseName=benhvienlmao;encrypt=false",
+                "sa", "123");
     }
 
-    public static void main(String[] args) {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            // Test connection
-            conn = getConnection();
-            System.out.println("Connection to benhvienlmao database successful!");
+    public DBContext(String url, String user, String pass) {
+        this.url = url;
+        this.user = user;
+        this.pass = pass;
+    }
 
-            // Execute a simple query to verify database access
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT 1 AS test");
-            if (rs.next()) {
-                System.out.println("Query executed successfully. Result: " + rs.getInt("test"));
-            }
-        } catch (SQLException e) {
-            System.err.println("Database connection failed!");
-            System.err.println("SQL Error: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            e.printStackTrace();
-        } finally {
-            // Close resources
+    /**
+     * Opens and returns a new connection to the database.
+     */
+    public Connection getConn() throws SQLException {
+        try {
+            // Load the driver (optional since JDBC 4.0, but kept here for clarity)
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        // Open a new connection every time getConn() is called
+        return DriverManager.getConnection(url, user, pass);
+    }
+
+    /**
+     * Closes the provided connection to the database.
+     */
+    public void closeConnection(Connection conn) {
+        if (conn != null) {
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error closing resources: " + e.getMessage());
+                conn.close();
+                System.out.println("Connection closed.");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         }
     }
+
+    // Abstract methods for CRUD operations
+    public abstract List<E> select();
+
+    public abstract E select(int... id);
+
+    public abstract int insert(E obj);
+
+    public abstract int update(E obj);
+
+    public abstract int delete(int... id);
 }
