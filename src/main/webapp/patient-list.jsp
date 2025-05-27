@@ -18,33 +18,40 @@
     <!-- Filter/Search/Sort Form -->
     <form method="get" action="PatientList" class="row g-3 mb-4">
         <div class="col-md-3">
-            <input type="text" name="search" class="form-control" placeholder="Search by name or email...">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by name or email..."
+                   value="${param.search}"/>
         </div>
+
         <div class="col-md-2">
             <select name="gender" class="form-select">
                 <option value="">Filter by gender</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
+                <option value="M" ${param.gender == 'M' ? 'selected' : ''}>Male</option>
+                <option value="F" ${param.gender == 'F' ? 'selected' : ''}>Female</option>
             </select>
         </div>
+
         <div class="col-md-3">
             <select name="sortBy" class="form-select">
                 <option value="">Sort by</option>
-                <option value="full_name">Full Name</option>
-                <option value="dob">Date of Birth</option>
-                <option value="email">Email</option>
+                <option value="full_name" ${param.sortBy == 'full_name' ? 'selected' : ''}>Full Name</option>
+                <option value="dob" ${param.sortBy == 'dob' ? 'selected' : ''}>Date of Birth</option>
+                <option value="email" ${param.sortBy == 'email' ? 'selected' : ''}>Email</option>
             </select>
         </div>
+
         <div class="col-md-2">
             <select name="sortDir" class="form-select">
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+                <option value="asc" ${param.sortDir == 'asc' ? 'selected' : ''}>Ascending</option>
+                <option value="desc" ${param.sortDir == 'desc' ? 'selected' : ''}>Descending</option>
             </select>
         </div>
+
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">Apply</button>
         </div>
     </form>
+
 
     <!-- Patient Table -->
     <div class="table-responsive">
