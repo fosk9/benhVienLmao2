@@ -77,7 +77,7 @@
                                     <ul id="navigation">
                                         <li><a href="${pageContext.request.contextPath}/doctor-home">Home</a></li>
                                         <li><a href="${pageContext.request.contextPath}/doctor-home#appointment-section"class="smooth-scroll">Appointment</a></li>
-                                        <li><a href="services.html">Create</a></li>
+                                        <li><a href="${pageContext.request.contextPath}/create-appointment">Create</a></li>
                                         <li><a href="blog.html">History</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
@@ -183,7 +183,7 @@
                                 <td style="padding: 12px 18px;">
                                     <c:choose>
                                         <c:when test="${not empty a.appointmentDate}">
-                                            ${a.appointmentDate}
+                                            ${a.formattedAppointmentDate}
                                         </c:when>
                                         <c:otherwise>
                                             Not scheduled

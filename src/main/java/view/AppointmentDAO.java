@@ -7,6 +7,9 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.sql.Timestamp;
 
 public  class AppointmentDAO  {
     private final Connection conn;
@@ -39,7 +42,7 @@ public  class AppointmentDAO  {
         List<Appointment> list = new ArrayList<>();
         String sql = "SELECT a.*, p.full_name FROM Appointments a " +
                 "JOIN Patients p ON a.patient_id = p.patient_id " +
-                "WHERE a.doctor_id = ? ORDER BY a.appointment_date DESC";
+                "WHERE a.doctor_id = ? ORDER BY a.appointment_date ASC";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, doctorId);
         ResultSet rs = ps.executeQuery();
@@ -92,4 +95,14 @@ public  class AppointmentDAO  {
         }
     }
 
+    public void createAppointment(int patientId, int doctorId, LocalDateTime date, String status) throws SQLException {
+        String sql = "INSERT INTO Appointments (patient_id, doctor_id, appointment_date, status, created_at) VALUES (?, ?, ?, ?, GETDATE())";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            ps.setTimestamp(3, Timestamp.valueOf(date));
+            ps.setString(4, status);
+            ps.executeUpdate();
+        }
+    }
 }
