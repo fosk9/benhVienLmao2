@@ -1,134 +1,139 @@
 package view;
 
 import model.Appointment;
+import model.Patient;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.sql.Timestamp;
 
-public class AppointmentDAO extends DBContext<Appointment> {
-    public AppointmentDAO() {
-        super();
+public  class AppointmentDAO  {
+    private final Connection conn;
+
+    public AppointmentDAO(Connection conn) {
+        this.conn = conn;
     }
 
-    // Fetch all appointments for a specific patient
-    public List<Appointment> getAppointmentsByPatientId(int patientId) {
-        List<Appointment> appointments = new ArrayList<>();
-        String query = "SELECT * FROM Appointments WHERE patient_id = ?";
-        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, patientId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                appointments.add(mapResultSetToAppointment(rs));
+    public  int[] getTodayStatsByDoctorId(int doctorId) throws SQLException {
+        String sql = "SELECT status, COUNT(*) as count FROM Appointments "+
+                "WHERE doctor_id = ? AND CAST(appointment_date AS DATE) = ? GROUP BY status";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, doctorId);
+        ps.setDate(2, Date.valueOf(LocalDate.now()));
+        ResultSet rs = ps.executeQuery();
+
+        int[] stats = new int[4]; //[Pending, Confirmed, Complete, Cancelled]
+        while (rs.next()) {
+            switch (rs.getString("status")) {
+                case "Pending": stats[0] = rs.getInt("count"); break;
+                case "Confirmed": stats[1] = rs.getInt("count"); break;
+                case "Completed": stats[2] = rs.getInt("count"); break;
+                case "Cancelled": stats[3] = rs.getInt("count"); break;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return appointments;
+        return stats;
     }
 
-    // Create a new appointment (used by BookAppointmentServlet)
-    public void createAppointment(Appointment appointment) throws SQLException {
-        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointment_type, status, created_at) VALUES (?, ?, ?, ?, GETDATE())";
-        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, appointment.getPatientId());
-            stmt.setTimestamp(2, Timestamp.valueOf(appointment.getAppointmentDate()));
-            stmt.setString(3, appointment.getAppointmentType());
-            stmt.setString(4, appointment.getStatus());
-            stmt.executeUpdate();
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId) throws SQLException {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT a.*, p.full_name FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? ORDER BY a.appointment_date ASC";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, doctorId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Appointment a = new Appointment();
+            a.setAppointmentId(rs.getInt("appointment_id"));
+            a.setDoctorId(rs.getInt("doctor_id"));
+            a.setPatientId(rs.getInt("patient_id"));
+            a.setAppointmentDate(rs.getTimestamp("appointment_date").toLocalDateTime());
+            a.setStatus(rs.getString("status"));
+            a.setPatientName(rs.getString("full_name"));
+            list.add(a);
         }
+        return list;
     }
 
-    @Override
-    public List<Appointment> select() {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    // Fetch a single appointment by ID
-    @Override
-    public Appointment select(int... id) {
-        if (id.length != 1) {
-            throw new IllegalArgumentException("One ID is required");
-        }
-        String query = "SELECT * FROM Appointments WHERE appointment_id = ?";
-        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id[0]);
-            ResultSet rs = stmt.executeQuery();
+    public Appointment getAppointmentsDetailById(int appointmentId) throws SQLException {
+        String sql = "SELECT a.*, p.full_name, p.email, p.phone FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id WHERE a.appointment_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSetToAppointment(rs);
+                Appointment a = new Appointment();
+                a.setAppointmentId(rs.getInt("appointment_id"));
+                a.setPatientId(rs.getInt("patient_id"));
+                a.setDoctorId(rs.getInt("doctor_id"));
+
+                Timestamp ts = rs.getTimestamp("appointment_date");
+                a.setAppointmentDate(ts != null ? ts.toLocalDateTime() : null);
+
+                a.setStatus(rs.getString("status"));
+                a.setPatientName(rs.getString("full_name"));
+                a.setPatientEmail(rs.getString("email"));
+                a.setPatientPhone(rs.getString("phone"));
+                return a;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return null;
     }
 
-    // Insert a new appointment (used by BookAppointmentServlet)
-    @Override
-    public int insert(Appointment appointment) {
-        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointment_type, status, created_at) VALUES (?, ?, ?, ?, GETDATE())";
-        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, appointment.getPatientId());
-            stmt.setTimestamp(2, Timestamp.valueOf(appointment.getAppointmentDate()));
-            stmt.setString(3, appointment.getAppointmentType());
-            stmt.setString(4, appointment.getStatus());
-            return stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+    public boolean updateStatus(int appointmentId, String newStatus) throws SQLException {
+        String sql = "UPDATE appointments SET status = ? WHERE appointment_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setInt(2, appointmentId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
         }
     }
 
-    // Update an existing appointment
-    @Override
-    public int update(Appointment appointment) {
-        String query = "UPDATE Appointments SET appointment_date = ?, appointment_type = ?, updated_at = GETDATE() WHERE appointment_id = ?";
-        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setTimestamp(1, Timestamp.valueOf(appointment.getAppointmentDate()));
-            stmt.setString(2, appointment.getAppointmentType());
-            stmt.setInt(3, appointment.getAppointmentId());
-            return stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+    public void createAppointment(int patientId, int doctorId, LocalDateTime date, String status) throws SQLException {
+        String sql = "INSERT INTO Appointments (patient_id, doctor_id, appointment_date, status, created_at) VALUES (?, ?, ?, ?, GETDATE())";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            ps.setTimestamp(3, Timestamp.valueOf(date));
+            ps.setString(4, status);
+            ps.executeUpdate();
         }
     }
 
-    // Delete an appointment by ID
-    @Override
-    public int delete(int... id) {
-        if (id.length != 1) {
-            throw new IllegalArgumentException("One ID is required");
+    public List<Appointment> getCompletedAppointmentsByDoctor(int doctorId) throws SQLException {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT p.patient_id, p.full_name, p.email AS patient_email, p.phone AS patient_phone, " +
+                "a.doctor_id, a.appointment_date, a.status, a.appointment_id " +
+                "FROM Patients p JOIN Appointments a ON p.patient_id = a.patient_id " +
+                "WHERE a.doctor_id = ? AND a.status = 'Completed' " +
+                "ORDER BY p.full_name ASC, a.appointment_date DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Appointment appt = new Appointment();
+                    appt.setPatientId(rs.getInt("patient_id"));
+                    appt.setPatientName(rs.getString("full_name"));
+                    appt.setPatientEmail(rs.getString("patient_email"));
+                    appt.setPatientPhone(rs.getString("patient_phone"));
+                    appt.setDoctorId(rs.getInt("doctor_id"));
+                    Timestamp ts = rs.getTimestamp("appointment_date");
+                    if (ts != null) appt.setAppointmentDate(ts.toLocalDateTime());
+                    appt.setStatus(rs.getString("status"));
+                    appt.setAppointmentId(rs.getInt("appointment_id"));
+                    list.add(appt);
+                }
+            }
         }
-        String query = "DELETE FROM Appointments WHERE appointment_id = ?";
-        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id[0]);
-            return stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return list;
     }
 
-    // Helper method to map ResultSet to Appointment object
-    private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
-        Timestamp appointmentDateTs = rs.getTimestamp("appointment_date");
-        Timestamp createdAtTs = rs.getTimestamp("created_at");
-        Timestamp updatedAtTs = rs.getTimestamp("updated_at");
 
-        return Appointment.builder()
-                .appointmentId(rs.getInt("appointment_id"))
-                .patientId(rs.getInt("patient_id"))
-                .doctorId(rs.getInt("doctor_id"))
-                .appointmentDate(appointmentDateTs != null ? appointmentDateTs.toLocalDateTime() : null)
-                .appointmentType(rs.getString("appointment_type"))
-                .status(rs.getString("status"))
-                .createdAt(createdAtTs != null ? createdAtTs.toLocalDateTime() : null)
-                .updatedAt(updatedAtTs != null ? updatedAtTs.toLocalDateTime() : null)
-                .build();
-    }
 }
