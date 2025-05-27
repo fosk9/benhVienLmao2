@@ -1,24 +1,18 @@
 package model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
     private int employeeId;
-    private String username;
-    private String passwordHash;
     private String fullName;
-    private LocalDate dob;
+    private String dob; // Consider java.time.LocalDate for better date handling
     private String gender;
     private String email;
     private String phone;
     private int roleId;
-    private Integer specializationId; // Nullable
 }
