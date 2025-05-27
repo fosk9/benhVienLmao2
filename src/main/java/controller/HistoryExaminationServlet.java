@@ -6,7 +6,6 @@ import jakarta.servlet.http.*;
 import model.Appointment;
 import model.Employee;
 import view.AppointmentDAO;
-import view.SimpleDBContext;
 
 import java.io.IOException;
 import java.sql.Connection;

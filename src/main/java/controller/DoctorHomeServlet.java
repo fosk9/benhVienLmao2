@@ -3,7 +3,6 @@ package controller;
 import model.Appointment;
 import view.AppointmentDAO;
 import model.Employee;
-import view.SimpleDBContext;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -7,11 +7,9 @@ import model.Employee;
 import model.Patient;
 import view.AppointmentDAO;
 import view.PatientDAO;
-import view.SimpleDBContext;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.sql.Timestamp;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;

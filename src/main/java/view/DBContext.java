@@ -60,38 +60,4 @@ public abstract class DBContext<E> {
     public abstract int update(E obj);
 
     public abstract int delete(int... id);
-
-    // Check connectione
-    public static void main(String[] args) {
-        try {
-            DBContext<?> db = new DBContext<Object>() {
-                @Override
-                public List<Object> select() { return null; }
-
-                @Override
-                public Object select(int... id) { return null; }
-
-                @Override
-                public int insert(Object obj) { return 0; }
-
-                @Override
-                public int update(Object obj) { return 0; }
-
-                @Override
-                public int delete(int... id) { return 0; }
-            };
-
-            Connection conn = db.getConn();
-            if (conn != null && !conn.isClosed()) {
-                System.out.println("KẾT NỐI DATABASE THÀNH CÔNG!");
-                db.closeConnection(conn);
-            } else {
-                System.out.println("KHÔNG KẾT NỐI ĐƯỢC DATABASE!");
-            }
-        } catch (Exception e) {
-            System.out.println("LỖI KẾT NỐI: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 }
-
