@@ -28,6 +28,13 @@
   <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
   <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
   <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+  <style>
+    .big-form { max-width: 500px; margin: 0 auto; font-size: 1.3rem; }
+    .big-form label, .big-form input, .big-form select, .big-form button { font-size: 1.2rem; }
+    .big-form .form-control { height: 50px; font-size: 1.2rem; }
+    .big-form .btn { padding: 15px 30px; font-size: 1.2rem; }
+    h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; }
+  </style>
 </head>
 <body>
 <header>
@@ -68,18 +75,19 @@
     <h2>Edit Appointment</h2>
     <div class="card">
       <div class="card-body">
-        <form action="<c:url value='/appointments/edit'/>" method="post">
+        <form action="<c:url value='/appointments/edit'/>" method="post" class="big-form">
           <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
-          <div class="form-group">
+          <div class="form-group mb-4">
             <label for="appointmentType">Appointment Type:</label>
             <input type="text" class="form-control" id="appointmentType" name="appointmentType" value="${appointment.appointmentType}" required>
           </div>
-          <div class="form-group">
-            <label for="appointmentDate">Appointment Date:</label>
-            <input type="datetime-local" class="form-control" id="appointmentDate" name="appointmentDate" value="${appointment.appointmentDate.format(formatter)}" required>
+          <div class="form-group mb-4">
+            <label for="appointmentDateTime">Appointment Date & Time:</label>
+            <input type="datetime-local" class="form-control" id="appointmentDateTime" name="appointmentDateTime"
+                   value="${appointment.appointmentDate != null ? appointment.appointmentDate.toString().replace(' ', 'T').substring(0,16) : ''}" required>
           </div>
-          <button type="submit" class="btn btn-primary mt-3">Update Appointment</button>
-          <a href="<c:url value='/appointments'/>" class="btn btn-secondary mt-3">Cancel</a>
+          <button type="submit" class="btn btn-primary mt-3 w-100">Update Appointment</button>
+          <a href="<c:url value='/appointments'/>" class="btn btn-secondary mt-3 w-100">Cancel</a>
         </form>
       </div>
     </div>

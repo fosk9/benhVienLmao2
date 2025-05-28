@@ -3,7 +3,8 @@ package test;
 import model.Appointment;
 import view.AppointmentDAO;
 
-import java.time.LocalDateTime;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 public class AppointmentDAOTest {
     public static void main(String[] args) {
@@ -13,8 +14,12 @@ public class AppointmentDAOTest {
         Appointment newAppt = Appointment.builder()
                 .patientId(1) // ID bệnh nhân tồn tại
                 .doctorId(2)  // ID bác sĩ tồn tại
-                .appointmentDate(LocalDateTime.of(2025, 6, 1, 10, 30)) // Ngày giờ khám
+                .appointmentType("Khám tổng quát")
+                .appointmentDate(Date.valueOf("2025-06-01")) // Ngày khám (yyyy-MM-dd)
+                .shift("Sáng") // Ca khám: Sáng/Chiều/Tối
                 .status("Pending")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         // Gọi hàm insert()

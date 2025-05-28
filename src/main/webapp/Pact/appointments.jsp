@@ -21,6 +21,11 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+    <style>
+        .table th, .table td { font-size: 1.2rem; }
+        h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; }
+        .btn { font-size: 1.1rem; padding: 10px 20px; }
+    </style>
 </head>
 <body>
 <header>
@@ -66,6 +71,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Appointment Date</th>
+                        <th>Shift</th>
                         <th>Type</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -76,6 +82,7 @@
                         <tr>
                             <td>${appointment.appointmentId}</td>
                             <td>${appointment.appointmentDate}</td>
+                            <td>${appointment.shift}</td>
                             <td>${appointment.appointmentType}</td>
                             <td>${appointment.status}</td>
                             <td>

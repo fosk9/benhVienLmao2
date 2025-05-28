@@ -21,6 +21,11 @@
   <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
   <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
   <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+  <style>
+    .card-body p, .card-body strong { font-size: 1.2rem; }
+    h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; }
+    .btn { font-size: 1.1rem; padding: 10px 20px; }
+  </style>
 </head>
 <body>
 <header>
@@ -62,7 +67,7 @@
     <div class="card">
       <div class="card-body">
         <p><strong>ID:</strong> ${appointment.appointmentId}</p>
-        <p><strong>Date:</strong> ${appointment.appointmentDate}</p>
+        <p><strong>Date & Time:</strong> ${appointment.appointmentDate}</p>
         <p><strong>Create Date:</strong> ${appointment.createdAt}</p>
         <p><strong>Type:</strong> ${appointment.appointmentType}</p>
         <c:choose>
