@@ -61,7 +61,7 @@ public class EmployeeDAO extends DBContext<Employee> {
 
     @Override
     public int insert(Employee e) {
-        String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, specialization_id) " +
+        String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, specialization_id, employee_ava_url) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -75,7 +75,7 @@ public class EmployeeDAO extends DBContext<Employee> {
 
     @Override
     public int update(Employee e) {
-        String sql = "UPDATE Employees SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, role_id=?, specialization_id=? WHERE employee_id=?";
+        String sql = "UPDATE Employees SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, role_id=?, specialization_id=?, employee_ava_url=? WHERE employee_id=?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromEmployee(ps, e);
@@ -113,6 +113,7 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .phone(rs.getString("phone"))
                 .roleId(rs.getInt("role_id"))
                 .specializationId(rs.getObject("specialization_id") != null ? rs.getInt("specialization_id") : null)
+                .employeeAvaUrl(rs.getString("employee_ava_url"))
                 .build();
     }
 
@@ -135,6 +136,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         } else {
             ps.setNull(9, Types.INTEGER);
         }
+        ps.setString(10, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
     }
 
 }
