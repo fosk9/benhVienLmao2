@@ -2,7 +2,7 @@ package model;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class Comment {
     private int commentId;
     private String content;
-    private LocalDate date;
+    private Timestamp createdAt;
     private int blogId;
     private int patientId;
 }

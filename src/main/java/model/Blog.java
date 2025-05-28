@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -17,7 +17,7 @@ public class Blog {
     private String content;
     private String image;
     private String author;
-    private LocalDate date;
+    private Timestamp createdAt;
     private int typeId;
     private boolean selectedBanner;
 
