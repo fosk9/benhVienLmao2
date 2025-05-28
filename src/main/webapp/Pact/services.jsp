@@ -71,7 +71,7 @@
                                         <li><a href="<c:url value='/pactDetails'/>">Account</a>
                                             <ul class="submenu">
                                                 <li><a href="<c:url value='/logout '/>">Logout</a></li>
-                                                <li><a href="<c:url value='/unknow'/>">Unknows</a></li>
+                                                <li><a href="<c:url value='/MyProfile'/>">My Profile</a></li>
                                                 <li><a href="<c:url value='/elements'/>">Elements</a></li>
                                             </ul>
                                         </li>
