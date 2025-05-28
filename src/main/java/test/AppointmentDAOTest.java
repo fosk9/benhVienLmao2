@@ -3,7 +3,6 @@ package test;
 import model.Appointment;
 import view.AppointmentDAO;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 public class AppointmentDAOTest {
@@ -15,8 +14,7 @@ public class AppointmentDAOTest {
                 .patientId(1) // ID bệnh nhân tồn tại
                 .doctorId(2)  // ID bác sĩ tồn tại
                 .appointmentType("Khám tổng quát")
-                .appointmentDate(Date.valueOf("2025-06-01")) // Ngày khám (yyyy-MM-dd)
-                .shift("Sáng") // Ca khám: Sáng/Chiều/Tối
+                .appointmentDate(Timestamp.valueOf("2025-06-01 09:00:00")) // Ngày & giờ khám
                 .status("Pending")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))

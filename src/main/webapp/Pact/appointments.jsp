@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <head>
@@ -44,9 +45,7 @@
                                 <nav>
                                     <ul id="navigation">
                                         <li><a href="<c:url value='/pactHome'/>">Home</a></li>
-                                        <li><a href="<c:url value='/services'/>">Services</a></li>
                                         <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>
-                                        <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>
                                         <li><a href="<c:url value='/logout'/>">Logout</a></li>
                                     </ul>
                                 </nav>
@@ -71,7 +70,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Appointment Date</th>
-                        <th>Shift</th>
                         <th>Type</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -81,15 +79,21 @@
                     <c:forEach var="appointment" items="${appointments}">
                         <tr>
                             <td>${appointment.appointmentId}</td>
-                            <td>${appointment.appointmentDate}</td>
-                            <td>${appointment.shift}</td>
+                            <td>
+                                <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm dd/MM/yyyy"/>
+                            </td>
                             <td>${appointment.appointmentType}</td>
                             <td>${appointment.status}</td>
                             <td>
-                                <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
-                                   class="btn btn-sm btn-primary">Edit</a>
-                                <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
-                                   class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                <c:set var="now" value="<%= new java.sql.Timestamp(System.currentTimeMillis()) %>" />
+                                <c:choose>
+                                  <c:when test="${appointment.appointmentDate.time > now.time}">
+                                    <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
+                                       class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
+                                       class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                  </c:when>
+                                </c:choose>
                                 <a href="<c:url value='/appointments/details?id=${appointment.appointmentId}'/>"
                                    class="btn btn-sm btn-info">Details</a>
                             </td>

@@ -4,12 +4,15 @@ import model.Appointment;
 import view.AppointmentDAO;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class TestAppointmentDAOforP {
     public static void main(String[] args) {
         testInsertFull();
         testInsertNoDoctor();
         testInsertWrongDate();
+        testSelectAll();
+        testUpdate();
     }
 
     static void testInsertFull() {
@@ -68,6 +71,40 @@ public class TestAppointmentDAOforP {
             System.out.println(result > 0 ? "✅ Insert wrong date OK" : "❌ Insert wrong date FAIL");
         } catch (Exception e) {
             System.out.println("❌ Insert wrong date EXCEPTION: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    static void testSelectAll() {
+        try {
+            AppointmentDAO dao = new AppointmentDAO();
+            List<Appointment> list = dao.select();
+            System.out.println("Appointments in DB:");
+            for (Appointment a : list) {
+                System.out.println(a);
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Select all EXCEPTION: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    static void testUpdate() {
+        try {
+            AppointmentDAO dao = new AppointmentDAO();
+            List<Appointment> list = dao.select();
+            if (!list.isEmpty()) {
+                Appointment appt = list.get(0);
+                appt.setAppointmentType("Updated Type");
+                appt.setAppointmentDate(Timestamp.valueOf("2025-07-01 15:00:00"));
+                appt.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                int result = dao.update(appt);
+                System.out.println(result > 0 ? "✅ Update OK" : "❌ Update FAIL");
+            } else {
+                System.out.println("❌ No appointment to update");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Update EXCEPTION: " + e.getMessage());
             e.printStackTrace();
         }
     }

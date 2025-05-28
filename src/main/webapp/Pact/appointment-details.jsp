@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,19 +68,13 @@
     <div class="card">
       <div class="card-body">
         <p><strong>ID:</strong> ${appointment.appointmentId}</p>
-        <p><strong>Date & Time:</strong> ${appointment.appointmentDate}</p>
-        <p><strong>Create Date:</strong> ${appointment.createdAt}</p>
+        <p><strong>Date & Time:</strong>
+          <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm dd/MM/yyyy"/>
+        </p>
+        <p><strong>Create Date:</strong>
+          <fmt:formatDate value="${appointment.createdAt}" pattern="HH:mm dd/MM/yyyy"/>
+        </p>
         <p><strong>Type:</strong> ${appointment.appointmentType}</p>
-        <c:choose>
-          <c:when test="${appointment.status == 'Confirmed' && appointment.doctorId != 0 && not empty doctor}">
-            <p><strong>Doctor Name:</strong> ${doctor.fullName}</p>
-            <p><strong>Doctor Specialization:</strong> ${doctorSpecialization}</p>
-          </c:when>
-          <c:otherwise>
-            <p><strong>Doctor Name:</strong> Waiting for assign</p>
-            <p><strong>Doctor Specialization:</strong> Waiting for assign</p>
-          </c:otherwise>
-        </c:choose>
         <p><strong>Status:</strong> ${appointment.status}</p>
         <a href="<c:url value='/appointments'/>" class="btn btn-primary mt-3">Back to Appointments</a>
       </div>

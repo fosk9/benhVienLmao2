@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @WebServlet({"/appointments", "/appointments/edit", "/appointments/delete", "/appointments/details"})
@@ -90,19 +90,23 @@ public class AppointmentsServlet extends HttpServlet {
 
         if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
-            String appointmentDateStr = request.getParameter("appointmentDate");
+            String appointmentDateTimeStr = request.getParameter("appointmentDateTime");
             String appointmentType = request.getParameter("appointmentType");
-            String shift = request.getParameter("shift");
 
             try {
-                Date appointmentDate = Date.valueOf(appointmentDateStr);
+                if (appointmentDateTimeStr == null || appointmentDateTimeStr.isEmpty()) {
+                    throw new IllegalArgumentException("DateTime is empty");
+                }
+                // Đảm bảo đúng định dạng yyyy-MM-ddTHH:mm
+                String tsStr = appointmentDateTimeStr.contains("T") ? appointmentDateTimeStr.replace("T", " ") + ":00" : appointmentDateTimeStr;
+                Timestamp appointmentDateTime = Timestamp.valueOf(tsStr);
 
                 AppointmentDAO appointmentDAO = new AppointmentDAO();
                 Appointment appointment = appointmentDAO.select(appointmentId);
                 if (appointment != null && appointment.getPatientId() == patientId) {
-                    appointment.setAppointmentDate(appointmentDate);
+                    appointment.setAppointmentDate(appointmentDateTime);
                     appointment.setAppointmentType(appointmentType);
-                    appointment.setShift(shift);
+                    appointment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
                     appointmentDAO.update(appointment);
                 }
                 response.sendRedirect(request.getContextPath() + "/appointments");

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Data
@@ -17,8 +16,7 @@ public class Appointment {
     private int patientId;
     private int doctorId;
     private String appointmentType;
-    private Date appointmentDate; // chỉ ngày
-    private String shift; // Sáng/Chiều/Tối
+    private Timestamp appointmentDate;
     private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
