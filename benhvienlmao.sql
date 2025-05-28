@@ -57,6 +57,7 @@ CREATE TABLE Employees (
     phone VARCHAR(20),
     role_id INT NOT NULL,
     specialization_id INT,
+	employee_ava_url NVARCHAR(255),
     FOREIGN KEY (role_id) REFERENCES Roles(role_id),
     FOREIGN KEY (specialization_id) REFERENCES Specializations(specialization_id)
 );
@@ -94,6 +95,7 @@ CREATE TABLE Patients (
     email VARCHAR(100),
     phone VARCHAR(20),
     address NVARCHAR(255),
+	patient_ava_url NVARCHAR(255),
     insurance_number VARCHAR(100),
     emergency_contact NVARCHAR(255)
 );
@@ -293,3 +295,25 @@ VALUES
 ('phamthutrang', 'pass123', N'Phạm Thu Trang', '1999-07-22', 'F', 'trangpham@example.com', '0911223344', N'99 Trần Hưng Đạo, Nha Trang', 'INS99887', N'Phạm Đức Anh - 0933445566');
 GO
 
+INSERT INTO Specializations (name, status) VALUES 
+(N'Cardiology', 'Active'),
+(N'Neurology', 'Active'),
+(N'Pediatrics', 'Active'),
+(N'Dermatology', 'Active'),
+(N'Orthopedics', 'Inactive');
+
+INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, specialization_id)
+VALUES
+('dr_smith', '123456', N'Dr. John Smith', '1980-03-15', 'M', 'john.smith@hospital.com', '0909000001', 1, 1),
+('dr_hoa', 'abcdef', N'Dr. Nguyễn Thị Hoa', '1985-06-22', 'F', 'hoa.nguyen@hospital.com', '0909000002', 1, 2),
+('dr_lee', '654321', N'Dr. David Lee', '1978-12-03', 'M', 'david.lee@hospital.com', '0909000003', 1, 3),
+('dr_linh', '999999', N'Dr. Phạm Minh Linh', '1990-09-09', 'F', 'linh.pham@hospital.com', '0909000004', 1, 4);
+
+-- Lưu ý: bạn cần biết chính xác employee_id của các doctor vừa thêm
+-- Giả sử: ID của họ tự tăng từ 1 → 4
+INSERT INTO DoctorDetails (doctor_id, license_number, work_schedule, rating)
+VALUES
+(1, 'LIC12345', 'Mon-Fri 08:00-12:00', 4.5),
+(2, 'LIC23456', 'Mon-Wed 13:00-17:00', 4.7),
+(3, 'LIC34567', 'Tue-Thu 08:00-12:00', 4.3),
+(4, 'LIC45678', 'Fri-Sun 08:00-11:00', 4.8);

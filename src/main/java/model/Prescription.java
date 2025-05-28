@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -14,5 +14,5 @@ public class Prescription {
     private int prescriptionId;
     private int appointmentId;
     private String medicationDetails;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 }
