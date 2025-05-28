@@ -23,6 +23,7 @@ public class Patient {
     private String address;
     private String insuranceNumber;
     private String emergencyContact;
+    private String patientAvtUrl;
 
     public String getFirstName() {
         if (fullName == null || fullName.trim().isEmpty()) {
