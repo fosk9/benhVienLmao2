@@ -3,7 +3,6 @@ package view;
 import model.Comment;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class CommentDAO extends DBContext<Comment> {
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, obj.getContent());
-            ps.setDate(2, Date.valueOf(obj.getDate()));
+            ps.setDate(2, obj.getDate());
             ps.setInt(3, obj.getBlogId());
             ps.setInt(4, obj.getPatientId());
             return ps.executeUpdate();
@@ -66,7 +65,7 @@ public class CommentDAO extends DBContext<Comment> {
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, obj.getContent());
-            ps.setDate(2, Date.valueOf(obj.getDate()));
+            ps.setDate(2, obj.getDate());
             ps.setInt(3, obj.getBlogId());
             ps.setInt(4, obj.getPatientId());
             ps.setInt(5, obj.getCommentId());
@@ -95,7 +94,7 @@ public class CommentDAO extends DBContext<Comment> {
         return Comment.builder()
                 .commentId(rs.getInt("comment_id"))
                 .content(rs.getString("content"))
-                .date(rs.getDate("date").toLocalDate())
+                .date(rs.getDate("date"))
                 .blogId(rs.getInt("blog_id"))
                 .patientId(rs.getInt("patient_id"))
                 .build();
