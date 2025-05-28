@@ -45,11 +45,11 @@ public class CommentDAO extends DBContext<Comment> {
 
     @Override
     public int insert(Comment obj) {
-        String sql = "INSERT INTO Comment (content, date, blog_id, patient_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Comment (content, created_at, blog_id, patient_id) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, obj.getContent());
-            ps.setDate(2, obj.getDate());
+            ps.setTimestamp(2, obj.getCreatedAt());
             ps.setInt(3, obj.getBlogId());
             ps.setInt(4, obj.getPatientId());
             return ps.executeUpdate();
@@ -61,11 +61,11 @@ public class CommentDAO extends DBContext<Comment> {
 
     @Override
     public int update(Comment obj) {
-        String sql = "UPDATE Comment SET content = ?, date = ?, blog_id = ?, patient_id = ? WHERE comment_id = ?";
+        String sql = "UPDATE Comment SET content = ?, created_at = ?, blog_id = ?, patient_id = ? WHERE comment_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, obj.getContent());
-            ps.setDate(2, obj.getDate());
+            ps.setTimestamp(2, obj.getCreatedAt());
             ps.setInt(3, obj.getBlogId());
             ps.setInt(4, obj.getPatientId());
             ps.setInt(5, obj.getCommentId());
@@ -94,7 +94,7 @@ public class CommentDAO extends DBContext<Comment> {
         return Comment.builder()
                 .commentId(rs.getInt("comment_id"))
                 .content(rs.getString("content"))
-                .date(rs.getDate("date"))
+                .createdAt(rs.getTimestamp("created_at"))
                 .blogId(rs.getInt("blog_id"))
                 .patientId(rs.getInt("patient_id"))
                 .build();

@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @WebServlet(name = "CommentServlet", urlPatterns = {"/add-comment"})
 public class CommentServlet extends HttpServlet {
@@ -29,7 +30,7 @@ public class CommentServlet extends HttpServlet {
         comment.setContent(content);
         comment.setBlogId(blogId);
         comment.setPatientId(patientId);
-        comment.setDate(LocalDate.now());
+        comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
         commentDAO.insert(comment);
         response.sendRedirect("blog-detail?id=" + blogId);
