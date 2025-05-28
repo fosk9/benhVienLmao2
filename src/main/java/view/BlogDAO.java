@@ -11,7 +11,7 @@ public class BlogDAO extends DBContext<Blog> {
     @Override
     public List<Blog> select() {
         List<Blog> list = new ArrayList<>();
-        String sql = "SELECT * FROM Blog ORDER BY date DESC";
+        String sql = "SELECT * FROM Blog ORDER BY created_at DESC";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -42,14 +42,14 @@ public class BlogDAO extends DBContext<Blog> {
 
     @Override
     public int insert(Blog blog) {
-        String sql = "INSERT INTO Blog(blog_name, content, image, author, date, type_id, selected_banner) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Blog(blog_name, content, image, author, created_at, type_id, selected_banner) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, blog.getBlogName());
             ps.setString(2, blog.getContent());
             ps.setString(3, blog.getImage());
             ps.setString(4, blog.getAuthor());
-            ps.setDate(5, Date.valueOf(blog.getDate()));
+            ps.setTimestamp(5, blog.getCreatedAt());
             ps.setInt(6, blog.getTypeId());
             ps.setBoolean(7, blog.isSelectedBanner());
             ps.executeUpdate();
@@ -61,14 +61,14 @@ public class BlogDAO extends DBContext<Blog> {
 
     @Override
     public int update(Blog blog) {
-        String sql = "UPDATE Blog SET blog_name = ?, content = ?, image = ?, author = ?, date = ?, type_id = ?, selected_banner = ? WHERE blog_id = ?";
+        String sql = "UPDATE Blog SET blog_name = ?, content = ?, image = ?, author = ?, created_at = ?, type_id = ?, selected_banner = ? WHERE blog_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, blog.getBlogName());
             ps.setString(2, blog.getContent());
             ps.setString(3, blog.getImage());
             ps.setString(4, blog.getAuthor());
-            ps.setDate(5, Date.valueOf(blog.getDate()));
+            ps.setTimestamp(5, blog.getCreatedAt());
             ps.setInt(6, blog.getTypeId());
             ps.setBoolean(7, blog.isSelectedBanner());
             ps.setInt(8, blog.getBlogId());
@@ -93,7 +93,7 @@ public class BlogDAO extends DBContext<Blog> {
     }
 
     public Blog getBannerBlog() {
-        String sql = "SELECT * FROM Blog WHERE selected_banner = 1 ORDER BY date DESC";
+        String sql = "SELECT * FROM Blog WHERE selected_banner = 1 ORDER BY created_at DESC";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -113,7 +113,7 @@ public class BlogDAO extends DBContext<Blog> {
                 .content(rs.getString("content"))
                 .image(rs.getString("image"))
                 .author(rs.getString("author"))
-                .date(rs.getDate("date").toLocalDate())
+                .createdAt(rs.getTimestamp("created_at"))
                 .typeId(rs.getInt("type_id"))
                 .selectedBanner(rs.getBoolean("selected_banner"))
                 .build();
