@@ -1,6 +1,8 @@
-package view.object;
+package view;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class Blog {
     private int blogId;
@@ -12,8 +14,7 @@ public class Blog {
     private int typeId;
     private boolean selectedBanner;
 
-    public Blog() {
-    }
+    public Blog() {}
 
     public Blog(int blogId, String blogName, String content, String image,
                 String author, LocalDate date, int typeId, boolean selectedBanner) {
@@ -27,6 +28,7 @@ public class Blog {
         this.selectedBanner = selectedBanner;
     }
 
+    // Getter & Setter
     public int getBlogId() {
         return blogId;
     }
@@ -91,12 +93,35 @@ public class Blog {
         this.selectedBanner = selectedBanner;
     }
 
+    // ✅ Dùng trong JSP
     public int getId() {
-        return this.blogId;
+        return blogId;
     }
 
-    public String getSummary() {
+    public String getTitle() {
+        return blogName;
+    }
+
+    public String getImageUrl() {
+        return image;
+    }
+
+    public String getShortDescription() {
         if (content == null) return "";
         return content.length() <= 150 ? content : content.substring(0, 150) + "...";
+    }
+
+    // ✅ Dùng để format date trong JSP
+    public Date getUtilDate() {
+        if (this.date == null) return null;
+        return Date.from(this.date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public String getDay() {
+        return (date != null) ? String.format("%02d", date.getDayOfMonth()) : "";
+    }
+
+    public String getMonth() {
+        return (date != null) ? date.getMonth().toString().substring(0, 3) : "";
     }
 }

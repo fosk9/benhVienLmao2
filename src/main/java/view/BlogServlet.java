@@ -1,7 +1,7 @@
-package view.controller;
+package view;
 
-import view.DAO.BlogDAO;
-import view.object.Blog;
+import view.BlogDAO;
+import view.Blog;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,7 +9,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "BlogServlet", urlPatterns = {"/blog", "/blog_detail"})
+@WebServlet(name = "BlogServlet", urlPatterns = {"/blog", "/blog_detail"})  //Servlet này sẽ xử lý các request gửi đến đường dẫn:
 public class BlogServlet extends HttpServlet {
     private BlogDAO blogDAO;
 

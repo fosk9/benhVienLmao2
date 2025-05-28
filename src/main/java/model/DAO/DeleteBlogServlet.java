@@ -1,6 +1,7 @@
-package view.controller;
+package model.DAO;
 
-import view.DAO.BlogDAO;
+import view.BlogDAO;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class DeleteBlogServlet extends HttpServlet {
             Logger.getLogger(DeleteBlogServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.sendRedirect("blog");
+        response.sendRedirect("blog");//Sau khi xóa, servlet sẽ chuyển hướng (redirect) trình duyệt về đường dẫn "blog".
+
     }
 }

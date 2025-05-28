@@ -1,7 +1,7 @@
-package view.controller;
+package view;
 
-import view.DAO.BlogDAO;
-import view.object.Blog;
+import view.BlogDAO;
+import view.Blog;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -33,10 +33,11 @@ public class AddBlogServlet extends HttpServlet {
             int typeId = Integer.parseInt(request.getParameter("typeId"));
             boolean selectedBanner = request.getParameter("selectedBanner") != null;
 
-
-            Part filePart = request.getPart("imageFile");
+            // Lấy ảnh từ file upload
+            Part filePart = request.getPart("imageFile"); // 'imageFile' là tên input type="file"
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
+            // Đường dẫn thư mục upload trong server
             String appPath = request.getServletContext().getRealPath("");
             String uploadPath = appPath + File.separator + UPLOAD_DIR;
             File uploadDir = new File(uploadPath);
@@ -44,26 +45,29 @@ public class AddBlogServlet extends HttpServlet {
                 uploadDir.mkdirs();
             }
 
-
+            // Đường dẫn tuyệt đối lưu file
             String filePath = uploadPath + File.separator + fileName;
-            filePart.write(filePath);
+            filePart.write(filePath); // Ghi file lên server
 
+            // Đường dẫn ảnh để lưu vào DB (tương đối, dùng để hiển thị sau này)
             String imagePath = UPLOAD_DIR + "/" + fileName;
 
+            // Tạo Blog object
             Blog blog = new Blog();
             blog.setBlogName(blogName);
-            blog.setImage(imagePath);
+            blog.setImage(imagePath); // đường dẫn tương đối
             blog.setAuthor(author);
             blog.setContent(content);
             blog.setDate(date);
             blog.setTypeId(typeId);
             blog.setSelectedBanner(selectedBanner);
 
-
+            // Thêm vào DB
             BlogDAO dao = new BlogDAO();
             dao.insertBlog(blog);
 
-                        response.sendRedirect("blog");
+            // Redirect sau khi thêm thành công
+            response.sendRedirect("blog");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi xử lý blog: " + e.getMessage());
