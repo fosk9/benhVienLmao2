@@ -116,6 +116,7 @@ public class PatientDAO extends DBContext<Patient> {
                         .address(rs.getString("address"))
                         .insuranceNumber(rs.getString("insurance_number"))
                         .emergencyContact(rs.getString("emergency_contact"))
+                        .patientAvtUrl(rs.getString("patient_ava_url")) // Lấy ảnh đại diện
                         .build();
             }
         } catch (SQLException e) {
@@ -174,8 +175,8 @@ public class PatientDAO extends DBContext<Patient> {
 
     @Override
     public int insert(Patient patient) {
-        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, patient_ava_url, insurance_number, emergency_contact) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromPatient(ps, patient);
@@ -244,8 +245,9 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(6, p.getEmail());
         ps.setString(7, p.getPhone());
         ps.setString(8, p.getAddress());
-        ps.setString(9, p.getInsuranceNumber());
-        ps.setString(10, p.getEmergencyContact());
+        ps.setString(9, p.getPatientAvtUrl());
+        ps.setString(10, p.getInsuranceNumber());
+        ps.setString(11, p.getEmergencyContact());
     }
 
 }

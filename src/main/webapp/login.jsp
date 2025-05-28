@@ -63,6 +63,12 @@
             margin-bottom: 15px;
         }
 
+        .success-message {
+            color: #4a9a44;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
         .link-group {
             text-align: center;
             margin-top: 15px;
@@ -131,8 +137,13 @@
 <div class="login-container">
     <h2>Login</h2>
     <% String error = (String) request.getAttribute("error"); %>
+    <% String success = (String) request.getAttribute("success"); %>
     <% if (error != null) { %>
     <div class="error-message"><%= error %>
+    </div>
+    <% } %>
+    <% if (success != null) { %>
+    <div class="success-message"><%= success %>
     </div>
     <% } %>
 
