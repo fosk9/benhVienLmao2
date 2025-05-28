@@ -11,7 +11,7 @@ import jakarta.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @WebServlet(name = "AddBlogServlet", urlPatterns = {"/add-blog"})
 @MultipartConfig
@@ -25,14 +25,12 @@ public class AddBlogServlet extends HttpServlet {
         try {
             request.setCharacterEncoding("UTF-8");
 
-            // Các trường văn bản
             String blogName = request.getParameter("blogName");
             String author = request.getParameter("author");
             String content = request.getParameter("content");
-            LocalDate date = LocalDate.parse(request.getParameter("date"));
+            Timestamp createdAt = new Timestamp(System.currentTimeMillis());
             int typeId = Integer.parseInt(request.getParameter("typeId"));
             boolean selectedBanner = request.getParameter("selectedBanner") != null;
-
 
             Part filePart = request.getPart("imageFile");
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
@@ -44,7 +42,6 @@ public class AddBlogServlet extends HttpServlet {
                 uploadDir.mkdirs();
             }
 
-
             String filePath = uploadPath + File.separator + fileName;
             filePart.write(filePath);
 
@@ -55,15 +52,14 @@ public class AddBlogServlet extends HttpServlet {
             blog.setImage(imagePath);
             blog.setAuthor(author);
             blog.setContent(content);
-            blog.setDate(date);
+            blog.setCreatedAt(createdAt);
             blog.setTypeId(typeId);
             blog.setSelectedBanner(selectedBanner);
-
 
             BlogDAO dao = new BlogDAO();
             dao.insert(blog);
 
-                        response.sendRedirect("blog");
+            response.sendRedirect("blog");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi xử lý blog: " + e.getMessage());
