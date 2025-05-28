@@ -57,6 +57,7 @@ CREATE TABLE Employees (
     phone VARCHAR(20),
     role_id INT NOT NULL,
     specialization_id INT,
+	employee_ava_url NVARCHAR(255),
     FOREIGN KEY (role_id) REFERENCES Roles(role_id),
     FOREIGN KEY (specialization_id) REFERENCES Specializations(specialization_id)
 );
@@ -94,6 +95,7 @@ CREATE TABLE Patients (
     email VARCHAR(100),
     phone VARCHAR(20),
     address NVARCHAR(255),
+	patient_ava_url NVARCHAR(255),
     insurance_number VARCHAR(100),
     emergency_contact NVARCHAR(255)
 );
@@ -314,4 +316,4 @@ VALUES
 (1, 'LIC12345', 'Mon-Fri 08:00-12:00', 4.5),
 (2, 'LIC23456', 'Mon-Wed 13:00-17:00', 4.7),
 (3, 'LIC34567', 'Tue-Thu 08:00-12:00', 4.3),
-(4, 'LIC45678', 'Fri-Sun 08:00-11:00', 4.8); 
+(4, 'LIC45678', 'Fri-Sun 08:00-11:00', 4.8);
