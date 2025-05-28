@@ -1,7 +1,7 @@
 package controller;
 
-import model.DAO.BlogDAO;
-import model.object.Blog;
+import view.BlogDAO;
+import model.Blog;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -61,7 +61,7 @@ public class AddBlogServlet extends HttpServlet {
 
 
             BlogDAO dao = new BlogDAO();
-            dao.insertBlog(blog);
+            dao.insert(blog);
 
                         response.sendRedirect("blog");
         } catch (Exception e) {

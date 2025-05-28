@@ -1,7 +1,7 @@
 package controller;
 
-import model.DAO.BlogDAO;
-import model.object.Blog;
+import view.BlogDAO;
+import model.Blog;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,7 +26,7 @@ public class BlogServlet extends HttpServlet {
 
         switch (path) {
             case "/blog":
-                List<Blog> blogs = blogDAO.getAllBlogs();
+                List<Blog> blogs = blogDAO.select();
                 Blog bannerBlog = blogDAO.getBannerBlog();
                 request.setAttribute("blogs", blogs);
                 request.setAttribute("banner", bannerBlog);
@@ -38,7 +38,7 @@ public class BlogServlet extends HttpServlet {
                 try {
                     if (idStr != null) {
                         int blogId = Integer.parseInt(idStr);
-                        Blog blog = blogDAO.getBlogById(blogId);
+                        Blog blog = blogDAO.select(blogId);
                         if (blog != null) {
                             request.setAttribute("blog", blog);
                             request.getRequestDispatcher("blog_detail.jsp").forward(request, response);

@@ -13,7 +13,7 @@ public abstract class DBContext<E> {
 
     public DBContext() {
         this("jdbc:sqlserver://localhost:1433;databaseName=benhvienlmao;encrypt=false",
-                "sa", "sa");
+                "sa", "123");
     }
 
     public DBContext(String url, String user, String pass) {
