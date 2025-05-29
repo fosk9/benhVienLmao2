@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Forgot Password</title>
     <style>
         body {
             margin: 0;
@@ -21,7 +21,7 @@
             background-color: rgba(255, 255, 255, 0.95);
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
             position: relative;
             z-index: 1;
         }
@@ -63,12 +63,6 @@
             margin-bottom: 15px;
         }
 
-        .success-message {
-            color: #4a9a44;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
         .link-group {
             text-align: center;
             margin-top: 15px;
@@ -86,88 +80,27 @@
             color: #1dc116;
             opacity: 0.5;
         }
-
-        .google-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background-color: #db4437;
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 93.75%;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 15px;
-            text-decoration: none;
-        }
-
-        .google-btn img {
-            width: 20px;
-            height: 20px;
-        }
-
-        .google-btn:hover {
-            background-color: #c23321;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 12px 14px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 15px;
-            font-family: inherit;
-            line-height: 1.5;
-            box-sizing: border-box;
-            display: block;
-        }
-
-
     </style>
 </head>
 <body>
 
 <div class="login-container">
-    <h2>Login</h2>
+    <h2>Forgot Password</h2>
     <% String error = (String) request.getAttribute("error"); %>
-    <% String success = (String) request.getAttribute("success"); %>
     <% if (error != null) { %>
-    <div class="error-message"><%= error %>
-    </div>
-    <% } %>
-    <% if (success != null) { %>
-    <div class="success-message"><%= success %>
-    </div>
+    <div class="error-message"><%= error %></div>
     <% } %>
 
-    <form action="login" method="post">
+    <form action="forgot" method="post">
         <input type="text" name="username" placeholder="Username" value="${username}" required/>
-        <input type="password" name="password" placeholder="Password" value="${password}" required/>
-
-        <select name="login-as" style="margin-bottom: 10px" required>
-            <option value="Patient">Patient</option>
-            <option value="Employee">Employee</option>
+        <select name="user_type" class="form-control" required>
+            <option value="patient">Patient</option>
+            <option value="employee">Employee</option>
         </select>
-
-
-        <input type="submit" value="Login"/>
+        <input type="submit" value="Submit"/>
     </form>
 
-    <a href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile%20openid&redirect_uri=http://localhost:8080/benhVienLmao_war_exploded/google-login&response_type=code&client_id=497598502234-jmgcibueto8hc1qh61gngkr44pcu90c6.apps.googleusercontent.com&prompt=consent" class="google-btn">
-    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
-        Sign in with Google
-    </a>
-
-
     <div class="link-group mt-3">
-        <a href="forgot-password.jsp">Forgot Password?</a>
         <a href="register.jsp">Don't have an account?</a>
     </div>
 </div>
