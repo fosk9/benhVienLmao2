@@ -8,6 +8,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
@@ -66,5 +67,4 @@ public class RegisterServlet extends HttpServlet {
 
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
-
 }

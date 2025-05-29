@@ -80,7 +80,7 @@
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <a href="<c:url value='/book-appointment'/>" class="btn header-btn">Book Appointment</a>
+                                <a href="<c:url value='/appointment'/>" class="btn header-btn">Book Appointment</a>
                             </div>
                         </div>
                     </div>
@@ -141,36 +141,36 @@
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="single-cat text-center mb-50">
                         <div class="cat-icon">
-                            <img src="<c:url value='/assets/img/icon/services1.svg'/>" alt="General Checkup Icon">
+                            <img src="<c:url value='/assets/img/icon/services1.svg'/>" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/book-appointment?type=General Checkup'/>">Comprehensive General Checkup</a></h5>
-                            <p>Feeling off or overdue for a health screening? Our thorough checkup assesses your overall wellness to catch issues early.</p>
-                            <a href="<c:url value='/book-appointment?type=General Checkup'/>" class="plus-btn"><i class="ti-plus"></i></a>
+                            <h5><a href="<c:url value='/book-appointment?type=Full Body Scan'/>">Physical Activity</a></h5>
+                            <p>Sudden decline in physical strength? It could be related to cardiovascular issues</p>
+                            <a href="<c:url value='/book-appointment?type=Full Body Scan'/>" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="single-cat text-center mb-50">
                         <div class="cat-icon">
-                            <img src="<c:url value='/assets/img/icon/services2.svg'/>" alt="Mental Health Icon">
+                            <img src="<c:url value='/assets/img/icon/services2.svg'/>" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/book-appointment?type=Mental Health Consultation'/>">Mental Health Support</a></h5>
-                            <p>Struggling with stress, anxiety, or low mood? Book a consultation with our compassionate mental health specialists.</p>
-                            <a href="<c:url value='/book-appointment?type=Mental Health Consultation'/>" class="plus-btn"><i class="ti-plus"></i></a>
+                            <h5><a href="<c:url value='/book-appointment?type=Meet Psychiatrist'/>">Mental Fog</a></h5>
+                            <p>Forgetfulness, frequent headaches, insomnia...?</p>
+                            <a href="<c:url value='/book-appointment?type=Meet Psychiatrist'/>" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6">
                     <div class="single-cat text-center mb-50">
                         <div class="cat-icon">
-                            <img src="<c:url value='/assets/img/icon/services3.svg'/>" alt="Periodic Checkup Icon">
+                            <img src="<c:url value='/assets/img/icon/services3.svg'/>" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/book-appointment?type=Periodic Health Checkup'/>">Routine Health Monitoring</a></h5>
-                            <p>Stay proactive about your health. Schedule a periodic checkup to monitor your well-being and secure peace of mind.</p>
-                            <a href="<c:url value='/book-appointment?type=Periodic Health Checkup'/>" class="plus-btn"><i class="ti-plus"></i></a>
+                            <h5><a href="<c:url value='/book-appointment?type=General Examination'/>">Anxious about not having a health check-up in a while?</a></h5>
+                            <p>Register for a check-up now to secure the earliest appointment slot</p>
+                            <a href="<c:url value='/book-appointment?type=General Examination'/>" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -257,7 +257,7 @@
                                 <h2>100% Satisfaction Guaranteed.</h2>
                             </div>
                             <p>Over 1,000 customers visit daily and are seen immediately because they booked early</p>
-                            <a href="<c:url value='/book-appointment'/>" class="border-btn">Book Appointment</a>
+                            <a href="<c:url value='/appointment'/>" class="border-btn">Book Appointment</a>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">

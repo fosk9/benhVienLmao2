@@ -14,7 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @WebServlet({"/appointments", "/appointments/edit", "/appointments/delete", "/appointments/details"})
@@ -39,6 +40,9 @@ public class AppointmentsServlet extends HttpServlet {
             int appointmentId = Integer.parseInt(request.getParameter("id"));
             Appointment appointment = appointmentDAO.select(appointmentId);
             if (appointment != null && appointment.getPatientId() == patientId) {
+                // Set the formatter for JSP
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                request.setAttribute("formatter", formatter);
                 request.setAttribute("appointment", appointment);
                 request.getRequestDispatcher("/Pact/edit-appointment.jsp").forward(request, response);
             } else {
@@ -53,6 +57,7 @@ public class AppointmentsServlet extends HttpServlet {
                     Employee doctor = employeeDAO.select(appointment.getDoctorId());
                     if (doctor != null) {
                         request.setAttribute("doctor", doctor);
+                        // Fetch the doctor's specialization
                         if (doctor.getSpecializationId() != null) {
                             SpecializationDAO specializationDAO = new SpecializationDAO();
                             String specialization = specializationDAO.getSpecializationName(doctor.getSpecializationId());
@@ -90,23 +95,18 @@ public class AppointmentsServlet extends HttpServlet {
 
         if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
-            String appointmentDateTimeStr = request.getParameter("appointmentDateTime");
+            String appointmentDateStr = request.getParameter("appointmentDate");
             String appointmentType = request.getParameter("appointmentType");
 
             try {
-                if (appointmentDateTimeStr == null || appointmentDateTimeStr.isEmpty()) {
-                    throw new IllegalArgumentException("DateTime is empty");
-                }
-                // Đảm bảo đúng định dạng yyyy-MM-ddTHH:mm
-                String tsStr = appointmentDateTimeStr.contains("T") ? appointmentDateTimeStr.replace("T", " ") + ":00" : appointmentDateTimeStr;
-                Timestamp appointmentDateTime = Timestamp.valueOf(tsStr);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                LocalDateTime appointmentDate = LocalDateTime.parse(appointmentDateStr, formatter);
 
                 AppointmentDAO appointmentDAO = new AppointmentDAO();
                 Appointment appointment = appointmentDAO.select(appointmentId);
                 if (appointment != null && appointment.getPatientId() == patientId) {
-                    appointment.setAppointmentDate(appointmentDateTime);
+                    appointment.setAppointmentDate(appointmentDate);
                     appointment.setAppointmentType(appointmentType);
-                    appointment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
                     appointmentDAO.update(appointment);
                 }
                 response.sendRedirect(request.getContextPath() + "/appointments");

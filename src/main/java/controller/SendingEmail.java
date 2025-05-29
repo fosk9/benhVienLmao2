@@ -10,8 +10,8 @@ import jakarta.mail.internet.*;
 public class SendingEmail {
 
     // Định nghĩa các thông tin đăng nhập cho tài khoản email gửi đi
-    private final String username = "sonnphe181147@fpt.edu.vn";
-    private final String password = "iejn bxay jihg djiq"; // Mật khẩu ứng dụng
+    private final String username = "hung9a112004@gmail.com";
+    private final String password = "cjdy gyip nccv kche"; // Mật khẩu ứng dụng
 
     // Phương thức để gửi email với các tham số: địa chỉ nhận, tiêu đề và nội dung
     public void sendEmail(String to, String subject, String body) {
