@@ -18,7 +18,7 @@ public class MyProfileServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("account") == null || session.getAttribute("login-as") == null) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 
@@ -35,7 +35,7 @@ public class MyProfileServlet extends HttpServlet {
             request.getRequestDispatcher("my-profile-employee.jsp").forward(request, response);
 
         } else {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect("login.jsp");
         }
     }
 }
