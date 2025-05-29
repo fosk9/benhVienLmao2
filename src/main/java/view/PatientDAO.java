@@ -187,6 +187,7 @@ public class PatientDAO extends DBContext<Patient> {
                 .address(rs.getString("address"))
                 .insuranceNumber(rs.getString("insurance_number"))
                 .emergencyContact(rs.getString("emergency_contact"))
+                .patientAvaUrl( rs.getString("patient_ava_url") != null ? rs.getString("patient_ava_url") : "")
                 .build();
     }
 
@@ -206,6 +207,7 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(8, p.getAddress());
         ps.setString(9, p.getInsuranceNumber());
         ps.setString(10, p.getEmergencyContact());
+        ps.setString(11, p.getPatientAvaUrl() != null ? p.getPatientAvaUrl() : "");
     }
 
 }
