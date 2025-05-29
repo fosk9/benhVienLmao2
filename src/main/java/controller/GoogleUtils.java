@@ -13,8 +13,8 @@
 
     public class GoogleUtils {
         //Cần thêm mã gg
-        private static final String CLIENT_ID = "/";
-        private static final String CLIENT_SECRET = "/";
+        private static final String CLIENT_ID = "";
+        private static final String CLIENT_SECRET = "";
         private static final String REDIRECT_URI = "http://localhost:8080/benhVienLmao_war_exploded/google-login";
         private static final String TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
         private static final String USER_INFO_ENDPOINT = "https://www.googleapis.com/oauth2/v2/userinfo";
