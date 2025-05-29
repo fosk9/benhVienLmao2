@@ -54,7 +54,7 @@ public class PatientListServlet extends HttpServlet {
 
         if (hasFilter) {
             patients = patientDAO.searchFilterSort(search, gender, sortBy, sortDir, page, recordsPerPage);
-            totalRecords = patientDAO.count(search, gender);
+            totalRecords = patientDAO.countFiltered(search, gender);
         } else {
             patients = patientDAO.select(page, recordsPerPage);
             totalRecords = patientDAO.countAll();
