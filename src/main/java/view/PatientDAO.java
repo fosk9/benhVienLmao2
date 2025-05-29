@@ -221,6 +221,47 @@ public class PatientDAO extends DBContext<Patient> {
         return null;
     }
 
+    public Patient getPatientByEmail(String email) {
+        String query = "SELECT * FROM Patients WHERE email = ?";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Patient.builder()
+                        .patientId(rs.getInt("patient_id"))
+                        .username(rs.getString("username"))
+                        .passwordHash(rs.getString("password_hash"))
+                        .fullName(rs.getString("full_name"))
+                        .dob(rs.getDate("dob"))
+                        .gender(rs.getString("gender"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getString("phone"))
+                        .address(rs.getString("address"))
+                        .insuranceNumber(rs.getString("insurance_number"))
+                        .emergencyContact(rs.getString("emergency_contact"))
+                        .patientAvaUrl(rs.getString("patient_ava_url")) // Lấy ảnh đại diện
+                        .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public int updatePasswordByUsername(String username, String newPasswordHash) {
+        String query = "UPDATE Patients SET password_hash = ? WHERE username = ?";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newPasswordHash);
+            stmt.setString(2, username);
+            return stmt.executeUpdate(); // Trả về số dòng bị ảnh hưởng
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+
     @Override
     public List<Patient> select() {
         List<Patient> patients = new ArrayList<>();
@@ -257,8 +298,8 @@ public class PatientDAO extends DBContext<Patient> {
 
     @Override
     public int insert(Patient patient) {
-        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, patient_ava_url, insurance_number, emergency_contact) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromPatient(ps, patient);
