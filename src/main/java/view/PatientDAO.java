@@ -239,7 +239,7 @@ public class PatientDAO extends DBContext<Patient> {
                         .address(rs.getString("address"))
                         .insuranceNumber(rs.getString("insurance_number"))
                         .emergencyContact(rs.getString("emergency_contact"))
-                        .patientAvtUrl(rs.getString("patient_ava_url")) // Lấy ảnh đại diện
+                        .patientAvaUrl(rs.getString("patient_ava_url")) // Lấy ảnh đại diện
                         .build();
             }
         } catch (SQLException e) {

@@ -276,7 +276,7 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .phone(rs.getString("phone"))
                 .roleId(rs.getInt("role_id"))
                 .specializationId(rs.getObject("specialization_id") != null ? rs.getInt("specialization_id") : null)
-                .employeeAvtUrl(rs.getString("employee_ava_url"))
+                .employeeAvaUrl(rs.getString("employee_ava_url"))
                 .build();
     }
 
@@ -299,7 +299,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         } else {
             ps.setNull(9, Types.INTEGER);
         }
-        ps.setString(10, e.getEmployeeAvtUrl() != null ? e.getEmployeeAvtUrl() : "");
+        ps.setString(10, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
     }
 
 }

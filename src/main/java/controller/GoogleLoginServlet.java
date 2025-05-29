@@ -69,7 +69,7 @@
                             .passwordHash(pass)
                             .fullName(name)
                             .email(email)
-                            .patientAvtUrl(avatarUrl)
+                            .patientAvaUrl(avatarUrl)
                             .build();
 
 
