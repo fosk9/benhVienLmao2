@@ -12,6 +12,7 @@ public class PatientDAOTest {
         Patient existing = dao.getPatientByEmail(testEmail);
         if (existing != null) {
             System.out.println("🔍 Đã tìm thấy bệnh nhân: " + existing.getFullName());
+            System.out.println("Avatar URL: " + existing.getPatientAvtUrl());
         } else {
             System.out.println("❌ Không tìm thấy bệnh nhân với email: " + testEmail);
         }
@@ -20,6 +21,7 @@ public class PatientDAOTest {
         Patient inserted = dao.getPatientByEmail("newuser@gmail.com");
         if (inserted != null) {
             System.out.println("📌 Đã xác nhận thêm bệnh nhân: " + inserted.getFullName());
+            System.out.println("Avatar URL: " + inserted.getPatientAvtUrl());
         }
     }
 }

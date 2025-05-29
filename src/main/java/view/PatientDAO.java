@@ -90,6 +90,7 @@ public class PatientDAO extends DBContext<Patient> {
                         .address(rs.getString("address"))
                         .insuranceNumber(rs.getString("insurance_number"))
                         .emergencyContact(rs.getString("emergency_contact"))
+                        .patientAvtUrl(rs.getString("patient_ava_url"))
                         .build();
             }
         } catch (SQLException e) {
@@ -116,7 +117,7 @@ public class PatientDAO extends DBContext<Patient> {
                         .address(rs.getString("address"))
                         .insuranceNumber(rs.getString("insurance_number"))
                         .emergencyContact(rs.getString("emergency_contact"))
-                        .patientAvtUrl(rs.getString("patient_ava_url")) // Lấy ảnh đại diện
+                        .patientAvtUrl(rs.getString("patient_ava_url"))
                         .build();
             }
         } catch (SQLException e) {
@@ -189,11 +190,11 @@ public class PatientDAO extends DBContext<Patient> {
 
     @Override
     public int update(Patient patient) {
-        String sql = "UPDATE Patients SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, address=?, insurance_number=?, emergency_contact=? WHERE patient_id=?";
+        String sql = "UPDATE Patients SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, address=?, patient_ava_url=?, insurance_number=?, emergency_contact=? WHERE patient_id=?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromPatient(ps, patient);
-            ps.setInt(11, patient.getPatientId());
+            ps.setInt(12, patient.getPatientId());
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -228,6 +229,7 @@ public class PatientDAO extends DBContext<Patient> {
                 .address(rs.getString("address"))
                 .insuranceNumber(rs.getString("insurance_number"))
                 .emergencyContact(rs.getString("emergency_contact"))
+                .patientAvtUrl(rs.getString("patient_ava_url"))
                 .build();
     }
 
