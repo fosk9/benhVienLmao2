@@ -22,7 +22,7 @@
                     HttpSession session = request.getSession();
 
                     if (code == null || code.isEmpty()) {
-                        response.sendRedirect("Login.jsp?error=no_code");
+                        response.sendRedirect("login.jsp?error=no_code");
                         return;
                     }
 
@@ -47,6 +47,7 @@
                         session.setAttribute("username", patient.getUsername());
                         session.setAttribute("patientId", patient.getPatientId());
                         session.setAttribute("role", "Patient");
+                        session.setAttribute("login-as", "patient");
                         response.sendRedirect(request.getContextPath() + "/pactHome");
                         return;
                     }
@@ -58,6 +59,7 @@
                         session.setAttribute("username", employee.getUsername());
                         session.setAttribute("employeeId", employee.getEmployeeId());
                         session.setAttribute("role", "employee");
+                        session.setAttribute("login-as", "employee");
                         response.sendRedirect("home.jsp");
                         return;
                     }
@@ -80,7 +82,7 @@
                             emailSender.sendEmail(email, "HRMS - Gửi Tài Khoản", "Tài khoản: " + email + "\nMật khẩu (Vui Lòng Đổi Mật Khẩu): " + pass);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            response.sendRedirect("Login.jsp?error=send_email_failed");
+                            response.sendRedirect("login.jsp?error=send_email_failed");
                             return;
                         }
 
@@ -92,11 +94,11 @@
                         session.setAttribute("role", "Patient");
                         response.sendRedirect(request.getContextPath() + "/pactHome");
                     } else {
-                        response.sendRedirect("Login.jsp?error=insert_failed");
+                        response.sendRedirect("login.jsp?error=insert_failed");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    response.sendRedirect("Login.jsp?error=exception");
+                    response.sendRedirect("login.jsp?error=exception");
                 }
             }
 
