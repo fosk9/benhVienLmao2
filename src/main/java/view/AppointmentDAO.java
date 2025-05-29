@@ -3,20 +3,20 @@ package view;
 import model.Appointment;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentDAO extends DBContext<Appointment> {
 
     public void createAppointment(Appointment appointment) throws SQLException {
-        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointment_type, status, created_at) VALUES (?, ?, ?, ?, GETDATE())";
+        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointment_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, appointment.getPatientId());
-            stmt.setTimestamp(2, Timestamp.valueOf(appointment.getAppointmentDate()));
+            stmt.setTimestamp(2, appointment.getAppointmentDate());
             stmt.setString(3, appointment.getAppointmentType());
             stmt.setString(4, appointment.getStatus());
+            stmt.setTimestamp(5, appointment.getCreatedAt());
+            stmt.setTimestamp(6, appointment.getUpdatedAt());
             stmt.executeUpdate();
         }
     }
@@ -36,8 +36,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return list;
     }
 
-
-    // CRUD methods
     @Override
     public List<Appointment> select() {
         List<Appointment> list = new ArrayList<>();
@@ -72,31 +70,37 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return null;
     }
 
-
-    // Insert a new appointment (used by BookAppointmentServlet)
     @Override
     public int insert(Appointment appointment) {
-        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointment_type, status, created_at) VALUES (?, ?, ?, ?, GETDATE())";
+        String query = "INSERT INTO Appointments (patient_id, doctor_id, appointment_date, appointment_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, appointment.getPatientId());
-            stmt.setTimestamp(2, Timestamp.valueOf(appointment.getAppointmentDate()));
-            stmt.setString(3, appointment.getAppointmentType());
-            stmt.setString(4, appointment.getStatus());
+            if (appointment.getDoctorId() == 0) {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            } else {
+                stmt.setInt(2, appointment.getDoctorId());
+            }
+            stmt.setTimestamp(3, appointment.getAppointmentDate());
+            stmt.setString(4, appointment.getAppointmentType());
+            stmt.setString(5, appointment.getStatus());
+            stmt.setTimestamp(6, appointment.getCreatedAt());
+            stmt.setTimestamp(7, appointment.getUpdatedAt());
             return stmt.executeUpdate();
         } catch (SQLException e) {
+            System.out.println("SQL Insert Exception: " + e.getMessage());
             e.printStackTrace();
             return 0;
         }
     }
 
-    // Update an existing appointment
     @Override
     public int update(Appointment appointment) {
-        String query = "UPDATE Appointments SET appointment_date = ?, appointment_type = ?, updated_at = GETDATE() WHERE appointment_id = ?";
+        String query = "UPDATE Appointments SET appointment_date = ?, appointment_type = ?, updated_at = ? WHERE appointment_id = ?";
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setTimestamp(1, Timestamp.valueOf(appointment.getAppointmentDate()));
+            stmt.setTimestamp(1, appointment.getAppointmentDate());
             stmt.setString(2, appointment.getAppointmentType());
-            stmt.setInt(3, appointment.getAppointmentId());
+            stmt.setTimestamp(3, appointment.getUpdatedAt());
+            stmt.setInt(4, appointment.getAppointmentId());
             return stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,8 +122,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return 0;
     }
 
-    // Custom methods
-
     public int[] getTodayStatsByDoctorId(int doctorId) {
         int[] stats = new int[4];
         String sql = "SELECT status, COUNT(*) as count FROM Appointments " +
@@ -127,7 +129,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
-            ps.setDate(2, Date.valueOf(LocalDate.now()));
+            ps.setDate(2, new Date(System.currentTimeMillis()));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 switch (rs.getString("status")) {
@@ -148,27 +150,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
         String sql = "SELECT * FROM Appointments WHERE doctor_id = ? ORDER BY appointment_date ASC";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, doctorId);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
-                Timestamp apptDate = rs.getTimestamp("appointment_date");
-                Timestamp createdAt = rs.getTimestamp("created_at");
-                Timestamp updatedAt = rs.getTimestamp("updated_at");
-
-                Appointment appt = Appointment.builder()
-                        .appointmentId(rs.getInt("appointment_id"))
-                        .patientId(rs.getInt("patient_id"))
-                        .doctorId(rs.getInt("doctor_id"))
-                        .appointmentDate(apptDate != null ? apptDate.toLocalDateTime() : null)
-                        .appointmentType(rs.getString("appointment_type"))
-                        .status(rs.getString("status"))
-                        .createdAt(createdAt != null ? createdAt.toLocalDateTime() : null)
-                        .updatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null)
-                        .build();
-
-                list.add(appt);
+                list.add(mapResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -176,38 +161,20 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return list;
     }
 
-
     public Appointment getAppointmentById(int appointmentId) {
         String sql = "SELECT * FROM Appointments WHERE appointment_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, appointmentId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
-                Timestamp apptDate = rs.getTimestamp("appointment_date");
-                Timestamp createdAt = rs.getTimestamp("created_at");
-                Timestamp updatedAt = rs.getTimestamp("updated_at");
-
-                return Appointment.builder()
-                        .appointmentId(rs.getInt("appointment_id"))
-                        .patientId(rs.getInt("patient_id"))
-                        .doctorId(rs.getInt("doctor_id"))
-                        .appointmentDate(apptDate != null ? apptDate.toLocalDateTime() : null)
-                        .appointmentType(rs.getString("appointment_type"))
-                        .status(rs.getString("status"))
-                        .createdAt(createdAt != null ? createdAt.toLocalDateTime() : null)
-                        .updatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null)
-                        .build();
+                return mapResultSet(rs);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
-
 
     public boolean updateStatus(int appointmentId, String newStatus) {
         String sql = "UPDATE Appointments SET status = ? WHERE appointment_id = ?";
@@ -227,27 +194,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
         String sql = "SELECT * FROM Appointments WHERE doctor_id = ? AND status = 'Completed' ORDER BY appointment_date DESC";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, doctorId);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
-                Timestamp apptDate = rs.getTimestamp("appointment_date");
-                Timestamp createdAt = rs.getTimestamp("created_at");
-                Timestamp updatedAt = rs.getTimestamp("updated_at");
-
-                Appointment appt = Appointment.builder()
-                        .appointmentId(rs.getInt("appointment_id"))
-                        .patientId(rs.getInt("patient_id"))
-                        .doctorId(rs.getInt("doctor_id"))
-                        .appointmentDate(apptDate != null ? apptDate.toLocalDateTime() : null)
-                        .appointmentType(rs.getString("appointment_type"))
-                        .status(rs.getString("status"))
-                        .createdAt(createdAt != null ? createdAt.toLocalDateTime() : null)
-                        .updatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null)
-                        .build();
-
-                list.add(appt);
+                list.add(mapResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -255,23 +205,20 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return list;
     }
 
-
     // Helper
     private Appointment mapResultSet(ResultSet rs) throws SQLException {
-        Timestamp ts = rs.getTimestamp("appointment_date");
-        Timestamp created = rs.getTimestamp("created_at");
-        Timestamp updated = rs.getTimestamp("updated_at");
-
+        Timestamp apptDate = rs.getTimestamp("appointment_date");
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
         return Appointment.builder()
                 .appointmentId(rs.getInt("appointment_id"))
                 .patientId(rs.getInt("patient_id"))
                 .doctorId(rs.getInt("doctor_id"))
                 .appointmentType(rs.getString("appointment_type"))
-                .appointmentDate(ts != null ? ts.toLocalDateTime() : null)
+                .appointmentDate(apptDate)
                 .status(rs.getString("status"))
-                .createdAt(created != null ? created.toLocalDateTime() : null)
-                .updatedAt(updated != null ? updated.toLocalDateTime() : null)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
                 .build();
     }
-
 }
