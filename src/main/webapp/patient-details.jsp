@@ -15,18 +15,27 @@
 <div class="container mt-5">
     <h2 class="mb-4">Patient Details</h2>
 
+    <c:if test="${not empty message}">
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <c:if test="${not empty patient}">
         <form action="UpdatePatientDetails" method="post">
             <input type="hidden" name="patientId" value="${patient.patientId}"/>
 
             <div class="mb-3">
                 <label>Username</label>
-                <input type="text" class="form-control" value="${patient.username}" disabled/>
+                <input type="text" name="username" class="form-control" value="${patient.username}" disabled/>
+                <input type="hidden" name="username" value="${patient.username}"/>
             </div>
 
             <div class="mb-3">
                 <label>Password</label>
-                <input type="password" class="form-control" value="${patient.passwordHash}" disabled/>
+                <input type="password" name="password_hash" class="form-control" value="${patient.passwordHash}" disabled/>
+                <input type="hidden" name="password_hash" value="${patient.passwordHash}"/>
             </div>
 
             <div class="mb-3">

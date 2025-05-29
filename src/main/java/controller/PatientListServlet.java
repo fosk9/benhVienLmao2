@@ -23,26 +23,57 @@ public class PatientListServlet extends HttpServlet {
         String sortBy = request.getParameter("sortBy");
         String sortDir = request.getParameter("sortDir");
 
+        int page = 1;
+        int recordsPerPage = 5;
+
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                page = Integer.parseInt(pageParam);
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        try {
+            String rppParam = request.getParameter("recordsPerPage");
+            if (rppParam != null && !rppParam.isEmpty()) {
+                recordsPerPage = Integer.parseInt(rppParam);
+            }
+        } catch (NumberFormatException e) {
+            recordsPerPage = 5;
+        }
+
         PatientDAO patientDAO = new PatientDAO();
         List<Patient> patients;
+        int totalRecords;
 
         boolean hasFilter = (search != null && !search.isEmpty()) ||
                 (gender != null && !gender.isEmpty()) ||
                 (sortBy != null && !sortBy.isEmpty());
 
         if (hasFilter) {
-            patients = patientDAO.searchFilterSort(search, gender, sortBy, sortDir);
+            patients = patientDAO.searchFilterSort(search, gender, sortBy, sortDir, page, recordsPerPage);
+            totalRecords = patientDAO.countFiltered(search, gender);
         } else {
-            patients = patientDAO.select();
+            patients = patientDAO.select(page, recordsPerPage);
+            totalRecords = patientDAO.countAll();
         }
+
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
         request.setAttribute("patients", patients);
         request.setAttribute("search", search);
         request.setAttribute("gender", gender);
         request.setAttribute("sortBy", sortBy);
         request.setAttribute("sortDir", sortDir);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("recordsPerPage", recordsPerPage);
+
 
         request.getRequestDispatcher("patient-list.jsp").forward(request, response);
     }
+
 
 }

@@ -8,6 +8,129 @@ import java.util.List;
 
 public class PatientDAO extends DBContext<Patient> {
 
+    public List<Patient> select(int page, int pageSize) {
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM Patients ORDER BY patient_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    patients.add(mapResultSetToPatient(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patients;
+    }
+
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM Patients";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Patient> searchFilterSort(String search, String gender, String sortBy, String sortDir, int page, int pageSize) {
+        List<Patient> patients = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Patients WHERE 1=1");
+
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (full_name LIKE ? OR email LIKE ?)");
+        }
+
+        if (gender != null && !gender.isEmpty()) {
+            sql.append(" AND gender = ?");
+        }
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            sql.append(" ORDER BY ").append(sortBy);
+            if (sortDir != null && !sortDir.isEmpty()) {
+                sql.append(" ").append(sortDir);
+            }
+        } else {
+            sql.append(" ORDER BY patient_id");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+
+            if (search != null && !search.isEmpty()) {
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
+            }
+
+            if (gender != null && !gender.isEmpty()) {
+                ps.setString(paramIndex++, gender);
+            }
+
+            ps.setInt(paramIndex++, (page - 1) * pageSize);
+            ps.setInt(paramIndex, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    patients.add(mapResultSetToPatient(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return patients;
+    }
+
+    public int countFiltered(String search, String gender) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Patients WHERE 1=1");
+
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (full_name LIKE ? OR email LIKE ?)");
+        }
+
+        if (gender != null && !gender.isEmpty()) {
+            sql.append(" AND gender = ?");
+        }
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+
+            if (search != null && !search.isEmpty()) {
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
+            }
+
+            if (gender != null && !gender.isEmpty()) {
+                ps.setString(paramIndex++, gender);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     public List<Patient> searchFilterSort(String search, String gender, String sortBy, String sortDir) {
         List<Patient> patients = new ArrayList<>();
 
@@ -148,11 +271,11 @@ public class PatientDAO extends DBContext<Patient> {
 
     @Override
     public int update(Patient patient) {
-        String sql = "UPDATE Patients SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, address=?, insurance_number=?, emergency_contact=? WHERE patient_id=?";
+        String sql = "UPDATE Patients SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, address=?, patient_ava_url=?, insurance_number=?, emergency_contact=? WHERE patient_id=?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromPatient(ps, patient);
-            ps.setInt(11, patient.getPatientId());
+            ps.setInt(12, patient.getPatientId());
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -205,9 +328,9 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(6, p.getEmail());
         ps.setString(7, p.getPhone());
         ps.setString(8, p.getAddress());
-        ps.setString(9, p.getInsuranceNumber());
-        ps.setString(10, p.getEmergencyContact());
-        ps.setString(11, p.getPatientAvaUrl() != null ? p.getPatientAvaUrl() : "");
+        ps.setString(9, p.getPatientAvaUrl() != null ? p.getPatientAvaUrl() : "");
+        ps.setString(10, p.getInsuranceNumber());
+        ps.setString(11, p.getEmergencyContact());
     }
 
 }

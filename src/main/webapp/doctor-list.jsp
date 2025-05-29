@@ -17,42 +17,52 @@
 
     <!-- Search / Filter / Sort Form -->
     <form method="get" action="DoctorList" class="row g-3 mb-4">
+
+        <div class="col-md-2">
+            <input type="number" name="recordsPerPage" class="form-control" min="1" max="100"
+                   placeholder="Records per page" value="${param.recordsPerPage != null ? param.recordsPerPage : 10}">
+        </div>
+
         <div class="col-md-3">
-            <input type="text" name="search" class="form-control" placeholder="Search by name or email...">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by name or email..." value="${param.search != null ? param.search : ''}">
         </div>
         <div class="col-md-2">
             <select name="gender" class="form-select">
-                <option value="">Filter by gender</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
+                <option value="" ${empty param.gender ? 'selected' : ''}>Filter by gender</option>
+                <option value="M" ${param.gender == 'M' ? 'selected' : ''}>Male</option>
+                <option value="F" ${param.gender == 'F' ? 'selected' : ''}>Female</option>
             </select>
         </div>
         <div class="col-md-3">
             <select name="specialization" class="form-select">
-                <option value="">Filter by specialization</option>
+                <option value="" ${empty param.specialization ? 'selected' : ''}>Filter by specialization</option>
                 <c:forEach var="spec" items="${specializations}">
-                    <option value="${spec.specializationId}">${spec.name}</option>
+                    <option value="${spec.specializationId}" ${param.specialization == spec.specializationId.toString() ? 'selected' : ''}>
+                            ${spec.name}
+                    </option>
                 </c:forEach>
             </select>
         </div>
         <div class="col-md-2">
             <select name="sortBy" class="form-select">
-                <option value="">Sort by</option>
-                <option value="full_name">Full Name</option>
-                <option value="dob">Date of Birth</option>
-                <option value="email">Email</option>
+                <option value="" ${empty param.sortBy ? 'selected' : ''}>Sort by</option>
+                <option value="full_name" ${param.sortBy == 'full_name' ? 'selected' : ''}>Full Name</option>
+                <option value="dob" ${param.sortBy == 'dob' ? 'selected' : ''}>Date of Birth</option>
+                <option value="email" ${param.sortBy == 'email' ? 'selected' : ''}>Email</option>
             </select>
         </div>
         <div class="col-md-2">
             <select name="sortDir" class="form-select">
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+                <option value="asc" ${param.sortDir == 'asc' ? 'selected' : ''}>Ascending</option>
+                <option value="desc" ${param.sortDir == 'desc' ? 'selected' : ''}>Descending</option>
             </select>
         </div>
         <div class="col-md-12 text-end">
             <button type="submit" class="btn btn-primary">Apply</button>
         </div>
     </form>
+
 
     <!-- Doctor Table -->
     <div class="table-responsive">
@@ -99,6 +109,27 @@
             </tbody>
         </table>
     </div>
+    <c:if test="${totalPages > 1}">
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <c:forEach var="i" begin="1" end="${totalPages}">
+                    <li class="page-item ${i == currentPage ? 'active' : ''}">
+                        <c:url var="pageUrl" value="DoctorList">
+                            <c:param name="page" value="${i}"/>
+                            <c:param name="recordsPerPage" value="${recordsPerPage}"/>
+                            <c:param name="search" value="${param.search}"/>
+                            <c:param name="gender" value="${param.gender}"/>
+                            <c:param name="specialization" value="${param.specialization}"/>
+                            <c:param name="sortBy" value="${param.sortBy}"/>
+                            <c:param name="sortDir" value="${param.sortDir}"/>
+                        </c:url>
+                        <a class="page-link" href="${pageUrl}">${i}</a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </nav>
+    </c:if>
+
 </div>
 
 <jsp:include page="footer.jsp"/>
