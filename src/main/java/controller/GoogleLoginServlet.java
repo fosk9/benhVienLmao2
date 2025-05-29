@@ -22,7 +22,7 @@
                     HttpSession session = request.getSession();
 
                     if (code == null || code.isEmpty()) {
-                        response.sendRedirect("Login.jsp?error=no_code");
+                        response.sendRedirect("login.jsp?error=no_code");
                         return;
                     }
 
@@ -80,7 +80,7 @@
                             emailSender.sendEmail(email, "HRMS - Gửi Tài Khoản", "Tài khoản: " + email + "\nMật khẩu (Vui Lòng Đổi Mật Khẩu): " + pass);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            response.sendRedirect("Login.jsp?error=send_email_failed");
+                            response.sendRedirect("login.jsp?error=send_email_failed");
                             return;
                         }
 
@@ -92,11 +92,11 @@
                         session.setAttribute("role", "Patient");
                         response.sendRedirect(request.getContextPath() + "/pactHome");
                     } else {
-                        response.sendRedirect("Login.jsp?error=insert_failed");
+                        response.sendRedirect("login.jsp?error=insert_failed");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    response.sendRedirect("Login.jsp?error=exception");
+                    response.sendRedirect("login.jsp?error=exception");
                 }
             }
 
