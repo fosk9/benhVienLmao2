@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
             if (employee != null) {
                 session.setAttribute("account", employee);
                 session.setAttribute("login-as", "employee");
-                response.sendRedirect(request.getContextPath()+"/doctor-home");
+                response.sendRedirect(request.getContextPath()+"/index.html");
                 return;
             } else {
                 request.setAttribute("username", username);
