@@ -15,7 +15,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Patient List</title>
-  <jsp:include page="common-css.jsp"/>
+  <jsp:include page="doctor-common-css.jsp"/>
   <style>
     table.table {
       font-size: 0.9rem !important;
@@ -55,7 +55,7 @@
 </head>
 <body>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="doctor-header.jsp"/>
 
 <c:set var="page" value="${param.page != null ? param.page : 1}" />
 <c:set var="pageSize" value="5" />
@@ -149,8 +149,8 @@
 
 </div>
 
-<jsp:include page="footer.jsp"/>
-<jsp:include page="common-scripts.jsp"/>
+<jsp:include page="doctor-footer.jsp"/>
+<jsp:include page="doctor-common-scripts.jsp"/>
 
 </body>
 </html>

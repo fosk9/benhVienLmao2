@@ -13,11 +13,11 @@
 <head>
   <meta charset="UTF-8">
   <title>My Profile - Employee</title>
-  <jsp:include page="common-css.jsp"/>
+  <jsp:include page="doctor-common-css.jsp"/>
 </head>
 <body>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="doctor-header.jsp"/>
 
 <div class="container mt-5">
   <h2 class="mb-4">My Profile (Employee)</h2>
@@ -68,7 +68,7 @@
   </form>
 </div>
 
-<jsp:include page="footer.jsp"/>
-<jsp:include page="common-scripts.jsp" />
+<jsp:include page="doctor-footer.jsp"/>
+<jsp:include page="doctor-common-scripts.jsp" />
 </body>
 </html>
