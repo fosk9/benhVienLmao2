@@ -22,4 +22,5 @@ public class Employee {
     private String phone;
     private int roleId;
     private Integer specializationId; // Nullable
+    private String employeeAvaUrl;
 }

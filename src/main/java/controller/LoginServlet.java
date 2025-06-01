@@ -25,33 +25,35 @@ public class LoginServlet extends HttpServlet {
             PatientDAO patientDAO = new PatientDAO();
             Patient patient = patientDAO.login(username, password);
             if (patient != null) {
+                session.setAttribute("username", username);
+                session.setAttribute("patientId", patient.getPatientId());
+                session.setAttribute("role", "Patient"); // Hardcoded role for patients
                 session.setAttribute("account", patient);
                 session.setAttribute("login-as", "patient");
-                response.sendRedirect("index.html");
+                response.sendRedirect(request.getContextPath() + "/pactHome");
                 return;
             } else {
                 request.setAttribute("username", username);
                 request.setAttribute("password", password);
-                request.setAttribute("error", "Invalid patient credentials!");
+                request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
             }
         } else if ("Employee".equals(loginAs)) {
             EmployeeDAO employeeDAO = new EmployeeDAO();
             Employee employee = employeeDAO.login(username, password);
             if (employee != null) {
-                if (employee.getRoleId()==1){
-                    session.setAttribute("account", employee);
-                    session.setAttribute("login-as", "employee");
-                    response.sendRedirect(request.getContextPath() + "/doctor-home");
-                    return;
-                }
                 session.setAttribute("account", employee);
-                session.setAttribute("login-as", "employee");
-                response.sendRedirect("index.html");
+                session.setAttribute("username", username);
+                session.setAttribute("role", employee.getRoleId());
+
+                if (employee.getRoleId() == 1) {
+                    response.sendRedirect(request.getContextPath() + "/doctor-home");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/index.html");
+                }
                 return;
             } else {
                 request.setAttribute("username", username);
-                request.setAttribute("password", password);
-                request.setAttribute("error", "Invalid employee credentials!");
+                request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
             }
         } else {
             request.setAttribute("username", username);
@@ -60,11 +62,11 @@ public class LoginServlet extends HttpServlet {
         }
         request.setAttribute("username", username);
         request.setAttribute("password", password);
-        request.getRequestDispatcher("Login.jsp").forward(request, response);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("Login.jsp").forward(request, response);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }
