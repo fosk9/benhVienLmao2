@@ -90,6 +90,11 @@
     <% if (error != null) { %>
     <div class="error-message"><%= error %></div>
     <% } %>
+    <% String msg = request.getParameter("msg"); %>
+    <% if ("otp_sent".equals(msg)) { %>
+    <p style="color: green; font-weight: bold;">Đã gửi OTP vào email.</p>
+    <% } %>
+
 
     <form action="verify-otp" method="post">
         <input type="text" name="otp" placeholder="Enter 8-character OTP" required />
