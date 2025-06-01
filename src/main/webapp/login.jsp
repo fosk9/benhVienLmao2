@@ -146,11 +146,6 @@
     <div class="success-message"><%= success %>
     </div>
     <% } %>
-    <% String msg = request.getParameter("msg"); %>
-    <% if ("register_success".equals(msg)) { %>
-    <p style="color: green; font-weight: bold;">Đã tạo tài khoản thành công. Vui lòng đăng nhập.</p>
-    <% } %>
-
 
     <form action="login" method="post">
         <input type="text" name="username" placeholder="Username" value="${username}" required/>
