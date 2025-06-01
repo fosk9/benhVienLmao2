@@ -60,7 +60,7 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
         Employee doctor = (Employee) acc;
 
         String patientIdStr = request.getParameter("patientId");
-        String appointmentType = request.getParameter("appointmentType");  // Nhớ form gửi trường này
+        String appointmentType = request.getParameter("appointmentType");
         String appointmentDateStr = request.getParameter("appointmentDate");
         String status = request.getParameter("status");
 

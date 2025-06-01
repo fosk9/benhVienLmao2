@@ -53,7 +53,6 @@
 
 <jsp:include page="header.jsp"/>
 
-<!-- Phân trang tính toán -->
 <c:set var="page" value="${param.page != null ? param.page : 1}" />
 <c:set var="page" value="${page + 0}" />
 <c:set var="pageSize" value="5" />

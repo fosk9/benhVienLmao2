@@ -51,8 +51,8 @@ public class AppointmentDAO extends DBContext<Appointment> {
                 .status(rs.getString("status"))
                 .createdAt(rs.getDate("created_at"))
                 .updatedAt(rs.getDate("updated_at"))
-                .insuranceNumber(rs.getString("insurance_number"))  // Lấy trường mới
-                .patientFullName(rs.getString("full_name"))        // Lấy trường mới
+                .insuranceNumber(rs.getString("insurance_number"))
+                .patientFullName(rs.getString("full_name"))
                 .build();
     }
 
