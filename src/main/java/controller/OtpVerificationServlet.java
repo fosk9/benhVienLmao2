@@ -19,6 +19,16 @@ public class OtpVerificationServlet extends HttpServlet {
         String correctOtp = (String) session.getAttribute("otp");
 
         if (correctOtp != null && correctOtp.equalsIgnoreCase(userInput)) {
+            Patient tempPatient = (Patient) session.getAttribute("tempPatient");
+            if (tempPatient != null) {
+                new PatientDAO().insert(tempPatient); // chỉ ghi vào DB nếu xác minh OTP thành công
+                session.removeAttribute("tempPatient");
+                session.removeAttribute("otp");
+                response.sendRedirect("login.jsp?msg=register_success");
+                return;
+            }
+
+            // Trường hợp dùng cho quên mật khẩu
             response.sendRedirect("reset-password.jsp");
         } else {
             request.setAttribute("error", "Mã OTP không chính xác!");

@@ -8,6 +8,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.Random;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
@@ -43,7 +44,14 @@ public class RegisterServlet extends HttpServlet {
             }
         }
 
-        Patient patient = Patient.builder()
+        // 2. Check trùng username, email, phone
+        if (patientDAO.getPatientByUsername(username) != null) {
+            request.setAttribute("error", "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        Patient tempPatient  = Patient.builder()
                 .username(username)
                 .passwordHash(password)  // Tạm thời chưa hash
                 .fullName(fullName)
@@ -55,16 +63,33 @@ public class RegisterServlet extends HttpServlet {
                 .insuranceNumber(insuranceNumber)
                 .emergencyContact(emergencyContact)
                 .build();
-        int result = patientDAO.insert(patient);
 
-        if (result > 0) {
-            request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Registration failed. Username might already exist or there was a DB error.");
+        String otp = generateOTP(6);
+        HttpSession session = request.getSession();
+        session.setAttribute("tempPatient", tempPatient);
+        session.setAttribute("otp", otp);
+
+        // Gửi email
+        SendingEmail emailSender = new SendingEmail();
+        try {
+            emailSender.sendEmail(email, "HRMS - Mã xác thực OTP", "Mã OTP của bạn là: " + otp);
+        } catch (Exception e) {
+            request.setAttribute("error", "Không thể gửi email. Vui lòng thử lại.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
         }
 
-        request.getRequestDispatcher("register.jsp").forward(request, response);
+        // Điều hướng tới trang nhập OTP
+        response.sendRedirect("otp-verification.jsp?msg=otp_sent");
     }
 
+    private String generateOTP(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random rand = new Random();
+        StringBuilder otp = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            otp.append(chars.charAt(rand.nextInt(chars.length())));
+        }
+        return otp.toString();
+    }
 }
