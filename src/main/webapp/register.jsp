@@ -151,7 +151,7 @@
 
             <button type="submit" class="btn btn-primary" onclick="return confirm('Bạn có chắc chắn muốn đăng ký không?');">Register</button>
             <div class="link-group">
-                <a href="Login.jsp">Already have an account? Login</a>
+                <a href="login.jsp">Already have an account? Login</a>
             </div>
         </form>
 
