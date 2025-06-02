@@ -91,7 +91,13 @@ public class AppointmentsServlet extends HttpServlet {
         if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
             String appointmentDateTimeStr = request.getParameter("appointmentDateTime");
-            String appointmentType = request.getParameter("appointmentType");
+            String appointmentType = request.getParameter("appointmentTypeSelect");
+            String customAppointmentType = request.getParameter("customAppointmentType");
+
+            // Nếu chọn custom thì lấy giá trị custom, ngược lại lấy từ select
+            if ("custom".equals(appointmentType) && customAppointmentType != null && !customAppointmentType.trim().isEmpty()) {
+                appointmentType = customAppointmentType.trim();
+            }
 
             try {
                 if (appointmentDateTimeStr == null || appointmentDateTimeStr.isEmpty()) {
