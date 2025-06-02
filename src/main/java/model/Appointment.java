@@ -27,3 +27,4 @@ public class Appointment {
     private Patient patient;
 
 }
+

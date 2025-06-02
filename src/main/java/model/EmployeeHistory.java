@@ -15,4 +15,6 @@ public class EmployeeHistory {
     private int employeeId;
     private int roleId;
     private Date date;
+
 }
+

@@ -18,4 +18,6 @@ public class ConsultationRegistration {
     private Date dob;
     private String consultationNeeds;
     private Timestamp createdAt;
+
 }
+

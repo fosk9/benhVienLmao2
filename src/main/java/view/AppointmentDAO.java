@@ -98,6 +98,21 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     @Override
+    public int update(Appointment appointment) {
+        String query = "UPDATE Appointments SET appointment_date = ?, appointment_type = ?, updated_at = ? WHERE appointment_id = ?";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setTimestamp(1, appointment.getAppointmentDate());
+            stmt.setString(2, appointment.getAppointmentType());
+            stmt.setTimestamp(3, appointment.getUpdatedAt());
+            stmt.setInt(4, appointment.getAppointmentId());
+            return stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
     public int delete(int... id) {
         if (id.length < 1) return 0;
         String sql = "DELETE FROM Appointments WHERE appointment_id = ?";
@@ -134,6 +149,22 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return stats;
     }
 
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Appointments WHERE doctor_id = ? ORDER BY appointment_date ASC";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public Appointment getAppointmentById(int appointmentId) {
         String sql = "SELECT * FROM Appointments WHERE appointment_id = ?";
         try (Connection conn = getConn();
@@ -148,6 +179,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return null;
     }
+
 
     @Override
     public int update(Appointment appointment) {
@@ -205,6 +237,36 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
 
+    public boolean updateStatus(int appointmentId, String newStatus) {
+        String sql = "UPDATE Appointments SET status = ? WHERE appointment_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<Appointment> getCompletedAppointmentsByDoctor(int doctorId) {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Appointments WHERE doctor_id = ? AND status = 'Completed' ORDER BY appointment_date DESC";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Helper
     private Appointment mapResultSet(ResultSet rs) throws SQLException {
         Timestamp apptDate = rs.getTimestamp("appointment_date");
         Timestamp createdAt = rs.getTimestamp("created_at");
@@ -334,3 +396,4 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
 }
+

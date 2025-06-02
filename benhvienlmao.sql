@@ -1,4 +1,4 @@
-﻿-- DROP & CREATE DATABASE
+-- DROP & CREATE DATABASE
 USE master
 GO
 

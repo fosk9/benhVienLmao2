@@ -22,7 +22,9 @@ public class DoctorHomeServlet extends HttpServlet {
         Object acc = (session != null) ? session.getAttribute("account") : null;
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
+
             response.sendRedirect("login.jsp");
+            response.sendRedirect("Login.jsp");
             return;
         }
 

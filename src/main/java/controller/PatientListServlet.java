@@ -74,6 +74,5 @@ public class PatientListServlet extends HttpServlet {
 
         request.getRequestDispatcher("patient-list.jsp").forward(request, response);
     }
-
-
 }
+
