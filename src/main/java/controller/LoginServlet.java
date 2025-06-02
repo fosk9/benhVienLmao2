@@ -53,11 +53,6 @@ public class LoginServlet extends HttpServlet {
                 return;
             } else {
                 request.setAttribute("username", username);
-                session.setAttribute("login-as", "employee");
-                response.sendRedirect(request.getContextPath()+"/index.html");
-                return;
-            } else {
-                request.setAttribute("username", username);
                 request.setAttribute("password", password);
                 request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
             }
