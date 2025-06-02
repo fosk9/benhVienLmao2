@@ -110,10 +110,23 @@
                                     <select id="appointmentType-${p.patientId}" name="appointmentType" required style="font-size: 1rem; padding: 4px; min-width: 140px; color: black;">
                                         <option value="" disabled selected>Select Treatment</option>
                                         <option value="General Checkup">General Checkup</option>
-                                        <option value="Dental">Dental</option>
-                                        <option value="Eye Exam">Eye Exam</option>
-                                        <option value="Surgery Consult">Surgery Consult</option>
-                                        <option value="Follow-up">Follow-up</option>
+                                        <option value="Cardiology Consultation" >Cardiology Consultation</option>
+                                        <option value="Gastroenterology Consultation" >Gastroenterology Consultation</option>
+                                        <option value="Orthopedic Consultation" >Orthopedic Consultation</option>
+                                        <option value="Neurology Consultation" >Neurology Consultation</option>
+                                        <option value="Mental Health Consultation" >Mental Health Consultation</option>
+                                        <option value="Psychotherapy Session" >Psychotherapy Session</option>
+                                        <option value="Psychiatric Evaluation" >Psychiatric Evaluation</option>
+                                        <option value="Stress and Anxiety Management" >Stress and Anxiety Management</option>
+                                        <option value="Depression Counseling" >Depression Counseling</option>
+                                        <option value="Periodic Health Checkup" >Periodic Health Checkup</option>
+                                        <option value="Gynecology Consultation" >Gynecology Consultation</option>
+                                        <option value="Pediatric Consultation" >Pediatric Consultation</option>
+                                        <option value="Ophthalmology Consultation" >Ophthalmology Consultation</option>
+                                        <option value="ENT Consultation" >ENT Consultation</option>
+                                        <option value="On-Demand Consultation" >On-Demand Consultation</option>
+                                        <option value="Emergency Consultation" >Emergency Consultation</option>
+                                        <option value="custom">Other...</option>
                                     </select>
 
                                     <label for="appointmentDate-${p.patientId}" style="min-width: 60px; color: black; margin-left: 16px; margin-right: 4px;">Date:</label>

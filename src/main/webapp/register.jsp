@@ -123,7 +123,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label>Email:</label>
-                    <input name="email" class="form-control">
+                    <input name="email" class="form-control" required>
                 </div>
             </div>
 
@@ -149,9 +149,9 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Bạn có chắc chắn muốn đăng ký không?');">Register</button>
             <div class="link-group">
-                <a href="Login.jsp">Already have an account? Login</a>
+                <a href="login.jsp">Already have an account? Login</a>
             </div>
         </form>
 

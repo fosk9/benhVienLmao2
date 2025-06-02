@@ -19,7 +19,7 @@ public class DoctorChangeStatusServlet extends HttpServlet {
         Object acc = (session != null) ? session.getAttribute("account") : null;
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
-            response.sendRedirect(request.getContextPath() + "/Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 

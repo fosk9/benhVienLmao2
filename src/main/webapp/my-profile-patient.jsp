@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ADMIN
-  Date: 5/27/2025
-  Time: 7:17 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -13,11 +6,11 @@
 <head>
   <meta charset="UTF-8">
   <title>My Profile - Patient</title>
-  <jsp:include page="doctor-common-css.jsp"/>
+  <jsp:include page="common-css.jsp"/>
 </head>
 <body>
 
-<jsp:include page="doctor-header.jsp"/>
+<jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
   <h2 class="mb-4">My Profile (Patient)</h2>
@@ -83,7 +76,7 @@
   </form>
 </div>
 
-<jsp:include page="doctor-footer.jsp"/>
-<jsp:include page="doctor-common-scripts.jsp"/>
+<jsp:include page="footer.jsp"/>
+<jsp:include page="common-scripts.jsp"/>
 </body>
 </html>

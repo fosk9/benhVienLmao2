@@ -28,7 +28,7 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
         Object acc = (session != null) ? session.getAttribute("account") : null;
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 
@@ -53,7 +53,7 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
         Object acc = (session != null) ? session.getAttribute("account") : null;
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 
@@ -94,14 +94,15 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
                 .patientId(patientId)
                 .doctorId(doctor.getEmployeeId())
                 .appointmentType(appointmentType)
-                .appointmentDate(appointmentDate)
+                .appointmentDate(new java.sql.Timestamp(appointmentDate.getTime()))
                 .status(status)
-                .createdAt(new java.sql.Date(System.currentTimeMillis()))
-                .updatedAt(new java.sql.Date(System.currentTimeMillis()))
+                .createdAt(new java.sql.Timestamp(System.currentTimeMillis()))
+                .updatedAt(new java.sql.Timestamp(System.currentTimeMillis()))
                 .build();
 
+
         AppointmentDAO dao = new AppointmentDAO();
-        int result = dao.insert(appointment);
+        int result = dao.doctorInsert(appointment);
 
         if (result > 0) {
             response.sendRedirect(request.getContextPath() + "/doctor-home");

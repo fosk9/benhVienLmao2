@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -15,5 +15,5 @@ public class TestRequest {
     private int appointmentId;
     private String testType;
     private String requestNotes;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 }

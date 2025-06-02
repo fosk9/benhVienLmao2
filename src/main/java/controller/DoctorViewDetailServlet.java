@@ -19,14 +19,14 @@ public class DoctorViewDetailServlet extends HttpServlet {
         Object acc = (session != null) ? session.getAttribute("account") : null;
 
         if (acc == null || !(acc instanceof Employee)) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 
         Employee doctor = (Employee) acc;
 
         if (doctor.getRoleId() != 1) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 

@@ -8,6 +8,22 @@ import java.util.List;
 
 public class SpecializationDAO extends DBContext<Specialization> {
 
+    public String getSpecializationName(int specializationId) {
+        String sql = "SELECT name FROM Specializations WHERE specialization_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, specializationId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public List<Specialization> select() {
         List<Specialization> list = new ArrayList<>();

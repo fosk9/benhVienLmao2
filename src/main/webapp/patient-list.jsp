@@ -1,33 +1,42 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ADMIN
-  Date: 5/27/2025
-  Time: 7:16 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Patient List</title>
-  <jsp:include page="doctor-common-css.jsp"/>
+  <jsp:include page="common-css.jsp"/>
 </head>
 <body>
 
-<jsp:include page="doctor-header.jsp"/>
+<jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
   <h2 class="mb-4">Patient List</h2>
 
+  <!-- Message Notification -->
+  <c:if test="${not empty message}">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        ${message}
+    </div>
+  </c:if>
+
   <!-- Filter/Search/Sort Form -->
   <form method="get" action="PatientList" class="row g-3 mb-4">
+
+    <div class="col-md-2">
+      <input type="number" name="recordsPerPage" min="1" class="form-control"
+             placeholder="Per page"
+             value="${param.recordsPerPage != null ? param.recordsPerPage : recordsPerPage}"/>
+    </div>
+
     <div class="col-md-3">
       <input type="text" name="search" class="form-control"
              placeholder="Search by name or email..."
-             value="${param.search}"/>
+             value="${fn:escapeXml(param.search)}"/>
     </div>
 
     <div class="col-md-2">
@@ -58,7 +67,6 @@
       <button type="submit" class="btn btn-primary w-100">Apply</button>
     </div>
   </form>
-
 
   <!-- Patient Table -->
   <div class="table-responsive">
@@ -97,10 +105,33 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Pagination -->
+  <c:if test="${totalPages > 1}">
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        <c:forEach var="i" begin="1" end="${totalPages}">
+          <li class="page-item ${i == currentPage ? 'active' : ''}">
+            <c:url var="pageUrl" value="PatientList">
+              <c:param name="page" value="${i}"/>
+              <c:param name="recordsPerPage" value="${recordsPerPage}"/>
+              <c:param name="search" value="${param.search}"/>
+              <c:param name="gender" value="${param.gender}"/>
+              <c:param name="sortBy" value="${param.sortBy}"/>
+              <c:param name="sortDir" value="${param.sortDir}"/>
+            </c:url>
+            <a class="page-link" href="${pageUrl}">${i}</a>
+          </li>
+        </c:forEach>
+      </ul>
+    </nav>
+  </c:if>
+
+
 </div>
 
-<jsp:include page="doctor-footer.jsp"/>
-<jsp:include page="doctor-common-scripts.jsp"/>
+<jsp:include page="footer.jsp"/>
+<jsp:include page="common-scripts.jsp"/>
 
 </body>
 </html>

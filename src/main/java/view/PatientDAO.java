@@ -374,6 +374,7 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(11, p.getEmergencyContact());
     }
 
+
     public List<Patient> getPatientsByDoctorId(int doctorId) {
         List<Patient> list = new ArrayList<>();
         String sql = "SELECT DISTINCT p.* FROM Patients p JOIN Appointments a ON p.patient_id = a.patient_id WHERE a.doctor_id = ?";
