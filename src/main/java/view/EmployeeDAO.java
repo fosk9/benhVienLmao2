@@ -187,7 +187,6 @@ public class EmployeeDAO extends DBContext<Employee> {
     }
 
 
-
     @Override
     public List<Employee> select() {
         List<Employee> list = new ArrayList<>();

@@ -166,7 +166,7 @@
     </form>
 
     <a href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile%20openid&redirect_uri=http://localhost:8080/benhVienLmao_war_exploded/google-login&response_type=code&client_id=497598502234-jmgcibueto8hc1qh61gngkr44pcu90c6.apps.googleusercontent.com&prompt=consent" class="google-btn">
-    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
         Sign in with Google
     </a>
 

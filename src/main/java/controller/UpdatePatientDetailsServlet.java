@@ -70,3 +70,4 @@ public class UpdatePatientDetailsServlet extends HttpServlet {
         }
     }
 }
+

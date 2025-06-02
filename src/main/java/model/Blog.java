@@ -29,4 +29,5 @@ public class Blog {
         if (content == null) return "";
         return content.length() <= 150 ? content : content.substring(0, 150) + "...";
     }
+
 }

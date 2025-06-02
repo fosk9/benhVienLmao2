@@ -21,6 +21,8 @@ public class ChangePasswordServlet extends HttpServlet {
         String role = (String) session.getAttribute("login-as");
 
         if (account == null || role == null) {
+
+            response.sendRedirect("login.jsp");
             response.sendRedirect("Login.jsp");
             return;
         }
@@ -74,4 +76,6 @@ public class ChangePasswordServlet extends HttpServlet {
             throws ServletException, IOException {
         request.getRequestDispatcher("change-password.jsp").forward(request, response);
     }
+
 }
+

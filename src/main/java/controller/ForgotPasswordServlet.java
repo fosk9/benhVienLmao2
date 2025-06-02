@@ -91,3 +91,4 @@ public class ForgotPasswordServlet extends HttpServlet {
         return otp.toString();
     }
 }
+

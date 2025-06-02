@@ -2,15 +2,15 @@
 <%@ page import="model.Blog, model.Comment" %>
 <%@ page import="java.util.List" %>
 <%
-  Blog blog = (Blog) request.getAttribute("blog");
-  List<Comment> comments = (List<Comment>) request.getAttribute("comments");
+    Blog blog = (Blog) request.getAttribute("blog");
+    List<Comment> comments = (List<Comment>) request.getAttribute("comments");
 %>
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title><%= blog != null ? blog.getBlogName() : "Chi tiết bài viết" %></title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <title><%= blog != null ? blog.getBlogName() : "Chi tiết bài viết" %></title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -22,11 +22,11 @@
 
 <h2>Bình luận</h2>
 <% if (comments != null && !comments.isEmpty()) {
-  for (Comment c : comments) { %>
+    for (Comment c : comments) { %>
 <div class="comment">
-  <p><strong>Patient #<%= c.getPatientId() %></strong> - <%= c.getDate() %></p>
-  <p><%= c.getContent() %></p>
-  <hr>
+    <p><strong>Patient #<%= c.getPatientId() %></strong> - <%= c.getDate() %></p>
+    <p><%= c.getContent() %></p>
+    <hr>
 </div>
 <%  } } else { %>
 <p>Chưa có bình luận nào.</p>

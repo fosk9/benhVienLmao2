@@ -20,4 +20,11 @@ public class Appointment {
     private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+
+    private String insuranceNumber;
+    private String patientFullName;
+
+    private Patient patient;
+
 }
+

@@ -35,3 +35,4 @@ public class DeletePatientServlet extends HttpServlet {
         }
     }
 }
+

@@ -360,3 +360,34 @@ VALUES (1, 'LIC12345', 'Mon-Fri 08:00-12:00', 4.5),
        (2, 'LIC23456', 'Mon-Wed 13:00-17:00', 4.7),
        (3, 'LIC34567', 'Tue-Thu 08:00-12:00', 4.3),
        (4, 'LIC45678', 'Fri-Sun 08:00-11:00', 4.8);
+
+-- DB mẫu của bảng Appointment
+INSERT INTO Appointments
+([patient_id], [doctor_id], [appointment_type], [appointment_date], [status], [created_at], [updated_at])
+VALUES
+    -- Pending từ 30/05/2025 đến 30/06/2025
+    (1, 1, 'General Checkup', '2025-05-30 09:00:00', 'Pending', GETDATE(), GETDATE()),
+    -- Confirmed từ 05/05/2025 đến 30/05/2025
+    (2, 1, 'Cardiology Consultation', '2025-05-10 10:00:00', 'Confirmed', GETDATE(), GETDATE()),
+    -- Completed trước 30/05/2025 giữ nguyên
+    (3, 1, 'Gastroenterology Consultation', '2025-05-29 14:00:00', 'Completed', GETDATE(), GETDATE()),
+    (4, 1, 'Orthopedic Consultation', '2025-06-04 08:30:00', 'Cancelled', GETDATE(), GETDATE()),
+    (5, 1, 'Neurology Consultation', '2025-06-15 11:15:00', 'Pending', GETDATE(), GETDATE()),
+
+    (1, 1, 'Mental Health Consultation', '2025-05-29 13:45:00', 'Completed', GETDATE(), GETDATE()),
+    (2, 1, 'Psychotherapy Session', '2025-06-20 15:00:00', 'Pending', GETDATE(), GETDATE()),
+    (3, 1, 'Psychiatric Evaluation', '2025-05-15 09:30:00', 'Confirmed', GETDATE(), GETDATE()),
+    (4, 1, 'Stress and Anxiety Management', '2025-06-09 10:45:00', 'Cancelled', GETDATE(), GETDATE()),
+    (5, 1, 'Depression Counseling', '2025-05-29 14:30:00', 'Completed', GETDATE(), GETDATE()),
+
+    (1, 1, 'Periodic Health Checkup', '2025-06-01 08:00:00', 'Pending', GETDATE(), GETDATE()),
+    (2, 1, 'Gynecology Consultation', '2025-05-20 16:00:00', 'Confirmed', GETDATE(), GETDATE()),
+    (3, 1, 'Pediatric Consultation', '2025-05-29 09:15:00', 'Completed', GETDATE(), GETDATE()),
+    (4, 1, 'Ophthalmology Consultation', '2025-06-14 11:00:00', 'Cancelled', GETDATE(), GETDATE()),
+    (5, 1, 'ENT Consultation', '2025-06-30 13:30:00', 'Pending', GETDATE(), GETDATE()),
+
+    (1, 1, 'On-Demand Consultation', '2025-05-30 10:00:00', 'Confirmed', GETDATE(), GETDATE()),
+    (2, 1, 'Emergency Consultation', '2025-05-29 17:00:00', 'Completed', GETDATE(), GETDATE()),
+    (3, 1, 'General Checkup', '2025-06-18 09:45:00', 'Cancelled', GETDATE(), GETDATE()),
+    (4, 1, 'Cardiology Consultation', '2025-06-05 14:00:00', 'Pending', GETDATE(), GETDATE()),
+    (5, 1, 'Gastroenterology Consultation', '2025-05-25 15:30:00', 'Confirmed', GETDATE(), GETDATE());

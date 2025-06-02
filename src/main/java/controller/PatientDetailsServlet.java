@@ -40,3 +40,4 @@ public class PatientDetailsServlet extends HttpServlet {
         request.getRequestDispatcher("patient-details.jsp").forward(request, response);
     }
 }
+

@@ -24,3 +24,5 @@ public class DeleteBlogServlet extends HttpServlet {
         response.sendRedirect("blog");
     }
 }
+
+

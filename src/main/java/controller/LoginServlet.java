@@ -1,5 +1,3 @@
-
-
 package controller;
 
 import jakarta.servlet.ServletException;
@@ -45,8 +43,13 @@ public class LoginServlet extends HttpServlet {
             if (employee != null) {
                 session.setAttribute("account", employee);
                 session.setAttribute("username", username);
-                session.setAttribute("login-as", "employee");
-                response.sendRedirect(request.getContextPath()+"/index.html");
+                session.setAttribute("role", employee.getRoleId());
+
+                if (employee.getRoleId() == 1) {
+                    response.sendRedirect(request.getContextPath() + "/doctor-home");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/index.html");
+                }
                 return;
             } else {
                 request.setAttribute("username", username);
@@ -68,3 +71,4 @@ public class LoginServlet extends HttpServlet {
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }
+
