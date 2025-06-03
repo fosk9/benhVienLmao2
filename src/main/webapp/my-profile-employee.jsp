@@ -15,7 +15,32 @@
 <div class="container mt-5">
   <h2 class="mb-4">My Profile (Employee)</h2>
 
-  <form method="post" action="UpdateMyProfile">
+  <c:if test="${not empty message}">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        ${message}
+    </div>
+  </c:if>
+
+  <!-- Avatar display -->
+  <div class="mb-4 text-center">
+    <c:choose>
+      <c:when test="${not empty employee.employeeAvaUrl}">
+        <img src="${employee.employeeAvaUrl}" alt="Avatar" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+      </c:when>
+      <c:otherwise>
+        <img src="assets/img/default-avatar.png" alt="Default Avatar" class="img-thumbnail" style="width: 150px; height: 150px;">
+      </c:otherwise>
+    </c:choose>
+  </div>
+
+  <!-- Avatar upload form -->
+  <form method="post" action="UpdateEmployeeAvatar" enctype="multipart/form-data" class="mb-4 text-center">
+    <input type="file" name="avatar" accept="image/*" required>
+    <input type="hidden" name="employeeId" value="${employee.employeeId}"/>
+    <button type="submit" class="btn btn-primary mt-2">Update Avatar</button>
+  </form>
+
+  <form method="post" action="UpdateMyProfileEmployee">
     <input type="hidden" name="employeeId" value="${employee.employeeId}"/>
 
     <div class="mb-3">

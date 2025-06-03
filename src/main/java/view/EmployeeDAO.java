@@ -241,7 +241,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromEmployee(ps, e);
-            ps.setInt(10, e.getEmployeeId());
+            ps.setInt(11, e.getEmployeeId());
             return ps.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
