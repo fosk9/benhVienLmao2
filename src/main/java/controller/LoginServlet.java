@@ -21,6 +21,14 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
+        if (password == null || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
+            request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
+            // Gửi lại dữ liệu đã nhập về JSP để hiển thị lại
+            request.setAttribute("username", username);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
+
         if ("Patient".equals(loginAs)) {
             PatientDAO patientDAO = new PatientDAO();
             Patient patient = patientDAO.login(username, password);

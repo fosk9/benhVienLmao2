@@ -94,7 +94,7 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Username:</label>
-                    <input name="username" class="form-control" required>
+                    <input name="username" class="form-control" value="${username != null ? username : ''}" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label>Password:</label>
@@ -105,11 +105,11 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Full Name:</label>
-                    <input name="full_name" class="form-control">
+                    <input name="full_name" class="form-control" value="${fullName != null ? fullName : ''}" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label>Date of Birth:</label>
-                    <input name="dob" type="date" class="form-control">
+                    <input name="dob" type="date" class="form-control" value="${dob != null ? dob : ''}" required>
                 </div>
             </div>
 
@@ -123,29 +123,29 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label>Email:</label>
-                    <input name="email" class="form-control" required>
+                    <input name="email" class="form-control" value="${email != null ? email : ''}" required>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Phone:</label>
-                    <input name="phone" class="form-control">
+                    <input name="phone" class="form-control" value="${phone != null ? phone : ''}" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label>Address:</label>
-                    <input name="address" class="form-control">
+                    <input name="address" class="form-control" value="${address != null ? address : ''}" required>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Insurance Number:</label>
-                    <input name="insurance_number" class="form-control">
+                    <input name="insurance_number" class="form-control" value="${insurance_number != null ? insurance_number : ''}" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label>Emergency Contact:</label>
-                    <input name="emergency_contact" class="form-control">
+                    <input name="emergency_contact" class="form-control" value="${emergency_contact != null ? emergency_contact : ''}" required>
                 </div>
             </div>
 
