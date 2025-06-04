@@ -134,24 +134,33 @@ CREATE TABLE Comment
 );
 GO
 
--- Appointments (restricted to Morning/Afternoon/Evening)
-CREATE TABLE Appointments
+CREATE TABLE AppointmentType
 (
-    appointment_id   INT PRIMARY KEY IDENTITY (1,1),
-    patient_id       INT,
-    doctor_id        INT,
-    appointment_type NVARCHAR(100) NOT NULL,
-    appointment_date DATE,
-    time_slot        VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening')),
-	requires_specialist BIT DEFAULT 0,
-    status           VARCHAR(50) CHECK (status IN ('Pending', 'Confirmed', 'Completed', 'Cancelled')),
-    created_at       DATETIME DEFAULT GETDATE(),
-    updated_at       DATETIME,
-    FOREIGN KEY (patient_id) REFERENCES Patients (patient_id),
-    FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id)
+    appointmenttype_id INT PRIMARY KEY IDENTITY(1,1),
+    type_name NVARCHAR(100) NOT NULL,
+    description NVARCHAR(255),
+    price DECIMAL(10, 2) NOT NULL
 );
 GO
 
+-- Appointments (restricted to Morning/Afternoon/Evening)
+CREATE TABLE Appointments
+(
+    appointment_id INT PRIMARY KEY IDENTITY(1,1),
+    patient_id INT,
+    doctor_id INT,
+    appointmenttype_id INT NOT NULL,
+    appointment_date DATE,
+    time_slot VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening')),
+    requires_specialist BIT DEFAULT 0,
+    status VARCHAR(50) CHECK (status IN ('Unpay', 'Pending', 'Confirmed', 'Completed', 'Cancelled')),
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME,
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    FOREIGN KEY (doctor_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (appointmenttype_id) REFERENCES AppointmentType(appointmenttype_id)
+);
+GO
 
 
 -- Diagnoses
@@ -291,29 +300,56 @@ VALUES (1, 'LIC12345', 1, 4.5),
        (3, 'LIC34567', 1, 4.3),
        (4, 'LIC45678', 0, 4.8);
 GO
+INSERT INTO AppointmentType (type_name, description, price)
+VALUES 
+    ('General Checkup', 'Routine health examination', 100.00),
+    ('Cardiology Consultation', 'Heart-related consultation', 200.00),
+    ('Gastroenterology Consultation', 'Digestive system consultation', 200.00),
+    ('Orthopedic Consultation', 'Bone and joint consultation', 200.00),
+    ('Neurology Consultation', 'Nervous system consultation', 200.00),
+    ('Mental Health Consultation', 'Mental health evaluation', 150.00),
+    ('Psychotherapy Session', 'Therapy session for mental health', 150.00),
+    ('Psychiatric Evaluation', 'Comprehensive psychiatric assessment', 200.00),
+    ('Stress and Anxiety Management', 'Counseling for stress and anxiety', 150.00),
+    ('Depression Counseling', 'Counseling for depression', 150.00),
+    ('Periodic Health Checkup', 'Regular health checkup', 120.00),
+    ('Gynecology Consultation', 'Women’s health consultation', 180.00),
+    ('Pediatric Consultation', 'Child health consultation', 150.00),
+    ('Ophthalmology Consultation', 'Eye examination', 180.00),
+    ('ENT Consultation', 'Ear, nose, and throat consultation', 180.00),
+    ('On-Demand Consultation', 'Immediate consultation', 150.00),
+    ('Emergency Consultation', 'Urgent medical consultation', 250.00),
+    ('Dental Checkup', 'Routine dental examination', 80.00),
+    ('Teeth Cleaning', 'Professional teeth cleaning', 100.00),
+    ('Dental Filling', 'Cavity filling procedure', 120.00),
+    ('Root Canal Treatment', 'Advanced dental procedure', 300.00),
+    ('Tooth Extraction', 'Removal of tooth', 150.00),
+    ('Orthodontic Consultation', 'Braces and alignment consultation', 200.00);
+GO
 
 -- Insert sample Appointments (updated time slots)
-INSERT INTO Appointments (patient_id, doctor_id, appointment_type, appointment_date, time_slot, status, created_at, updated_at)
-VALUES (1, 1, 'General Checkup', '2025-05-30', 'Morning', 'Pending', GETDATE(), GETDATE()),
-       (2, 1, 'Cardiology Consultation', '2025-05-10', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
-       (3, 1, 'Gastroenterology Consultation', '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
-       (4, 1, 'Orthopedic Consultation', '2025-06-04', 'Morning', 'Cancelled', GETDATE(), GETDATE()),
-       (5, 1, 'Neurology Consultation', '2025-06-15', 'Afternoon', 'Pending', GETDATE(), GETDATE()),
-       (1, 1, 'Mental Health Consultation', '2025-05-29', 'Morning', 'Completed', GETDATE(), GETDATE()),
-       (2, 1, 'Psychotherapy Session', '2025-06-20', 'Evening', 'Pending', GETDATE(), GETDATE()),
-       (3, 1, 'Psychiatric Evaluation', '2025-05-15', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
-       (4, 1, 'Stress and Anxiety Management', '2025-06-09', 'Morning', 'Cancelled', GETDATE(), GETDATE()),
-       (5, 1, 'Depression Counseling', '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
-       (1, 1, 'Periodic Health Checkup', '2025-06-01', 'Morning', 'Pending', GETDATE(), GETDATE()),
-       (2, 1, 'Gynecology Consultation', '2025-05-20', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
-       (3, 1, 'Pediatric Consultation', '2025-05-29', 'Morning', 'Completed', GETDATE(), GETDATE()),
-       (4, 1, 'Ophthalmology Consultation', '2025-06-14', 'Evening', 'Cancelled', GETDATE(), GETDATE()),
-       (5, 1, 'ENT Consultation', '2025-06-30', 'Afternoon', 'Pending', GETDATE(), GETDATE()),
-       (1, 1, 'On-Demand Consultation', '2025-05-30', 'Morning', 'Confirmed', GETDATE(), GETDATE()),
-       (2, 1, 'Emergency Consultation', '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
-       (3, 1, 'General Checkup', '2025-06-18', 'Afternoon', 'Cancelled', GETDATE(), GETDATE()),
-       (4, 1, 'Cardiology Consultation', '2025-06-05', 'Morning', 'Pending', GETDATE(), GETDATE()),
-       (5, 1, 'Gastroenterology Consultation', '2025-05-25', 'Evening', 'Confirmed', GETDATE(), GETDATE());
+INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status, created_at, updated_at)
+VALUES 
+    (1, 1, 1, '2025-05-30', 'Morning', 'Pending', GETDATE(), GETDATE()),
+    (2, 1, 2, '2025-05-10', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
+    (3, 1, 3, '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
+    (4, 1, 4, '2025-06-04', 'Morning', 'Cancelled', GETDATE(), GETDATE()),
+    (5, 1, 5, '2025-06-15', 'Afternoon', 'Pending', GETDATE(), GETDATE()),
+    (1, 1, 6, '2025-05-29', 'Morning', 'Completed', GETDATE(), GETDATE()),
+    (2, 1, 7, '2025-06-20', 'Evening', 'Pending', GETDATE(), GETDATE()),
+    (3, 1, 8, '2025-05-15', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
+    (4, 1, 9, '2025-06-09', 'Morning', 'Cancelled', GETDATE(), GETDATE()),
+    (5, 1, 10, '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
+    (1, 1, 11, '2025-06-01', 'Morning', 'Pending', GETDATE(), GETDATE()),
+    (2, 1, 12, '2025-05-20', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
+    (3, 1, 13, '2025-05-29', 'Morning', 'Completed', GETDATE(), GETDATE()),
+    (4, 1, 14, '2025-06-14', 'Evening', 'Cancelled', GETDATE(), GETDATE()),
+    (5, 1, 15, '2025-06-30', 'Afternoon', 'Pending', GETDATE(), GETDATE()),
+    (1, 1, 16, '2025-05-30', 'Morning', 'Confirmed', GETDATE(), GETDATE()),
+    (2, 1, 17, '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
+    (3, 1, 1, '2025-06-18', 'Afternoon', 'Cancelled', GETDATE(), GETDATE()),
+    (4, 1, 2, '2025-06-05', 'Morning', 'Pending', GETDATE(), GETDATE()),
+    (5, 1, 3, '2025-05-25', 'Evening', 'Confirmed', GETDATE(), GETDATE());
 GO
 
 -- Insert sample Doctor Shifts (example with rest requests)
