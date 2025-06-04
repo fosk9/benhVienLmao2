@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Data
@@ -15,16 +16,15 @@ public class Appointment {
     private int appointmentId;
     private int patientId;
     private int doctorId;
-    private String appointmentType;
-    private Timestamp appointmentDate;
+    private int appointmentTypeId; // appointmenttype_id
+    private Date appointmentDate; // java.sql.Date
+    private String timeSlot; // Morning, Afternoon, Evening
+    private boolean requiresSpecialist;
     private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    private String insuranceNumber;
-    private String patientFullName;
-
     private Patient patient;
-
+    private AppointmentType appointmentType;
+    // ...remove insuranceNumber, patientFullName...
 }
-

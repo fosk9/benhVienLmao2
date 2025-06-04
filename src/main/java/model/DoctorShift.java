@@ -16,8 +16,8 @@ public class DoctorShift {
     private int doctorId;
     private Date shiftDate;
     /**
-     * shiftTime: one of "Morning", "Afternoon", "Night", "Midnight"
+     * timeSlot: one of "Morning", "Afternoon", "Evening", "Night"
      */
-    private String shiftTime;
+    private String timeSlot;
     private String status;
 }
