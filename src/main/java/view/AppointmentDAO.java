@@ -34,7 +34,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             ps.setInt(1, patientId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(mapResultSet(rs));
+                list.add(mapResultSetToAppointment(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,8 +50,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Appointment a = mapResultSet(rs);
-                list.add(a);
+                list.add(mapResultSetToAppointment(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,7 +67,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             ps.setInt(1, id[0]);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSet(rs);
+                return mapResultSetToAppointment(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -161,7 +160,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             ps.setInt(1, appointmentId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSet(rs);
+                return mapResultSetToAppointment(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();

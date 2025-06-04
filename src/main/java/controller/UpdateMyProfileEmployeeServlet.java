@@ -32,7 +32,6 @@ public class UpdateMyProfileEmployeeServlet extends HttpServlet {
                     .passwordHash(oldEmployee.getPasswordHash())
                     .email(oldEmployee.getEmail())
                     .roleId(oldEmployee.getRoleId())
-                    .specializationId(oldEmployee.getSpecializationId())
                     .employeeAvaUrl(oldEmployee.getEmployeeAvaUrl())
                     .fullName(fullName)
                     .dob(Date.valueOf(dobStr))

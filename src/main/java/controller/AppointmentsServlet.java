@@ -2,7 +2,6 @@ package controller;
 
 import view.AppointmentDAO;
 import view.EmployeeDAO;
-import view.SpecializationDAO;
 import model.Appointment;
 import model.Employee;
 
@@ -15,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.List;
 
 @WebServlet({"/appointments", "/appointments/edit", "/appointments/delete", "/appointments/details"})
@@ -53,13 +53,6 @@ public class AppointmentsServlet extends HttpServlet {
                     Employee doctor = employeeDAO.select(appointment.getDoctorId());
                     if (doctor != null) {
                         request.setAttribute("doctor", doctor);
-                        if (doctor.getSpecializationId() != null) {
-                            SpecializationDAO specializationDAO = new SpecializationDAO();
-                            String specialization = specializationDAO.getSpecializationName(doctor.getSpecializationId());
-                            request.setAttribute("doctorSpecialization", specialization != null ? specialization : "N/A");
-                        } else {
-                            request.setAttribute("doctorSpecialization", "N/A");
-                        }
                     }
                 }
                 request.setAttribute("appointment", appointment);
@@ -90,28 +83,31 @@ public class AppointmentsServlet extends HttpServlet {
 
         if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
-            String appointmentDateTimeStr = request.getParameter("appointmentDateTime");
-            String appointmentType = request.getParameter("appointmentTypeSelect");
-            String customAppointmentType = request.getParameter("customAppointmentType");
-
-            // Nếu chọn custom thì lấy giá trị custom, ngược lại lấy từ select
-            if ("custom".equals(appointmentType) && customAppointmentType != null && !customAppointmentType.trim().isEmpty()) {
-                appointmentType = customAppointmentType.trim();
-            }
+            String appointmentDateStr = request.getParameter("appointmentDate");
+            String appointmentTypeIdStr = request.getParameter("appointmentTypeSelect");
+            String timeSlot = request.getParameter("timeSlot");
 
             try {
-                if (appointmentDateTimeStr == null || appointmentDateTimeStr.isEmpty()) {
-                    throw new IllegalArgumentException("DateTime is empty");
+                if (appointmentDateStr == null || appointmentDateStr.isEmpty()) {
+                    throw new IllegalArgumentException("Date is empty");
                 }
-                // Đảm bảo đúng định dạng yyyy-MM-ddTHH:mm
-                String tsStr = appointmentDateTimeStr.contains("T") ? appointmentDateTimeStr.replace("T", " ") + ":00" : appointmentDateTimeStr;
-                Timestamp appointmentDateTime = Timestamp.valueOf(tsStr);
+                java.sql.Date appointmentDate = java.sql.Date.valueOf(appointmentDateStr);
+
+                if (appointmentTypeIdStr == null || appointmentTypeIdStr.isEmpty()) {
+                    throw new IllegalArgumentException("Appointment type is empty");
+                }
+                int appointmentTypeId = Integer.parseInt(appointmentTypeIdStr);
+
+                if (timeSlot == null || timeSlot.isEmpty()) {
+                    throw new IllegalArgumentException("Time slot is empty");
+                }
 
                 AppointmentDAO appointmentDAO = new AppointmentDAO();
                 Appointment appointment = appointmentDAO.select(appointmentId);
                 if (appointment != null && appointment.getPatientId() == patientId) {
-                    appointment.setAppointmentDate(appointmentDateTime);
-                    appointment.setAppointmentType(appointmentType);
+                    appointment.setAppointmentDate(appointmentDate);
+                    appointment.setAppointmentTypeId(appointmentTypeId);
+                    appointment.setTimeSlot(timeSlot);
                     appointment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
                     appointmentDAO.update(appointment);
                 }

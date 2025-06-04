@@ -12,16 +12,15 @@ public class EmployeeDAO extends DBContext<Employee> {
                                                   String sortBy, String sortDir,
                                                   int page, int recordsPerPage) {
         List<Employee> list = new ArrayList<>();
-        // Validate sortBy và sortDir để tránh SQL Injection (chỉ cho phép một số trường)
         List<String> allowedSortBy = List.of("full_name", "dob", "email", "employee_id");
         if (sortBy == null || !allowedSortBy.contains(sortBy)) {
-            sortBy = "employee_id"; // default
+            sortBy = "employee_id";
         }
         if (!"desc".equalsIgnoreCase(sortDir)) {
             sortDir = "asc";
         }
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM Employees WHERE role_id = 1 "); // role_id=1 là bác sĩ
+        StringBuilder sql = new StringBuilder("SELECT * FROM Employees WHERE role_id = 1 ");
 
         if (search != null && !search.trim().isEmpty()) {
             sql.append("AND (full_name LIKE ? OR email LIKE ?) ");
@@ -29,9 +28,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         if (gender != null && (gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F"))) {
             sql.append("AND gender = ? ");
         }
-        if (specializationId != null && specializationId > 0) {
-            sql.append("AND specialization_id = ? ");
-        }
+        // specializationId đã bị loại bỏ khỏi bảng Employees
 
         sql.append("ORDER BY ").append(sortBy).append(" ").append(sortDir).append(" ");
         sql.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
@@ -48,9 +45,7 @@ public class EmployeeDAO extends DBContext<Employee> {
             if (gender != null && (gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F"))) {
                 ps.setString(idx++, gender);
             }
-            if (specializationId != null && specializationId > 0) {
-                ps.setInt(idx++, specializationId);
-            }
+            // Không còn specializationId
 
             ps.setInt(idx++, (page - 1) * recordsPerPage);
             ps.setInt(idx, recordsPerPage);
@@ -76,9 +71,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         if (gender != null && (gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F"))) {
             sql.append("AND gender = ? ");
         }
-        if (specializationId != null && specializationId > 0) {
-            sql.append("AND specialization_id = ? ");
-        }
+        // specializationId đã bị loại bỏ khỏi bảng Employees
 
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -92,9 +85,7 @@ public class EmployeeDAO extends DBContext<Employee> {
             if (gender != null && (gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("F"))) {
                 ps.setString(idx++, gender);
             }
-            if (specializationId != null && specializationId > 0) {
-                ps.setInt(idx++, specializationId);
-            }
+            // Không còn specializationId
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -130,18 +121,7 @@ public class EmployeeDAO extends DBContext<Employee> {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return Employee.builder()
-                        .employeeId(rs.getInt("employee_id"))
-                        .username(rs.getString("username"))
-                        .passwordHash(rs.getString("password_hash"))
-                        .fullName(rs.getString("full_name"))
-                        .dob(rs.getDate("dob"))
-                        .gender(rs.getString("gender"))
-                        .email(rs.getString("email"))
-                        .phone(rs.getString("phone"))
-                        .roleId(rs.getInt("role_id"))
-                        .specializationId(rs.getObject("specialization_id", Integer.class))
-                        .build();
+                return mapResultSetToEmployee(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -155,18 +135,7 @@ public class EmployeeDAO extends DBContext<Employee> {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return Employee.builder()
-                        .employeeId(rs.getInt("employee_id"))
-                        .username(rs.getString("username"))
-                        .passwordHash(rs.getString("password_hash"))
-                        .fullName(rs.getString("full_name"))
-                        .dob(rs.getDate("dob"))
-                        .gender(rs.getString("gender"))
-                        .email(rs.getString("email"))
-                        .phone(rs.getString("phone"))
-                        .roleId(rs.getInt("role_id"))
-                        .specializationId(rs.getObject("specialization_id") != null ? rs.getInt("specialization_id") : null)
-                        .build();
+                return mapResultSetToEmployee(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -179,13 +148,12 @@ public class EmployeeDAO extends DBContext<Employee> {
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, newPasswordHash);
             stmt.setString(2, username);
-            return stmt.executeUpdate(); // Trả về số dòng bị ảnh hưởng
+            return stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
-
 
     @Override
     public List<Employee> select() {
@@ -223,7 +191,7 @@ public class EmployeeDAO extends DBContext<Employee> {
 
     @Override
     public int insert(Employee e) {
-        String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, specialization_id, employee_ava_url) " +
+        String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, employee_ava_url) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -237,11 +205,11 @@ public class EmployeeDAO extends DBContext<Employee> {
 
     @Override
     public int update(Employee e) {
-        String sql = "UPDATE Employees SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, role_id=?, specialization_id=?, employee_ava_url=? WHERE employee_id=?";
+        String sql = "UPDATE Employees SET username=?, password_hash=?, full_name=?, dob=?, gender=?, email=?, phone=?, role_id=?, employee_ava_url=? WHERE employee_id=?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             setPreparedStatementFromEmployee(ps, e);
-            ps.setInt(11, e.getEmployeeId());
+            ps.setInt(10, e.getEmployeeId());
             return ps.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -274,11 +242,9 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .email(rs.getString("email"))
                 .phone(rs.getString("phone"))
                 .roleId(rs.getInt("role_id"))
-                .specializationId(rs.getObject("specialization_id") != null ? rs.getInt("specialization_id") : null)
                 .employeeAvaUrl(rs.getString("employee_ava_url"))
                 .build();
     }
-
 
     private void setPreparedStatementFromEmployee(PreparedStatement ps, Employee e) throws SQLException {
         ps.setString(1, e.getUsername());
@@ -293,12 +259,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         ps.setString(6, e.getEmail());
         ps.setString(7, e.getPhone());
         ps.setInt(8, e.getRoleId());
-        if (e.getSpecializationId() != null) {
-            ps.setInt(9, e.getSpecializationId());
-        } else {
-            ps.setNull(9, Types.INTEGER);
-        }
-        ps.setString(10, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
+        ps.setString(9, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
     }
 
 }

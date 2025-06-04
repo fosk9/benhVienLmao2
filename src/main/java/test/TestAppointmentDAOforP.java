@@ -3,6 +3,7 @@ package test;
 import model.Appointment;
 import view.AppointmentDAO;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -21,8 +22,10 @@ public class TestAppointmentDAOforP {
             Appointment appt = Appointment.builder()
                     .patientId(1)
                     .doctorId(1)
-                    .appointmentType("Test Full")
-                    .appointmentDate(Timestamp.valueOf("2025-06-01 09:00:00"))
+                    .appointmentTypeId(1)
+                    .appointmentDate(Date.valueOf("2025-06-01"))
+                    .timeSlot("Morning")
+                    .requiresSpecialist(false)
                     .status("Pending")
                     .createdAt(new Timestamp(System.currentTimeMillis()))
                     .updatedAt(new Timestamp(System.currentTimeMillis()))
@@ -41,8 +44,10 @@ public class TestAppointmentDAOforP {
             Appointment appt = Appointment.builder()
                     .patientId(1)
                     .doctorId(0)
-                    .appointmentType("Test No Doctor")
-                    .appointmentDate(Timestamp.valueOf("2025-06-01 10:00:00"))
+                    .appointmentTypeId(2)
+                    .appointmentDate(Date.valueOf("2025-06-01"))
+                    .timeSlot("Afternoon")
+                    .requiresSpecialist(false)
                     .status("Pending")
                     .createdAt(new Timestamp(System.currentTimeMillis()))
                     .updatedAt(new Timestamp(System.currentTimeMillis()))
@@ -61,8 +66,10 @@ public class TestAppointmentDAOforP {
             Appointment appt = Appointment.builder()
                     .patientId(1)
                     .doctorId(1)
-                    .appointmentType("Test Wrong Date")
+                    .appointmentTypeId(3)
                     .appointmentDate(null) // Sai ngày
+                    .timeSlot("Evening")
+                    .requiresSpecialist(false)
                     .status("Pending")
                     .createdAt(new Timestamp(System.currentTimeMillis()))
                     .updatedAt(new Timestamp(System.currentTimeMillis()))
@@ -95,8 +102,9 @@ public class TestAppointmentDAOforP {
             List<Appointment> list = dao.select();
             if (!list.isEmpty()) {
                 Appointment appt = list.get(0);
-                appt.setAppointmentType("Updated Type");
-                appt.setAppointmentDate(Timestamp.valueOf("2025-07-01 15:00:00"));
+                appt.setAppointmentTypeId(2);
+                appt.setAppointmentDate(Date.valueOf("2025-07-01"));
+                appt.setTimeSlot("Evening");
                 appt.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
                 int result = dao.update(appt);
                 System.out.println(result > 0 ? "✅ Update OK" : "❌ Update FAIL");
