@@ -26,5 +26,4 @@ public class Appointment {
 
     private Patient patient;
     private AppointmentType appointmentType;
-    // ...remove insuranceNumber, patientFullName...
 }
