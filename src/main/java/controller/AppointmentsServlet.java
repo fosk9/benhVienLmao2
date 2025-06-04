@@ -2,8 +2,10 @@ package controller;
 
 import view.AppointmentDAO;
 import view.EmployeeDAO;
+import view.AppointmentTypeDAO;
 import model.Appointment;
 import model.Employee;
+import model.AppointmentType;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -39,6 +41,9 @@ public class AppointmentsServlet extends HttpServlet {
             int appointmentId = Integer.parseInt(request.getParameter("id"));
             Appointment appointment = appointmentDAO.select(appointmentId);
             if (appointment != null && appointment.getPatientId() == patientId) {
+                AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
+                AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
+                appointment.setAppointmentType(type);
                 request.setAttribute("appointment", appointment);
                 request.getRequestDispatcher("/Pact/edit-appointment.jsp").forward(request, response);
             } else {
@@ -48,6 +53,9 @@ public class AppointmentsServlet extends HttpServlet {
             int appointmentId = Integer.parseInt(request.getParameter("id"));
             Appointment appointment = appointmentDAO.select(appointmentId);
             if (appointment != null && appointment.getPatientId() == patientId) {
+                AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
+                AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
+                appointment.setAppointmentType(type);
                 if ("Confirmed".equals(appointment.getStatus()) && appointment.getDoctorId() != 0) {
                     EmployeeDAO employeeDAO = new EmployeeDAO();
                     Employee doctor = employeeDAO.select(appointment.getDoctorId());
@@ -84,7 +92,7 @@ public class AppointmentsServlet extends HttpServlet {
         if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
             String appointmentDateStr = request.getParameter("appointmentDate");
-            String appointmentTypeIdStr = request.getParameter("appointmentTypeSelect");
+            String appointmentTypeIdStr = request.getParameter("appointmentTypeId");
             String timeSlot = request.getParameter("timeSlot");
 
             try {
