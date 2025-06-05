@@ -11,7 +11,6 @@ import java.sql.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Employee {
     private int employeeId;
     private String username;
@@ -22,6 +21,5 @@ public class Employee {
     private String email;
     private String phone;
     private int roleId;
-    private Integer specializationId; // Nullable
     private String employeeAvaUrl; // Nullable, can be empty string
 }

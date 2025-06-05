@@ -18,7 +18,7 @@ import java.util.List;
 @WebServlet("/create-appointment")
 public class DoctorCreateAppointmentServlet extends HttpServlet {
 
-    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"); // phù hợp với input datetime-local
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // phù hợp với input date
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -60,31 +60,39 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
         Employee doctor = (Employee) acc;
 
         String patientIdStr = request.getParameter("patientId");
-        String appointmentType = request.getParameter("appointmentType");
+        String appointmentTypeIdStr = request.getParameter("appointmentTypeId");
         String appointmentDateStr = request.getParameter("appointmentDate");
+        String timeSlot = request.getParameter("timeSlot");
         String status = request.getParameter("status");
+        String requiresSpecialistStr = request.getParameter("requiresSpecialist");
 
-        if (patientIdStr == null || appointmentType == null || appointmentDateStr == null || status == null
-                || patientIdStr.isEmpty() || appointmentType.isEmpty() || appointmentDateStr.isEmpty() || status.isEmpty()) {
+        if (patientIdStr == null || appointmentTypeIdStr == null || appointmentDateStr == null || timeSlot == null || status == null
+                || patientIdStr.isEmpty() || appointmentTypeIdStr.isEmpty() || appointmentDateStr.isEmpty() || timeSlot.isEmpty() || status.isEmpty()) {
             request.setAttribute("error", "Please fill in all required fields.");
             request.getRequestDispatcher("doctor-create-appointment.jsp").forward(request, response);
             return;
         }
 
         int patientId;
+        int appointmentTypeId;
+        boolean requiresSpecialist = false;
         try {
             patientId = Integer.parseInt(patientIdStr);
+            appointmentTypeId = Integer.parseInt(appointmentTypeIdStr);
+            if (requiresSpecialistStr != null) {
+                requiresSpecialist = Boolean.parseBoolean(requiresSpecialistStr);
+            }
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid patient ID.");
+            request.setAttribute("error", "Invalid input.");
             request.getRequestDispatcher("doctor-create-appointment.jsp").forward(request, response);
             return;
         }
 
         Date parsedDate;
         try {
-            parsedDate = dateTimeFormat.parse(appointmentDateStr);
+            parsedDate = dateFormat.parse(appointmentDateStr);
         } catch (ParseException e) {
-            request.setAttribute("error", "Invalid date/time format.");
+            request.setAttribute("error", "Invalid date format.");
             request.getRequestDispatcher("doctor-create-appointment.jsp").forward(request, response);
             return;
         }
@@ -93,13 +101,14 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
         Appointment appointment = Appointment.builder()
                 .patientId(patientId)
                 .doctorId(doctor.getEmployeeId())
-                .appointmentType(appointmentType)
-                .appointmentDate(new java.sql.Timestamp(appointmentDate.getTime()))
+                .appointmentTypeId(appointmentTypeId)
+                .appointmentDate(appointmentDate)
+                .timeSlot(timeSlot)
+                .requiresSpecialist(requiresSpecialist)
                 .status(status)
                 .createdAt(new java.sql.Timestamp(System.currentTimeMillis()))
                 .updatedAt(new java.sql.Timestamp(System.currentTimeMillis()))
                 .build();
-
 
         AppointmentDAO dao = new AppointmentDAO();
         int result = dao.doctorInsert(appointment);

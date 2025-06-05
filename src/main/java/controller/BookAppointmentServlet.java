@@ -11,13 +11,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.logging.Logger;
 
 @WebServlet("/book-appointment")
 public class BookAppointmentServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(BookAppointmentServlet.class.getName());
-    private static final int MAX_TYPE_LENGTH = 100; // Maximum length for custom appointment type
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -37,43 +39,45 @@ public class BookAppointmentServlet extends HttpServlet {
         }
 
         int patientId = (int) session.getAttribute("patientId");
-        // Prioritize custom input if provided
-        String appointmentType = request.getParameter("customAppointmentType");
-        if (appointmentType == null || appointmentType.trim().isEmpty()) {
-            appointmentType = request.getParameter("appointmentTypeSelect");
-        }
-
-        String appointmentDateTimeStr = request.getParameter("appointmentDateTime");
+        String appointmentTypeIdStr = request.getParameter("appointmentTypeSelect");
+        String doctorIdStr = request.getParameter("doctorId");
+        String appointmentDateStr = request.getParameter("appointmentDate");
+        String timeSlot = request.getParameter("timeSlot");
 
         try {
-            // Validate inputs
-            if (appointmentType == null || appointmentType.trim().isEmpty()) {
+            if (appointmentTypeIdStr == null || appointmentTypeIdStr.isEmpty()) {
                 throw new IllegalArgumentException("Appointment type is required");
             }
-            if (appointmentType.length() > MAX_TYPE_LENGTH) {
-                throw new IllegalArgumentException("Appointment type is too long");
+            int appointmentTypeId = Integer.parseInt(appointmentTypeIdStr);
+
+            if (doctorIdStr == null || doctorIdStr.isEmpty()) {
+                throw new IllegalArgumentException("Doctor is required");
             }
-            if (appointmentDateTimeStr == null || appointmentDateTimeStr.isEmpty()) {
-                throw new IllegalArgumentException("Date and time are required");
+            int doctorId = Integer.parseInt(doctorIdStr);
+
+            if (appointmentDateStr == null || appointmentDateStr.isEmpty()) {
+                throw new IllegalArgumentException("Appointment date is required");
+            }
+            LocalDate localDate;
+            try {
+                localDate = LocalDate.parse(appointmentDateStr);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("Invalid date format");
+            }
+            Date appointmentDate = Date.valueOf(localDate);
+
+            if (timeSlot == null || timeSlot.isEmpty()) {
+                throw new IllegalArgumentException("Time slot is required");
             }
 
-            // Format timestamp
-            String tsStr = appointmentDateTimeStr.contains("T") ? appointmentDateTimeStr.replace("T", " ") + ":00" : appointmentDateTimeStr;
-            Timestamp appointmentDateTime = Timestamp.valueOf(tsStr);
             Timestamp now = new Timestamp(System.currentTimeMillis());
-
-            // Prevent past bookings
-            if (appointmentDateTime.before(now)) {
-                request.setAttribute("errorMsg", "Invalid appointment time: Cannot book in the past.");
-                request.setAttribute("appointmentType", appointmentType);
-                request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response);
-                return;
-            }
 
             Appointment appointment = Appointment.builder()
                     .patientId(patientId)
-                    .appointmentType(appointmentType.trim())
-                    .appointmentDate(appointmentDateTime)
+                    .doctorId(doctorId)
+                    .appointmentTypeId(appointmentTypeId)
+                    .appointmentDate(appointmentDate)
+                    .timeSlot(timeSlot)
                     .status("Pending")
                     .createdAt(now)
                     .updatedAt(now)
@@ -89,7 +93,6 @@ public class BookAppointmentServlet extends HttpServlet {
         } catch (IllegalArgumentException e) {
             LOGGER.warning("Invalid input: " + e.getMessage());
             request.setAttribute("errorMsg", e.getMessage());
-            request.setAttribute("appointmentType", appointmentType);
             request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.severe("Error processing appointment: " + e.getMessage());

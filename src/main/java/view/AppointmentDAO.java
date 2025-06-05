@@ -13,14 +13,16 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     public void createAppointment(Appointment appointment) throws SQLException {
-        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointment_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointmenttype_id, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, appointment.getPatientId());
-            stmt.setTimestamp(2, appointment.getAppointmentDate());
-            stmt.setString(3, appointment.getAppointmentType());
-            stmt.setString(4, appointment.getStatus());
-            stmt.setTimestamp(5, appointment.getCreatedAt());
-            stmt.setTimestamp(6, appointment.getUpdatedAt());
+            stmt.setDate(2, appointment.getAppointmentDate());
+            stmt.setInt(3, appointment.getAppointmentTypeId());
+            stmt.setString(4, appointment.getTimeSlot());
+            stmt.setBoolean(5, appointment.isRequiresSpecialist());
+            stmt.setString(6, appointment.getStatus());
+            stmt.setTimestamp(7, appointment.getCreatedAt());
+            stmt.setTimestamp(8, appointment.getUpdatedAt());
             stmt.executeUpdate();
         }
     }
@@ -32,7 +34,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             ps.setInt(1, patientId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(mapResultSet(rs));
+                list.add(mapResultSetToAppointment(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,8 +50,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Appointment a = mapResultSet(rs);
-                list.add(a);
+                list.add(mapResultSetToAppointment(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,7 +67,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             ps.setInt(1, id[0]);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSet(rs);
+                return mapResultSetToAppointment(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,19 +77,17 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
     @Override
     public int insert(Appointment appointment) {
-        String query = "INSERT INTO Appointments (patient_id, doctor_id, appointment_date, appointment_type, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, appointment.getPatientId());
-            if (appointment.getDoctorId() == 0) {
-                stmt.setNull(2, java.sql.Types.INTEGER);
-            } else {
-                stmt.setInt(2, appointment.getDoctorId());
-            }
-            stmt.setTimestamp(3, appointment.getAppointmentDate());
-            stmt.setString(4, appointment.getAppointmentType());
-            stmt.setString(5, appointment.getStatus());
-            stmt.setTimestamp(6, appointment.getCreatedAt());
-            stmt.setTimestamp(7, appointment.getUpdatedAt());
+            stmt.setInt(2, appointment.getDoctorId());
+            stmt.setInt(3, appointment.getAppointmentTypeId());
+            stmt.setDate(4, appointment.getAppointmentDate());
+            stmt.setString(5, appointment.getTimeSlot());
+            stmt.setBoolean(6, appointment.isRequiresSpecialist());
+            stmt.setString(7, appointment.getStatus());
+            stmt.setTimestamp(8, appointment.getCreatedAt());
+            stmt.setTimestamp(9, appointment.getUpdatedAt());
             return stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("SQL Insert Exception: " + e.getMessage());
@@ -99,12 +98,17 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
     @Override
     public int update(Appointment appointment) {
-        String query = "UPDATE Appointments SET appointment_date = ?, appointment_type = ?, updated_at = ? WHERE appointment_id = ?";
+        String query = "UPDATE Appointments SET patient_id = ?, doctor_id = ?, appointmenttype_id = ?, appointment_date = ?, time_slot = ?, requires_specialist = ?, status = ?, updated_at = ? WHERE appointment_id = ?";
         try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setTimestamp(1, appointment.getAppointmentDate());
-            stmt.setString(2, appointment.getAppointmentType());
-            stmt.setTimestamp(3, appointment.getUpdatedAt());
-            stmt.setInt(4, appointment.getAppointmentId());
+            stmt.setInt(1, appointment.getPatientId());
+            stmt.setInt(2, appointment.getDoctorId());
+            stmt.setInt(3, appointment.getAppointmentTypeId());
+            stmt.setDate(4, appointment.getAppointmentDate());
+            stmt.setString(5, appointment.getTimeSlot());
+            stmt.setBoolean(6, appointment.isRequiresSpecialist());
+            stmt.setString(7, appointment.getStatus());
+            stmt.setTimestamp(8, appointment.getUpdatedAt());
+            stmt.setInt(9, appointment.getAppointmentId());
             return stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -156,7 +160,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             ps.setInt(1, appointmentId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSet(rs);
+                return mapResultSetToAppointment(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -186,70 +190,40 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
-        Timestamp appointmentDateTs = rs.getTimestamp("appointment_date");
-        Timestamp createdAtTs = rs.getTimestamp("created_at");
-        Timestamp updatedAtTs = rs.getTimestamp("updated_at");
-
         return Appointment.builder()
                 .appointmentId(rs.getInt("appointment_id"))
                 .patientId(rs.getInt("patient_id"))
                 .doctorId(rs.getInt("doctor_id"))
-                .appointmentDate(appointmentDateTs)         // sửa ở đây
-                .appointmentType(rs.getString("appointment_type"))
+                .appointmentTypeId(rs.getInt("appointmenttype_id"))
+                .appointmentDate(rs.getDate("appointment_date"))
+                .timeSlot(rs.getString("time_slot"))
+                .requiresSpecialist(rs.getBoolean("requires_specialist"))
                 .status(rs.getString("status"))
-                .createdAt(createdAtTs)                      // sửa ở đây
-                .updatedAt(updatedAtTs)                      // sửa ở đây
-                .insuranceNumber(rs.getString("insurance_number"))
-                .patientFullName(rs.getString("full_name"))
+                .createdAt(rs.getTimestamp("created_at"))
+                .updatedAt(rs.getTimestamp("updated_at"))
                 .build();
     }
 
     // Helper
     private Appointment mapResultSet(ResultSet rs) throws SQLException {
-        Timestamp apptDate = rs.getTimestamp("appointment_date");
-        Timestamp createdAt = rs.getTimestamp("created_at");
-        Timestamp updatedAt = rs.getTimestamp("updated_at");
-        return Appointment.builder()
-                .appointmentId(rs.getInt("appointment_id"))
-                .patientId(rs.getInt("patient_id"))
-                .doctorId(rs.getInt("doctor_id"))
-                .appointmentType(rs.getString("appointment_type"))
-                .appointmentDate(apptDate)
-                .status(rs.getString("status"))
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .build();
+        return mapResultSetToAppointment(rs);
     }
 
     public int doctorInsert(Appointment appointment) {
-        String sql = "INSERT INTO Appointments (patient_id, doctor_id, appointment_type, appointment_date, status, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, appointment.getPatientId());
             ps.setInt(2, appointment.getDoctorId());
-            ps.setString(3, appointment.getAppointmentType());
-
-            if (appointment.getAppointmentDate() != null) {
-                ps.setTimestamp(4, new Timestamp(appointment.getAppointmentDate().getTime()));
-            } else {
-                ps.setTimestamp(4, null);
-            }
-
-            ps.setString(5, appointment.getStatus());
-
-            if (appointment.getCreatedAt() != null) {
-                ps.setTimestamp(6, new Timestamp(appointment.getCreatedAt().getTime()));
-            } else {
-                ps.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-            }
-
-            if (appointment.getUpdatedAt() != null) {
-                ps.setTimestamp(7, new Timestamp(appointment.getUpdatedAt().getTime()));
-            } else {
-                ps.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
-            }
+            ps.setInt(3, appointment.getAppointmentTypeId());
+            ps.setDate(4, appointment.getAppointmentDate());
+            ps.setString(5, appointment.getTimeSlot());
+            ps.setBoolean(6, appointment.isRequiresSpecialist());
+            ps.setString(7, appointment.getStatus());
+            ps.setTimestamp(8, appointment.getCreatedAt());
+            ps.setTimestamp(9, appointment.getUpdatedAt());
 
             return ps.executeUpdate();
 
@@ -334,4 +308,3 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
 }
-
