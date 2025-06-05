@@ -31,7 +31,8 @@
     .error-message { color: #dc3545; font-size: 1rem; margin-top: 5px; display: none; }
     .price-display { font-size: 1.2rem; color: #28A745; margin-top: 10px; font-weight: bold; }
     .description-display { font-size: 1.1rem; color: #333; margin-top: 5px; }
-    .total-price-section { margin-top: 20px; margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
+    .total-price-section { margin-top: 20px; margin-bottom: 20px; padding: 15px; background-color: #f1f8f1; border-radius: 8px; border: 1px solid #28A745; }
+    .total-price-section .price-display { font-size: 1.3rem; color: #28A745; }
   </style>
 </head>
 <body>
@@ -75,7 +76,7 @@
     <form action="<c:url value='/book-appointment'/>" method="post" class="big-form" id="appointmentForm">
       <div class="form-group mb-4">
         <label for="appointmentTypeSelect">Appointment Type:</label>
-        <select class="form-control" id="appointmentTypeSelect" name="appointmentTypeId" required>
+        <select class="form-control" id="appointmentTypeSelect" name="appointmentTypeId" onChange="selectBoxDebug(this);" required>
           <option value="">-- Select Appointment Type --</option>
           <c:forEach var="type" items="${appointmentTypes}">
             <option value="${type.appointmentTypeId}"
@@ -111,7 +112,7 @@
         </div>
       </div>
       <div class="total-price-section">
-        <div class="price-display" id="priceDisplay">Total Price: 0 VND</div>
+        <div class="price-display" id="priceDisplay">Total Price: <span id="priceValue">0</span> VND</div>
         <input type="hidden" id="finalPrice" name="finalPrice" value="0">
       </div>
       <button type="submit" class="btn btn-primary mt-3 w-100">Submit Appointment</button>
@@ -137,50 +138,47 @@
     });
 
     // Update price and description when appointment type or specialist is changed
-    function updatePriceAndDescription() {
+    function updatePriceAndDescription(event) {
       const $select = $('#appointmentTypeSelect');
       const selectedValue = $select.val();
       const $selectedOption = $select.find(`option[value="${selectedValue}"]`);
       const requiresSpecialist = $('#requiresSpecialist').is(':checked');
-      const priceDisplay = $('#priceDisplay');
+      const priceDisplay = $('#priceValue');
       const typeDescription = $('#typeDescription');
       const typeNameInput = $('#typeName');
+      const finalPriceInput = $('#finalPrice');
 
       if (selectedValue && $selectedOption.length) {
         const basePrice = parseFloat($selectedOption.data('price'));
         const description = $selectedOption.data('description');
         const typeName = $selectedOption.data('type-name');
 
-        console.log('Selected:', { basePrice, description, typeName, requiresSpecialist }); // Debug log
+        // Tính giá cuối cùng: nếu chọn chuyên gia thì cộng 50%
+        const multiplier = requiresSpecialist ? 1.5 : 1;
+        const finalPrice = !isNaN(basePrice) ? basePrice * multiplier : 0;
 
-        if (!isNaN(basePrice)) {
-          const multiplier = requiresSpecialist ? 1.5 : 1;
-          const finalPrice = basePrice * multiplier;
-          priceDisplay.text(`Total Price: ${finalPrice.toLocaleString('vi-VN')} VND`);
-          $('#finalPrice').val(finalPrice); // cập nhật giá tiền thực tế vào hidden input
-          typeDescription.text(description ? `Description: ${description}` : '');
-          typeNameInput.val(typeName || '');
-        } else {
-          console.warn('Invalid price:', $selectedOption.data('price')); // Debug log
-          priceDisplay.text('Total Price: 0 VND');
-          $('#finalPrice').val(0);
-          typeDescription.text('');
-          typeNameInput.val('');
-        }
+        priceDisplay.text(finalPrice);
+        finalPriceInput.val(finalPrice);
+        typeDescription.text(description ? `Description: ${description}` : '');
+        typeNameInput.val(typeName || '');
       } else {
-        console.log('No selection or invalid option'); // Debug log
-        priceDisplay.text('Total Price: 0 VND');
-        $('#finalPrice').val(0);
+        priceDisplay.text('0');
+        finalPriceInput.val(0);
         typeDescription.text('');
         typeNameInput.val('');
       }
     }
 
-    // Bind events for Select2 and checkbox
-    $('#appointmentTypeSelect').on('select2:select select2:clear', updatePriceAndDescription);
+    // Bind Select2 select event to update price immediately
+    $('#appointmentTypeSelect').on('select2:select', updatePriceAndDescription);
+
+    // Bind Select2 clear event to reset price
+    $('#appointmentTypeSelect').on('select2:clear', updatePriceAndDescription);
+
+    // Bind checkbox change event for specialist
     $('#requiresSpecialist').on('change', updatePriceAndDescription);
 
-    // Trigger initial update in case of pre-selected values
+    // Trigger initial update in case of pre-selected values or error reload
     updatePriceAndDescription();
 
     // Client-side validation for past dates
@@ -195,7 +193,17 @@
         $('#dateError').hide();
       }
     });
+
+    // Restore form state if error occurred
+    <c:if test="${not empty finalPrice}">
+    $('#finalPrice').val('${finalPrice}');
+    $('#priceValue').text(parseFloat('${finalPrice}'));
+    </c:if>
   };
+
+  function selectBoxDebug(sel) {
+    console.log(sel.options[sel.selectedIndex].text);
+  }
 </script>
 <footer>
   <div class="footer-wrappr section-bg3">
