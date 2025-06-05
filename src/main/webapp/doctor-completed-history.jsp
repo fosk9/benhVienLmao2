@@ -16,38 +16,116 @@
   <title>Completed Appointments History</title>
   <jsp:include page="doctor-common-css.jsp"/>
   <style>
-    table.table {
-      font-size: 0.9rem !important;
-      width: 75% !important;
-      margin: 0 auto !important;
+    form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 0 auto;
+      width: 100%; /* Form chiếm toàn bộ chiều rộng */
+      flex-wrap: wrap;
+      padding: 10px;
     }
-    table.table th, table.table td {
-      padding: 6px 10px !important;
-      white-space: nowrap;
+
+    form input, form select {
+      width: 30%; /* Đảm bảo các trường nhập liệu có chiều rộng bằng nhau */
+      height: 40px; /* Chiều cao của các trường nhập liệu đồng đều */
     }
-    table.table th:nth-child(1), table.table td:nth-child(1) {
+
+    form .btn {
+      width: 30%; /* Chiều rộng của nút tìm kiếm lớn hơn các trường */
+      height: 40px; /* Chiều cao của nút tìm kiếm */
+      margin-top: 10px;
+    }
+
+    /* Cải thiện giao diện của bảng */
+    .table {
+      font-size: 0.9rem;
+      width: 75%;
+      margin: 30px auto;
+      border-collapse: collapse;
+    }
+
+    .table th, .table td {
+      padding: 6px 10px;
+      text-align: center;
+    }
+
+    .table th:nth-child(1), table.table td:nth-child(1) {
       width: 3%;
     }
-    table.table th:nth-child(2), table.table td:nth-child(2) {
+
+    .table th:nth-child(2), table.table td:nth-child(2) {
       width: 15%;
     }
-    table.table th:nth-child(3), table.table td:nth-child(3) {
+
+    .table th:nth-child(3), table.table td:nth-child(3) {
       width: 22%;
     }
-    table.table th:nth-child(4), table.table td:nth-child(4) {
+
+    .table th:nth-child(4), table.table td:nth-child(4) {
       width: 15%;
     }
-    table.table th:nth-child(5), table.table td:nth-child(5) {
+
+    .table th:nth-child(5), table.table td:nth-child(5) {
       width: 15%;
     }
-    table.table th:nth-child(6), table.table td:nth-child(6) {
+
+    .table th:nth-child(6), table.table td:nth-child(6) {
       width: 12%;
     }
+
+    .table th:nth-child(7), table.table td:nth-child(7) {
+      width: 18%;
+    }
+
     .pagination {
       justify-content: center;
-      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .pagination .page-item .page-link {
+      color: #28a745;
     }
   </style>
+  <script>
+    function validateForm() {
+      // Lấy giá trị từ form và loại bỏ khoảng trắng thừa
+      var fullName = document.forms[0]["fullName"].value.trim();
+      var insuranceNumber = document.forms[0]["insuranceNumber"].value.trim();
+      var appointmentType = document.forms[0]["appointmentType"].value.trim();
+      var customAppointmentType = document.forms[0]["customAppointmentType"] ? document.forms[0]["customAppointmentType"].value.trim() : '';
+
+      fullName = fullName.replace(/\s+/g, ' ');  // Thay thế tất cả khoảng trắng thừa thành một khoảng trắng duy nhất
+      insuranceNumber = insuranceNumber.replace(/\s+/g, ' ');  // Thay thế tất cả khoảng trắng thừa thành một khoảng trắng duy nhất
+      // Kiểm tra nếu không có dữ liệu trong các trường tìm kiếm
+      if (fullName === "" && insuranceNumber === "" && appointmentType === "" && customAppointmentType === "") {
+        alert("Please enter at least one search criterion.");
+        return false;
+      }
+
+      // Kiểm tra tên bệnh nhân không chứa ký tự lạ và khoảng trắng thừa
+      if (fullName !== "" && !/^[a-zA-Z\s]+$/.test(fullName)) {
+        alert("Please enter a valid patient's name (only letters and spaces).");
+        return false;
+      }
+
+      // Kiểm tra mã bảo hiểm (INS + số)
+      if (insuranceNumber !== "" && !/^\d+$/.test(insuranceNumber)) {
+        alert("Please enter a valid insurance number (only digits after INS).");
+        return false;
+      }
+
+      // Kiểm tra nếu chọn "Other..." nhưng không nhập loại cuộc hẹn
+      if (appointmentType === "custom" && customAppointmentType === "") {
+        alert("Please enter a custom appointment type.");
+        return false;
+      }
+
+      return true; // Cho phép gửi form nếu tất cả các điều kiện đều hợp lệ
+    }
+  </script>
 </head>
 <body>
 
@@ -67,6 +145,38 @@
       <div class="section-tittle mb-30 text-center">
         <h2>Completed Appointments History</h2>
       </div>
+      <form action="completed-history" method="get" class="mb-4" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin: 0 auto; width: 80%; flex-wrap: wrap;">
+        <!-- Tìm kiếm theo tên bệnh nhân -->
+        <input type="text" name="fullName" value="${param.fullName}" placeholder="Patient's Name..." class="form-control" style="width: 280px; height: 40px;" />
+
+        <!-- Tìm kiếm theo mã bảo hiểm -->
+        <input type="text" name="insuranceNumber" value="${param.insuranceNumber}" placeholder="Insurance Number..." class="form-control" style="width: 280px; height: 40px;" />
+
+        <!-- Tìm kiếm theo loại cuộc hẹn -->
+        <select name="appointmentType" class="form-control" style="width: 280px; height: 40px;">
+          <option value="" disabled selected>Select Treatment</option>
+          <option value="General Checkup">General Checkup</option>
+          <option value="Cardiology Consultation">Cardiology Consultation</option>
+          <option value="Gastroenterology Consultation">Gastroenterology Consultation</option>
+          <option value="Orthopedic Consultation">Orthopedic Consultation</option>
+          <option value="Neurology Consultation">Neurology Consultation</option>
+          <option value="Mental Health Consultation">Mental Health Consultation</option>
+          <option value="Psychotherapy Session">Psychotherapy Session</option>
+          <option value="Psychiatric Evaluation">Psychiatric Evaluation</option>
+          <option value="Stress and Anxiety Management">Stress and Anxiety Management</option>
+          <option value="Depression Counseling">Depression Counseling</option>
+          <option value="Periodic Health Checkup">Periodic Health Checkup</option>
+          <option value="Gynecology Consultation">Gynecology Consultation</option>
+          <option value="Pediatric Consultation">Pediatric Consultation</option>
+          <option value="Ophthalmology Consultation">Ophthalmology Consultation</option>
+          <option value="ENT Consultation">ENT Consultation</option>
+          <option value="On-Demand Consultation">On-Demand Consultation</option>
+          <option value="Emergency Consultation">Emergency Consultation</option>
+          <option value="custom">Other...</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary" style="width: 300px; height: 40px; margin-top: 10px;">Search</button>
+      </form>
       <div class="row justify-content-center">
         <div class="col-lg-10">
           <table class="table table-hover table-bordered text-center">

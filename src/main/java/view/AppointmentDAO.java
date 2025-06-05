@@ -164,27 +164,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return null;
     }
 
-    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
-        List<Appointment> appointments = new ArrayList<>();
-        String query = "SELECT a.*, p.insurance_number, p.full_name " +
-                "FROM Appointments a JOIN Patients p ON a.patient_id = p.patient_id " +
-                "WHERE a.doctor_id = ? ORDER BY a.appointment_date ASC";
-        try (Connection conn = getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, doctorId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    appointments.add(mapResultSetToAppointment(rs));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return appointments;
-    }
-
     private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
         Timestamp appointmentDateTs = rs.getTimestamp("appointment_date");
         Timestamp createdAtTs = rs.getTimestamp("created_at");
@@ -221,6 +200,28 @@ public class AppointmentDAO extends DBContext<Appointment> {
                 .build();
     }
 
+    //PhongLPH
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? ORDER BY a.appointment_date DESC ";
+        try (Connection conn = getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, doctorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
     public int doctorInsert(Appointment appointment) {
         String sql = "INSERT INTO Appointments (patient_id, doctor_id, appointment_type, appointment_date, status, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -258,7 +259,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
             return 0;
         }
     }
-
+    //PhongLPH
     public boolean updateStatus(int appointmentId, String status) {
         String sql = "UPDATE Appointments SET status = ? WHERE appointment_id = ?";
         try (Connection conn = getConn();
@@ -273,10 +274,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
             return false;
         }
     }
-
+    //PhongLPH
     public Appointment getAppointmentDetailById(int appointmentId) {
         String sql = "SELECT a.*, p.patient_id, p.username, p.password_hash, p.full_name, p.dob, p.gender, " +
-                "p.email, p.phone, p.address, p.insurance_number, p.emergency_contact " +
+                "p.email, p.phone, p.address, p.insurance_number, p.emergency_contact, a.appointment_type " +
                 "FROM Appointments a JOIN Patients p ON a.patient_id = p.patient_id " +
                 "WHERE a.appointment_id = ?";
         try (Connection conn = getConn();
@@ -299,6 +300,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
                             .address(rs.getString("address"))
                             .insuranceNumber(rs.getString("insurance_number"))
                             .emergencyContact(rs.getString("emergency_contact"))
+                            .appointmentType(rs.getString("appointment_type"))
                             .build();
 
                     a.setPatient(patient);
@@ -311,7 +313,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return null;
     }
-
+    //PhongLPH
     public List<Appointment> getCompletedAppointmentsByDoctor(int doctorId) {
         List<Appointment> completedAppointments = new ArrayList<>();
         String query = "SELECT a.*, p.insurance_number, p.full_name " +
@@ -331,6 +333,191 @@ public class AppointmentDAO extends DBContext<Appointment> {
             e.printStackTrace();
         }
         return completedAppointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchAppointmentsByDoctor(int doctorId, String searchTerm)
+    {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND (p.insurance_number LIKE ? " +
+                "OR p.full_name LIKE ? " +
+                "OR a.appointment_id LIKE ?) " +
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + searchTerm + "%");  // Tìm kiếm theo mã bảo hiểm
+            stmt.setString(3, "%" + searchTerm + "%");  // Tìm kiếm theo tên bệnh nhân
+            stmt.setString(4, "%" + searchTerm + "%");  // Tìm kiếm theo mã cuộc hẹn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchAppointmentsByDoctorAndFullName(int doctorId, String fullName) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND p.full_name LIKE ? " +
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + fullName + "%");  // Tìm kiếm theo tên bệnh nhân
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchAppointmentsByDoctorAndInsuranceNumber(int doctorId, String insuranceNumber) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND p.insurance_number LIKE ? " +  // Tìm kiếm theo mã bảo hiểm
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + insuranceNumber + "%");  // Tìm kiếm theo mã bảo hiểm
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchAppointmentsByDoctorAndAppointmentType(int doctorId, String appointmentType) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND a.appointment_type LIKE ? " +  // Tìm kiếm theo loại cuộc hẹn
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + appointmentType + "%");  // Sử dụng loại cuộc hẹn đã chọn
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchCompletedAppointmentsByDoctorAndFullName(int doctorId, String fullName) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND p.full_name LIKE ? " +
+                "AND a.status = 'Completed' " + // Thêm điều kiện status = 'Completed'
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + fullName + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchCompletedAppointmentsByDoctorAndInsuranceNumber(int doctorId, String insuranceNumber) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND p.insurance_number LIKE ? " +
+                "AND a.status = 'Completed' " + // Thêm điều kiện status = 'Completed'
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + insuranceNumber + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+    //PhongLPH
+    public List<Appointment> searchCompletedAppointmentsByDoctorAndAppointmentType(int doctorId, String appointmentType) {
+        List<Appointment> appointments = new ArrayList<>();
+        String query = "SELECT a.*, p.insurance_number, p.full_name " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "WHERE a.doctor_id = ? " +
+                "AND a.appointment_type LIKE ? " +
+                "AND a.status = 'Completed' " + // Thêm điều kiện status = 'Completed'
+                "ORDER BY a.appointment_date DESC";
+        try (Connection conn = getConn(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, "%" + appointmentType + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mapResultSetToAppointment(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
+    public boolean updateAppointmentType(int appointmentId, String appointmentType) {
+        // SQL query để cập nhật loại cuộc hẹn
+        String sql = "UPDATE Appointments SET appointment_type = ? WHERE appointment_id = ?";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Cập nhật loại cuộc hẹn
+            ps.setString(1, appointmentType);  // Gán giá trị appointmentType vào tham số đầu tiên
+            ps.setInt(2, appointmentId);        // Gán giá trị appointmentId vào tham số thứ hai
+
+            // Thực thi câu lệnh UPDATE và kiểm tra số lượng bản ghi bị ảnh hưởng
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;  // Nếu có ít nhất một bản ghi bị ảnh hưởng, trả về true
+        } catch (SQLException e) {
+            e.printStackTrace();  // In ra lỗi nếu có
+            return false;         // Nếu có lỗi, trả về false
+        }
     }
 
 }
