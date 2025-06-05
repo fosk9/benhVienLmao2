@@ -25,8 +25,17 @@ public class ResetPasswordServlet extends HttpServlet {
         String newPassword = request.getParameter("new_password");
         HttpSession session = request.getSession();
 
+
         String username = (String) session.getAttribute("username");
         String userType = (String) session.getAttribute("user_type"); // Giá trị từ dropdown: "patient" hoặc "employee"
+
+        if (newPassword == null || !newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
+            request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
+            // Gửi lại dữ liệu đã nhập về JSP để hiển thị lại
+            request.setAttribute("username", username);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
 
         if (username == null || userType == null) {
             request.setAttribute("error", "Session hết hạn hoặc dữ liệu không đầy đủ. Vui lòng thử lại.");

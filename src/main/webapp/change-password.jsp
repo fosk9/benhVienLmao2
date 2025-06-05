@@ -96,7 +96,8 @@
   <div class="alert alert-success" style="text-align:center; color:green;"><%= success %></div>
   <% } %>
 
-  <form action="change-password" method="post">
+  <form action="
+" method="post">
     <input type="password" name="old-password" placeholder="Current Password" required/>
     <input type="password" name="new-password" placeholder="New Password" required/>
     <input type="password" name="confirm-password" placeholder="Confirm Password" required/>
