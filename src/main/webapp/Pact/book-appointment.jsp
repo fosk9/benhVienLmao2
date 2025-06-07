@@ -126,7 +126,72 @@
   </div>
 </main>
 <script>
-  window.onload = function() {
+  // Lưu trữ dữ liệu appointmentTypes từ server vào array JS
+  const appointmentTypes = [
+    <c:forEach var="type" items="${appointmentTypes}" varStatus="loop">
+      {
+        appointmentTypeId: ${type.appointmentTypeId},
+        typeName: "${type.typeName}",
+        price: ${type.price != null ? type.price : 0},
+        description: "${type.description != null ? type.description : ''}"
+      }<c:if test="${!loop.last}">,</c:if>
+    </c:forEach>
+  ];
+  console.log("Loaded appointmentTypes:", appointmentTypes);
+
+  function getTypeById(id) {
+    return appointmentTypes.find(t => t.appointmentTypeId == id);
+  }
+
+  function updatePriceAndDescription() {
+    const select = document.getElementById('appointmentTypeSelect');
+    const selectedId = select.value;
+    const specialist = document.getElementById('requiresSpecialist').checked;
+    const priceDisplay = document.getElementById('priceValue');
+    const typeDescription = document.getElementById('typeDescription');
+    const typeNameInput = document.getElementById('typeName');
+    const finalPriceInput = document.getElementById('finalPrice');
+    const priceWarning = document.getElementById('priceWarning');
+
+    priceWarning.style.display = 'none';
+
+    let price = 0;
+    let valid = true;
+    let typeObj = null;
+
+    if (selectedId) {
+      typeObj = getTypeById(selectedId);
+      console.log("Selected type object:", typeObj);
+      if (typeObj && typeof typeObj.price === "number") {
+        price = typeObj.price;
+      } else {
+        valid = false;
+      }
+    } else {
+      valid = false;
+    }
+
+    if (specialist && valid) price = price * 1.5;
+
+    priceDisplay.innerText = price.toLocaleString('vi-VN');
+    finalPriceInput.value = price;
+
+    // Hiển thị mô tả
+    if (typeObj && typeObj.description) {
+      typeDescription.innerText = "Description: " + typeObj.description;
+    } else {
+      typeDescription.innerText = "";
+    }
+    // Gán typeName vào input ẩn
+    typeNameInput.value = typeObj && typeObj.typeName ? typeObj.typeName : "";
+
+    // Show/hide warning
+    priceWarning.style.display = valid ? 'none' : '';
+    // Log for debug
+    console.log("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
     const now = new Date();
     const pad = n => n < 10 ? '0' + n : n;
     const yyyy = now.getFullYear();
@@ -161,100 +226,26 @@
     }
     initSelect2IfReady();
 
-    // Update price and description
-    function updatePriceAndDescription(event) {
-      const $select = $('#appointmentTypeSelect');
-      const selectedValue = $select.val();
-      const $selectedOption = $select.find(`option[value="${selectedValue}"]`);
-      const requiresSpecialist = $('#requiresSpecialist').is(':checked');
-      const priceDisplay = $('#priceValue');
-      const typeDescription = $('#typeDescription');
-      const typeNameInput = $('#typeName');
-      const finalPriceInput = $('#finalPrice');
-      const priceWarning = $('#priceWarning');
-
-      priceWarning.hide();
-
-      let basePrice = 0;
-      let rawPrice = '';
-      if (selectedValue && $selectedOption.length) {
-        rawPrice = $selectedOption.data('price');
-        // Fix: handle undefined/null/empty price
-        if (typeof rawPrice === 'undefined' || rawPrice === null || rawPrice === '') {
-          basePrice = 0;
-        } else {
-          basePrice = parseFloat(rawPrice);
-          if (isNaN(basePrice)) basePrice = 0;
-        }
-
-        const description = $selectedOption.data('description');
-        const typeName = $selectedOption.data('type-name');
-
-        if (basePrice > 0) {
-          const multiplier = requiresSpecialist ? 1.5 : 1;
-          const finalPrice = basePrice * multiplier;
-          priceDisplay.text(finalPrice.toLocaleString('vi-VN'));
-          finalPriceInput.val(finalPrice);
-          typeDescription.text(description ? `Description: ${description}` : '');
-          typeNameInput.val(typeName || '');
-          priceWarning.hide();
-        } else {
-          priceDisplay.text('0');
-          finalPriceInput.val(0);
-          typeDescription.text(description ? `Description: ${description}` : '');
-          typeNameInput.val(typeName || '');
-          priceWarning.show();
-        }
-      } else {
-        priceDisplay.text('0');
-        finalPriceInput.val(0);
-        typeDescription.text('');
-        typeNameInput.val('');
-      }
-    }
-
     // Bind events
-    $('#appointmentTypeSelect').on('change', updatePriceAndDescription);
-    if (window.jQuery && typeof $.fn.select2 === 'function') {
-      $('#appointmentTypeSelect').on('select2:select', updatePriceAndDescription);
-      $('#appointmentTypeSelect').on('select2:clear', updatePriceAndDescription);
-    }
-    $('#requiresSpecialist').on('change', updatePriceAndDescription);
-
-    // Restore form state
-    <c:if test="${not empty finalPrice and not empty selectedTypeId}">
-    const serverPrice = parseFloat('${finalPrice}');
-    if (!isNaN(serverPrice) && serverPrice > 0) {
-      $('#finalPrice').val(serverPrice);
-      $('#priceValue').text(serverPrice.toLocaleString('vi-VN'));
-    } else {
-      $('#priceWarning').show();
-    }
-    const selectedOption = $('#appointmentTypeSelect').find(`option[value="${'${selectedTypeId}'}"]`);
-    if (selectedOption.length) {
-      const description = selectedOption.data('description');
-      const typeName = selectedOption.data('type-name');
-      $('#typeDescription').text(description ? `Description: ${description}` : '');
-      $('#typeName').val(typeName || '');
-    }
-    </c:if>
+    document.getElementById('appointmentTypeSelect').addEventListener('change', updatePriceAndDescription);
+    document.getElementById('requiresSpecialist').addEventListener('change', updatePriceAndDescription);
 
     // Trigger initial update
     updatePriceAndDescription();
 
     // Client-side validation for past dates
-    $('#appointmentForm').on('submit', function(event) {
+    document.getElementById('appointmentForm').addEventListener('submit', function(event) {
       const selectedDate = new Date(dateInput.value);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (selectedDate < today) {
         event.preventDefault();
-        $('#dateError').show();
+        document.getElementById('dateError').style.display = 'block';
       } else {
-        $('#dateError').hide();
+        document.getElementById('dateError').style.display = 'none';
       }
     });
-  };
+  });
 </script>
 <footer>
   <div class="footer-wrappr section-bg3">
