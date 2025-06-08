@@ -1,6 +1,7 @@
 package view;
 
 import model.Blog;
+import model.Category;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,12 +12,19 @@ public class BlogDAO extends DBContext<Blog> {
     @Override
     public List<Blog> select() {
         List<Blog> list = new ArrayList<>();
-        String sql = "SELECT * FROM Blog ORDER BY created_at DESC";
+        String sql = "SELECT b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name, COUNT(cm.comment_id) AS comment_count " +
+                "FROM Blog b " +
+                "LEFT JOIN Category c ON b.category_id = c.category_id " +
+                "LEFT JOIN Comment cm ON b.blog_id = cm.blog_id " +
+                "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name " +
+                "ORDER BY b.date DESC";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(mapResultSet(rs));
+                list.add(mapResultSetToBlog(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -24,15 +32,228 @@ public class BlogDAO extends DBContext<Blog> {
         return list;
     }
 
+    // 1. Tìm kiếm blog theo tên
+    public List<Blog> searchBlogsByName(String blogName, int offset, int pageSize) {
+        List<Blog> list = new ArrayList<>();
+        String sql = "SELECT b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name, COUNT(cm.comment_id) AS comment_count " +
+                "FROM Blog b " +
+                "LEFT JOIN Category c ON b.category_id = c.category_id " +
+                "LEFT JOIN Comment cm ON b.blog_id = cm.blog_id " +
+                "WHERE b.blog_name LIKE ? " +
+                "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name " +
+                "ORDER BY b.date DESC " +
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"; // Dùng OFFSET và FETCH cho SQL Server
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + blogName + "%");
+            ps.setInt(2, offset);  // Tính toán offset
+            ps.setInt(3, pageSize); // Giới hạn số lượng kết quả mỗi trang
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToBlog(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+
+    // 2. Lấy tất cả danh mục và tổng số bài viết trong mỗi danh mục
+    public List<Category> getCategoriesWithBlogCount() {
+        List<Category> categories = new ArrayList<>();
+        String sql = "SELECT c.category_id, c.category_name, COUNT(b.blog_id) AS blog_count " +
+                "FROM Category c " +
+                "LEFT JOIN Blog b ON c.category_id = b.category_id " +
+                "GROUP BY c.category_id, c.category_name"; // Đảm bảo GROUP BY có category_id
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Category category = new Category();
+                category.setCategoryId(rs.getInt("category_id"));  // Lấy categoryId
+                category.setCategoryName(rs.getString("category_name"));
+                category.setBlogCount(rs.getInt("blog_count"));
+                categories.add(category);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categories;
+    }
+
+
+    // 3. Lấy 4 bài viết gần nhất
+    public List<Blog> getRecentBlogs() {
+        List<Blog> recentBlogs = new ArrayList<>();
+        String sql = "SELECT TOP 4 b.blog_id, b.blog_name, b.blog_img, b.date " +
+                "FROM Blog b " +
+                "ORDER BY b.date DESC";  // Sử dụng TOP 4 thay vì LIMIT
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Blog blog = new Blog();
+                blog.setBlogId(rs.getInt("blog_id"));
+                blog.setBlogName(rs.getString("blog_name"));
+                blog.setBlogImg(rs.getString("blog_img"));
+                blog.setDate(rs.getDate("date"));
+                recentBlogs.add(blog);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recentBlogs;
+    }
+
+    // Lấy các bài viết theo danh mục
+    public List<Blog> getBlogsByCategory(int categoryId, int offset, int pageSize) {
+        List<Blog> blogs = new ArrayList<>();
+        String sql = "SELECT b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name, COUNT(cm.comment_id) AS comment_count " +
+                "FROM Blog b " +
+                "LEFT JOIN Category c ON b.category_id = c.category_id " +
+                "LEFT JOIN Comment cm ON b.blog_id = cm.blog_id " +
+                "WHERE b.category_id = ? " +
+                "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name " +
+                "ORDER BY b.date DESC " +
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";  // Sửa lại cú pháp phân trang cho SQL Server
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);
+            ps.setInt(2, offset);
+            ps.setInt(3, pageSize);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Blog blog = new Blog();
+                blog.setBlogId(rs.getInt("blog_id"));
+                blog.setBlogName(rs.getString("blog_name"));
+                blog.setBlogSubContent(rs.getString("blog_sub_content"));
+                blog.setContent(rs.getString("content"));
+                blog.setBlogImg(rs.getString("blog_img"));
+                blog.setAuthor(rs.getString("author"));
+                blog.setDate(rs.getDate("date"));
+                blog.setCategoryId(rs.getInt("category_id"));
+                blog.setCategoryName(rs.getString("category_name"));
+                blog.setCommentCount(rs.getInt("comment_count"));
+                blogs.add(blog);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return blogs;
+    }
+
+    // Lấy tổng số bài viết của một danh mục
+    public int getTotalBlogsCountByCategory(int categoryId) {
+        String sql = "SELECT COUNT(*) FROM Blog WHERE category_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Phương thức để lấy blog theo phân trang (sửa cho SQL Server)
+    public List<Blog> getPaginatedBlogs(int offset, int pageSize) {
+        List<Blog> blogs = new ArrayList<>();
+        String sql = "SELECT b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name, COUNT(cm.comment_id) AS comment_count " +
+                "FROM Blog b " +
+                "LEFT JOIN Category c ON b.category_id = c.category_id " +
+                "LEFT JOIN Comment cm ON b.blog_id = cm.blog_id " +
+                "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name " +
+                "ORDER BY b.date DESC " +
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";  // Sử dụng OFFSET và FETCH cho SQL Server
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, offset);   // Tham số OFFSET
+            ps.setInt(2, pageSize);  // Tham số FETCH
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                blogs.add(mapResultSetToBlog(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return blogs;
+    }
+
+    // Phương thức để lấy tổng số bài viết
+    public int getTotalBlogsCount() {
+        String sql = "SELECT COUNT(*) FROM Blog";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Phương thức để lấy tổng số bài viết theo từ khóa tìm kiếm
+    public int getTotalBlogsCount(String blogName) {
+        // Định nghĩa câu truy vấn để đếm số lượng bài viết theo từ khóa tìm kiếm
+        String sql = "SELECT COUNT(*) FROM Blog b WHERE b.blog_name LIKE ?";
+
+        // Sử dụng try-with-resources để đảm bảo đóng tài nguyên khi không còn sử dụng
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Thêm tham số tìm kiếm vào câu truy vấn, sử dụng dấu "%" để tìm kiếm theo chuỗi
+            ps.setString(1, "%" + blogName + "%");
+
+            // Thực thi câu truy vấn và nhận kết quả
+            ResultSet rs = ps.executeQuery();
+
+            // Nếu có kết quả, lấy số lượng bài viết tìm được
+            if (rs.next()) {
+                return rs.getInt(1); // Lấy giá trị của cột đầu tiên (tổng số bài viết)
+            }
+        } catch (SQLException e) {
+            // In lỗi nếu có lỗi xảy ra
+            e.printStackTrace();
+        }
+
+        // Trả về 0 nếu không có bài viết nào tìm được hoặc có lỗi
+        return 0;
+    }
+
     @Override
     public Blog select(int... id) {
-        String sql = "SELECT * FROM Blog WHERE blog_id = ?";
+        if (id == null || id.length == 0) return null;
+        String sql = "SELECT b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                "b.author, b.date, b.category_id, c.category_name " +
+                "FROM Blog b " +
+                "LEFT JOIN Category c ON b.category_id = c.category_id " +
+                "WHERE b.blog_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id[0]);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return mapResultSet(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapResultSetToBlog(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,17 +263,12 @@ public class BlogDAO extends DBContext<Blog> {
 
     @Override
     public int insert(Blog blog) {
-        String sql = "INSERT INTO Blog(blog_name, content, image, author, created_at, type_id, selected_banner) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Blog (blog_name, blog_sub_content, content, blog_img, author, date, category_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, blog.getBlogName());
-            ps.setString(2, blog.getContent());
-            ps.setString(3, blog.getImage());
-            ps.setString(4, blog.getAuthor());
-            ps.setTimestamp(5, blog.getCreatedAt());
-            ps.setInt(6, blog.getTypeId());
-            ps.setBoolean(7, blog.isSelectedBanner());
-            ps.executeUpdate();
+            setPreparedStatementFromBlog(ps, blog);
+            return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -61,18 +277,13 @@ public class BlogDAO extends DBContext<Blog> {
 
     @Override
     public int update(Blog blog) {
-        String sql = "UPDATE Blog SET blog_name = ?, content = ?, image = ?, author = ?, created_at = ?, type_id = ?, selected_banner = ? WHERE blog_id = ?";
+        String sql = "UPDATE Blog SET blog_name = ?, blog_sub_content = ?, content = ?, blog_img = ?, " +
+                "author = ?, date = ?, category_id = ? WHERE blog_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, blog.getBlogName());
-            ps.setString(2, blog.getContent());
-            ps.setString(3, blog.getImage());
-            ps.setString(4, blog.getAuthor());
-            ps.setTimestamp(5, blog.getCreatedAt());
-            ps.setInt(6, blog.getTypeId());
-            ps.setBoolean(7, blog.isSelectedBanner());
+            setPreparedStatementFromBlog(ps, blog);
             ps.setInt(8, blog.getBlogId());
-            ps.executeUpdate();
+            return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -81,41 +292,52 @@ public class BlogDAO extends DBContext<Blog> {
 
     @Override
     public int delete(int... id) {
+        if (id == null || id.length == 0) return 0;
         String sql = "DELETE FROM Blog WHERE blog_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id[0]);
-            ps.executeUpdate();
+            return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
-    public Blog getBannerBlog() {
-        String sql = "SELECT * FROM Blog WHERE selected_banner = 1 ORDER BY created_at DESC";
-        try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return mapResultSet(rs);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private Blog mapResultSet(ResultSet rs) throws SQLException {
-        return Blog.builder()
+    private Blog mapResultSetToBlog(ResultSet rs) throws SQLException {
+        Blog blog = Blog.builder()
                 .blogId(rs.getInt("blog_id"))
                 .blogName(rs.getString("blog_name"))
+                .blogSubContent(rs.getString("blog_sub_content"))
                 .content(rs.getString("content"))
-                .image(rs.getString("image"))
+                .blogImg(rs.getString("blog_img"))
                 .author(rs.getString("author"))
-                .createdAt(rs.getTimestamp("created_at"))
-                .typeId(rs.getInt("type_id"))
-                .selectedBanner(rs.getBoolean("selected_banner"))
+                .date(rs.getDate("date"))
+                .categoryId(rs.getInt("category_id"))
+                .categoryName(rs.getString("category_name"))
                 .build();
+
+        // Nếu có cột comment_count thì set thêm
+        try {
+            int count = rs.getInt("comment_count");
+            blog.setCommentCount(count);
+        } catch (SQLException ignored) {
+        }
+
+        return blog;
+    }
+
+    private void setPreparedStatementFromBlog(PreparedStatement ps, Blog blog) throws SQLException {
+        ps.setString(1, blog.getBlogName());
+        ps.setString(2, blog.getBlogSubContent());
+        ps.setString(3, blog.getContent());
+        ps.setString(4, blog.getBlogImg());
+        ps.setString(5, blog.getAuthor());
+        if (blog.getDate() != null) {
+            ps.setDate(6, blog.getDate());
+        } else {
+            ps.setNull(6, Types.DATE);
+        }
+        ps.setInt(7, blog.getCategoryId());
     }
 }
