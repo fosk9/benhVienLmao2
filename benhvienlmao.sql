@@ -98,41 +98,45 @@ CREATE TABLE Patients
 );
 GO
 
--- Blog Types
-CREATE TABLE BlogType
-(
-    type_id   TINYINT PRIMARY KEY,
-    type_name NVARCHAR(10)
+-- Bảng danh mục (Category)
+CREATE TABLE Category (
+    category_id TINYINT PRIMARY KEY IDENTITY(1,1),
+    category_name NVARCHAR(100) NOT NULL
 );
 GO
 
--- Blogs
-CREATE TABLE Blog
-(
-    blog_id         INT PRIMARY KEY IDENTITY (1,1),
-    blog_name       NVARCHAR(255),
-    content         NVARCHAR(MAX),
-    image           NVARCHAR(MAX),
-    author          NVARCHAR(255),
-    date            DATE,
-    type_id         TINYINT,
-    selected_banner TINYINT CHECK (selected_banner IN (0, 1)) DEFAULT 0,
-    FOREIGN KEY (type_id) REFERENCES BlogType (type_id)
+-- Bảng Blog (bài viết)
+CREATE TABLE Blog (
+    blog_id         INT PRIMARY KEY IDENTITY(1,1),
+    blog_name       NVARCHAR(255) NOT NULL,     -- Tiêu đề bài viết
+    blog_sub_content NVARCHAR(500),              -- Nội dung tóm tắt
+    content         NVARCHAR(MAX) NOT NULL,     -- Nội dung đầy đủ
+    blog_img        NVARCHAR(500),              -- Đường dẫn hình ảnh
+    author          NVARCHAR(255),              -- Tên tác giả
+    date            DATETIME DEFAULT GETDATE(), -- Ngày đăng
+    category_id     TINYINT,                    -- Danh mục
+    selected_banner BIT DEFAULT 0,              -- Có hiển thị nổi bật không (1 là có)
+
+    FOREIGN KEY (category_id) REFERENCES Category(category_id)
 );
 GO
 
--- Comments
-CREATE TABLE Comment
-(
-    comment_id INT PRIMARY KEY IDENTITY (1,1),
-    content    NVARCHAR(MAX),
-    date       DATE,
-    blog_id    INT,
-    patient_id INT,
-    FOREIGN KEY (blog_id) REFERENCES Blog (blog_id),
-    FOREIGN KEY (patient_id) REFERENCES Patients (patient_id)
+-- Bảng Comment (bình luận bài viết)
+CREATE TABLE Comment (
+    comment_id INT PRIMARY KEY IDENTITY(1,1),
+    blog_id    INT NOT NULL,             -- Bài viết được bình luận
+    patient_id INT NOT NULL,             -- Người bình luận
+    content    NVARCHAR(MAX) NOT NULL,   -- Nội dung bình luận
+    date       DATETIME DEFAULT GETDATE(),  -- Ngày bình luận
+
+    FOREIGN KEY (blog_id) REFERENCES Blog(blog_id),
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
 );
 GO
+
+
+
+
 
 CREATE TABLE AppointmentType
 (
@@ -256,12 +260,6 @@ VALUES ('Book Appointment'),
        ('Approve Doctor Shifts');
 GO
 
--- Insert sample Blog Types
-INSERT INTO BlogType (type_id, type_name)
-VALUES (0, N'Blog'),
-       (1, N'Banner'),
-       (2, N'Footer');
-GO
 
 -- Insert sample Patients
 INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact)
@@ -354,3 +352,68 @@ VALUES (1, '2025-06-01', 'Morning', 'PendingApproval', 9, GETDATE()),
        (2, '2025-06-02', 'Morning', 'Scheduled', NULL, GETDATE()),
        (2, '2025-06-02', 'Afternoon', 'PendingApproval', 9, GETDATE());
 GO
+
+-- Dữ liệu mẫu cho bảng Category (thêm các danh mục y tế)
+INSERT INTO Category (category_name)
+VALUES 
+    ('Khám bệnh'),      -- Category ID = 1
+    ('Bệnh lý'),        -- Category ID = 2
+    ('Chăm sóc sức khỏe'),  -- Category ID = 3
+    ('Phòng ngừa bệnh');     -- Category ID = 4
+
+-- Dữ liệu mẫu cho bảng Blog (Thêm bài viết liên quan đến y tế)
+INSERT INTO Blog (blog_name, blog_sub_content, content, blog_img, author, date, category_id)
+VALUES 
+    ('Khám bệnh định kỳ', 
+     'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
+     'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
+     'checkup_regular.jpg', 
+     'TS.BS Lê Văn C', 
+     '2025-06-21 00:00:00.000', 
+     1),  -- Thuộc danh mục "Khám bệnh"
+     
+    ('Phòng ngừa bệnh tim mạch', 
+     'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
+     'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
+     'heart_disease_prevention.jpg', 
+     'Nguyễn Thị A', 
+     '2025-06-22 00:00:00.000', 
+     4),  -- Thuộc danh mục "Phòng ngừa bệnh"
+     
+    ('Chế độ ăn uống cho bệnh nhân tiểu đường', 
+     'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
+     'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
+     'diabetes_diet.jpg', 
+     'TS.BS Trần Thị B', 
+     '2025-06-23 00:00:00.000', 
+     2),  -- Thuộc danh mục "Bệnh lý"
+     
+    ('Điều trị ung thư', 
+     'Tổng quan về phương pháp điều trị ung thư hiện đại.',
+     'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
+     'cancer_treatment.jpg', 
+     'Lê Thị C', 
+     '2025-06-24 00:00:00.000', 
+     2),  -- Thuộc danh mục "Bệnh lý"
+     
+    ('Chăm sóc sức khỏe người cao tuổi', 
+     'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
+     'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
+     'elderly_care.jpg', 
+     'Nguyễn Minh D', 
+     '2025-06-25 00:00:00.000', 
+     3);  -- Thuộc danh mục "Chăm sóc sức khỏe"
+
+	 -- Dữ liệu mẫu cho bảng Comment (Thêm bình luận cho các bài viết y tế)
+INSERT INTO Comment (blog_id, patient_id, content, date)
+VALUES 
+    (1, 1, 'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định kỳ ngay.', '2025-06-21 10:30:00.000'),
+    (1, 2, 'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
+    (2, 3, 'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
+    (2, 4, 'Tôi sẽ thay đổi chế độ ăn uống của mình để phòng ngừa bệnh tim mạch.', '2025-06-24 11:45:00.000'),
+    (3, 2, 'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.', '2025-06-25 16:25:00.000'),
+    (3, 3, 'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.', '2025-06-26 17:30:00.000'),
+    (4, 4, 'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.', '2025-06-27 10:20:00.000'),
+    (4, 1, 'Tôi rất muốn tìm hiểu thêm về các phương pháp điều trị ung thư hiện đại.', '2025-06-28 08:55:00.000'),
+    (5, 1, 'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
+    (5, 4, 'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
