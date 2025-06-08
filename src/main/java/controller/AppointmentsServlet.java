@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.sql.Date;
 import java.util.List;
 
 @WebServlet({"/appointments", "/appointments/edit", "/appointments/delete", "/appointments/details"})
@@ -35,23 +34,28 @@ public class AppointmentsServlet extends HttpServlet {
 
         if ("/appointments".equals(path)) {
             List<Appointment> appointments = appointmentDAO.getAppointmentsByPatientId(patientId);
+            AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
+            for (Appointment appointment : appointments) {
+                AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
+                appointment.setAppointmentType(type);
+            }
             request.setAttribute("appointments", appointments);
             request.getRequestDispatcher("/Pact/appointments.jsp").forward(request, response);
         } else if ("/appointments/edit".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("id"));
-            Appointment appointment = appointmentDAO.select(appointmentId);
+            Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
             if (appointment != null && appointment.getPatientId() == patientId) {
                 AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
-                AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
-                appointment.setAppointmentType(type);
+                List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
                 request.setAttribute("appointment", appointment);
+                request.setAttribute("appointmentTypes", appointmentTypes);
                 request.getRequestDispatcher("/Pact/edit-appointment.jsp").forward(request, response);
             } else {
                 response.sendRedirect(request.getContextPath() + "/appointments");
             }
         } else if ("/appointments/details".equals(path)) {
             int appointmentId = Integer.parseInt(request.getParameter("id"));
-            Appointment appointment = appointmentDAO.select(appointmentId);
+            Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
             if (appointment != null && appointment.getPatientId() == patientId) {
                 AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
                 AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
@@ -94,6 +98,7 @@ public class AppointmentsServlet extends HttpServlet {
             String appointmentDateStr = request.getParameter("appointmentDate");
             String appointmentTypeIdStr = request.getParameter("appointmentTypeId");
             String timeSlot = request.getParameter("timeSlot");
+            boolean requiresSpecialist = "on".equals(request.getParameter("requiresSpecialist"));
 
             try {
                 if (appointmentDateStr == null || appointmentDateStr.isEmpty()) {
@@ -116,6 +121,7 @@ public class AppointmentsServlet extends HttpServlet {
                     appointment.setAppointmentDate(appointmentDate);
                     appointment.setAppointmentTypeId(appointmentTypeId);
                     appointment.setTimeSlot(timeSlot);
+                    appointment.setRequiresSpecialist(requiresSpecialist);
                     appointment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
                     appointmentDAO.update(appointment);
                 }

@@ -7,25 +7,18 @@
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>Appointment Details</title>
-  <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="<c:url value='/assets/css/bootstrap.min.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/owl.carousel.min.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/slicknav.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/flaticon.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/gijgo.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/animate.min.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/animated-headline.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/magnific-popup.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/fontawesome-all.min.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/themify-icons.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
-  <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
   <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
   <style>
-    .card-body p, .card-body strong { font-size: 1.2rem; }
-    h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; }
-    .btn { font-size: 1.1rem; padding: 10px 20px; }
+    .big-card { max-width: 600px; margin: 0 auto; font-size: 1.3rem; }
+    .big-card .card-body p, .big-card .card-body strong { font-size: 1.2rem; }
+    h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; color: #28a745; }
+    .btn { font-size: 1.2rem; padding: 15px 30px; background-color: #28a745; color: #fff; border-color: #28a745; }
+    .btn:hover { background-color: #218838; border-color: #218838; }
+    .total-price-section { margin-top: 20px; padding: 15px; background-color: #f1f8f1; border-radius: 8px; border: 1px solid #28a745; }
+    .total-price-section .price-display { font-size: 1.3rem; color: #28a745; font-weight: bold; }
+    .description-display { font-size: 1.1rem; color: #333; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -65,18 +58,64 @@
 <main>
   <div class="container mt-5">
     <h2>Appointment Details</h2>
-    <div class="card">
+    <div class="card big-card">
       <div class="card-body">
         <p><strong>ID:</strong> ${appointment.appointmentId}</p>
-        <p><strong>Date & Time:</strong>
-          <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm dd/MM/yyyy"/>
+        <p><strong>Appointment Type:</strong>
+          <c:choose>
+            <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.typeName}">
+              ${appointment.appointmentType.typeName}
+            </c:when>
+            <c:otherwise>Unknown Type</c:otherwise>
+          </c:choose>
         </p>
-        <p><strong>Create Date:</strong>
+        <p><strong>Description:</strong>
+          <c:choose>
+            <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.description}">
+              ${appointment.appointmentType.description}
+            </c:when>
+            <c:otherwise>No description available</c:otherwise>
+          </c:choose>
+        </p>
+        <p><strong>Date:</strong>
+          <fmt:formatDate value="${appointment.appointmentDate}" pattern="dd/MM/yyyy"/>
+        </p>
+        <p><strong>Time Slot:</strong> ${not empty appointment.timeSlot ? appointment.timeSlot : 'Not specified'}</p>
+        <p><strong>Requires Specialist:</strong>
+          <c:choose>
+            <c:when test="${appointment.requiresSpecialist}">Yes</c:when>
+            <c:otherwise>No</c:otherwise>
+          </c:choose>
+        </p>
+        <p><strong>Status:</strong> ${not empty appointment.status ? appointment.status : 'Not specified'}</p>
+        <p><strong>Created At:</strong>
           <fmt:formatDate value="${appointment.createdAt}" pattern="HH:mm dd/MM/yyyy"/>
         </p>
-        <p><strong>Type:</strong> ${appointment.appointmentType}</p>
-        <p><strong>Status:</strong> ${appointment.status}</p>
-        <a href="<c:url value='/appointments'/>" class="btn btn-primary mt-3">Back to Appointments</a>
+        <p><strong>Updated At:</strong>
+          <fmt:formatDate value="${appointment.updatedAt}" pattern="HH:mm dd/MM/yyyy"/>
+        </p>
+        <c:if test="${not empty doctor}">
+          <p><strong>Doctor:</strong> ${doctor.fullName}
+            <c:if test="${not empty doctor.email}">(${doctor.email})</c:if>
+          </p>
+        </c:if>
+        <div class="total-price-section">
+          <div class="price-display">Total Price:
+            <span id="priceValue">
+              <c:choose>
+                <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.price}">
+                  <c:set var="totalPrice" value="${appointment.appointmentType.price}"/>
+                  <c:if test="${appointment.requiresSpecialist}">
+                    <c:set var="totalPrice" value="${totalPrice * 1.5}"/>
+                  </c:if>
+                  <fmt:formatNumber value="${totalPrice}" type="number" groupingUsed="true"/> VND
+                </c:when>
+                <c:otherwise>0 VND</c:otherwise>
+              </c:choose>
+            </span>
+          </div>
+        </div>
+        <a href="<c:url value='/appointments'/>" class="btn mt-3 w-100">Back to Appointments</a>
       </div>
     </div>
   </div>
@@ -137,29 +176,9 @@
   <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
 </div>
 
-<script src="<c:url value='/assets/js/vendor/modernizr-3.5.0.min.js'/>"></script>
 <script src="<c:url value='/assets/js/vendor/jquery-1.12.4.min.js'/>"></script>
 <script src="<c:url value='/assets/js/popper.min.js'/>"></script>
 <script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.slicknav.min.js'/>"></script>
-<script src="<c:url value='/assets/js/owl.carousel.min.js'/>"></script>
-<script src="<c:url value='/assets/js/slick.min.js'/>"></script>
-<script src="<c:url value='/assets/js/wow.min.js'/>"></script>
-<script src="<c:url value='/assets/js/animated.headline.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.magnific-popup.js'/>"></script>
-<script src="<c:url value='/assets/js/gijgo.min.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.nice-select.min.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.sticky.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.counterup.min.js'/>"></script>
-<script src="<c:url value='/assets/js/waypoints.min.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.countdown.min.js'/>"></script>
-<script src="<c:url value='/assets/js/hover-direction-snake.min.js'/>"></script>
-<script src="<c:url value='/assets/js/contact.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.form.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.validate.min.js'/>"></script>
-<script src="<c:url value='/assets/js/mail-script.js'/>"></script>
-<script src="<c:url value='/assets/js/jquery.ajaxchimp.min.js'/>"></script>
-<script src="<c:url value='/assets/js/plugins.js'/>"></script>
 <script src="<c:url value='/assets/js/main.js'/>"></script>
 </body>
 </html>

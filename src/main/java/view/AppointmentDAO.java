@@ -1,6 +1,7 @@
 package view;
 
 import model.Appointment;
+import model.AppointmentType;
 import model.Patient;
 
 import java.sql.*;
@@ -230,7 +231,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     public Appointment getAppointmentById(int appointmentId) {
-        String sql = "SELECT * FROM Appointments WHERE appointment_id = ?";
+        String sql = "SELECT a.*, at.type_name, at.description, at.price " +
+                "FROM Appointments a " +
+                "JOIN AppointmentType at ON a.appointmenttype_id = at.appointmenttype_id " +
+                "WHERE a.appointment_id = ?";
         Connection conn = null;
         try {
             conn = getConn();
@@ -238,7 +242,15 @@ public class AppointmentDAO extends DBContext<Appointment> {
                 ps.setInt(1, appointmentId);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    return mapResultSetToAppointment(rs);
+                    Appointment appointment = mapResultSetToAppointment(rs);
+                    AppointmentType type = AppointmentType.builder()
+                            .appointmentTypeId(rs.getInt("appointmenttype_id"))
+                            .typeName(rs.getString("type_name"))
+                            .description(rs.getString("description"))
+                            .price(rs.getBigDecimal("price"))
+                            .build();
+                    appointment.setAppointmentType(type);
+                    return appointment;
                 }
             }
         } catch (SQLException e) {
@@ -249,6 +261,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return null;
     }
+
 
     public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
         List<Appointment> appointments = new ArrayList<>();

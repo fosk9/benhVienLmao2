@@ -19,17 +19,21 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/select2.min.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
     <style>
-        .big-form { max-width: 500px; margin: 0 auto; font-size: 1.3rem; }
+        .big-form { max-width: 600px; margin: 0 auto; font-size: 1.3rem; }
         .big-form label, .big-form input, .big-form select, .big-form button { font-size: 1.2rem; }
         .big-form .form-control { height: 50px; font-size: 1.2rem; }
-        .big-form .btn-primary { padding: 15px 30px; font-size: 1.2rem; background-color: #28A745; border-color: #28A745; }
-        .big-form .btn-primary:hover { background-color: #218838; border-color: #218838; }
-        .big-form .btn-secondary { padding: 15px 30px; font-size: 1.2rem; }
-        h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; color: #28A745; }
-        .select2-container--default .select2-selection--single { height: 50px; font-size: 1.2rem; border-color: #28A745; }
+        .big-form .btn { padding: 15px 30px; font-size: 1.2rem; background-color: #28a745; color: #fff; border-color: #28a745; }
+        .big-form .btn:hover { background-color: #218838; border-color: #218838; }
+        h2 { font-size: 2.2rem; text-align: center; margin-bottom: 30px; color: #28a745; }
+        .select2-container--default .select2-selection--single { height: 50px; font-size: 1.2rem; border-color: #28a745; }
         .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 50px; }
         .select2-container--default .select2-selection--single .select2-selection__arrow { height: 50px; }
         .error-message { color: #dc3545; font-size: 1rem; margin-top: 5px; display: none; }
+        .price-display { font-size: 1.2rem; color: #28a745; margin-top: 10px; font-weight: bold; }
+        .description-display { font-size: 1.1rem; color: #333; margin-top: 5px; }
+        .total-price-section { margin-top: 20px; margin-bottom: 20px; padding: 15px; background-color: #f1f8f1; border-radius: 8px; border: 1px solid #28a745; }
+        .total-price-section .price-display { font-size: 1.3rem; color: #28a745; }
+        .price-warning { color: #dc3545; font-size: 1rem; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -72,98 +76,184 @@
         <c:if test="${not empty errorMsg}">
             <div class="error-message" style="display: block;">${errorMsg}</div>
         </c:if>
-        <div class="card">
-            <div class="card-body">
-                <form action="<c:url value='/appointments/edit'/>" method="post" class="big-form" id="appointmentForm">
-                    <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
-                    <div class="form-group mb-4">
-                        <label for="appointmentTypeSelect">Appointment Type:</label>
-                        <select class="form-control" id="appointmentTypeSelect" name="appointmentTypeSelect" required onchange="toggleCustomType(this)">
-                            <option value="" <c:if test="${empty appointment.appointmentType}">selected</c:if>>-- Select Appointment Type --</option>
-                            <option value="General Checkup" <c:if test="${appointment.appointmentType == 'General Checkup'}">selected</c:if>>General Checkup</option>
-                            <option value="Cardiology Consultation" <c:if test="${appointment.appointmentType == 'Cardiology Consultation'}">selected</c:if>>Cardiology Consultation</option>
-                            <option value="Gastroenterology Consultation" <c:if test="${appointment.appointmentType == 'Gastroenterology Consultation'}">selected</c:if>>Gastroenterology Consultation</option>
-                            <option value="Orthopedic Consultation" <c:if test="${appointment.appointmentType == 'Orthopedic Consultation'}">selected</c:if>>Orthopedic Consultation</option>
-                            <option value="Neurology Consultation" <c:if test="${appointment.appointmentType == 'Neurology Consultation'}">selected</c:if>>Neurology Consultation</option>
-                            <option value="Mental Health Consultation" <c:if test="${appointment.appointmentType == 'Mental Health Consultation'}">selected</c:if>>Mental Health Consultation</option>
-                            <option value="Psychotherapy Session" <c:if test="${appointment.appointmentType == 'Psychotherapy Session'}">selected</c:if>>Psychotherapy Session</option>
-                            <option value="Psychiatric Evaluation" <c:if test="${appointment.appointmentType == 'Psychiatric Evaluation'}">selected</c:if>>Psychiatric Evaluation</option>
-                            <option value="Stress and Anxiety Management" <c:if test="${appointment.appointmentType == 'Stress and Anxiety Management'}">selected</c:if>>Stress and Anxiety Management</option>
-                            <option value="Depression Counseling" <c:if test="${appointment.appointmentType == 'Depression Counseling'}">selected</c:if>>Depression Counseling</option>
-                            <option value="Periodic Health Checkup" <c:if test="${appointment.appointmentType == 'Periodic Health Checkup'}">selected</c:if>>Periodic Health Checkup</option>
-                            <option value="Gynecology Consultation" <c:if test="${appointment.appointmentType == 'Gynecology Consultation'}">selected</c:if>>Gynecology Consultation</option>
-                            <option value="Pediatric Consultation" <c:if test="${appointment.appointmentType == 'Pediatric Consultation'}">selected</c:if>>Pediatric Consultation</option>
-                            <option value="Ophthalmology Consultation" <c:if test="${appointment.appointmentType == 'Ophthalmology Consultation'}">selected</c:if>>Ophthalmology Consultation</option>
-                            <option value="ENT Consultation" <c:if test="${appointment.appointmentType == 'ENT Consultation'}">selected</c:if>>ENT Consultation</option>
-                            <option value="On-Demand Consultation" <c:if test="${appointment.appointmentType == 'On-Demand Consultation'}">selected</c:if>>On-Demand Consultation</option>
-                            <option value="Emergency Consultation" <c:if test="${appointment.appointmentType == 'Emergency Consultation'}">selected</c:if>>Emergency Consultation</option>
-                            <option value="custom" <c:if test="${not empty appointment.appointmentType && appointment.appointmentType != 'General Checkup' && appointment.appointmentType != 'Cardiology Consultation' && appointment.appointmentType != 'Gastroenterology Consultation' && appointment.appointmentType != 'Orthopedic Consultation' && appointment.appointmentType != 'Neurology Consultation' && appointment.appointmentType != 'Mental Health Consultation' && appointment.appointmentType != 'Psychotherapy Session' && appointment.appointmentType != 'Psychiatric Evaluation' && appointment.appointmentType != 'Stress and Anxiety Management' && appointment.appointmentType != 'Depression Counseling' && appointment.appointmentType != 'Periodic Health Checkup' && appointment.appointmentType != 'Gynecology Consultation' && appointment.appointmentType != 'Pediatric Consultation' && appointment.appointmentType != 'Ophthalmology Consultation' && appointment.appointmentType != 'ENT Consultation' && appointment.appointmentType != 'On-Demand Consultation' && appointment.appointmentType != 'Emergency Consultation'}">selected</c:if>>Other...</option>
-                        </select>
-                        <input type="text" class="form-control mt-2" id="customAppointmentType" name="customAppointmentType" placeholder="Enter other appointment type" style="display:none;" value="${not empty appointment.appointmentType && appointment.appointmentType != 'General Checkup' && appointment.appointmentType != 'Cardiology Consultation' && appointment.appointmentType != 'Gastroenterology Consultation' && appointment.appointmentType != 'Orthopedic Consultation' && appointment.appointmentType != 'Neurology Consultation' && appointment.appointmentType != 'Mental Health Consultation' && appointment.appointmentType != 'Psychotherapy Session' && appointment.appointmentType != 'Psychiatric Evaluation' && appointment.appointmentType != 'Stress and Anxiety Management' && appointment.appointmentType != 'Depression Counseling' && appointment.appointmentType != 'Periodic Health Checkup' && appointment.appointmentType != 'Gynecology Consultation' && appointment.appointmentType != 'Pediatric Consultation' && appointment.appointmentType != 'Ophthalmology Consultation' && appointment.appointmentType != 'ENT Consultation' && appointment.appointmentType != 'On-Demand Consultation' && appointment.appointmentType != 'Emergency Consultation' ? appointment.appointmentType : ''}"/>
-                    </div>
-                    <div class="form-group mb-4">
-                        <label for="appointmentDateTime">Appointment Date & Time:</label>
-                        <input type="datetime-local" class="form-control" id="appointmentDateTime" name="appointmentDateTime" required
-                               value="${appointment.appointmentDate != null ? appointment.appointmentDate.toString().replace(' ', 'T').substring(0,16) : ''}">
-                        <div class="mt-2">
-                            <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm dd/MM/yyyy"/>
-                        </div>
-                        <div class="error-message" id="dateError">Invalid appointment time: Cannot update to a past date.</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3 w-100">Update Appointment</button>
-                    <a href="<c:url value='/appointments'/>" class="btn btn-secondary mt-3 w-100">Cancel</a>
-                </form>
+        <form action="<c:url value='/appointments/edit'/>" method="post" class="big-form" id="appointmentForm">
+            <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
+            <div class="form-group mb-4">
+                <label for="appointmentTypeSelect">Appointment Type:</label>
+                <select class="form-control" id="appointmentTypeSelect" name="appointmentTypeId" required>
+                    <option value="">-- Select Appointment Type --</option>
+                    <c:forEach var="type" items="${appointmentTypes}">
+                        <option value="${type.appointmentTypeId}"
+                                data-price="${type.price != null ? type.price : ''}"
+                                data-description="${type.description != null ? type.description : ''}"
+                                data-type-name="${type.typeName != null ? type.typeName : ''}"
+                                <c:if test="${appointment.appointmentType != null && appointment.appointmentType.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
+                                ${type.typeName != null ? type.typeName : 'Unknown Type'}
+                        </option>
+                    </c:forEach>
+                </select>
+                <input type="hidden" id="typeName" name="typeName" value="${appointment.appointmentType != null ? appointment.appointmentType.typeName : ''}">
+                <div class="description-display" id="typeDescription">
+                    <c:if test="${appointment.appointmentType != null && appointment.appointmentType.description != null}">
+                        Description: ${appointment.appointmentType.description}
+                    </c:if>
+                </div>
+                <div class="price-warning" id="priceWarning" style="display:none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Invalid price for selected appointment type. Please select another type.
+                </div>
             </div>
-        </div>
+            <div class="form-group mb-4">
+                <label for="appointmentDate">Appointment Date:</label>
+                <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required
+                       value="${appointment.appointmentDate != null ? appointment.appointmentDate.toString() : ''}">
+                <div class="error-message" id="dateError">Invalid appointment date: Cannot book in the past.</div>
+            </div>
+            <div class="form-group mb-4">
+                <label for="timeSlot">Time Slot:</label>
+                <select class="form-control" id="timeSlot" name="timeSlot" required>
+                    <option value="">-- Select Time Slot --</option>
+                    <option value="Morning" <c:if test="${appointment.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
+                    <option value="Afternoon" <c:if test="${appointment.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
+                    <option value="Evening" <c:if test="${appointment.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
+                </select>
+            </div>
+            <div class="form-group mb-4">
+                <label>Requires Specialist:</label>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="requiresSpecialist" name="requiresSpecialist"
+                           <c:if test="${appointment.requiresSpecialist}">checked</c:if>>
+                    <label class="form-check-label" for="requiresSpecialist">Yes (+50% price)</label>
+                </div>
+            </div>
+            <div class="total-price-section">
+                <div class="price-display" id="priceDisplay">Total Price: <span id="priceValue">0</span> VND</div>
+                <input type="hidden" id="finalPrice" name="finalPrice" value="0">
+            </div>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Update Appointment</button>
+            <a href="<c:url value='/appointments'/>" class="btn btn-secondary mt-3 w-100">Cancel</a>
+        </form>
     </div>
 </main>
 <script>
-    // Initialize form elements and validation
-    window.onload = function() {
+    // Lưu trữ dữ liệu appointmentTypes từ server vào array JS
+    const appointmentTypes = [
+        <c:forEach var="type" items="${appointmentTypes}" varStatus="loop">
+        {
+            appointmentTypeId: ${type.appointmentTypeId},
+            typeName: "${type.typeName}",
+            price: ${type.price != null ? type.price : 0},
+            description: "${type.description != null ? type.description : ''}"
+        }<c:if test="${!loop.last}">,</c:if>
+        </c:forEach>
+    ];
+    console.log("Loaded appointmentTypes:", appointmentTypes);
+
+    function getTypeById(id) {
+        return appointmentTypes.find(t => t.appointmentTypeId == id);
+    }
+
+    function updatePriceAndDescription() {
+        const select = document.getElementById('appointmentTypeSelect');
+        const selectedId = select.value;
+        const specialist = document.getElementById('requiresSpecialist').checked;
+        const priceDisplay = document.getElementById('priceValue');
+        const typeDescription = document.getElementById('typeDescription');
+        const typeNameInput = document.getElementById('typeName');
+        const finalPriceInput = document.getElementById('finalPrice');
+        const priceWarning = document.getElementById('priceWarning');
+
+        priceWarning.style.display = 'none';
+
+        let price = 0;
+        let valid = true;
+        let typeObj = null;
+
+        if (selectedId) {
+            typeObj = getTypeById(selectedId);
+            console.log("Selected type object:", typeObj);
+            if (typeObj && typeof typeObj.price === "number" && typeObj.price > 0) {
+                price = typeObj.price;
+            } else {
+                valid = false;
+            }
+        } else {
+            valid = false;
+        }
+
+        if (specialist && valid) price = price * 1.5;
+
+        priceDisplay.innerText = price.toLocaleString('vi-VN');
+        finalPriceInput.value = price;
+
+        // Hiển thị mô tả
+        if (typeObj && typeObj.description) {
+            typeDescription.innerText = "Description: " + typeObj.description;
+        } else {
+            typeDescription.innerText = "";
+        }
+        // Gán typeName vào input ẩn
+        typeNameInput.value = typeObj && typeObj.typeName ? typeObj.typeName : "";
+
+        // Show/hide warning
+        priceWarning.style.display = valid ? 'none' : '';
+        console.log("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
         const now = new Date();
         const pad = n => n < 10 ? '0' + n : n;
         const yyyy = now.getFullYear();
         const MM = pad(now.getMonth() + 1);
         const dd = pad(now.getDate());
-        const hh = pad(now.getHours());
-        const mm = pad(now.getMinutes());
-        const minValue = `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
-        const dateInput = document.getElementById('appointmentDateTime');
-        dateInput.setAttribute('min', minValue);
+        const minDate = `${yyyy}-${MM}-${dd}`;
+        const dateInput = document.getElementById('appointmentDate');
+        dateInput.setAttribute('min', minDate);
 
-        // Initialize Select2 for searchable dropdown
-        $('#appointmentTypeSelect').select2({
-            placeholder: "-- Select Appointment Type --",
-            allowClear: true,
-            width: '100%'
-        });
+        // Initialize Select2
+        function initSelect2IfReady() {
+            if (window.jQuery && typeof $.fn.select2 === 'function') {
+                try {
+                    $('#appointmentTypeSelect').select2({
+                        placeholder: "-- Select Appointment Type --",
+                        allowClear: true,
+                        width: '100%'
+                    });
+                } catch (e) {
+                    console.error('Failed to initialize Select2:', e);
+                    $('#appointmentTypeSelect').css('width', '100%');
+                }
+            } else {
+                $('#appointmentTypeSelect').css('width', '100%');
+                if (!window.jQuery) {
+                    console.warn('jQuery is not loaded. Falling back to default select.');
+                } else {
+                    console.warn('Select2 is not loaded. Falling back to default select.');
+                }
+            }
+        }
+        initSelect2IfReady();
 
-        // Ensure custom input is hidden or shown based on selection
-        toggleCustomType(document.getElementById('appointmentTypeSelect'));
+        // Bind events
+        document.getElementById('appointmentTypeSelect').addEventListener('change', updatePriceAndDescription);
+        document.getElementById('requiresSpecialist').addEventListener('change', updatePriceAndDescription);
+
+        // Trigger initial update
+        updatePriceAndDescription();
 
         // Client-side validation for past dates
         document.getElementById('appointmentForm').addEventListener('submit', function(event) {
             const selectedDate = new Date(dateInput.value);
-            if (selectedDate < now) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate < today) {
                 event.preventDefault();
                 document.getElementById('dateError').style.display = 'block';
             } else {
                 document.getElementById('dateError').style.display = 'none';
             }
         });
-    };
-
-    // Toggle custom appointment type input
-    function toggleCustomType(select) {
-        const customInput = document.getElementById('customAppointmentType');
-        if (select.value === 'custom') {
-            customInput.style.display = 'block';
-            customInput.setAttribute('required', 'required');
-        } else {
-            customInput.style.display = 'none';
-            customInput.removeAttribute('required');
-        }
-    }
+    });
 </script>
 <footer>
     <div class="footer-wrappr section-bg3">
