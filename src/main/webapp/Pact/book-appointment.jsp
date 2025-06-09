@@ -53,8 +53,14 @@
                 <nav>
                   <ul id="navigation">
                     <li><a href="<c:url value='/pactHome'/>">Home</a></li>
-                    <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>
-                    <li><a href="<c:url value='/logout'/>">Logout</a></li>
+                    <c:if test="${sessionScope.patientId != null}">
+                      <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>
+                      <li><a href="<c:url value='/logout'/>">Logout</a></li>
+                    </c:if>
+                    <c:if test="${sessionScope.patientId == null}">
+                      <li><a href="<c:url value='/login'/>">Login</a></li>
+                      <li><a href="<c:url value='/register'/>">Register</a></li>
+                    </c:if>
                   </ul>
                 </nav>
               </div>
@@ -75,6 +81,13 @@
       <div class="error-message" style="display: block;">${errorMsg}</div>
     </c:if>
     <form action="<c:url value='/book-appointment'/>" method="post" class="big-form" id="appointmentForm">
+      <c:if test="${sessionScope.patientId == null}">
+        <div class="form-group mb-4">
+          <label for="email">Email:</label>
+          <input type="email" class="form-control" id="email" name="email" required value="${formData.email}">
+          <div class="error-message" id="emailError">Invalid email format.</div>
+        </div>
+      </c:if>
       <div class="form-group mb-4">
         <label for="appointmentTypeSelect">Appointment Type:</label>
         <select class="form-control" id="appointmentTypeSelect" name="appointmentTypeId" required>
@@ -84,13 +97,13 @@
                     data-price="${type.price != null ? type.price : ''}"
                     data-description="${type.description != null ? type.description : ''}"
                     data-type-name="${type.typeName != null ? type.typeName : ''}"
-                    <c:if test="${type.appointmentTypeId == selectedTypeId}">selected</c:if>>
+                    <c:if test="${type.appointmentTypeId == formData.appointmentTypeId || type.appointmentTypeId == selectedTypeId}">selected</c:if>>
                 ${type.typeName != null ? type.typeName : 'Unknown Type'}
             </option>
           </c:forEach>
         </select>
-        <input type="hidden" id="typeName" name="typeName" value="">
-        <div class="description-display" id="typeDescription"></div>
+        <input type="hidden" id="typeName" name="typeName" value="${formData.typeName}">
+        <div class="description-display" id="typeDescription">${formData.typeDescription}</div>
         <div class="price-warning" id="priceWarning" style="display:none;">
           <i class="fas fa-exclamation-triangle"></i>
           Invalid price for selected appointment type. Please select another type.
@@ -98,28 +111,28 @@
       </div>
       <div class="form-group mb-4">
         <label for="appointmentDate">Appointment Date:</label>
-        <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required value="${param.appointmentDate}">
+        <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required value="${formData.appointmentDate != null ? formData.appointmentDate : param.appointmentDate}">
         <div class="error-message" id="dateError">Invalid appointment date: Cannot book in the past.</div>
       </div>
       <div class="form-group mb-4">
         <label for="timeSlot">Time Slot:</label>
         <select class="form-control" id="timeSlot" name="timeSlot" required>
           <option value="">-- Select Time Slot --</option>
-          <option value="Morning" <c:if test="${param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
-          <option value="Afternoon" <c:if test="${param.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
-          <option value="Evening" <c:if test="${param.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
+          <option value="Morning" <c:if test="${formData.timeSlot == 'Morning' || param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
+          <option value="Afternoon" <c:if test="${formData.timeSlot == 'Afternoon' || param.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
+          <option value="Evening" <c:if test="${formData.timeSlot == 'Evening' || param.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
         </select>
       </div>
       <div class="form-group mb-4">
         <label>Requires Specialist:</label>
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="requiresSpecialist" name="requiresSpecialist" <c:if test="${requiresSpecialist}">checked</c:if>>
+          <input type="checkbox" class="form-check-input" id="requiresSpecialist" name="requiresSpecialist" <c:if test="${formData.requiresSpecialist || requiresSpecialist}">checked</c:if>>
           <label class="form-check-label" for="requiresSpecialist">Yes (+50% price)</label>
         </div>
       </div>
       <div class="total-price-section">
-        <div class="price-display" id="priceDisplay">Total Price: <span id="priceValue">0</span> VND</div>
-        <input type="hidden" id="finalPrice" name="finalPrice" value="0">
+        <div class="price-display" id="priceDisplay">Total Price: <span id="priceValue">${formData.finalPrice != null ? formData.finalPrice : '0'}</span> VND</div>
+        <input type="hidden" id="finalPrice" name="finalPrice" value="${formData.finalPrice != null ? formData.finalPrice : '0'}">
       </div>
       <button type="submit" class="btn btn-primary mt-3 w-100">Submit Appointment</button>
     </form>
@@ -129,12 +142,12 @@
   // Lưu trữ dữ liệu appointmentTypes từ server vào array JS
   const appointmentTypes = [
     <c:forEach var="type" items="${appointmentTypes}" varStatus="loop">
-      {
-        appointmentTypeId: ${type.appointmentTypeId},
-        typeName: "${type.typeName}",
-        price: ${type.price != null ? type.price : 0},
-        description: "${type.description != null ? type.description : ''}"
-      }<c:if test="${!loop.last}">,</c:if>
+    {
+      appointmentTypeId: ${type.appointmentTypeId},
+      typeName: "${type.typeName}",
+      price: ${type.price != null ? type.price : 0},
+      description: "${type.description != null ? type.description : ''}"
+    }<c:if test="${!loop.last}">,</c:if>
     </c:forEach>
   ];
   console.log("Loaded appointmentTypes:", appointmentTypes);

@@ -112,6 +112,62 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return null;
     }
 
+    public int insertAndReturnID(Appointment appointment) {
+        String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, appointment.getPatientId());
+                // Set doctor_id to NULL if 0 (unassigned)
+                if (appointment.getDoctorId() == 0) {
+                    stmt.setNull(2, Types.INTEGER);
+                } else {
+                    stmt.setInt(2, appointment.getDoctorId());
+                }
+                stmt.setInt(3, appointment.getAppointmentTypeId());
+                stmt.setDate(4, appointment.getAppointmentDate());
+                stmt.setString(5, appointment.getTimeSlot());
+                stmt.setBoolean(6, appointment.isRequiresSpecialist());
+                stmt.setString(7, appointment.getStatus());
+                stmt.setTimestamp(8, appointment.getCreatedAt());
+                stmt.setTimestamp(9, appointment.getUpdatedAt());
+                int tempId = takeID();
+                if (tempId == -1) {
+                    LOGGER.severe("Failed to fetch last appointment ID for patient_id=" + appointment.getPatientId());
+                    throw new RuntimeException("Failed to insert appointment: No rows affected");
+                }
+                LOGGER.info("Found last appointment ID: " + tempId);
+                return tempId;
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("SQL Insert Exception for patient_id=" + appointment.getPatientId() + ": " + e.getMessage());
+            throw new RuntimeException("Failed to insert appointment: " + e.getMessage(), e);
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    public int takeID() {
+        String query = "SELECT TOP 1 appointment_id FROM Appointments ORDER BY appointment_id DESC";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("appointment_id");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching last appointment ID: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch last appointment ID", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return -1; // Return -1 if no appointments found
+    }
+
     @Override
     public int insert(Appointment appointment) {
         String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";

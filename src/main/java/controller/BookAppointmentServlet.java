@@ -7,15 +7,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Appointment;
+import model.Patient;
 import view.AppointmentDAO;
 import view.AppointmentTypeDAO;
+import view.PatientDAO;
 import model.AppointmentType;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @WebServlet("/book-appointment")
@@ -45,13 +49,8 @@ public class BookAppointmentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-//        if (session == null || session.getAttribute("patientId") == null) {
-//            response.sendRedirect(request.getContextPath() + "/login");
-//            return;
-//        }
-
         // Load all appointment types
+
         AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
         List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
         if (appointmentTypes.isEmpty()) {
@@ -62,19 +61,19 @@ public class BookAppointmentServlet extends HttpServlet {
         }
         request.setAttribute("appointmentTypes", appointmentTypes);
 
+        // Restore form data if available
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("appointmentFormData") != null) {
+            request.setAttribute("formData", session.getAttribute("appointmentFormData"));
+        }
+
         // Forward to JSP
         request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("patientId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        int patientId = (int) session.getAttribute("patientId");
+        HttpSession session = request.getSession(true);
         AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
         List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
         if (appointmentTypes.isEmpty()) {
@@ -87,14 +86,15 @@ public class BookAppointmentServlet extends HttpServlet {
 
         try {
             // Retrieve form parameters
+            String email = request.getParameter("email");
             int appointmentTypeId = Integer.parseInt(request.getParameter("appointmentTypeId"));
             String typeName = request.getParameter("typeName");
             String appointmentDateStr = request.getParameter("appointmentDate");
             String timeSlot = request.getParameter("timeSlot");
             boolean requiresSpecialist = "on".equals(request.getParameter("requiresSpecialist"));
+            String finalPriceStr = request.getParameter("finalPrice");
 
             // Retrieve client-side final price
-            String finalPriceStr = request.getParameter("finalPrice");
             BigDecimal clientFinalPrice = null;
             if (finalPriceStr != null && !finalPriceStr.isEmpty()) {
                 try {
@@ -105,7 +105,7 @@ public class BookAppointmentServlet extends HttpServlet {
                 }
             }
 
-            LOGGER.info("Received form data: appointmentTypeId=" + appointmentTypeId + ", typeName=" + typeName +
+            LOGGER.info("Received form data: email=" + email + ", appointmentTypeId=" + appointmentTypeId + ", typeName=" + typeName +
                     ", appointmentDate=" + appointmentDateStr + ", timeSlot=" + timeSlot +
                     ", requiresSpecialist=" + requiresSpecialist + ", clientFinalPrice=" + clientFinalPrice);
 
@@ -119,7 +119,6 @@ public class BookAppointmentServlet extends HttpServlet {
                 throw new IllegalArgumentException("Time slot is required");
             }
 
-            // Validate time slot
             if (!List.of("Morning", "Afternoon", "Evening").contains(timeSlot)) {
                 throw new IllegalArgumentException("Invalid time slot");
             }
@@ -131,14 +130,55 @@ public class BookAppointmentServlet extends HttpServlet {
             }
 
             // Calculate final price with specialist multiplier
+            BigDecimal serverPrice = price;
             if (requiresSpecialist) {
-                price = price.multiply(new BigDecimal("1.5"));
+                serverPrice = price.multiply(new BigDecimal("1.5"));
             }
 
             // Validate client-side price against server-side calculation
-            if (clientFinalPrice != null && price.compareTo(clientFinalPrice) != 0) {
-                LOGGER.warning("Client price mismatch: client=" + clientFinalPrice + ", server=" + price);
-                clientFinalPrice = price; // Use server-calculated price
+            if (clientFinalPrice != null && serverPrice.compareTo(clientFinalPrice) != 0) {
+                LOGGER.warning("Client price mismatch: client=" + clientFinalPrice + ", server=" + serverPrice);
+                clientFinalPrice = serverPrice; // Use server-calculated price
+            }
+
+            // Check if user is logged in
+            Integer patientId = (Integer) session.getAttribute("patientId");
+            PatientDAO patientDAO = new PatientDAO();
+
+            if (patientId == null) {
+                // Non-logged-in user: validate email
+                if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                    throw new IllegalArgumentException("Invalid email format");
+                }
+
+
+                // Check if email exists
+                Patient patient = patientDAO.getPatientByEmail(email);
+                if (patient == null) {
+                    // Email not found: store form data and redirect to register
+                    Map<String, Object> formData = new HashMap<>();
+                    formData.put("email", email);
+                    formData.put("appointmentTypeId", appointmentTypeId);
+                    formData.put("typeName", typeName);
+                    formData.put("appointmentDate", appointmentDateStr);
+                    formData.put("timeSlot", timeSlot);
+                    formData.put("requiresSpecialist", requiresSpecialist);
+                    formData.put("finalPrice", serverPrice.toString());
+                    // Find type description
+                    AppointmentType selectedType = appointmentTypes.stream()
+                            .filter(type -> type.getAppointmentTypeId() == appointmentTypeId)
+                            .findFirst()
+                            .orElse(null);
+                    formData.put("typeDescription", selectedType != null ? selectedType.getDescription() : "");
+
+                    session.setAttribute("appointmentFormData", formData);
+                    response.sendRedirect(request.getContextPath() + "/register");
+                    return;
+                } else {
+                    // Email exists: use patient ID
+                    patientId = patient.getPatientId();
+                    session.setAttribute("bookingEmail", email);
+                }
             }
 
             // Create appointment
@@ -155,11 +195,11 @@ public class BookAppointmentServlet extends HttpServlet {
 
             // Save to database
             AppointmentDAO appointmentDAO = new AppointmentDAO();
-            int rowsAffected = appointmentDAO.insert(appointment);
-            LOGGER.info("Successfully inserted appointment for patientId=" + patientId);
+            int appointmentId = appointmentDAO.insertAndReturnID(appointment);
+            LOGGER.info("Successfully inserted appointment for patientId=" + patientId + ", appointmentId=" + appointmentId);
 
-            // Redirect to appointments list
-            response.sendRedirect(request.getContextPath() + "/appointments");
+            // Redirect to appointment details
+            response.sendRedirect(request.getContextPath() + "/appointments/details?id=" + appointmentId);
         } catch (IllegalArgumentException e) {
             LOGGER.warning("Invalid input: " + e.getMessage());
             request.setAttribute("errorMsg", e.getMessage());
@@ -168,39 +208,22 @@ public class BookAppointmentServlet extends HttpServlet {
             request.setAttribute("appointmentTypes", appointmentTypes);
 
             // Send back form data for redisplay
-            String appointmentTypeIdStr = request.getParameter("appointmentTypeId");
-            request.setAttribute("selectedTypeId", appointmentTypeIdStr);
-            request.setAttribute("requiresSpecialist", "on".equals(request.getParameter("requiresSpecialist")));
-
-            // Calculate and send server-side price
-            if (appointmentTypeIdStr != null) {
-                try {
-                    int appointmentTypeId = Integer.parseInt(appointmentTypeIdStr);
-                    BigDecimal price = getPriceByTypeId(appointmentTypes, appointmentTypeId);
-                    if (price != null) {
-                        if ("on".equals(request.getParameter("requiresSpecialist"))) {
-                            price = price.multiply(new BigDecimal("1.5"));
-                        }
-                        request.setAttribute("finalPrice", price.toString());
-                    } else {
-                        request.setAttribute("finalPrice", "0");
-                    }
-                } catch (NumberFormatException ex) {
-                    LOGGER.warning("Invalid appointmentTypeId: " + appointmentTypeIdStr);
-                    request.setAttribute("finalPrice", "0");
-                }
-            } else {
-                request.setAttribute("finalPrice", "0");
-            }
+            Map<String, Object> formData = new HashMap<>();
+            formData.put("email", request.getParameter("email"));
+            formData.put("appointmentTypeId", request.getParameter("appointmentTypeId"));
+            formData.put("typeName", request.getParameter("typeName"));
+            formData.put("appointmentDate", request.getParameter("appointmentDate"));
+            formData.put("timeSlot", request.getParameter("timeSlot"));
+            formData.put("requiresSpecialist", "on".equals(request.getParameter("requiresSpecialist")));
+            formData.put("finalPrice", request.getParameter("finalPrice"));
+            request.setAttribute("formData", formData);
 
             request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response);
         } catch (RuntimeException e) {
             LOGGER.severe("Error processing appointment: " + e.getMessage());
             request.setAttribute("errorMsg", "Unable to save appointment: " + e.getMessage());
             request.setAttribute("appointmentTypes", appointmentTypes);
-            request.setAttribute("selectedTypeId", request.getParameter("appointmentTypeId"));
-            request.setAttribute("requiresSpecialist", "on".equals(request.getParameter("requiresSpecialist")));
-            request.setAttribute("finalPrice", request.getParameter("finalPrice"));
+            request.setAttribute("formData", session.getAttribute("appointmentFormData"));
             request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.severe("Unexpected error: " + e.getMessage());
