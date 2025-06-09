@@ -2,11 +2,14 @@ package view;
 
 import model.AppointmentType;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class AppointmentTypeDAO extends DBContext<AppointmentType> {
+    private static final Logger LOGGER = Logger.getLogger(AppointmentTypeDAO.class.getName());
 
     @Override
     public List<AppointmentType> select() {
@@ -85,6 +88,36 @@ public class AppointmentTypeDAO extends DBContext<AppointmentType> {
             return 0;
         }
     }
+
+    public BigDecimal getPrice(int appointmenttype_id) {
+        String sql = "SELECT price FROM AppointmentType WHERE appointmenttype_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, appointmenttype_id);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    BigDecimal price = rs.getBigDecimal("price");
+                    if (price == null) {
+                        LOGGER.warning("Null price found for appointmenttype_id=" + appointmenttype_id);
+                    } else {
+                        LOGGER.info("Retrieved price=" + price + " for appointmenttype_id=" + appointmenttype_id);
+                    }
+                    return price;
+                } else {
+                    LOGGER.warning("No price found for appointmenttype_id=" + appointmenttype_id);
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error retrieving price for appointmenttype_id=" + appointmenttype_id + ": " + e.getMessage());
+            throw new RuntimeException("Failed to retrieve price", e);
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
 
     private AppointmentType mapResultSetToAppointmentType(ResultSet rs) throws SQLException {
         return AppointmentType.builder()

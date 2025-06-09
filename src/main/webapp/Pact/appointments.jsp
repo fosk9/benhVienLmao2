@@ -70,7 +70,9 @@
           <tr>
             <th>ID</th>
             <th>Appointment Date</th>
+            <th>Time Slot</th>
             <th>Type</th>
+            <th>Requires Specialist</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -80,9 +82,25 @@
             <tr>
               <td>${appointment.appointmentId}</td>
               <td>
-                <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm dd/MM/yyyy"/>
+                <fmt:formatDate value="${appointment.appointmentDate}" pattern="yyyy-MM-dd"/>
               </td>
-              <td>${appointment.appointmentType}</td>
+              <td>${appointment.timeSlot}</td>
+              <td>
+                <c:choose>
+                  <c:when test="${not empty appointment.appointmentType}">
+                    ${appointment.appointmentType.typeName}
+                  </c:when>
+                  <c:otherwise>
+                    N/A
+                  </c:otherwise>
+                </c:choose>
+              </td>
+              <td>
+                <c:choose>
+                  <c:when test="${appointment.requiresSpecialist}">Yes</c:when>
+                  <c:otherwise>No</c:otherwise>
+                </c:choose>
+              </td>
               <td>${appointment.status}</td>
               <td>
                 <c:set var="now" value="<%= new java.sql.Timestamp(System.currentTimeMillis()) %>" />

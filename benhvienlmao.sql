@@ -143,9 +143,8 @@ CREATE TABLE AppointmentType
     appointmenttype_id INT PRIMARY KEY IDENTITY(1,1),
     type_name NVARCHAR(100) NOT NULL,
     description NVARCHAR(255),
-    price DECIMAL(10, 2) NOT NULL
+    price DECIMAL(12, 2) NOT NULL
 );
-GO
 
 -- Appointments (restricted to Morning/Afternoon/Evening)
 CREATE TABLE Appointments
@@ -298,32 +297,26 @@ VALUES (1, 'LIC12345', 1, 4.5),
        (3, 'LIC34567', 1, 4.3),
        (4, 'LIC45678', 0, 4.8);
 GO
+-- Insert dental AppointmentType with 2025 Vietnam market prices
 INSERT INTO AppointmentType (type_name, description, price)
 VALUES 
-    ('General Checkup', 'Routine health examination', 100.00),
-    ('Cardiology Consultation', 'Heart-related consultation', 200.00),
-    ('Gastroenterology Consultation', 'Digestive system consultation', 200.00),
-    ('Orthopedic Consultation', 'Bone and joint consultation', 200.00),
-    ('Neurology Consultation', 'Nervous system consultation', 200.00),
-    ('Mental Health Consultation', 'Mental health evaluation', 150.00),
-    ('Psychotherapy Session', 'Therapy session for mental health', 150.00),
-    ('Psychiatric Evaluation', 'Comprehensive psychiatric assessment', 200.00),
-    ('Stress and Anxiety Management', 'Counseling for stress and anxiety', 150.00),
-    ('Depression Counseling', 'Counseling for depression', 150.00),
-    ('Periodic Health Checkup', 'Regular health checkup', 120.00),
-    ('Gynecology Consultation', 'Women’s health consultation', 180.00),
-    ('Pediatric Consultation', 'Child health consultation', 150.00),
-    ('Ophthalmology Consultation', 'Eye examination', 180.00),
-    ('ENT Consultation', 'Ear, nose, and throat consultation', 180.00),
-    ('On-Demand Consultation', 'Immediate consultation', 150.00),
-    ('Emergency Consultation', 'Urgent medical consultation', 250.00),
-    ('Dental Checkup', 'Routine dental examination', 80.00),
-    ('Teeth Cleaning', 'Professional teeth cleaning', 100.00),
-    ('Dental Filling', 'Cavity filling procedure', 120.00),
-    ('Root Canal Treatment', 'Advanced dental procedure', 300.00),
-    ('Tooth Extraction', 'Removal of tooth', 150.00),
-    ('Orthodontic Consultation', 'Braces and alignment consultation', 200.00);
+    ('Dental Checkup', 'Routine dental examination and consultation', 200000.00),
+    ('Teeth Cleaning', 'Professional scaling and polishing', 800000.00),
+    ('Teeth Whitening', 'Laser or home kit teeth whitening', 3000000.00),
+    ('Composite Filling', 'Filling for small cavities using composite resin', 400000.00),
+    ('Inlay/Onlay Filling', 'Aesthetic filling for larger cavities', 2000000.00),
+    ('Tooth Extraction', 'Simple tooth removal', 900000.00),
+    ('Wisdom Tooth Extraction', 'Surgical removal of wisdom teeth', 3500000.00),
+    ('Root Canal Treatment', 'Treatment for infected tooth roots', 5000000.00),
+    ('Porcelain Veneer', 'Cosmetic veneer for chipped or stained teeth', 8400000.00),
+    ('Zirconia Crown', 'Durable crown for damaged teeth', 7000000.00),
+    ('Single Dental Implant', 'Titanium implant with crown for one tooth', 27500000.00),
+    ('All-on-4 Implants', 'Full-arch restoration with 4 implants per arch', 117600000.00),
+    ('Orthodontic Consultation', 'Consultation for braces or aligners', 1800000.00),
+    ('Traditional Braces', 'Metal braces for teeth alignment', 36000000.00),
+    ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
+
 
 -- Insert sample Appointments (updated time slots)
 INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status, created_at, updated_at)
