@@ -112,6 +112,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return null;
     }
 
+    // Insert appointment and return the last inserted ID
     public int insertAndReturnID(Appointment appointment) {
         String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
@@ -148,6 +149,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
     }
 
+    // Fetch the last appointment ID
     public int takeID() {
         String query = "SELECT TOP 1 appointment_id FROM Appointments ORDER BY appointment_id DESC";
         Connection conn = null;
@@ -168,6 +170,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return -1; // Return -1 if no appointments found
     }
 
+    // Insert appointment with error handling
     @Override
     public int insert(Appointment appointment) {
         String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
