@@ -64,10 +64,11 @@ public class GoogleLoginServlet extends HttpServlet {
                 return;
             }
 
+            String username = email.split("@")[0];
             // Nếu chưa có trong cả 2 bảng thì mới insert
             String pass = generatePass(6);
             Patient newPatient = Patient.builder()
-                    .username(email)
+                    .username(username)
                     .passwordHash(pass)
                     .fullName(name)
                     .email(email)
