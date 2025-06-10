@@ -9,11 +9,15 @@ import model.Employee;
 import view.EmployeeDAO;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 @WebServlet("/UpdateEmployeeAvatar")
-@MultipartConfig
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,        // 1MB: file sẽ được lưu tạm vào disk nếu vượt ngưỡng này
+        maxFileSize = 5 * 1024 * 1024,          // Giới hạn: 5MB cho mỗi file
+        maxRequestSize = 10 * 1024 * 1024       // Tổng dung lượng tất cả request parts: 10MB
+)
+
 public class UpdateEmployeeAvatarServlet extends HttpServlet {
 
     private Cloudinary cloudinary;
@@ -39,24 +43,40 @@ public class UpdateEmployeeAvatarServlet extends HttpServlet {
 
         try {
             Part avatarPart = request.getPart("avatar");
-            InputStream avatarStream = avatarPart.getInputStream();
-            byte[] bytes = avatarStream.readAllBytes();
 
+            // 1. Validate content type
+            String contentType = avatarPart.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                request.setAttribute("message", "Only image files are allowed.");
+                request.setAttribute("employee", employee);
+                request.getRequestDispatcher("my-profile-employee.jsp").forward(request, response);
+                return;
+            }
+
+            // 2. Validate file size
+            long fileSize = avatarPart.getSize();
+            if (fileSize > 5 * 1024 * 1024) {
+                request.setAttribute("message", "Avatar file must be under 5MB.");
+                request.setAttribute("employee", employee);
+                request.getRequestDispatcher("my-profile-employee.jsp").forward(request, response);
+                return;
+            }
+
+            // 3. Upload to Cloudinary
+            byte[] bytes = avatarPart.getInputStream().readAllBytes();
             Map<String, Object> uploadParams = ObjectUtils.asMap(
                     "resource_type", "auto",
-                    "public_id", "employee_avatar_" + employee.getEmployeeId() + "_" + System.currentTimeMillis(),
+                    "public_id", "employee_avatar_" + employee.getEmployeeId(),
                     "overwrite", true
             );
-
             Map<String, Object> uploadResult = cloudinary.uploader().upload(bytes, uploadParams);
             String uploadedUrl = (String) uploadResult.get("secure_url");
 
-            // Update avatar URL
+            // 4. Update DB
             employee.setEmployeeAvaUrl(uploadedUrl);
-            EmployeeDAO dao = new EmployeeDAO();
-            dao.update(employee);
-
+            new EmployeeDAO().update(employee);
             session.setAttribute("account", employee);
+
             request.setAttribute("employee", employee);
             request.setAttribute("message", "Avatar updated successfully!");
             request.getRequestDispatcher("my-profile-employee.jsp").forward(request, response);

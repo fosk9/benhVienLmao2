@@ -18,13 +18,26 @@
     <c:if test="${not empty message}">
         <div class="alert alert-info alert-dismissible fade show" role="alert">
                 ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
 
     <c:if test="${not empty patient}">
+        <div class="mb-4 text-center">
+            <c:choose>
+                <c:when test="${not empty patient.patientAvaUrl}">
+                    <img src="${patient.patientAvaUrl}" alt="Avatar" class="img-thumbnail"
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                </c:when>
+                <c:otherwise>
+                    <img src="assets/img/default-avatar.png" alt="Default Avatar" class="img-thumbnail"
+                         style="width: 150px; height: 150px;">
+                </c:otherwise>
+            </c:choose>
+        </div>
+
         <form action="UpdatePatientDetails" method="post">
             <input type="hidden" name="patientId" value="${patient.patientId}"/>
+            <input type="hidden" name="patient_ava_url" value="${patient.patientAvaUrl}"/>
 
             <div class="mb-3">
                 <label>Username</label>
@@ -34,7 +47,8 @@
 
             <div class="mb-3">
                 <label>Password</label>
-                <input type="password" name="password_hash" class="form-control" value="${patient.passwordHash}" disabled/>
+                <input type="password" name="password_hash" class="form-control" value="${patient.passwordHash}"
+                       disabled/>
                 <input type="hidden" name="password_hash" value="${patient.passwordHash}"/>
             </div>
 
