@@ -7,10 +7,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import validation.PatientValidator;
 import view.PatientDAO;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @WebServlet(name = "UpdateMyProfilePatientServlet", urlPatterns = {"/UpdateMyProfilePatient"})
 public class UpdateMyProfilePatientServlet extends HttpServlet {
@@ -18,7 +20,7 @@ public class UpdateMyProfilePatientServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy dữ liệu từ form
+        // Get parameters from the request
         int patientId = Integer.parseInt(request.getParameter("patientId"));
         String fullName = request.getParameter("fullName");
         String dobStr = request.getParameter("dob");
@@ -28,12 +30,67 @@ public class UpdateMyProfilePatientServlet extends HttpServlet {
         String insuranceNumber = request.getParameter("insuranceNumber");
         String emergencyContact = request.getParameter("emergencyContact");
 
-        // Lấy đối tượng cũ từ session
         HttpSession session = request.getSession();
         Patient oldPatient = (Patient) session.getAttribute("account");
 
         try {
-            // Tạo đối tượng mới bằng builder
+            // ✅ Validate input data
+            if (!PatientValidator.isValidFullName(fullName)) {
+                request.setAttribute("message", "Invalid full name.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            Date dob = null;
+            try {
+                dob = Date.valueOf(dobStr);
+                if (!PatientValidator.isValidDob(dob)) {
+                    throw new IllegalArgumentException();
+                }
+            } catch (Exception ex) {
+                request.setAttribute("message", "Invalid date of birth.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            if (!PatientValidator.isValidGender(gender)) {
+                request.setAttribute("message", "Invalid gender.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            if (!PatientValidator.isValidPhone(phone)) {
+                request.setAttribute("message", "Invalid phone number.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            if (!PatientValidator.isValidAddress(address)) {
+                request.setAttribute("message", "Invalid address.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            if (!PatientValidator.isValidInsuranceNumber(insuranceNumber)) {
+                request.setAttribute("message", "Invalid insurance number.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            if (!PatientValidator.isValidEmergencyContact(emergencyContact)) {
+                request.setAttribute("message", "Invalid emergency contact.");
+                request.setAttribute("patient", oldPatient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            // ✅ Build updated Patient object
             Patient updatedPatient = Patient.builder()
                     .patientId(patientId)
                     .username(oldPatient.getUsername())
@@ -41,7 +98,7 @@ public class UpdateMyProfilePatientServlet extends HttpServlet {
                     .email(oldPatient.getEmail())
                     .patientAvaUrl(oldPatient.getPatientAvaUrl())
                     .fullName(fullName)
-                    .dob(Date.valueOf(dobStr))
+                    .dob(dob)
                     .gender(gender)
                     .phone(phone)
                     .address(address)
@@ -49,14 +106,14 @@ public class UpdateMyProfilePatientServlet extends HttpServlet {
                     .emergencyContact(emergencyContact)
                     .build();
 
-            // Cập nhật vào DB
+            // ✅ Update DB
             PatientDAO dao = new PatientDAO();
             dao.update(updatedPatient);
 
-            // Cập nhật lại session
+            // ✅ Update session
             session.setAttribute("account", updatedPatient);
 
-            // Forward lại với thông báo
+            // ✅ Forward to JSP with success message
             request.setAttribute("patient", updatedPatient);
             request.setAttribute("message", "Your profile has been updated successfully.");
             request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
