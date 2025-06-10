@@ -318,31 +318,6 @@ VALUES
 GO
 
 
--- Insert sample Appointments (updated time slots)
-INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status, created_at, updated_at)
-VALUES 
-    (1, 1, 1, '2025-05-30', 'Morning', 'Pending', GETDATE(), GETDATE()),
-    (2, 1, 2, '2025-05-10', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
-    (3, 1, 3, '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
-    (4, 1, 4, '2025-06-04', 'Morning', 'Cancelled', GETDATE(), GETDATE()),
-    (5, 1, 5, '2025-06-15', 'Afternoon', 'Pending', GETDATE(), GETDATE()),
-    (1, 1, 6, '2025-05-29', 'Morning', 'Completed', GETDATE(), GETDATE()),
-    (2, 1, 7, '2025-06-20', 'Evening', 'Pending', GETDATE(), GETDATE()),
-    (3, 1, 8, '2025-05-15', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
-    (4, 1, 9, '2025-06-09', 'Morning', 'Cancelled', GETDATE(), GETDATE()),
-    (5, 1, 10, '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
-    (1, 1, 11, '2025-06-01', 'Morning', 'Pending', GETDATE(), GETDATE()),
-    (2, 1, 12, '2025-05-20', 'Afternoon', 'Confirmed', GETDATE(), GETDATE()),
-    (3, 1, 13, '2025-05-29', 'Morning', 'Completed', GETDATE(), GETDATE()),
-    (4, 1, 14, '2025-06-14', 'Evening', 'Cancelled', GETDATE(), GETDATE()),
-    (5, 1, 15, '2025-06-30', 'Afternoon', 'Pending', GETDATE(), GETDATE()),
-    (1, 1, 16, '2025-05-30', 'Morning', 'Confirmed', GETDATE(), GETDATE()),
-    (2, 1, 17, '2025-05-29', 'Evening', 'Completed', GETDATE(), GETDATE()),
-    (3, 1, 1, '2025-06-18', 'Afternoon', 'Cancelled', GETDATE(), GETDATE()),
-    (4, 1, 2, '2025-06-05', 'Morning', 'Pending', GETDATE(), GETDATE()),
-    (5, 1, 3, '2025-05-25', 'Evening', 'Confirmed', GETDATE(), GETDATE());
-GO
-
 -- Insert sample Doctor Shifts (example with rest requests)
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status, manager_id, requested_at)
 VALUES (1, '2025-06-01', 'Morning', 'PendingApproval', 9, GETDATE()),
