@@ -118,7 +118,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         Connection conn = null;
         try {
             conn = getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setInt(1, appointment.getPatientId());
                 // Set doctor_id to NULL if 0 (unassigned)
                 if (appointment.getDoctorId() == 0) {
@@ -133,13 +133,21 @@ public class AppointmentDAO extends DBContext<Appointment> {
                 stmt.setString(7, appointment.getStatus());
                 stmt.setTimestamp(8, appointment.getCreatedAt());
                 stmt.setTimestamp(9, appointment.getUpdatedAt());
-                int tempId = takeID();
-                if (tempId == -1) {
-                    LOGGER.severe("Failed to fetch last appointment ID for patient_id=" + appointment.getPatientId());
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    LOGGER.severe("Failed to insert appointment: No rows affected for patient_id=" + appointment.getPatientId());
                     throw new RuntimeException("Failed to insert appointment: No rows affected");
                 }
-                LOGGER.info("Found last appointment ID: " + tempId);
-                return tempId;
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int newId = generatedKeys.getInt(1);
+                        LOGGER.info("Inserted appointment for patient_id=" + appointment.getPatientId() + ", new appointment_id=" + newId);
+                        return newId;
+                    } else {
+                        LOGGER.severe("Failed to retrieve generated appointment_id after insert");
+                        throw new RuntimeException("Failed to retrieve appointment ID after insert");
+                    }
+                }
             }
         } catch (SQLException e) {
             LOGGER.severe("SQL Insert Exception for patient_id=" + appointment.getPatientId() + ": " + e.getMessage());
