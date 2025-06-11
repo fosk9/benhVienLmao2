@@ -1,10 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!doctype html>
-<html class="no-js" lang="zxx">
+<html class="no-js" lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Health | Template</title>
+    <title>Dental Care | Template</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="site.webmanifest">
@@ -47,7 +47,7 @@
                     <!-- Logo -->
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="index.html"><img src="assets/img/logo/logo.png" alt=""></a>
+                            <a href="index.jsp"><img src="assets/img/logo/logo.png" alt=""></a>
                         </div>
                     </div>
                     <div class="col-xl-10 col-lg-10 col-md-10">
@@ -56,9 +56,9 @@
                             <div class="main-menu f-right d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="index.html">Home</a></li>
+                                        <li><a href="index.jsp">Home</a></li>
                                         <li><a href="about.html">About</a></li>
-                                        <li><a href="services.html">Services</a></li>
+                                        <li><a href="services.html">Dental Services</a></li>
                                         <li><a href="blog.html">Blog</a>
                                             <ul class="submenu">
                                                 <li><a href="blog.html">Blog</a></li>
@@ -71,7 +71,7 @@
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <a href="#" class="btn header-btn">Make an Appointment</a>
+                                <a href="#" class="btn header-btn">Book a Dental Appointment</a>
                             </div>
                         </div>
                     </div>
@@ -102,9 +102,9 @@
                                     </a>
                                 </div>
                                 <div class="hero__caption">
-                                    <h1 data-animation="fadeInUp" data-delay=".3s">Health is wealth  keep it healthy </h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Almost before we knew it, we<br> had left the ground</p>
-                                    <a href="services.html" class="btn" data-animation="fadeInLeft" data-delay=".3s">Take a Service</a>
+                                    <h1 data-animation="fadeInUp" data-delay=".3s">Smile with Confidence</h1>
+                                    <p data-animation="fadeInUp" data-delay=".6s">Transform your smile with our expert dental care services</p>
+                                    <a href="services.html" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore Dental Services</a>
                                 </div>
                             </div>
                         </div>
@@ -124,9 +124,9 @@
                                     </a>
                                 </div>
                                 <div class="hero__caption">
-                                    <h1 data-animation="fadeInUp" data-delay=".3s">Health is wealth  keep it healthy </h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Almost before we knew it, we<br> had left the ground</p>
-                                    <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Take a Service</a>
+                                    <h1 data-animation="fadeInUp" data-delay=".3s">Healthy Teeth, Happy Life</h1>
+                                    <p data-animation="fadeInUp" data-delay=".6s">Comprehensive dental solutions for all ages</p>
+                                    <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an Appointment</a>
                                 </div>
                             </div>
                         </div>
@@ -150,13 +150,10 @@
                     <div class="about-caption">
                         <!-- Section Tittle -->
                         <div class="section-tittle mb-35">
-                            <h2>Create a healthy
-                                life you love!</h2>
+                            <h2>Perfect Smile, Made Simple</h2>
                         </div>
-                        <p class="pera-top mb-40">Almost before we knew it, we had left the ground</p>
-                        <p class="pera-bottom mb-30">Praesent porttitor, nulla vitae posuere iaculis, arcu nisl
-                            dignissim dolor, a pretium mi sem ut ipsum. Fusce
-                            fermentum. Pellentesque libero tortor, tincidunt et.</p>
+                        <p class="pera-top mb-40">Experience top-notch dental care tailored to your needs</p>
+                        <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.</p>
                         <div class="icon-about">
                             <img src="assets/img/icon/about1.svg" alt="" class=" mr-20">
                             <img src="assets/img/icon/about2.svg" alt="">
@@ -173,12 +170,12 @@
                 <div class="row align-items-center justify-content-between">
                     <div class="col-xl-7 col-lg-9 col-md-8">
                         <div class="wantToWork-caption wantToWork-caption2">
-                            <h2>Happy mind <br>healthy life</h2>
-                            <p>Almost before we knew it, we<br> had left the ground</p>
+                            <h2>Bright Smile <br>Healthy Teeth</h2>
+                            <p>Discover personalized dental care that makes you smile</p>
                         </div>
                     </div>
                     <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="services.html" class="btn f-right sm-left">Take a Service</a>
+                        <a href="services.html" class="btn f-right sm-left">Explore Services</a>
                     </div>
                 </div>
             </div>
@@ -194,8 +191,8 @@
                             <img src="assets/img/icon/services1.svg" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="services.html">Physical Activity</a></h5>
-                            <p>Praesent porttitor, nulla vitae  posuere iaculis, arcu nisl dignissim dolor, a pretium mi  sem ut ipsum.</p>
+                            <h5><a href="services.html">Teeth Whitening</a></h5>
+                            <p>Achieve a brighter smile with our safe and effective whitening treatments.</p>
                             <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
@@ -206,8 +203,8 @@
                             <img src="assets/img/icon/services2.svg" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="services.html">Physical Activity</a></h5>
-                            <p>Praesent porttitor, nulla vitae  posuere iaculis, arcu nisl dignissim dolor, a pretium mi  sem ut ipsum.</p>
+                            <h5><a href="services.html">Dental Implants</a></h5>
+                            <p>Restore your smile with durable and natural-looking dental implants.</p>
                             <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
@@ -218,8 +215,8 @@
                             <img src="assets/img/icon/services3.svg" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="services.html">Physical Activity</a></h5>
-                            <p>Praesent porttitor, nulla vitae  posuere iaculis, arcu nisl dignissim dolor, a pretium mi  sem ut ipsum.</p>
+                            <h5><a href="services.html">Orthodontics</a></h5>
+                            <p>Straighten your teeth with our advanced braces and aligner solutions.</p>
                             <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
@@ -240,7 +237,7 @@
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
                                     <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"The automated process starts as soon as your clothe go into the machine. This site outcome is gleaming clothe. Placeholder text commonly used. In publishing and graphic.</p>
+                                    <p>"The dental care I received was exceptional. My smile has never looked better, and the process was so comfortable!"</p>
                                 </div>
                                 <!-- founder -->
                                 <div class="testimonial-founder d-flex align-items-center">
@@ -248,8 +245,8 @@
                                         <img src="assets/img/icon/testimonial.png" alt="">
                                     </div>
                                     <div class="founder-text">
-                                        <span>Robart Brown</span>
-                                        <p>Creative designer at Colorlib</p>
+                                        <span>Jane Smith</span>
+                                        <p>Happy Patient</p>
                                     </div>
                                 </div>
                             </div>
@@ -257,7 +254,7 @@
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
                                     <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"The automated process starts as soon as your clothe go into the machine. This site outcome is gleaming clothe. Placeholder text commonly used. In publishing and graphic.</p>
+                                    <p>"From consultation to treatment, the team was professional and caring. Highly recommend their services!"</p>
                                 </div>
                                 <!-- founder -->
                                 <div class="testimonial-founder d-flex align-items-center">
@@ -265,8 +262,8 @@
                                         <img src="assets/img/icon/testimonial.png" alt="">
                                     </div>
                                     <div class="founder-text">
-                                        <span>Robart Brown</span>
-                                        <p>Creative designer at Colorlib</p>
+                                        <span>John Doe</span>
+                                        <p>Satisfied Client</p>
                                     </div>
                                 </div>
                             </div>
@@ -296,7 +293,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-7 col-md-9 col-sm-10">
                     <div class="section-tittle text-center mb-100">
-                        <h2>Latest Blog</h2>
+                        <h2>Latest Dental Tips</h2>
                     </div>
                 </div>
             </div>
@@ -308,9 +305,8 @@
                                 <img src="assets/img/gallery/blog1.png" alt="">
                             </div>
                             <div class="blog-cap">
-                                <h3><a href="blog_details.html">Your daily meal plan</a></h3>
-                                <P>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium mi
-                                    sem ut ipsum.</P>
+                                <h3><a href="blog_details.html">Maintaining Oral Hygiene</a></h3>
+                                <p>Learn the best practices for keeping your teeth and gums healthy every day.</p>
                             </div>
                         </div>
                     </div>
@@ -322,9 +318,8 @@
                                 <img src="assets/img/gallery/blog2.png" alt="">
                             </div>
                             <div class="blog-cap">
-                                <h3><a href="blog_details.html">Food is a great source of  medicine</a></h3>
-                                <P>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium mi
-                                    sem ut ipsum.</P>
+                                <h3><a href="blog_details.html">Benefits of Regular Dental Check-ups</a></h3>
+                                <p>Discover why routine visits to the dentist are key to a healthy smile.</p>
                             </div>
                         </div>
                     </div>
@@ -336,9 +331,8 @@
                                 <img src="assets/img/gallery/blog3.png" alt="">
                             </div>
                             <div class="blog-cap">
-                                <h3><a href="blog_details.html">Everyday diet plan</a></h3>
-                                <P>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium mi
-                                    sem ut ipsum.</P>
+                                <h3><a href="blog_details.html">Choosing the Right Toothbrush</a></h3>
+                                <p>Find out how to select the best toothbrush for your dental needs.</p>
                             </div>
                         </div>
                     </div>
@@ -356,10 +350,10 @@
                         <div class="about-caption mb-50">
                             <!-- Section Tittle -->
                             <div class="section-tittle mb-35">
-                                <h2>100% satisfaction guaranteed.</h2>
+                                <h2>100% Satisfaction Guaranteed</h2>
                             </div>
-                            <p>Almost before we knew it, we had left the ground</p>
-                            <a href="about.html" class="border-btn">Make an Appointment</a>
+                            <p>Your perfect smile is our priority</p>
+                            <a href="about.html" class="border-btn">Book a Dental Appointment</a>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
@@ -385,18 +379,18 @@
                         <div class="single-footer-caption mb-50">
                             <!-- logo -->
                             <div class="footer-logo mb-25">
-                                <a href="index.html"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
+                                <a href="index.jsp"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
                             </div>
-                            <d iv class="header-area">
+                            <div class="header-area">
                                 <div class="main-header main-header2">
                                     <div class="menu-main d-flex align-items-center justify-content-start">
                                         <!-- Main-menu -->
                                         <div class="main-menu main-menu2">
                                             <nav>
                                                 <ul>
-                                                    <li><a href="index.html">Home</a></li>
+                                                    <li><a href="index.jsp">Home</a></li>
                                                     <li><a href="about.html">About</a></li>
-                                                    <li><a href="services.html">Services</a></li>
+                                                    <li><a href="services.html">Dental Services</a></li>
                                                     <li><a href="blog.html">Blog</a></li>
                                                     <li><a href="contact.html">Contact</a></li>
                                                 </ul>
@@ -404,7 +398,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </d>
+                            </div>
                             <!-- social -->
                             <div class="footer-social mt-50">
                                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -416,13 +410,13 @@
                     <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                         <div class="single-footer-caption">
                             <div class="footer-tittle mb-50">
-                                <h4>Subscribe newsletter</h4>
+                                <h4>Subscribe to Our Newsletter</h4>
                             </div>
                             <!-- Form -->
                             <div class="footer-form">
                                 <div id="mc_embed_signup">
                                     <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
-                                        <input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your email'">
+                                        <input type="email" name="EMAIL" id="newsletter-form-email" placeholder="Email Address" class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your email'">
                                         <div class="form-icon">
                                             <button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
                                                 Subscribe
@@ -434,7 +428,7 @@
                             </div>
                             <div class="footer-tittle">
                                 <div class="footer-pera">
-                                    <p>Praesent porttitor, nulla vitae posuere iaculis, arcu nisl dignissim dolor, a pretium misem ut ipsum.</p>
+                                    <p>Stay updated with the latest dental care tips and promotions.</p>
                                 </div>
                             </div>
                         </div>
