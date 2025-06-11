@@ -1,4 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!doctype html>
 <html class="no-js" lang="en">
 <head>
@@ -9,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
-
     <!-- CSS here -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
@@ -59,10 +60,10 @@
                                         <li><a href="index.jsp">Home</a></li>
                                         <li><a href="about.html">About</a></li>
                                         <li><a href="services.html">Dental Services</a></li>
-                                        <li><a href="blog.html">Blog</a>
+                                        <li><a href="blog.jsp">Blog</a>
                                             <ul class="submenu">
-                                                <li><a href="blog.html">Blog</a></li>
-                                                <li><a href="blog_details.html">Blog Details</a></li>
+                                                <li><a href="blog.jsp">Blog</a></li>
+                                                <li><a href="blog-detail.jsp">Blog Details</a></li>
                                                 <li><a href="elements.html">Element</a></li>
                                             </ul>
                                         </li>
@@ -136,6 +137,46 @@
         </div>
     </div>
     <!-- Slider Area End -->
+    <!--? Latest News Area Start -->
+    <section class="latest-news-area section-padding30">
+        <div class="container">
+            <!-- Section Tittle -->
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9 col-sm-10">
+                    <div class="section-tittle text-center mb-70">
+                        <h2>Daily Dental Updates</h2>
+                        <p>Stay informed with the latest tips and news for a healthy smile</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <article class="blog_item">
+                                <div class="blog_item_img">
+                                    <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
+                                    <a href="#" class="blog_item_date">
+                                        <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
+                                        <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
+                                    </a>
+                                </div>
+                                <div class="blog_details">
+                                    <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
+                                        <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
+                                    </a>
+                                    <p>${b.blogSubContent}</p>
+                                    <ul class="blog-info-link">
+                                        <li><a href="blog?categoryId=${b.categoryId}"><i class="fa fa-user"></i> ${b.categoryName}</a></li>
+                                        <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
+                                    </ul>
+                                </div>
+                            </article>
+                        </div>
+                </c:forEach>
+            </div>
+        </div>
+    </section>
+    <!-- Latest News Area End -->
     <!--? About-2 Area Start -->
     <div class="about-area2 section-padding40">
         <div class="container">
@@ -277,9 +318,9 @@
     <!--? Testimonial Area End -->
     <!--? video_start -->
     <div class="container">
-        <div class="video-area section-bg2 d-flex align-items-center"  data-background="assets/img/gallery/video-bg.png">
+        <div class="video-area section-bg2 d-flex align-items-center" data-background="assets/img/gallery/video-bg.png">
             <div class="video-wrap position-relative">
-                <div class="video-icon" >
+                <div class="video-icon">
                     <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i class="fas fa-play"></i></a>
                 </div>
             </div>
@@ -298,45 +339,21 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="home-blog-single mb-40">
-                        <div class="blog-img-cap">
-                            <div class="blog-img">
-                                <img src="assets/img/gallery/blog1.png" alt="">
-                            </div>
-                            <div class="blog-cap">
-                                <h3><a href="blog_details.html">Maintaining Oral Hygiene</a></h3>
-                                <p>Learn the best practices for keeping your teeth and gums healthy every day.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="home-blog-single mb-40">
-                        <div class="blog-img-cap">
-                            <div class="blog-img">
-                                <img src="assets/img/gallery/blog2.png" alt="">
-                            </div>
-                            <div class="blog-cap">
-                                <h3><a href="blog_details.html">Benefits of Regular Dental Check-ups</a></h3>
-                                <p>Discover why routine visits to the dentist are key to a healthy smile.</p>
+                <c:forEach var="blog" items="${recentBlogs}">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="home-blog-single mb-40">
+                            <div class="blog-img-cap">
+                                <div class="blog-img">
+                                    <img src="${blog.blogImg}" alt="">
+                                </div>
+                                <div class="blog-cap">
+                                    <h3><a href="blog-detail?id=${blog.blogId}">${blog.blogName}</a></h3>
+                                    <p>${blog.blogSubContent}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="home-blog-single mb-40">
-                        <div class="blog-img-cap">
-                            <div class="blog-img">
-                                <img src="assets/img/gallery/blog3.png" alt="">
-                            </div>
-                            <div class="blog-cap">
-                                <h3><a href="blog_details.html">Choosing the Right Toothbrush</a></h3>
-                                <p>Find out how to select the best toothbrush for your dental needs.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </c:forEach>
             </div>
         </div>
     </section>
@@ -346,7 +363,7 @@
         <div class="container">
             <div class="about-cap-wrapper">
                 <div class="row">
-                    <div class="col-xl-5  col-lg-6 col-md-10 offset-xl-1">
+                    <div class="col-xl-5 col-lg-6 col-md-10 offset-xl-1">
                         <div class="about-caption mb-50">
                             <!-- Section Tittle -->
                             <div class="section-tittle mb-35">
@@ -372,7 +389,7 @@
 </main>
 <footer>
     <div class="footer-wrappr section-bg3" data-background="assets/img/gallery/footer-bg.png">
-        <div class="footer-area footer-padding ">
+        <div class="footer-area footer-padding">
             <div class="container">
                 <div class="row justify-content-between">
                     <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12">
@@ -391,7 +408,7 @@
                                                     <li><a href="index.jsp">Home</a></li>
                                                     <li><a href="about.html">About</a></li>
                                                     <li><a href="services.html">Dental Services</a></li>
-                                                    <li><a href="blog.html">Blog</a></li>
+                                                    <li><a href="blog.jsp">Blog</a></li>
                                                     <li><a href="contact.html">Contact</a></li>
                                                 </ul>
                                             </nav>
@@ -415,7 +432,7 @@
                             <!-- Form -->
                             <div class="footer-form">
                                 <div id="mc_embed_signup">
-                                    <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
+                                    <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
                                         <input type="email" name="EMAIL" id="newsletter-form-email" placeholder="Email Address" class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your email'">
                                         <div class="form-icon">
                                             <button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
@@ -441,11 +458,9 @@
             <div class="container">
                 <div class="footer-border">
                     <div class="row">
-                        <div class="col-xl-10 ">
+                        <div class="col-xl-10">
                             <div class="footer-copy-right">
-                                <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+                                <p>Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
                             </div>
                         </div>
                     </div>
@@ -455,50 +470,33 @@
     </div>
 </footer>
 <!-- Scroll Up -->
-<div id="back-top" >
+<div id="back-top">
     <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
 </div>
-
 <!-- JS here -->
-
 <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
-<!-- Jquery, Popper, Bootstrap -->
 <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
 <script src="./assets/js/popper.min.js"></script>
 <script src="./assets/js/bootstrap.min.js"></script>
-<!-- Jquery Mobile Menu -->
 <script src="./assets/js/jquery.slicknav.min.js"></script>
-
-<!-- Jquery Slick , Owl-Carousel Plugins -->
 <script src="./assets/js/owl.carousel.min.js"></script>
 <script src="./assets/js/slick.min.js"></script>
-<!-- One Page, Animated-HeadLin -->
 <script src="./assets/js/wow.min.js"></script>
 <script src="./assets/js/animated.headline.js"></script>
 <script src="./assets/js/jquery.magnific-popup.js"></script>
-
-<!-- Date Picker -->
 <script src="./assets/js/gijgo.min.js"></script>
-<!-- Nice-select, sticky -->
 <script src="./assets/js/jquery.nice-select.min.js"></script>
 <script src="./assets/js/jquery.sticky.js"></script>
-
-<!-- counter , waypoint,Hover Direction -->
 <script src="./assets/js/jquery.counterup.min.js"></script>
 <script src="./assets/js/waypoints.min.js"></script>
 <script src="./assets/js/jquery.countdown.min.js"></script>
 <script src="./assets/js/hover-direction-snake.min.js"></script>
-
-<!-- contact js -->
 <script src="./assets/js/contact.js"></script>
 <script src="./assets/js/jquery.form.js"></script>
 <script src="./assets/js/jquery.validate.min.js"></script>
 <script src="./assets/js/mail-script.js"></script>
 <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
-
-<!-- Jquery Plugins, main Jquery -->
 <script src="./assets/js/plugins.js"></script>
 <script src="./assets/js/main.js"></script>
-
 </body>
 </html>

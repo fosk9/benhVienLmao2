@@ -6,8 +6,46 @@ import model.Category;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class BlogDAO extends DBContext<Blog> {
+    private static final Logger LOGGER = Logger.getLogger(BlogDAO.class.getName());
+
+    public List<Blog> getRecentBlogsLimited(int limit) {
+        List<Blog> recentBlogs = new ArrayList<>();
+        if (limit <= 0) {
+            LOGGER.warning("Invalid limit value: " + limit + ". Defaulting to 3.");
+            limit = 3;
+        }
+        String sql = String.format(
+                "SELECT TOP %d b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
+                        "b.author, b.date, b.category_id, c.category_name " +
+                        "FROM Blog b " +
+                        "LEFT JOIN Category c ON b.category_id = c.category_id " +
+                        "ORDER BY b.date DESC", limit);
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Blog blog = new Blog();
+                blog.setBlogId(rs.getInt("blog_id"));
+                blog.setBlogName(rs.getString("blog_name"));
+                blog.setBlogSubContent(rs.getString("blog_sub_content"));
+                blog.setContent(rs.getString("content"));
+                blog.setBlogImg(rs.getString("blog_img"));
+                blog.setAuthor(rs.getString("author"));
+                blog.setDate(rs.getDate("date"));
+                blog.setCategoryId(rs.getInt("category_id"));
+                blog.setCategoryName(rs.getString("category_name"));
+                recentBlogs.add(blog);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error executing query: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return recentBlogs;
+    }
 
     @Override
     public List<Blog> select() {
