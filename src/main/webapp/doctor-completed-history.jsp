@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ADMIN
-  Date: 5/28/2025
-  Time: 4:35 AM
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -11,231 +5,281 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Completed Appointments History</title>
+  <title>Completed Appointments</title>
+
   <jsp:include page="doctor-common-css.jsp"/>
+
   <style>
-    form {
+    .search-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
-      margin: 0 auto;
-      width: 100%; /* Form chiếm toàn bộ chiều rộng */
       flex-wrap: wrap;
-      padding: 10px;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 20px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    form input, form select {
-      width: 30%; /* Đảm bảo các trường nhập liệu có chiều rộng bằng nhau */
-      height: 40px; /* Chiều cao của các trường nhập liệu đồng đều */
+    .search-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
     }
 
-    form .btn {
-      width: 30%; /* Chiều rộng của nút tìm kiếm lớn hơn các trường */
-      height: 40px; /* Chiều cao của nút tìm kiếm */
-      margin-top: 10px;
+    .search-fields select,
+    .search-fields input,
+    .search-fields button {
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      width: 220px;
     }
 
-    /* Cải thiện giao diện của bảng */
-    .table {
-      font-size: 0.9rem;
-      width: 75%;
-      margin: 30px auto;
+    .search-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+
+    .search-btn:hover {
+      background-color: #45a049;
+    }
+
+    .table-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    table {
+      width: 80%; /* Adjust width as needed */
       border-collapse: collapse;
-    }
-
-    .table th, .table td {
-      padding: 6px 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
 
-    .table th:nth-child(1), table.table td:nth-child(1) {
-      width: 3%;
+    th, td {
+      padding: 15px;
+      border: 1px solid #ddd;
+      font-family: 'Arial', sans-serif;
+      color: #333;
     }
 
-    .table th:nth-child(2), table.table td:nth-child(2) {
-      width: 15%;
+    th {
+      background-color: #f4f4f4;
+      font-weight: bold;
     }
 
-    .table th:nth-child(3), table.table td:nth-child(3) {
-      width: 22%;
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
 
-    .table th:nth-child(4), table.table td:nth-child(4) {
-      width: 15%;
+    tr:hover {
+      background-color: #f1f1f1;
     }
 
-    .table th:nth-child(5), table.table td:nth-child(5) {
-      width: 15%;
-    }
-
-    .table th:nth-child(6), table.table td:nth-child(6) {
-      width: 12%;
-    }
-
-    .table th:nth-child(7), table.table td:nth-child(7) {
-      width: 18%;
-    }
-
+    /* Pagination Styles */
     .pagination {
-      justify-content: center;
+      margin-top: 20px;
       display: flex;
-      gap: 10px;
+      justify-content: center;
     }
 
-    .pagination .page-item .page-link {
-      color: #28a745;
+    .pagination a {
+      padding: 5px 10px;
+      margin: 0 2px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .pagination a:hover {
+      background-color: #45a049;
+    }
+
+    .pagination .active {
+      background-color: #234821;
+    }
+
+    .pagination .disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
     }
   </style>
   <script>
     function validateForm() {
-      // Lấy giá trị từ form và loại bỏ khoảng trắng thừa
-      var fullName = document.forms[0]["fullName"].value.trim();
-      var insuranceNumber = document.forms[0]["insuranceNumber"].value.trim();
-      var appointmentType = document.forms[0]["appointmentType"].value.trim();
-      var customAppointmentType = document.forms[0]["customAppointmentType"] ? document.forms[0]["customAppointmentType"].value.trim() : '';
+      // Lấy giá trị từ các trường tìm kiếm
+      var fullName = document.getElementById("fullName").value.trim();
+      var insuranceNumber = document.getElementById("insuranceNumber").value.trim();
 
-      fullName = fullName.replace(/\s+/g, ' ');  // Thay thế tất cả khoảng trắng thừa thành một khoảng trắng duy nhất
-      insuranceNumber = insuranceNumber.replace(/\s+/g, ' ');  // Thay thế tất cả khoảng trắng thừa thành một khoảng trắng duy nhất
-      // Kiểm tra nếu không có dữ liệu trong các trường tìm kiếm
-      if (fullName === "" && insuranceNumber === "" && appointmentType === "" && customAppointmentType === "") {
-        alert("Please enter at least one search criterion.");
-        return false;
+      // Xử lý khoảng trắng thừa trong fullName (Thay các khoảng trắng liên tiếp thành một khoảng trắng duy nhất)
+      fullName = fullName.replace(/\s+/g, ' ');
+
+      // Kiểm tra nếu fullName không có khoảng trắng liên tiếp và không bắt đầu/kết thúc với khoảng trắng
+      document.getElementById("fullName").value = fullName;
+
+      // Kiểm tra và xử lý khoảng trắng trong số bảo hiểm (loại bỏ tất cả khoảng trắng chỉ có trong chuỗi)
+      var formattedInsuranceNumber = insuranceNumber.replace(/\s+/g, '');
+
+      // Loại bỏ khoảng trắng ở đầu và cuối của số bảo hiểm
+      var trimmedInsuranceNumber = insuranceNumber.trim();
+
+      // Nếu số bảo hiểm có khoảng trắng ở giữa, loại bỏ chúng và hiển thị lại
+      document.getElementById("insuranceNumber").value = trimmedInsuranceNumber;
+
+      // Kiểm tra và thông báo lỗi nếu không có số bảo hiểm hợp lệ
+      if (formattedInsuranceNumber !== trimmedInsuranceNumber) {
+        alert("Insurance number cannot have spaces.");
+        return false; // Không gửi form khi số bảo hiểm có khoảng trắng
       }
 
-      // Kiểm tra tên bệnh nhân không chứa ký tự lạ và khoảng trắng thừa
-      if (fullName !== "" && !/^[a-zA-Z\s]+$/.test(fullName)) {
-        alert("Please enter a valid patient's name (only letters and spaces).");
-        return false;
-      }
-
-      // Kiểm tra mã bảo hiểm (INS + số)
-      if (insuranceNumber !== "" && !/^\d+$/.test(insuranceNumber)) {
-        alert("Please enter a valid insurance number (only digits after INS).");
-        return false;
-      }
-
-      // Kiểm tra nếu chọn "Other..." nhưng không nhập loại cuộc hẹn
-      if (appointmentType === "custom" && customAppointmentType === "") {
-        alert("Please enter a custom appointment type.");
-        return false;
-      }
-
-      return true; // Cho phép gửi form nếu tất cả các điều kiện đều hợp lệ
+      // Nếu mọi thứ hợp lệ, form sẽ được gửi
+      return true;
     }
   </script>
 </head>
+
 <body>
 
 <jsp:include page="doctor-header.jsp"/>
+<div class="section-tittle mb-30 text-center">
+  <h2>Completed Appointments</h2>
+  <p>Hello, ${doctor.fullName} </p>
+</div>
 
-<c:set var="page" value="${param.page != null ? param.page : 1}" />
-<c:set var="page" value="${page + 0}" />
-<c:set var="pageSize" value="5" />
-<c:set var="totalItems" value="${fn:length(completedAppointments)}" />
-<c:set var="totalPages" value="${(totalItems + pageSize - 1) / pageSize}" />
-<c:set var="start" value="${(page - 1) * pageSize}" />
-<c:set var="end" value="${page * pageSize}" />
-
-<div class="container mt-5">
-  <section class="about-area2 section-padding40" id="completed-history-section">
-    <div class="container">
-      <div class="section-tittle mb-30 text-center">
-        <h2>Completed Appointments History</h2>
-      </div>
-      <form action="completed-history" method="get" class="mb-4" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin: 0 auto; width: 80%; flex-wrap: wrap;">
-        <!-- Tìm kiếm theo tên bệnh nhân -->
-        <input type="text" name="fullName" value="${param.fullName}" placeholder="Patient's Name..." class="form-control" style="width: 280px; height: 40px;" />
-
-        <!-- Tìm kiếm theo mã bảo hiểm -->
-        <input type="text" name="insuranceNumber" value="${param.insuranceNumber}" placeholder="Insurance Number..." class="form-control" style="width: 280px; height: 40px;" />
-
-        <!-- Tìm kiếm theo loại cuộc hẹn -->
-        <select name="appointmentType" class="form-control" style="width: 280px; height: 40px;">
-          <option value="" disabled selected>Select Treatment</option>
-          <option value="General Checkup">General Checkup</option>
-          <option value="Cardiology Consultation">Cardiology Consultation</option>
-          <option value="Gastroenterology Consultation">Gastroenterology Consultation</option>
-          <option value="Orthopedic Consultation">Orthopedic Consultation</option>
-          <option value="Neurology Consultation">Neurology Consultation</option>
-          <option value="Mental Health Consultation">Mental Health Consultation</option>
-          <option value="Psychotherapy Session">Psychotherapy Session</option>
-          <option value="Psychiatric Evaluation">Psychiatric Evaluation</option>
-          <option value="Stress and Anxiety Management">Stress and Anxiety Management</option>
-          <option value="Depression Counseling">Depression Counseling</option>
-          <option value="Periodic Health Checkup">Periodic Health Checkup</option>
-          <option value="Gynecology Consultation">Gynecology Consultation</option>
-          <option value="Pediatric Consultation">Pediatric Consultation</option>
-          <option value="Ophthalmology Consultation">Ophthalmology Consultation</option>
-          <option value="ENT Consultation">ENT Consultation</option>
-          <option value="On-Demand Consultation">On-Demand Consultation</option>
-          <option value="Emergency Consultation">Emergency Consultation</option>
-          <option value="custom">Other...</option>
-        </select>
-
-        <button type="submit" class="btn btn-primary" style="width: 300px; height: 40px; margin-top: 10px;">Search</button>
-      </form>
-      <div class="row justify-content-center">
-        <div class="col-lg-10">
-          <table class="table table-hover table-bordered text-center">
-            <thead class="thead-dark" style="font-weight: 600;">
-            <tr>
-              <th style="padding: 6px 10px;">Number</th>
-              <th style="padding: 6px 10px;">Insurance Number</th>
-              <th style="padding: 6px 10px;">Patient Name</th>
-              <th style="padding: 6px 10px;">Appointment Type</th>
-              <th style="padding: 6px 10px;">Appointment Date</th>
-              <th style="padding: 6px 10px;">Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:choose>
-              <c:when test="${empty completedAppointments}">
-                <tr>
-                  <td colspan="6" class="text-center">No completed appointments found.</td>
-                </tr>
-              </c:when>
-              <c:otherwise>
-                <c:forEach var="a" items="${completedAppointments}" varStatus="loop">
-                  <c:if test="${loop.index >= start && loop.index < end}">
-                    <tr style="text-align: center;">
-                      <td style="padding: 6px 10px;">${loop.index - start + 1}</td>
-                      <td style="padding: 6px 10px;">${a.insuranceNumber}</td>
-                      <td style="padding: 6px 10px;">${a.patientFullName}</td>
-                      <td style="padding: 6px 10px;">${a.appointmentType}</td>
-                      <td style="padding: 6px 10px;">
-                        <c:choose>
-                          <c:when test="${not empty a.appointmentDate}">
-                            <fmt:formatDate value="${a.appointmentDate}" pattern="dd/MM/yyyy" />
-                          </c:when>
-                          <c:otherwise>
-                            Not scheduled
-                          </c:otherwise>
-                        </c:choose>
-                      </td>
-                      <td style="padding: 6px 10px;">${a.status}</td>
-                    </tr>
-                  </c:if>
-                </c:forEach>
-              </c:otherwise>
-            </c:choose>
-            </tbody>
-          </table>
-          <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-              <c:forEach begin="1" end="${totalPages}" var="i">
-                <li class="page-item ${i == page ? 'active' : ''}">
-                  <a class="page-link" href="?page=${i}">${i}</a>
-                </li>
-              </c:forEach>
-            </ul>
-          </nav>
-        </div>
-      </div>
+<!-- Form tìm kiếm -->
+<div class="search-container">
+  <form action="completed-history" method="get" onsubmit="return validateForm()">
+    <div class="search-fields">
+      <input type="text" name="fullName" id="fullName" value="${fullName}" placeholder="Search by Full Name">
+      <input type="text" name="insuranceNumber" id="insuranceNumber" value="${insuranceNumber}" placeholder="Search by INS">
+      <select name="typeName">
+        <option value="">Select Appointment Type</option>
+        <option value="General Checkup" ${typeName == 'General Checkup' ? 'selected' : ''}>General Checkup</option>
+        <option value="Cardiology Consultation" ${typeName == 'Cardiology Consultation' ? 'selected' : ''}>
+          Cardiology Consultation
+        </option>
+        <option value="Gastroenterology Consultation" ${typeName == 'Gastroenterology Consultation' ? 'selected' : ''}>
+          Gastroenterology Consultation
+        </option>
+        <option value="Orthopedic Consultation" ${typeName == 'Orthopedic Consultation' ? 'selected' : ''}>
+          Orthopedic Consultation
+        </option>
+        <option value="Neurology Consultation" ${typeName == 'Neurology Consultation' ? 'selected' : ''}>Neurology
+          Consultation
+        </option>
+        <option value="Mental Health Consultation" ${typeName == 'Mental Health Consultation' ? 'selected' : ''}>
+          Mental Health Consultation
+        </option>
+        <option value="Psychotherapy Session" ${typeName == 'Psychotherapy Session' ? 'selected' : ''}>Psychotherapy
+          Session
+        </option>
+        <option value="Psychiatric Evaluation" ${typeName == 'Psychiatric Evaluation' ? 'selected' : ''}>Psychiatric
+          Evaluation
+        </option>
+        <option value="Stress and Anxiety Management" ${typeName == 'Stress and Anxiety Management' ? 'selected' : ''}>
+          Stress and Anxiety Management
+        </option>
+        <option value="Depression Counseling" ${typeName == 'Depression Counseling' ? 'selected' : ''}>Depression
+          Counseling
+        </option>
+        <option value="Periodic Health Checkup" ${typeName == 'Periodic Health Checkup' ? 'selected' : ''}>Periodic
+          Health Checkup
+        </option>
+        <option value="Gynecology Consultation" ${typeName == 'Gynecology Consultation' ? 'selected' : ''}>
+          Gynecology Consultation
+        </option>
+        <option value="Pediatric Consultation" ${typeName == 'Pediatric Consultation' ? 'selected' : ''}>Pediatric
+          Consultation
+        </option>
+        <option value="Ophthalmology Consultation" ${typeName == 'Ophthalmology Consultation' ? 'selected' : ''}>
+          Ophthalmology Consultation
+        </option>
+        <option value="ENT Consultation" ${typeName == 'ENT Consultation' ? 'selected' : ''}>ENT Consultation
+        </option>
+        <option value="On-Demand Consultation" ${typeName == 'On-Demand Consultation' ? 'selected' : ''}>On-Demand
+          Consultation
+        </option>
+        <option value="Emergency Consultation" ${typeName == 'Emergency Consultation' ? 'selected' : ''}>Emergency
+          Consultation
+        </option>
+      </select>
+      <select name="timeSlot">
+        <option value="">Select Time Slot</option>
+        <option value="Morning" ${timeSlot == 'Morning' ? 'selected' : ''}>Morning</option>
+        <option value="Afternoon" ${timeSlot == 'Afternoon' ? 'selected' : ''}>Afternoon</option>
+        <option value="Evening" ${timeSlot == 'Evening' ? 'selected' : ''}>Evening</option>
+      </select>
+      <button type="submit" class="search-btn">Search</button>
     </div>
-  </section>
+  </form>
+</div>
+
+<div class="table-container">
+  <table border="1">
+    <thead>
+    <tr>
+      <th>Number</th>
+      <th>Full Name</th>
+      <th>Insurance Number</th>
+      <th>Appointment Type</th>
+      <th>Appointment Date</th>
+      <th>Time Slot</th>
+      <th>Status</th>
+      <th>View</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach var="appointment" items="${appointments}">
+      <tr>
+        <td>${appointments.indexOf(appointment) + 1 + startIndex}</td> <!-- Số thứ tự tổng quát -->
+        <td>${appointment.patient.fullName}</td>
+        <td>${appointment.patient.insuranceNumber}</td>
+        <td>${appointment.appointmentType.typeName}</td>
+        <td>
+          <fmt:formatDate value="${appointment.appointmentDate}" pattern="dd/MM/yyyy"/>
+        </td>
+        <td>${appointment.timeSlot}</td>
+        <td>${appointment.status}</td>
+        <td>
+          <a href="${pageContext.request.contextPath}/view-detail?id=${appointment.appointmentId}" class="btn btn-primary">Detail</a>
+        </td>
+      </tr>
+    </c:forEach>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination">
+  <c:forEach var="i" begin="1" end="${totalPages}">
+    <c:choose>
+      <c:when test="${i == currentPage}">
+        <!-- Khi trang hiện tại, đánh dấu là active và giữ lại các tham số tìm kiếm -->
+        <a href="completed-history?page=${i}&fullName=${fullName}&insuranceNumber=${insuranceNumber}&typeName=${typeName}&timeSlot=${timeSlot}" class="active">${i}</a>
+      </c:when>
+      <c:otherwise>
+        <!-- Các trang còn lại, giữ lại các tham số tìm kiếm -->
+        <a href="completed-history?page=${i}&fullName=${fullName}&insuranceNumber=${insuranceNumber}&typeName=${typeName}&timeSlot=${timeSlot}">${i}</a>
+      </c:otherwise>
+    </c:choose>
+  </c:forEach>
 </div>
 
 <jsp:include page="doctor-footer.jsp"/>

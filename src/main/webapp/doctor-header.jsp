@@ -48,20 +48,12 @@
                   <ul id="navigation">
                     <li><a href="${pageContext.request.contextPath}/doctor-home">Appointment</a></li>
                     <li><a href="${pageContext.request.contextPath}/create-appointment">Create An Appointment</a></li>
-                    <li><a href="services.html">Schedul</a></li>
-                    <li><a href="blog.html">Information</a>
-                      <ul class="submenu">
-                        <li><a href="blog.html">Profile</a></li>
-                        <li><a href="${pageContext.request.contextPath}/completed-history">History</a></li>
-                        <li><a href="elements.html">Unknown</a></li>
-                      </ul>
-                    </li>
-                    <li><a href="contact.html">Unknown</a></li>
+                    <li><a href="${pageContext.request.contextPath}/completed-history">History</a></li>
                   </ul>
                 </nav>
               </div>
               <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                <a href="#" class="btn header-btn">Unknown</a>
+                <a href="index.html" class="btn header-btn" >Log out</a>
               </div>
             </div>
           </div>

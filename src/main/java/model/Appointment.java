@@ -25,5 +25,6 @@ public class Appointment {
     private Timestamp updatedAt;
 
     private Patient patient;
+    private Patient insuranceNumber; // For insurance-related appointments
     private AppointmentType appointmentType;
 }

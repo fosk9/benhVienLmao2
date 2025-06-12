@@ -29,49 +29,62 @@ public class DoctorHomeServlet extends HttpServlet {
         }
 
         Employee doctor = (Employee) acc;
-        String fullName = request.getParameter("fullName");
-        String insuranceNumber = request.getParameter("insuranceNumber");
-        String appointmentType = request.getParameter("appointmentType");
-        String customAppointmentType = request.getParameter("customAppointmentType");
 
+        System.out.println("Logged in as Doctor: " + doctor.getFullName());
+        System.out.println("Doctor ID from session: " + doctor.getEmployeeId());
+
+        // List để chứa các cuộc hẹn của bác sĩ
         List<Appointment> list = new ArrayList<>();
+        int rowsPerPage = 5;  // Số bản ghi trên mỗi trang
+        int currentPage = 1;  // Mặc định trang 1
 
         try {
+            // Kiểm tra tham số page trên URL
+            String pageParam = request.getParameter("page");
+            if (pageParam != null) {
+                currentPage = Integer.parseInt(pageParam);
+            }
+
+            // Nhận các tham số tìm kiếm từ request
+            String fullName = request.getParameter("fullName");
+            String insuranceNumber = request.getParameter("insuranceNumber");
+            String typeName = request.getParameter("typeName");
+            String timeSlot = request.getParameter("timeSlot");
+
+            // Lấy danh sách các cuộc hẹn của bác sĩ từ AppointmentDAO với tìm kiếm
             AppointmentDAO dao = new AppointmentDAO();
+            list = dao.searchAppointments(doctor.getEmployeeId(), fullName, insuranceNumber, typeName, timeSlot);
 
-            // Tìm kiếm theo tên bệnh nhân
-            if (fullName != null && !fullName.isEmpty()) {
-                fullName = fullName.replaceAll("\\s+", " ").trim();
-                list = dao.searchAppointmentsByDoctorAndFullName(doctor.getEmployeeId(), fullName);
-            }
-            // Tìm kiếm theo mã bệnh nhân
-            else if (insuranceNumber != null && !insuranceNumber.isEmpty()) {
-                //list = dao.searchAppointmentsByDoctorAndInsuranceNumber(doctor.getEmployeeId(), insuranceNumber);
-                //String fullInsuranceNumber = "INS" + insuranceNumber;
-                insuranceNumber = insuranceNumber.replaceAll("\\s+", " ").trim();
-                list = dao.searchAppointmentsByDoctorAndInsuranceNumber(doctor.getEmployeeId(), insuranceNumber);
-            }
-            // Tìm kiếm theo loại cuộc hẹn
-            else if (appointmentType != null && !appointmentType.isEmpty()) {
-                if (appointmentType.equals("custom") && customAppointmentType != null && !customAppointmentType.isEmpty()) {
-                    list = dao.searchAppointmentsByDoctorAndAppointmentType(doctor.getEmployeeId(), customAppointmentType);
-                } else {
-                    list = dao.searchAppointmentsByDoctorAndAppointmentType(doctor.getEmployeeId(), appointmentType);
-                }
-            }
-            // Nếu không có từ khóa tìm kiếm, lấy tất cả cuộc hẹn của bác sĩ
-            else {
-                list = dao.getAppointmentsByDoctorId(doctor.getEmployeeId());
-            }
+            // Tính toán phân trang
+            int totalAppointments = list.size();
+            int totalPages = (int) Math.ceil((double) totalAppointments / rowsPerPage);
 
-            // Đặt dữ liệu vào request để hiển thị trên trang doctor-home.jsp
+            // Xác định vị trí bắt đầu và kết thúc của cuộc hẹn trên trang hiện tại
+            int startIndex = (currentPage - 1) * rowsPerPage;
+            int endIndex = Math.min(startIndex + rowsPerPage, totalAppointments);
+
+            // Lấy danh sách cuộc hẹn cho trang hiện tại
+            List<Appointment> pageAppointments = list.subList(startIndex, endIndex);
+
+            // Đặt các giá trị vào request để hiển thị trên JSP
             request.setAttribute("doctor", doctor);
-            request.setAttribute("appointments", list);
-            request.getRequestDispatcher("doctor-home.jsp").forward(request, response);
+            request.setAttribute("appointments", pageAppointments);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("startIndex", startIndex);  // Truyền startIndex vào request để tính số thứ tự toàn cục
+
+            // Đặt các tham số tìm kiếm vào request để giữ lại khi hiển thị trang
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("insuranceNumber", insuranceNumber);
+            request.setAttribute("typeName", typeName);
+            request.setAttribute("timeSlot", timeSlot);
+
+            request.getRequestDispatcher("doctor-home.jsp").forward(request, response); // Chuyển hướng đến JSP
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("error.jsp"); // Điều hướng tới trang lỗi nếu có lỗi
         }
     }
 }
+

@@ -44,19 +44,18 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("account", employee);
                 session.setAttribute("username", username);
                 session.setAttribute("role", employee.getRoleId());
-                session.setAttribute("login-as", "employee");
+                //session.setAttribute("login-as", "employee");
 
-
-                if (employee.getRoleId() == 1) {
-                    response.sendRedirect(request.getContextPath() + "/doctor-home");
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/index.html");
-                }
+                session.setAttribute("doctorId", employee.getEmployeeId()); // Lưu doctorId vào session
+                // Redirect to doctor's page
+                response.sendRedirect(request.getContextPath() + "/doctor-home");
                 return;
+                // Lưu doctorId vào session khi bác sĩ đăng nhập
+
             } else {
                 request.setAttribute("username", username);
                 request.setAttribute("password", password);
-                request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
+                request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
             }
         } else {
             request.setAttribute("username", username);

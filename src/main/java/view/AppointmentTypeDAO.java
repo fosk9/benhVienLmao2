@@ -94,4 +94,8 @@ public class AppointmentTypeDAO extends DBContext<AppointmentType> {
                 .price(rs.getBigDecimal("price"))
                 .build();
     }
+
+    public List<AppointmentType> getAllAppointmentTypes() {
+        return select();
+    }
 }

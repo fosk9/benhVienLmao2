@@ -5,31 +5,28 @@ import view.AppointmentDAO;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class AppointmentDAOTest {
     public static void main(String[] args) {
-        AppointmentDAO dao = new AppointmentDAO();
+//
+        int doctorId = 1;
 
-        // Tạo một đối tượng Appointment mới
-        Appointment newAppt = Appointment.builder()
-                .patientId(1) // ID bệnh nhân tồn tại
-                .doctorId(2)  // ID bác sĩ tồn tại
-                .appointmentTypeId(1) // ID loại khám
-                .appointmentDate(Date.valueOf("2025-06-01")) // Ngày khám
-                .timeSlot("Morning")
-                .requiresSpecialist(false)
-                .status("Pending")
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
-                .build();
+        // Tạo đối tượng của lớp chứa hàm getAppointmentsByDoctorId
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
 
-        // Gọi hàm insert()
-        int result = dao.insert(newAppt);
+        // Lấy danh sách các cuộc hẹn
+        List<Appointment> appointments = appointmentDAO.getAppointmentsByDoctorId(doctorId);
 
-        if (result > 0) {
-            System.out.println("✅ Insert appointment success!");
+        // Kiểm tra và in kết quả
+        if (appointments != null && !appointments.isEmpty()) {
+            System.out.println("Danh sách các cuộc hẹn của bác sĩ với ID " + doctorId + ":");
+            for (Appointment appointment : appointments) {
+                // Giả sử bạn đã định nghĩa phương thức toString() trong lớp Appointment để hiển thị thông tin cần thiết
+                System.out.println(appointment);
+            }
         } else {
-            System.out.println("❌ Insert appointment failed!");
+            System.out.println("Không có cuộc hẹn nào cho bác sĩ với ID " + doctorId);
         }
     }
 }
