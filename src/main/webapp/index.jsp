@@ -12,6 +12,7 @@
     <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
     <!-- CSS here -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
     <link rel="stylesheet" href="assets/css/slicknav.css">
@@ -72,7 +73,10 @@
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <a href="#" class="btn header-btn">Book a Dental Appointment</a>
+                                <div class="header-right-btn f-right d-none d-lg-block ml-15">
+                                    <a href="login.jsp" class="btn header-btn">Login</a>
+                                    <a href="register.jsp" class="btn header-btn">Register</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -98,14 +102,17 @@
                             <div class="hero-wrapper">
                                 <!-- Video icon -->
                                 <div class="video-icon">
-                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0" data-animation="bounceIn" data-delay=".4s">
+                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                       data-animation="bounceIn" data-delay=".4s">
                                         <i class="fas fa-play"></i>
                                     </a>
                                 </div>
                                 <div class="hero__caption">
                                     <h1 data-animation="fadeInUp" data-delay=".3s">Smile with Confidence</h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Transform your smile with our expert dental care services</p>
-                                    <a href="services.html" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore Dental Services</a>
+                                    <p data-animation="fadeInUp" data-delay=".6s">Transform your smile with our expert
+                                        dental care services</p>
+                                    <a href="book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore
+                                        Dental Services</a>
                                 </div>
                             </div>
                         </div>
@@ -120,14 +127,17 @@
                             <div class="hero-wrapper">
                                 <!-- Video icon -->
                                 <div class="video-icon">
-                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0" data-animation="bounceIn" data-delay=".4s">
+                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                       data-animation="bounceIn" data-delay=".4s">
                                         <i class="fas fa-play"></i>
                                     </a>
                                 </div>
                                 <div class="hero__caption">
                                     <h1 data-animation="fadeInUp" data-delay=".3s">Healthy Teeth, Happy Life</h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Comprehensive dental solutions for all ages</p>
-                                    <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an Appointment</a>
+                                    <p data-animation="fadeInUp" data-delay=".6s">Comprehensive dental solutions for all
+                                        ages</p>
+                                    <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an
+                                        Appointment</a>
                                 </div>
                             </div>
                         </div>
@@ -151,27 +161,28 @@
             </div>
             <div class="row">
                 <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
-                        <div class="col-lg-4 col-md-6 col-sm-12">
-                            <article class="blog_item">
-                                <div class="blog_item_img">
-                                    <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
-                                    <a href="#" class="blog_item_date">
-                                        <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
-                                        <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
-                                    </a>
-                                </div>
-                                <div class="blog_details">
-                                    <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
-                                        <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
-                                    </a>
-                                    <p>${b.blogSubContent}</p>
-                                    <ul class="blog-info-link">
-                                        <li><a href="blog?categoryId=${b.categoryId}"><i class="fa fa-user"></i> ${b.categoryName}</a></li>
-                                        <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
-                                    </ul>
-                                </div>
-                            </article>
-                        </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <article class="blog_item">
+                            <div class="blog_item_img">
+                                <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
+                                <a href="#" class="blog_item_date">
+                                    <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
+                                    <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
+                                </a>
+                            </div>
+                            <div class="blog_details">
+                                <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
+                                    <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
+                                </a>
+                                <p>${b.blogSubContent}</p>
+                                <ul class="blog-info-link">
+                                    <li><a href="blog?categoryId=${b.categoryId}"><i
+                                            class="fa fa-user"></i> ${b.categoryName}</a></li>
+                                    <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
+                                </ul>
+                            </div>
+                        </article>
+                    </div>
                 </c:forEach>
             </div>
         </div>
@@ -194,7 +205,9 @@
                             <h2>Perfect Smile, Made Simple</h2>
                         </div>
                         <p class="pera-top mb-40">Experience top-notch dental care tailored to your needs</p>
-                        <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.</p>
+                        <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure
+                            your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you
+                            covered.</p>
                         <div class="icon-about">
                             <img src="assets/img/icon/about1.svg" alt="" class=" mr-20">
                             <img src="assets/img/icon/about2.svg" alt="">
@@ -216,7 +229,7 @@
                         </div>
                     </div>
                     <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="services.html" class="btn f-right sm-left">Explore Services</a>
+                        <a href="book-appointment" class="btn f-right sm-left">Explore Services</a>
                     </div>
                 </div>
             </div>
@@ -232,9 +245,9 @@
                             <img src="assets/img/icon/services1.svg" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="services.html">Teeth Whitening</a></h5>
+                            <h5><a href="book-appointment?appointmentTypeId=1">Teeth Whitening</a></h5>
                             <p>Achieve a brighter smile with our safe and effective whitening treatments.</p>
-                            <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
+                            <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -244,9 +257,9 @@
                             <img src="assets/img/icon/services2.svg" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="services.html">Dental Implants</a></h5>
+                            <h5><a href="book-appointment?appointmentTypeId=1">Dental Checkup</a></h5>
                             <p>Restore your smile with durable and natural-looking dental implants.</p>
-                            <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
+                            <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -256,9 +269,9 @@
                             <img src="assets/img/icon/services3.svg" alt="">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="services.html">Orthodontics</a></h5>
+                            <h5><a href="book-appointment?appointmentTypeId=6">Tooth Extraction</a></h5>
                             <p>Straighten your teeth with our advanced braces and aligner solutions.</p>
-                            <a href="services.html" class="plus-btn"><i class="ti-plus"></i></a>
+                            <a href="book-appointment?appointmentTypeId=6" class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
                 </div>
@@ -266,6 +279,38 @@
         </div>
     </div>
     <!-- Services Area End -->
+    <!--? Services List Area Start -->
+    <div class="accordion compact-accordion" id="servicesAccordion">
+        <c:forEach var="service" items="${services}" varStatus="loop">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-${service.appointmentTypeId}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse-${service.appointmentTypeId}" aria-expanded="false"
+                            aria-controls="collapse-${service.appointmentTypeId}">
+                            ${service.typeName}
+                    </button>
+                </h2>
+                <div id="collapse-${service.appointmentTypeId}" class="accordion-collapse collapse"
+                     aria-labelledby="heading-${service.appointmentTypeId}" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        <p class="service-description">${service.description != null ? service.description : 'No description available.'}</p>
+                        <p class="service-price">
+                            <strong>Price:</strong>
+                            <fmt:formatNumber value="${service.price}" type="currency" currencyCode="VND"
+                                              maxFractionDigits="0"/>
+                        </p>
+                        <a href="book-appointment?appointmentTypeId=${service.appointmentTypeId}"
+                           class="btn btn-sm btn-outline-success">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
+    </div>
+
+    <!-- Services List Area End -->
+
     <!--? Testimonial Area Start -->
     <section class="testimonial-area testimonial-padding fix">
         <div class="container">
@@ -278,7 +323,8 @@
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
                                     <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"The dental care I received was exceptional. My smile has never looked better, and the process was so comfortable!"</p>
+                                    <p>"The dental care I received was exceptional. My smile has never looked better,
+                                        and the process was so comfortable!"</p>
                                 </div>
                                 <!-- founder -->
                                 <div class="testimonial-founder d-flex align-items-center">
@@ -295,7 +341,8 @@
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
                                     <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"From consultation to treatment, the team was professional and caring. Highly recommend their services!"</p>
+                                    <p>"From consultation to treatment, the team was professional and caring. Highly
+                                        recommend their services!"</p>
                                 </div>
                                 <!-- founder -->
                                 <div class="testimonial-founder d-flex align-items-center">
@@ -321,43 +368,14 @@
         <div class="video-area section-bg2 d-flex align-items-center" data-background="assets/img/gallery/video-bg.png">
             <div class="video-wrap position-relative">
                 <div class="video-icon">
-                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i class="fas fa-play"></i></a>
+                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i
+                            class="fas fa-play"></i></a>
                 </div>
             </div>
         </div>
     </div>
     <!-- video_end -->
-    <!--? Blog Area Start -->
-    <section class="home-blog-area section-padding30">
-        <div class="container">
-            <!-- Section Tittle -->
-            <div class="row justify-content-center">
-                <div class="col-lg-7 col-md-9 col-sm-10">
-                    <div class="section-tittle text-center mb-100">
-                        <h2>Latest Dental Tips</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <c:forEach var="blog" items="${recentBlogs}">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="home-blog-single mb-40">
-                            <div class="blog-img-cap">
-                                <div class="blog-img">
-                                    <img src="${blog.blogImg}" alt="">
-                                </div>
-                                <div class="blog-cap">
-                                    <h3><a href="blog-detail?id=${blog.blogId}">${blog.blogName}</a></h3>
-                                    <p>${blog.blogSubContent}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </c:forEach>
-            </div>
-        </div>
-    </section>
-    <!-- Blog Area End -->
+
     <!--? About Law Start-->
     <section class="about-low-area mt-30">
         <div class="container">
@@ -432,10 +450,16 @@
                             <!-- Form -->
                             <div class="footer-form">
                                 <div id="mc_embed_signup">
-                                    <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
-                                        <input type="email" name="EMAIL" id="newsletter-form-email" placeholder="Email Address" class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your email'">
+                                    <form target="_blank"
+                                          action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01"
+                                          method="get" class="subscribe_form relative mail_part" novalidate="true">
+                                        <input type="email" name="EMAIL" id="newsletter-form-email"
+                                               placeholder="Email Address" class="placeholder hide-on-focus"
+                                               onfocus="this.placeholder = ''"
+                                               onblur="this.placeholder = 'Enter your email'">
                                         <div class="form-icon">
-                                            <button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
+                                            <button type="submit" name="submit" id="newsletter-submit"
+                                                    class="email_icon newsletter-submit button-contactForm">
                                                 Subscribe
                                             </button>
                                         </div>
@@ -460,7 +484,11 @@
                     <div class="row">
                         <div class="col-xl-10">
                             <div class="footer-copy-right">
-                                <p>Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+                                <p>Copyright ©
+                                    <script>document.write(new Date().getFullYear());</script>
+                                    All rights reserved | This template is made with <i class="fa fa-heart"
+                                                                                        aria-hidden="true"></i> by <a
+                                            href="https://colorlib.com" target="_blank">Colorlib</a></p>
                             </div>
                         </div>
                     </div>
@@ -498,5 +526,6 @@
 <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
 <script src="./assets/js/plugins.js"></script>
 <script src="./assets/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
