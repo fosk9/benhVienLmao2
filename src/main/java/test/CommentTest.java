@@ -10,7 +10,7 @@ public class CommentTest {
         CommentDAO dao = new CommentDAO();
 
         int blogIdToTest = 3; // 👈 Đổi ID blog nếu cần
-        List<Comment> comments = dao.selectByBlogId(blogIdToTest);
+        List<Comment> comments = dao.selectCommentsByBlogId(blogIdToTest);
 
         System.out.println("Tổng số comment: " + comments.size());
         for (Comment c : comments) {

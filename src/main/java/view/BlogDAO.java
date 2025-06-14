@@ -19,7 +19,7 @@ public class BlogDAO extends DBContext<Blog> {
                 "LEFT JOIN Comment cm ON b.blog_id = cm.blog_id " +
                 "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
                 "b.author, b.date, b.category_id, c.category_name " +
-                "ORDER BY b.date DESC";
+                "ORDER BY b.blog_id DESC";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -43,7 +43,7 @@ public class BlogDAO extends DBContext<Blog> {
                 "WHERE b.blog_name LIKE ? " +
                 "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
                 "b.author, b.date, b.category_id, c.category_name " +
-                "ORDER BY b.date DESC " +
+                "ORDER BY b.blog_id DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"; // Dùng OFFSET và FETCH cho SQL Server
 
         try (Connection conn = getConn();
@@ -95,7 +95,7 @@ public class BlogDAO extends DBContext<Blog> {
         List<Blog> recentBlogs = new ArrayList<>();
         String sql = "SELECT TOP 4 b.blog_id, b.blog_name, b.blog_img, b.date " +
                 "FROM Blog b " +
-                "ORDER BY b.date DESC";  // Sử dụng TOP 4 thay vì LIMIT
+                "ORDER BY b.blog_id DESC";  // Sử dụng TOP 4 thay vì LIMIT
 
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -125,7 +125,7 @@ public class BlogDAO extends DBContext<Blog> {
                 "WHERE b.category_id = ? " +
                 "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
                 "b.author, b.date, b.category_id, c.category_name " +
-                "ORDER BY b.date DESC " +
+                "ORDER BY b.blog_id DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";  // Sửa lại cú pháp phân trang cho SQL Server
 
         try (Connection conn = getConn();
@@ -181,7 +181,7 @@ public class BlogDAO extends DBContext<Blog> {
                 "LEFT JOIN Comment cm ON b.blog_id = cm.blog_id " +
                 "GROUP BY b.blog_id, b.blog_name, b.blog_sub_content, b.content, b.blog_img, " +
                 "b.author, b.date, b.category_id, c.category_name " +
-                "ORDER BY b.date DESC " +
+                "ORDER BY b.blog_id DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";  // Sử dụng OFFSET và FETCH cho SQL Server
 
         try (Connection conn = getConn();
@@ -240,6 +240,30 @@ public class BlogDAO extends DBContext<Blog> {
         // Trả về 0 nếu không có bài viết nào tìm được hoặc có lỗi
         return 0;
     }
+
+    public int addNewCategory(String categoryName) {
+        int categoryId = -1;
+        String sql = "INSERT INTO Category (category_name) VALUES (?)";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, categoryName);
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        categoryId = generatedKeys.getInt(1);  // Lấy ID của danh mục vừa thêm
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return categoryId;
+    }
+
 
     @Override
     public Blog select(int... id) {
