@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Patient;
+import validation.InputSanitizer;
 import view.PatientDAO;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class PatientListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String search = request.getParameter("search");
+        search = InputSanitizer.cleanSearchQuery(search);
         String gender = request.getParameter("gender");
         String sortBy = request.getParameter("sortBy");
         String sortDir = request.getParameter("sortDir");
@@ -70,7 +72,6 @@ public class PatientListServlet extends HttpServlet {
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("recordsPerPage", recordsPerPage);
-
 
         request.getRequestDispatcher("patient-list.jsp").forward(request, response);
     }

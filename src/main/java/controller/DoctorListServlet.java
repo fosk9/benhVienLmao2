@@ -5,12 +5,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Employee;
 import model.Specialization;
+import validation.InputSanitizer;
 import view.EmployeeDAO;
 import view.SpecializationDAO;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @WebServlet("/DoctorList")
 public class DoctorListServlet extends HttpServlet {
@@ -20,6 +20,7 @@ public class DoctorListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String search = request.getParameter("search");
+        search = InputSanitizer.cleanSearchQuery(search);
         String gender = request.getParameter("gender");
         String specializationParam = request.getParameter("specialization");
         String sortBy = request.getParameter("sortBy");
@@ -69,7 +70,6 @@ public class DoctorListServlet extends HttpServlet {
 
         request.setAttribute("doctors", doctors);
         request.setAttribute("specializations", specializations);
-
         request.setAttribute("search", search);
         request.setAttribute("gender", gender);
         request.setAttribute("specialization", specializationId);

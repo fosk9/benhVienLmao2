@@ -9,11 +9,15 @@ import model.Patient;
 import view.PatientDAO;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 @WebServlet("/UpdatePatientAvatar")
-@MultipartConfig
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,        // 1MB: file sẽ được lưu tạm vào disk nếu vượt ngưỡng này
+        maxFileSize = 5 * 1024 * 1024,          // Giới hạn: 5MB cho mỗi file
+        maxRequestSize = 10 * 1024 * 1024       // Tổng dung lượng tất cả request parts: 10MB
+)
+
 public class UpdatePatientAvatarServlet extends HttpServlet {
 
     private Cloudinary cloudinary;
@@ -39,25 +43,40 @@ public class UpdatePatientAvatarServlet extends HttpServlet {
 
         try {
             Part avatarPart = request.getPart("avatar");
-            InputStream avatarStream = avatarPart.getInputStream();
-            String fileName = avatarPart.getSubmittedFileName();
 
-            byte[] bytes = avatarStream.readAllBytes(); // Convert InputStream -> byte[]
+            // 1. Check content type
+            String contentType = avatarPart.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                request.setAttribute("message", "Only image files are allowed.");
+                request.setAttribute("patient", patient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
 
+            // 2. Check file size <= 2MB
+            long fileSize = avatarPart.getSize();
+            if (fileSize > 5 * 1024 * 1024) {
+                request.setAttribute("message", "Avatar file must be under 5MB.");
+                request.setAttribute("patient", patient);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
+                return;
+            }
+
+            // 3. Read file bytes
+            byte[] bytes = avatarPart.getInputStream().readAllBytes();
+
+            // 4. Upload to Cloudinary
             Map<String, Object> uploadParams = ObjectUtils.asMap(
                     "resource_type", "auto",
-                    "public_id", "patient_avatar_" + patient.getPatientId() + "_" + System.currentTimeMillis(),
+                    "public_id", "patient_avatar_" + patient.getPatientId(),
                     "overwrite", true
             );
-
             Map<String, Object> uploadResult = cloudinary.uploader().upload(bytes, uploadParams);
-
             String uploadedUrl = (String) uploadResult.get("secure_url");
 
-            // Update DB
+            // 5. Update DB
             patient.setPatientAvaUrl(uploadedUrl);
-            PatientDAO dao = new PatientDAO();
-            dao.update(patient);
+            new PatientDAO().update(patient);
 
             session.setAttribute("account", patient);
             request.setAttribute("patient", patient);
