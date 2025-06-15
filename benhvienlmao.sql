@@ -21,14 +21,29 @@ CREATE TABLE Roles
 );
 GO
 
--- Features (for access control)
-CREATE TABLE Features
+-- RoleFeatures (maps roles to features)
+CREATE TABLE RoleFeatures
 (
-    feature_id   INT PRIMARY KEY IDENTITY (1,1),
-    feature_name NVARCHAR(255) NOT NULL
+    id         INT PRIMARY KEY IDENTITY (1,1),
+    role_id    INT,
+    feature_id INT,
+    FOREIGN KEY (role_id) REFERENCES Roles (role_id),
+    FOREIGN KEY (feature_id) REFERENCES Features (feature_id)
 );
 GO
 
+-- NavigationItems (for dynamic navigation bar)
+CREATE TABLE NavigationItems
+(
+    nav_id INT PRIMARY KEY IDENTITY(1,1),
+    nav_name NVARCHAR(100) NOT NULL,
+    nav_url NVARCHAR(255) NOT NULL,
+    display_order INT NOT NULL,
+    is_active BIT DEFAULT 1,
+    parent_nav_id INT NULL, -- For sub-menu items
+    FOREIGN KEY (parent_nav_id) REFERENCES NavigationItems(nav_id)
+);
+GO
 -- RoleFeatures (maps roles to features)
 CREATE TABLE RoleFeatures
 (
@@ -339,56 +354,92 @@ VALUES
 -- Dữ liệu mẫu cho bảng Blog (Thêm bài viết liên quan đến y tế)
 INSERT INTO Blog (blog_name, blog_sub_content, content, blog_img, author, date, category_id)
 VALUES 
-    ('Khám bệnh định kỳ', 
-     'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
-     'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
-     'checkup_regular.jpg', 
-     'TS.BS Lê Văn C', 
+    (N'Khám bệnh định kỳ', 
+     N'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
+     N'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
+     N'kham-suc-khoe-dinh-ky-la-gi.jpg', 
+     N'TS.BS Lê Văn C', 
      '2025-06-21 00:00:00.000', 
-     1),  -- Thuộc danh mục "Khám bệnh"
+     1),
      
-    ('Phòng ngừa bệnh tim mạch', 
-     'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
-     'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
-     'heart_disease_prevention.jpg', 
-     'Nguyễn Thị A', 
+    (N'Phòng ngừa bệnh tim mạch', 
+     N'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
+     N'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
+     N'phong-ngua-tim-mach.jpg', 
+     N'Nguyễn Thị A', 
      '2025-06-22 00:00:00.000', 
-     4),  -- Thuộc danh mục "Phòng ngừa bệnh"
+     4),
      
-    ('Chế độ ăn uống cho bệnh nhân tiểu đường', 
-     'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
-     'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
-     'diabetes_diet.jpg', 
-     'TS.BS Trần Thị B', 
+    (N'Chế độ ăn uống cho bệnh nhân tiểu đường', 
+     N'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
+     N'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
+     N'che-do-dinh-duong-phu-hop.jpg', 
+     N'TS.BS Trần Thị B', 
      '2025-06-23 00:00:00.000', 
-     2),  -- Thuộc danh mục "Bệnh lý"
+     2),
      
-    ('Điều trị ung thư', 
-     'Tổng quan về phương pháp điều trị ung thư hiện đại.',
-     'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
-     'cancer_treatment.jpg', 
-     'Lê Thị C', 
+    (N'Điều trị ung thư', 
+     N'Tổng quan về phương pháp điều trị ung thư hiện đại.',
+     N'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
+     N'20201013_tri-ung-thu-1.jpg', 
+     N'Lê Thị C', 
      '2025-06-24 00:00:00.000', 
-     2),  -- Thuộc danh mục "Bệnh lý"
+     2),
      
-    ('Chăm sóc sức khỏe người cao tuổi', 
-     'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
-     'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
-     'elderly_care.jpg', 
-     'Nguyễn Minh D', 
+    (N'Chăm sóc sức khỏe người cao tuổi', 
+     N'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
+     N'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
+     N'cham-soc-nguoi-gia.jpg', 
+     N'Nguyễn Minh D', 
      '2025-06-25 00:00:00.000', 
-     3);  -- Thuộc danh mục "Chăm sóc sức khỏe"
+     3);
 
-	 -- Dữ liệu mẫu cho bảng Comment (Thêm bình luận cho các bài viết y tế)
+-- Dữ liệu mẫu cho bảng Comment (Thêm bình luận cho các bài viết y tế)
 INSERT INTO Comment (blog_id, patient_id, content, date)
 VALUES 
-    (1, 1, 'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định kỳ ngay.', '2025-06-21 10:30:00.000'),
-    (1, 2, 'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
-    (2, 3, 'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
-    (2, 4, 'Tôi sẽ thay đổi chế độ ăn uống của mình để phòng ngừa bệnh tim mạch.', '2025-06-24 11:45:00.000'),
-    (3, 2, 'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.', '2025-06-25 16:25:00.000'),
-    (3, 3, 'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.', '2025-06-26 17:30:00.000'),
-    (4, 4, 'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.', '2025-06-27 10:20:00.000'),
-    (4, 1, 'Tôi rất muốn tìm hiểu thêm về các phương pháp điều trị ung thư hiện đại.', '2025-06-28 08:55:00.000'),
-    (5, 1, 'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
-    (5, 4, 'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
+    (1, 1, N'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định kỳ ngay.', '2025-06-21 10:30:00.000'),
+    (1, 2, N'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
+    (2, 3, N'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
+    (2, 4, N'Tôi sẽ thay đổi chế độ ăn uống của mình để phòng ngừa bệnh tim mạch.', '2025-06-24 11:45:00.000'),
+    (3, 2, N'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.', '2025-06-25 16:25:00.000'),
+    (3, 3, N'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.', '2025-06-26 17:30:00.000'),
+    (4, 4, N'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.', '2025-06-27 10:20:00.000'),
+    (4, 1, N'Tôi rất muốn tìm hiểu thêm về các phương pháp điều trị ung thư hiện đại.', '2025-06-28 08:55:00.000'),
+    (5, 1, N'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
+    (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
+	GO
+
+	-- Insert sample Features with new attributes
+INSERT INTO Features (feature_name, image_url, feature_url, is_active)
+VALUES 
+    ('Book Appointment', 'assets/img/icon/book_appointment.png', 'book-appointment', 1),
+    ('View Prescription', 'assets/img/icon/prescription.png', 'view-prescription', 1),
+    ('Manage Users', 'assets/img/icon/manage_users.png', 'admin/users', 1),
+    ('View Statistics', 'assets/img/icon/statistics.png', 'admin/statistics', 1),
+    ('Approve Doctor Shifts', 'assets/img/icon/shift_approval.png', 'admin/shift-approval', 1),
+    ('Teeth Whitening', 'assets/img/icon/services1.svg', 'book-appointment?appointmentTypeId=3', 1),
+    ('Dental Checkup', 'assets/img/icon/services2.svg', 'book-appointment?appointmentTypeId=1', 1),
+    ('Tooth Extraction', 'assets/img/icon/services3.svg', 'book-appointment?appointmentTypeId=6', 1);
+GO
+
+-- Insert sample NavigationItems
+INSERT INTO NavigationItems (nav_name, nav_url, display_order, is_active, parent_nav_id)
+VALUES 
+    ('Home', 'index.jsp', 1, 1, NULL),
+    ('About', 'about.html', 2, 1, NULL),
+    ('Dental Services', 'services.html', 3, 1, NULL),
+    ('Blog', 'blog.jsp', 4, 1, NULL),
+    ('Blog', 'blog.jsp', 1, 1, 4),
+    ('Blog Details', 'blog-detail.jsp', 2, 1, 4),
+    ('Element', 'elements.html', 3, 1, 4),
+    ('Contact', 'contact.html', 5, 1, NULL);
+GO
+
+-- Insert sample RoleFeatures (Book Appointment not restricted to any role)
+INSERT INTO RoleFeatures (role_id, feature_id)
+VALUES 
+    (1, 2), -- Doctor: View Prescription
+    (3, 3), -- Admin: Manage Users
+    (3, 4), -- Admin: View Statistics
+    (4, 5); -- Manager: Approve Doctor Shifts
+GO
