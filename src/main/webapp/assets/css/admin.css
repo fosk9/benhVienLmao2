@@ -1,0 +1,46 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.container, .container-fluid {
+    max-width: 1400px;
+}
+
+.table img {
+    max-width: 50px;
+    height: auto;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control, .form-select {
+    border-radius: 0.25rem;
+}
+
+.admin-header {
+    background-color: #28a745; /* Green theme inspired by Thu Cuc hospital */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card img {
+    max-width: 50px;
+    height: auto;
+}

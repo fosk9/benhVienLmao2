@@ -52,7 +52,7 @@ public class LoginServlet extends HttpServlet {
                 } else if (employee.getRoleId() == 2) {
                     response.sendRedirect(request.getContextPath() + "/receptionist-home");
                 } else if (employee.getRoleId() == 3) {
-                    response.sendRedirect(request.getContextPath() + "/admin-home");
+                    response.sendRedirect(request.getContextPath() + "/admin/home");
                 } else if (employee.getRoleId() == 4) {
                     response.sendRedirect(request.getContextPath() + "/manager-home");
                 }
@@ -80,4 +80,3 @@ public class LoginServlet extends HttpServlet {
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }
-

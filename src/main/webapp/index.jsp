@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Dental Care | Template</title>
+    <title>Dental Care | benhVienLmao</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="site.webmanifest">
@@ -58,25 +58,24 @@
                             <div class="main-menu f-right d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="index.jsp">Home</a></li>
-                                        <li><a href="about.html">About</a></li>
-                                        <li><a href="services.html">Dental Services</a></li>
-                                        <li><a href="blog.jsp">Blog</a>
-                                            <ul class="submenu">
-                                                <li><a href="blog.jsp">Blog</a></li>
-                                                <li><a href="blog-detail.jsp">Blog Details</a></li>
-                                                <li><a href="elements.html">Element</a></li>
-                                            </ul>
-                                        </li>
-                                        <li><a href="contact.html">Contact</a></li>
+                                        <c:forEach var="nav" items="${navItems}">
+                                            <li>
+                                                <a href="${nav.itemUrl}">${nav.itemName}</a>
+                                                <c:if test="${not empty nav.subItems}">
+                                                    <ul class="submenu">
+                                                        <c:forEach var="subNav" items="${nav.subItems}">
+                                                            <li><a href="${subNav.itemUrl}">${subNav.itemName}</a></li>
+                                                        </c:forEach>
+                                                    </ul>
+                                                </c:if>
+                                            </li>
+                                        </c:forEach>
                                     </ul>
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                    <a href="login.jsp" class="btn header-btn">Login</a>
-                                    <a href="register.jsp" class="btn header-btn">Register</a>
-                                </div>
+                                <a href="login.jsp" class="btn header-btn">Login</a>
+                                <a href="register.jsp" class="btn header-btn">Register</a>
                             </div>
                         </div>
                     </div>
@@ -98,9 +97,8 @@
             <div class="single-slider d-flex align-items-center slider-height">
                 <div class="container">
                     <div class="row align-items-center">
-                        <div class="col-xl-7 col-lg-8 col-md-10 ">
+                        <div class="col-xl-7 col-lg-8 col-md-10">
                             <div class="hero-wrapper">
-                                <!-- Video icon -->
                                 <div class="video-icon">
                                     <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
                                        data-animation="bounceIn" data-delay=".4s">
@@ -123,9 +121,8 @@
             <div class="single-slider d-flex align-items-center slider-height">
                 <div class="container">
                     <div class="row align-items-center">
-                        <div class="col-xl-7 col-lg-8 col-md-10 ">
+                        <div class="col-xl-7 col-lg-8 col-md-10">
                             <div class="hero-wrapper">
-                                <!-- Video icon -->
                                 <div class="video-icon">
                                     <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
                                        data-animation="bounceIn" data-delay=".4s">
@@ -136,7 +133,7 @@
                                     <h1 data-animation="fadeInUp" data-delay=".3s">Healthy Teeth, Happy Life</h1>
                                     <p data-animation="fadeInUp" data-delay=".6s">Comprehensive dental solutions for all
                                         ages</p>
-                                    <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an
+                                    <a href="book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an
                                         Appointment</a>
                                 </div>
                             </div>
@@ -150,7 +147,6 @@
     <!--? Latest News Area Start -->
     <section class="latest-news-area section-padding30">
         <div class="container">
-            <!-- Section Tittle -->
             <div class="row justify-content-center">
                 <div class="col-lg-7 col-md-9 col-sm-10">
                     <div class="section-tittle text-center mb-70">
@@ -193,14 +189,12 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-7 col-md-12">
-                    <!-- about-img -->
-                    <div class="about-img ">
+                    <div class="about-img">
                         <img src="assets/img/gallery/about.png" alt="">
                     </div>
                 </div>
                 <div class="col-lg-5 col-md-12">
                     <div class="about-caption">
-                        <!-- Section Tittle -->
                         <div class="section-tittle mb-35">
                             <h2>Perfect Smile, Made Simple</h2>
                         </div>
@@ -209,7 +203,7 @@
                             your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you
                             covered.</p>
                         <div class="icon-about">
-                            <img src="assets/img/icon/about1.svg" alt="" class=" mr-20">
+                            <img src="assets/img/icon/about1.svg" alt="" class="mr-20">
                             <img src="assets/img/icon/about2.svg" alt="">
                         </div>
                     </div>
@@ -239,42 +233,22 @@
     <div class="service-area">
         <div class="container">
             <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services1.svg" alt="">
+                <c:forEach var="feature" items="${featureItems}" varStatus="loop">
+                    <c:if test="${feature.isActive}">
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="single-cat text-center mb-50">
+                                <div class="cat-icon">
+                                    <img src="${feature.imageUrl}" alt="${feature.itemName}">
+                                </div>
+                                <div class="cat-cap">
+                                    <h5><a href="${feature.itemUrl}">${feature.itemName}</a></h5>
+                                    <p>Explore our ${feature.itemName} services for a healthier smile.</p>
+                                    <a href="${feature.itemUrl}" class="plus-btn"><i class="ti-plus"></i></a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="cat-cap">
-                            <h5><a href="book-appointment?appointmentTypeId=1">Teeth Whitening</a></h5>
-                            <p>Achieve a brighter smile with our safe and effective whitening treatments.</p>
-                            <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services2.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="book-appointment?appointmentTypeId=1">Dental Checkup</a></h5>
-                            <p>Restore your smile with durable and natural-looking dental implants.</p>
-                            <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services3.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="book-appointment?appointmentTypeId=6">Tooth Extraction</a></h5>
-                            <p>Straighten your teeth with our advanced braces and aligner solutions.</p>
-                            <a href="book-appointment?appointmentTypeId=6" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
+                    </c:if>
+                </c:forEach>
             </div>
         </div>
     </div>
@@ -308,25 +282,20 @@
             </div>
         </c:forEach>
     </div>
-
     <!-- Services List Area End -->
-
     <!--? Testimonial Area Start -->
     <section class="testimonial-area testimonial-padding fix">
         <div class="container">
             <div class="row align-items-center justify-content-center">
-                <div class=" col-lg-9">
+                <div class="col-lg-9">
                     <div class="about-caption">
-                        <!-- Testimonial Start -->
                         <div class="h1-testimonial-active dot-style">
-                            <!-- Single Testimonial -->
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
                                     <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
                                     <p>"The dental care I received was exceptional. My smile has never looked better,
                                         and the process was so comfortable!"</p>
                                 </div>
-                                <!-- founder -->
                                 <div class="testimonial-founder d-flex align-items-center">
                                     <div class="founder-img">
                                         <img src="assets/img/icon/testimonial.png" alt="">
@@ -337,14 +306,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Single Testimonial -->
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
                                     <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
                                     <p>"From consultation to treatment, the team was professional and caring. Highly
                                         recommend their services!"</p>
                                 </div>
-                                <!-- founder -->
                                 <div class="testimonial-founder d-flex align-items-center">
                                     <div class="founder-img">
                                         <img src="assets/img/icon/testimonial.png" alt="">
@@ -356,7 +323,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Testimonial End -->
                     </div>
                 </div>
             </div>
@@ -375,7 +341,6 @@
         </div>
     </div>
     <!-- video_end -->
-
     <!--? About Law Start-->
     <section class="about-low-area mt-30">
         <div class="container">
@@ -383,16 +348,14 @@
                 <div class="row">
                     <div class="col-xl-5 col-lg-6 col-md-10 offset-xl-1">
                         <div class="about-caption mb-50">
-                            <!-- Section Tittle -->
                             <div class="section-tittle mb-35">
                                 <h2>100% Satisfaction Guaranteed</h2>
                             </div>
                             <p>Your perfect smile is our priority</p>
-                            <a href="about.html" class="border-btn">Book a Dental Appointment</a>
+                            <a href="book-appointment" class="border-btn">Book a Dental Appointment</a>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
-                        <!-- about-img -->
                         <div class="about-img">
                             <div class="about-font-img">
                                 <img src="assets/img/gallery/about2.png" alt="">
@@ -412,29 +375,24 @@
                 <div class="row justify-content-between">
                     <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12">
                         <div class="single-footer-caption mb-50">
-                            <!-- logo -->
                             <div class="footer-logo mb-25">
                                 <a href="index.jsp"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
                             </div>
                             <div class="header-area">
                                 <div class="main-header main-header2">
                                     <div class="menu-main d-flex align-items-center justify-content-start">
-                                        <!-- Main-menu -->
                                         <div class="main-menu main-menu2">
                                             <nav>
                                                 <ul>
-                                                    <li><a href="index.jsp">Home</a></li>
-                                                    <li><a href="about.html">About</a></li>
-                                                    <li><a href="services.html">Dental Services</a></li>
-                                                    <li><a href="blog.jsp">Blog</a></li>
-                                                    <li><a href="contact.html">Contact</a></li>
+                                                    <c:forEach var="nav" items="${navItems}">
+                                                        <li><a href="${nav.itemUrl}">${nav.itemName}</a></li>
+                                                    </c:forEach>
                                                 </ul>
                                             </nav>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- social -->
                             <div class="footer-social mt-50">
                                 <a href="#"><i class="fab fa-twitter"></i></a>
                                 <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
@@ -447,7 +405,6 @@
                             <div class="footer-tittle mb-50">
                                 <h4>Subscribe to Our Newsletter</h4>
                             </div>
-                            <!-- Form -->
                             <div class="footer-form">
                                 <div id="mc_embed_signup">
                                     <form target="_blank"
@@ -477,7 +434,6 @@
                 </div>
             </div>
         </div>
-        <!-- footer-bottom area -->
         <div class="footer-bottom-area">
             <div class="container">
                 <div class="footer-border">
