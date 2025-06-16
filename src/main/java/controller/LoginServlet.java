@@ -49,7 +49,14 @@ public class LoginServlet extends HttpServlet {
 
                 if (employee.getRoleId() == 1) {
                     response.sendRedirect(request.getContextPath() + "/doctor-home");
-                } else {
+                } else if (employee.getRoleId() == 2) {
+                    response.sendRedirect(request.getContextPath() + "/receptionist-home");
+                } else if (employee.getRoleId() == 3) {
+                    response.sendRedirect(request.getContextPath() + "/admin-home");
+                } else if (employee.getRoleId() == 4) {
+                    response.sendRedirect(request.getContextPath() + "/manager-home");
+                }
+                else {
                     response.sendRedirect(request.getContextPath() + "/index.html");
                 }
                 return;
