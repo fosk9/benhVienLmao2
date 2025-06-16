@@ -417,3 +417,12 @@ VALUES
     (5, 1, N'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
     (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
 GO
+
+-- Insert admin panel feature
+INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
+VALUES ('Manage System Items', 'admin/system-items', 'assets/img/icon/manage_system_items.png', 1, NULL, NULL, 'Feature');
+
+-- Map to Admin role (role_id = 3)
+INSERT INTO RoleSystemItems (role_id, item_id)
+VALUES (3, (SELECT item_id FROM SystemItems WHERE item_name = 'Manage System Items'));
+GO
