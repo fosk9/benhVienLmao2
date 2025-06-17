@@ -426,3 +426,31 @@ VALUES ('Manage System Items', 'admin/system-items', 'assets/img/icon/manage_sys
 INSERT INTO RoleSystemItems (role_id, item_id)
 VALUES (3, (SELECT item_id FROM SystemItems WHERE item_name = 'Manage System Items'));
 GO
+
+CREATE TABLE PageContent (
+    content_id INT PRIMARY KEY IDENTITY(1,1),
+    page_name VARCHAR(50) NOT NULL, -- e.g., 'index'
+    content_key VARCHAR(100) NOT NULL, -- e.g., 'slider1_caption', 'daily_dental_updates_title'
+    content_value NVARCHAR(MAX) NOT NULL, -- e.g., 'Smile with Confidence'
+    is_active BIT DEFAULT 1,
+    UNIQUE (page_name, content_key)
+);
+
+INSERT INTO PageContent (page_name, content_key, content_value, is_active)
+VALUES 
+    ('index', 'slider1_caption', 'Smile with Confidence', 1),
+    ('index', 'slider1_subcaption', 'Transform your smile with our expert dental care services', 1),
+    ('index', 'slider2_caption', 'Healthy Teeth, Happy Life', 1),
+    ('index', 'slider2_subcaption', 'Comprehensive dental solutions for all ages', 1),
+    ('index', 'daily_dental_updates_title', 'Daily Dental Updates', 1),
+    ('index', 'daily_dental_updates_subtitle', 'Stay informed with the latest tips and news for a healthy smile', 1),
+    ('index', 'perfect_smile_title', 'Perfect Smile, Made Simple', 1),
+    ('index', 'perfect_smile_subtitle', 'Experience top-notch dental care tailored to your needs', 1);
+
+	-- Add edit mode feature to SystemItems
+INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
+VALUES ('Edit Home Page', 'index?action=edit', 'assets/img/icon/edit_page.png', 1, 5, NULL, 'Feature');
+
+-- Map to Admin role (role_id = 3)
+INSERT INTO RoleSystemItems (role_id, item_id)
+VALUES (3, (SELECT item_id FROM SystemItems WHERE item_name = 'Edit Home Page'));
