@@ -10,22 +10,22 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="site.webmanifest">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="assets/css/slicknav.css">
-    <link rel="stylesheet" href="assets/css/flaticon.css">
-    <link rel="stylesheet" href="assets/css/gijgo.css">
-    <link rel="stylesheet" href="assets/css/animate.min.css">
-    <link rel="stylesheet" href="assets/css/animated-headline.css">
-    <link rel="stylesheet" href="assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="assets/css/themify-icons.css">
-    <link rel="stylesheet" href="assets/css/slick.css">
-    <link rel="stylesheet" href="assets/css/nice-select.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/slicknav.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/flaticon.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/gijgo.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/animate.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/animated-headline.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/slick.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/nice-select.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
     <style>
         .editable:hover {
             background-color: #f0f0f0;
@@ -33,10 +33,19 @@
         }
         .edit-form {
             display: none;
+            z-index: 1000;
+            position: relative;
         }
     </style>
+    <script>
+        console.log('index.jsp: Starting head rendering at ' + new Date().toISOString());
+    </script>
 </head>
 <body>
+<script>
+    console.log('index.jsp: Starting body rendering at ' + new Date().toISOString());
+</script>
+
 <!-- Debug Edit Mode -->
 <c:out value="EditMode: ${editMode} Role: ${sessionScope.role}"/>
 
@@ -45,7 +54,7 @@
         <div class="preloader-inner position-relative">
             <div class="preloader-circle"></div>
             <div class="preloader-img pere-text">
-                <img src="assets/img/logo/loder.png" alt="">
+                <img src="${pageContext.request.contextPath}/assets/img/logo/loder.png" alt="">
             </div>
         </div>
     </div>
@@ -57,7 +66,7 @@
                 <div class="row align-items-center">
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="index.jsp"><img src="assets/img/logo/logo.png" alt=""></a>
+                            <a href="index.jsp"><img src="${pageContext.request.contextPath}/assets/img/logo/logo.png" alt=""></a>
                         </div>
                     </div>
                     <div class="col-xl-10 col-lg-10 col-md-10">
@@ -152,8 +161,8 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </c:if>
-                                <a href="login.jsp" class="btn header-btn">Login</a>
-                                <a href="register.jsp" class="btn header-btn">Register</a>
+                                <a href="${pageContext.request.contextPath}/login.jsp" class="btn header-btn">Login</a>
+                                <a href="${pageContext.request.contextPath}/register.jsp" class="btn header-btn">Register</a>
                             </div>
                         </div>
                     </div>
@@ -225,7 +234,7 @@
                                                 </c:choose>
                                             </c:if>
                                         </c:forEach>
-                                        <a href="book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore Dental Services</a>
+                                        <a href="${pageContext.request.contextPath}/book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore Dental Services</a>
                                     </div>
                                 </div>
                             </div>
@@ -290,19 +299,19 @@
                     <div class="col-lg-4 col-md-6 col-sm-12">
                         <article class="blog_item">
                             <div class="blog_item_img">
-                                <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
+                                <img class="card-img rounded-0" src="${pageContext.request.contextPath}/assets/img/${b.blogImg}" alt="${b.blogName}">
                                 <a href="#" class="blog_item_date">
                                     <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
                                     <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
                                 </a>
                             </div>
                             <div class="blog_details">
-                                <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
+                                <a class="d-inline-block" href="${pageContext.request.contextPath}/blog-detail?id=${b.blogId}">
                                     <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
                                 </a>
                                 <p>${b.blogSubContent}</p>
                                 <ul class="blog-info-link">
-                                    <li><a href="blog?categoryId=${b.categoryId}"><i class="fa fa-user"></i> ${b.categoryName}</a></li>
+                                    <li><a href="${pageContext.request.contextPath}/blog?categoryId=${b.categoryId}"><i class="fa fa-user"></i> ${b.categoryName}</a></li>
                                     <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
                                 </ul>
                             </div>
@@ -317,7 +326,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-7 col-md-12">
                     <div class="about-img">
-                        <img src="assets/img/gallery/about.png" alt="">
+                        <img src="${pageContext.request.contextPath}/assets/img/gallery/about.png" alt="">
                     </div>
                 </div>
                 <div class="col-lg-5 col-md-12">
@@ -370,15 +379,15 @@
                         </c:forEach>
                         <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.</p>
                         <div class="icon-about">
-                            <img src="assets/img/icon/about1.svg" alt="" class="mr-20">
-                            <img src="assets/img/icon/about2.svg" alt="">
+                            <img src="${pageContext.request.contextPath}/assets/img/icon/about1.svg" alt="" class="mr-20">
+                            <img src="${pageContext.request.contextPath}/assets/img/icon/about2.svg" alt="">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <section class="wantToWork-area section-bg3" data-background="assets/img/gallery/section_bg01.png">
+    <section class="wantToWork-area section-bg3" data-background="${pageContext.request.contextPath}/assets/img/gallery/section_bg01.png">
         <div class="container">
             <div class="wants-wrapper w-padding2">
                 <div class="row align-items-center justify-content-between">
@@ -389,7 +398,7 @@
                         </div>
                     </div>
                     <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="book-appointment" class="btn f-right sm-left">Explore Services</a>
+                        <a href="${pageContext.request.contextPath}/book-appointment" class="btn f-right sm-left">Explore Services</a>
                     </div>
                 </div>
             </div>
@@ -399,14 +408,14 @@
         <div class="container">
             <div class="row">
                 <c:forEach var="feature" items="${featureItems}" varStatus="loop">
-                    <c:if test="${feature.isActive}">
+                    <c:if test="${feature.active}">
                         <div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="single-cat text-center mb-50">
                                 <div class="cat-icon">
                                     <c:choose>
                                         <c:when test="${editMode}">
                                             <span class="editable" onclick="toggleEdit('feature_${feature.itemId}')">
-                                                <img src="${feature.imageUrl}" alt="${feature.itemName}">
+                                                <img src="${pageContext.request.contextPath}/${feature.imageUrl}" alt="${feature.itemName}">
                                             </span>
                                             <div id="edit_feature_${feature.itemId}" class="edit-form">
                                                 <form action="${pageContext.request.contextPath}/index" method="post" enctype="multipart/form-data">
@@ -428,7 +437,7 @@
                                             </div>
                                         </c:when>
                                         <c:otherwise>
-                                            <img src="${feature.imageUrl}" alt="${feature.itemName}">
+                                            <img src="${pageContext.request.contextPath}/${feature.imageUrl}" alt="${feature.itemName}">
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -438,11 +447,11 @@
                                             <h5 class="editable" onclick="toggleEdit('feature_${feature.itemId}')">${feature.itemName}</h5>
                                         </c:when>
                                         <c:otherwise>
-                                            <h5><a href="${feature.itemUrl}">${feature.itemName}</a></h5>
+                                            <h5><a href="${pageContext.request.contextPath}/${feature.itemUrl}">${feature.itemName}</a></h5>
                                         </c:otherwise>
                                     </c:choose>
                                     <p>Explore our ${feature.itemName} services for a healthier smile.</p>
-                                    <a href="${feature.itemUrl}" class="plus-btn"><i class="ti-plus"></i></a>
+                                    <a href="${pageContext.request.contextPath}/${feature.itemUrl}" class="plus-btn"><i class="ti-plus"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -470,7 +479,7 @@
                             <fmt:formatNumber value="${service.price}" type="currency" currencyCode="VND"
                                               maxFractionDigits="0"/>
                         </p>
-                        <a href="book-appointment?appointmentTypeId=${service.appointmentTypeId}"
+                        <a href="${pageContext.request.contextPath}/book-appointment?appointmentTypeId=${service.appointmentTypeId}"
                            class="btn btn-sm btn-outline-success">
                             Book Now
                         </a>
@@ -487,13 +496,13 @@
                         <div class="h1-testimonial-active dot-style">
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
-                                    <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
+                                    <img src="${pageContext.request.contextPath}/assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
                                     <p>"The dental care I received was exceptional. My smile has never looked better,
                                         and the process was so comfortable!"</p>
                                 </div>
                                 <div class="testimonial-founder d-flex align-items-center">
                                     <div class="founder-img">
-                                        <img src="assets/img/icon/testimonial.png" alt="">
+                                        <img src="${pageContext.request.contextPath}/assets/img/icon/testimonial.png" alt="">
                                     </div>
                                     <div class="founder-text">
                                         <span>Jane Smith</span>
@@ -503,13 +512,13 @@
                             </div>
                             <div class="single-testimonial position-relative">
                                 <div class="testimonial-caption">
-                                    <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
+                                    <img src="${pageContext.request.contextPath}/assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
                                     <p>"From consultation to treatment, the team was professional and caring. Highly
                                         recommend their services!"</p>
                                 </div>
                                 <div class="testimonial-founder d-flex align-items-center">
                                     <div class="founder-img">
-                                        <img src="assets/img/icon/testimonial.png" alt="">
+                                        <img src="${pageContext.request.contextPath}/assets/img/icon/testimonial.png" alt="">
                                     </div>
                                     <div class="founder-text">
                                         <span>John Doe</span>
@@ -524,7 +533,7 @@
         </div>
     </section>
     <div class="container">
-        <div class="video-area section-bg2 d-flex align-items-center" data-background="assets/img/gallery/video-bg.png">
+        <div class="video-area section-bg2 d-flex align-items-center" data-background="${pageContext.request.contextPath}/assets/img/gallery/video-bg.png">
             <div class="video-wrap position-relative">
                 <div class="video-icon">
                     <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i
@@ -543,13 +552,13 @@
                                 <h2>100% Satisfaction Guaranteed</h2>
                             </div>
                             <p>Your perfect smile is our priority</p>
-                            <a href="book-appointment" class="border-btn">Book a Dental Appointment</a>
+                            <a href="${pageContext.request.contextPath}/book-appointment" class="border-btn">Book a Dental Appointment</a>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12">
                         <div class="about-img">
                             <div class="about-font-img">
-                                <img src="assets/img/gallery/about2.png" alt="">
+                                <img src="${pageContext.request.contextPath}/assets/img/gallery/about2.png" alt="">
                             </div>
                         </div>
                     </div>
@@ -559,14 +568,14 @@
     </section>
 </main>
 <footer>
-    <div class="footer-wrappr section-bg3" data-background="assets/img/gallery/footer-bg.png">
+    <div class="footer-wrappr section-bg3" data-background="${pageContext.request.contextPath}/assets/img/gallery/footer-bg.png">
         <div class="footer-area footer-padding">
             <div class="container">
                 <div class="row justify-content-between">
                     <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12">
                         <div class="single-footer-caption mb-50">
                             <div class="footer-logo mb-25">
-                                <a href="index.jsp"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
+                                <a href="index.jsp"><img src="${pageContext.request.contextPath}/assets/img/logo/logo2_footer.png" alt=""></a>
                             </div>
                             <div class="header-area">
                                 <div class="main-header main-header2">
@@ -603,7 +612,7 @@
                                                                     </div>
                                                                 </c:when>
                                                                 <c:otherwise>
-                                                                    <a href="${nav.itemUrl}">${nav.itemName}</a>
+                                                                    <a href="${pageContext.request.contextPath}/${nav.itemUrl}">${nav.itemName}</a>
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </li>
@@ -677,36 +686,103 @@
 <div id="back-top">
     <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
 </div>
-<script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
-<script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
-<script src="./assets/js/popper.min.js"></script>
-<script src="./assets/js/bootstrap.min.js"></script>
-<script src="./assets/js/jquery.slicknav.min.js"></script>
-<script src="./assets/js/owl.carousel.min.js"></script>
-<script src="./assets/js/slick.min.js"></script>
-<script src="./assets/js/wow.min.js"></script>
-<script src="./assets/js/animated.headline.js"></script>
-<script src="./assets/js/jquery.magnific-popup.js"></script>
-<script src="./assets/js/gijgo.min.js"></script>
-<script src="./assets/js/jquery.nice-select.min.js"></script>
-<script src="./assets/js/jquery.sticky.js"></script>
-<script src="./assets/js/jquery.counterup.min.js"></script>
-<script src="./assets/js/waypoints.min.js"></script>
-<script src="./assets/js/jquery.countdown.min.js"></script>
-<script src="./assets/js/hover-direction-snake.min.js"></script>
-<script src="./assets/js/contact.js"></script>
-<script src="./assets/js/jquery.form.js"></script>
-<script src="./assets/js/jquery.validate.min.js"></script>
-<script src="./assets/js/mail-script.js"></script>
-<script src="./assets/js/jquery.ajaxchimp.min.js"></script>
-<script src="./assets/js/plugins.js"></script>
-<script src="./assets/js/main.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/vendor/modernizr-3.5.0.min.js"></script>
+<script>
+    console.log('index.jsp: Loaded modernizr at ' + new Date().toISOString());
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/vendor/jquery-1.12.4.min.js"></script>
+<script>
+    console.log('index.jsp: Loaded jQuery at ' + new Date().toISOString());
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/popper.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/bootstrap.min.js"></script>
+<script>
+    console.log('index.jsp: Loaded Bootstrap at ' + new Date().toISOString());
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.slicknav.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/owl.carousel.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/slick.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/wow.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/animated.headline.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.magnific-popup.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/gijgo.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.nice-select.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.sticky.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.counterup.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/waypoints.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.countdown.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/hover-direction-snake.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/contact.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.form.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.validate.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/mail-script.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/plugins.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/main.js" defer></script>
+<script>
+    console.log('index.jsp: Loaded main.js at ' + new Date().toISOString());
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    console.log('index.jsp: Loaded Bootstrap bundle at ' + new Date().toISOString());
+
     function toggleEdit(id) {
-        const display = document.getElementById(id).style.display;
-        document.getElementById(id).style.display = display === 'block' ? 'none' : 'block';
+        console.log('index.jsp: toggleEdit called for ID: ' + id + ' at ' + new Date().toISOString());
+        try {
+            const element = document.getElementById(id);
+            if (element) {
+                const display = element.style.display;
+                element.style.display = display === 'block' ? 'none' : 'block';
+                console.log('index.jsp: Toggled display for ' + id + ' to ' + element.style.display);
+            } else {
+                console.error('index.jsp: Element not found for ID: ' + id);
+            }
+        } catch (error) {
+            console.error('index.jsp: Error in toggleEdit for ID: ' + id + ': ' + error.message);
+        }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('index.jsp: DOM fully loaded at ' + new Date().toISOString());
+        try {
+            // Initialize plugins safely
+            if (typeof jQuery !== 'undefined') {
+                console.log('index.jsp: jQuery version: ' + jQuery.fn.jquery);
+                // Initialize Owl Carousel
+                if (jQuery('.slider-active').owlCarousel) {
+                    jQuery('.slider-active').owlCarousel({
+                        loop: true,
+                        nav: true,
+                        dots: true,
+                        responsive: {
+                            0: { items: 1 },
+                            600: { items: 1 },
+                            1000: { items: 1 }
+                        }
+                    });
+                    console.log('index.jsp: Initialized Owl Carousel');
+                }
+                // Initialize other plugins (e.g., Magnific Popup, Slick)
+                if (jQuery.magnificPopup) {
+                    jQuery('.popup-video').magnificPopup({ type: 'iframe' });
+                    console.log('index.jsp: Initialized Magnific Popup');
+                }
+            } else {
+                console.error('index.jsp: jQuery not loaded');
+            }
+        } catch (error) {
+            console.error('index.jsp: Error initializing plugins: ' + error.message);
+        }
+    });
+
+    window.addEventListener('load', function() {
+        console.log('index.jsp: Window fully loaded at ' + new Date().toISOString());
+    });
+
+    // Log resource errors
+    window.addEventListener('error', function(event) {
+        console.error('index.jsp: Resource error: ' + event.message + ' at ' + event.filename + ':' + event.lineno);
+    });
 </script>
 </body>
 </html>

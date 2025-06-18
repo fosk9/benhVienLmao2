@@ -81,6 +81,11 @@ public class MainPageServlet extends HttpServlet {
         try {
             featureItems = systemItemDAO.getActiveItemsByRoleAndType(role, "Feature");
             LOGGER.info("Fetched " + featureItems.size() + " feature items for role " + role);
+
+            //for debugging, listing feature items' isActive
+//            for (SystemItem item : featureItems) {
+//                LOGGER.info("Feature Item: " + item.getItemName() + ", Active: " + item.isActive());
+//            }
         } catch (SQLException e) {
             LOGGER.severe("Error fetching feature items: " + e.getMessage());
         }
