@@ -1,6 +1,5 @@
 package controller;
 
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,11 +10,13 @@ import model.SystemItem;
 import view.SystemItemDAO;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Servlet for rendering the admin dashboard.
+ */
 @WebServlet("/admin/home")
 public class AdminHomeServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminHomeServlet.class.getName());
@@ -27,31 +28,31 @@ public class AdminHomeServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
-            Logger.getLogger(AdminHomeServlet.class.getName()).warning("User not logged in");
+            LOGGER.warning("User not logged in");
             return;
         }
 
-        // Lấy account object từ session
+        // Get account object from session
         Object accountObj = session.getAttribute("account");
         Integer roleId = null;
         String fullName = "Admin";
-        if (accountObj != null && accountObj instanceof model.Employee) {
+        if (accountObj instanceof model.Employee) {
             model.Employee employee = (model.Employee) accountObj;
             roleId = employee.getRoleId();
             fullName = employee.getFullName();
         }
 
-        if (roleId == null || (roleId != 3)) {
+        if (roleId == null || roleId != 3) { // Admin role_id = 3
             response.sendRedirect(request.getContextPath() + "/unauthorized.jsp");
             return;
         }
 
-        // Fetch admin features for the user’s role
+        // Fetch admin features for the user's role
         List<SystemItem> adminFeatures = new ArrayList<>();
         try {
             adminFeatures = systemItemDAO.getActiveItemsByRoleAndType(roleId, "Feature");
             LOGGER.info("Fetched " + adminFeatures.size() + " admin features for role " + roleId);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.severe("Error fetching admin features: " + e.getMessage());
         }
 

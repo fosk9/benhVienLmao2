@@ -1,14 +1,15 @@
 package controller;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import model.SystemItem;
-import view.SystemItemDAO;
+import model.PageContent;
+import view.PageContentDAO;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +17,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Servlet for managing SystemItems in the admin panel.
+ * Servlet for managing PageContent in the admin panel.
  */
-@WebServlet("/admin/system-items")
-public class AdminSystemItemsServlet extends HttpServlet {
-    private static final Logger LOGGER = Logger.getLogger(AdminSystemItemsServlet.class.getName());
-    private final SystemItemDAO systemItemDAO = new SystemItemDAO();
+@WebServlet("/admin/page-content")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
+public class AdminPageContentServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(AdminPageContentServlet.class.getName());
+    private final PageContentDAO pageContentDAO = new PageContentDAO();
     private static final String UPLOAD_DIR = "assets/img/uploads";
 
     @Override
@@ -48,40 +50,39 @@ public class AdminSystemItemsServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
+        String pageName = request.getParameter("pageName");
         if (action == null) {
             action = "list";
         }
 
         switch (action) {
             case "add":
-                // Fetch all SystemItems for parent item dropdown
-                List<SystemItem> allItems = systemItemDAO.select();
-                request.setAttribute("allItems", allItems);
-                request.getRequestDispatcher("/admin/system-items/add.jsp").forward(request, response);
+                request.setAttribute("pageName", pageName);
+                request.getRequestDispatcher("/admin/page-content/add.jsp").forward(request, response);
                 break;
             case "edit":
                 int id = Integer.parseInt(request.getParameter("id"));
-                SystemItem item = systemItemDAO.select(id);
-                allItems = systemItemDAO.select();
-                request.setAttribute("item", item);
-                request.setAttribute("allItems", allItems);
-                request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
+                PageContent content = pageContentDAO.select(id);
+                request.setAttribute("content", content);
+                request.setAttribute("pageName", pageName);
+                request.getRequestDispatcher("/admin/page-content/edit.jsp").forward(request, response);
                 break;
             case "delete":
                 id = Integer.parseInt(request.getParameter("id"));
-                int deleted = systemItemDAO.delete(id);
+                int deleted = pageContentDAO.delete(id);
                 if (deleted > 0) {
-                    LOGGER.info("Successfully deleted SystemItem ID: " + id);
+                    LOGGER.info("Successfully deleted PageContent ID: " + id);
                 } else {
-                    LOGGER.warning("Failed to delete SystemItem ID: " + id);
+                    LOGGER.warning("Failed to delete PageContent ID: " + id);
                 }
-                response.sendRedirect(request.getContextPath() + "/admin/system-items");
+                response.sendRedirect(request.getContextPath() + "/admin/page-content?pageName=" + (pageName != null ? pageName : ""));
                 break;
             case "list":
             default:
-                allItems = systemItemDAO.select();
-                request.setAttribute("items", allItems);
-                request.getRequestDispatcher("/admin/system-items/list.jsp").forward(request, response);
+                List<PageContent> contents = pageContentDAO.select(pageName);
+                request.setAttribute("contents", contents);
+                request.setAttribute("pageName", pageName);
+                request.getRequestDispatcher("/admin/page-content/list.jsp").forward(request, response);
                 break;
         }
     }
@@ -110,15 +111,15 @@ public class AdminSystemItemsServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        SystemItem item = new SystemItem();
-        item.setItemName(request.getParameter("itemName"));
-        item.setItemUrl(request.getParameter("itemUrl"));
-        item.setActive(Boolean.parseBoolean(request.getParameter("isActive")));
-        String displayOrder = request.getParameter("displayOrder");
-        item.setDisplayOrder(displayOrder.isEmpty() ? null : Integer.parseInt(displayOrder));
-        String parentItemId = request.getParameter("parentItemId");
-        item.setParentItemId(parentItemId.isEmpty() ? null : Integer.parseInt(parentItemId));
-        item.setItemType(request.getParameter("itemType"));
+        String pageName = request.getParameter("pageName");
+        PageContent content = new PageContent();
+        content.setPageName(request.getParameter("pageName"));
+        content.setContentKey(request.getParameter("contentKey"));
+        content.setContentValue(request.getParameter("contentValue"));
+        content.setActive(Boolean.parseBoolean(request.getParameter("isActive")));
+        content.setVideoUrl(request.getParameter("videoUrl"));
+        content.setButtonUrl(request.getParameter("buttonUrl"));
+        content.setButtonText(request.getParameter("buttonText"));
 
         // Handle file upload
         Part filePart = request.getPart("imageFile");
@@ -131,29 +132,29 @@ public class AdminSystemItemsServlet extends HttpServlet {
             }
             String filePath = savePath + File.separator + fileName;
             filePart.write(filePath);
-            item.setImageUrl(UPLOAD_DIR + "/" + fileName);
+            content.setImageUrl(UPLOAD_DIR + "/" + fileName);
         } else {
-            item.setImageUrl(request.getParameter("existingImageUrl"));
+            content.setImageUrl(request.getParameter("existingImageUrl"));
         }
 
         if ("add".equals(action)) {
-            int inserted = systemItemDAO.insert(item);
+            int inserted = pageContentDAO.insert(content);
             if (inserted > 0) {
-                LOGGER.info("Successfully inserted SystemItem: " + item.getItemName());
+                LOGGER.info("Successfully inserted PageContent: " + content.getContentKey());
             } else {
-                LOGGER.warning("Failed to insert SystemItem: " + item.getItemName());
+                LOGGER.warning("Failed to insert PageContent: " + content.getContentKey());
             }
         } else if ("edit".equals(action)) {
-            item.setItemId(Integer.parseInt(request.getParameter("id")));
-            int updated = systemItemDAO.update(item);
+            content.setContentId(Integer.parseInt(request.getParameter("id")));
+            int updated = pageContentDAO.update(content);
             if (updated > 0) {
-                LOGGER.info("Successfully updated SystemItem ID: " + item.getItemId());
+                LOGGER.info("Successfully updated PageContent ID: " + content.getContentId());
             } else {
-                LOGGER.warning("Failed to update SystemItem ID: " + item.getItemId());
+                LOGGER.warning("Failed to update PageContent ID: " + content.getContentId());
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/system-items");
+        response.sendRedirect(request.getContextPath() + "/admin/page-content?pageName=" + (pageName != null ? pageName : ""));
     }
 
     private String extractFileName(Part part) {

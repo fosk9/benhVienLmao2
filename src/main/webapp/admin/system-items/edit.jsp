@@ -4,61 +4,58 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Edit System Item - benhVienLmao</title>
+  <title>Edit Page Content - benhVienLmao</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
 </head>
 <body>
 <div class="container mt-5">
-  <h2>Edit System Item</h2>
-  <form action="${pageContext.request.contextPath}/admin/system-items" method="post" enctype="multipart/form-data">
+  <h2>Edit Page Content</h2>
+  <form action="${pageContext.request.contextPath}/admin/page-content" method="post" enctype="multipart/form-data">
     <input type="hidden" name="action" value="edit">
-    <input type="hidden" name="id" value="${item.itemId}">
+    <input type="hidden" name="id" value="${content.contentId}">
+    <input type="hidden" name="pageName" value="${pageName}">
     <div class="mb-3">
-      <label for="itemName" class="form-label">Name</label>
-      <input type="text" class="form-control" id="itemName" name="itemName" value="${item.itemName}" required>
+      <label for="pageName" class="form-label">Page Name</label>
+      <input type="text" class="form-control" id="pageName" name="pageName" value="${content.pageName}" required>
     </div>
     <div class="mb-3">
-      <label for="itemUrl" class="form-label">URL</label>
-      <input type="text" class="form-control" id="itemUrl" name="itemUrl" value="${item.itemUrl}">
+      <label for="contentKey" class="form-label">Content Key</label>
+      <input type="text" class="form-control" id="contentKey" name="contentKey" value="${content.contentKey}" required>
     </div>
     <div class="mb-3">
-      <label for="imageFile" class="form-label">Image</label>
+      <label for="contentValue" class="form-label">Content Value</label>
+      <textarea class="form-control" id="contentValue" name="contentValue" rows="4" required>${content.contentValue}</textarea>
+    </div>
+    <div class="mb-3">
+      <label for="imageFile" class="form-label">Background Image</label>
       <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
-      <c:if test="${not empty item.imageUrl}">
-        <img src="${pageContext.request.contextPath}/${item.imageUrl}" alt="${item.itemName}" width="100" class="mt-2">
-        <input type="hidden" name="existingImageUrl" value="${item.imageUrl}">
+      <c:if test="${not empty content.imageUrl}">
+        <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="Current Image" width="100" class="mt-2">
+        <input type="hidden" name="existingImageUrl" value="${content.imageUrl}">
       </c:if>
+    </div>
+    <div class="mb-3">
+      <label for="videoUrl" class="form-label">Video URL</label>
+      <input type="text" class="form-control" id="videoUrl" name="videoUrl" value="${content.videoUrl}" placeholder="e.g., https://www.youtube.com/watch?v=...">
+    </div>
+    <div class="mb-3">
+      <label for="buttonUrl" class="form-label">Button URL</label>
+      <input type="text" class="form-control" id="buttonUrl" name="buttonUrl" value="${content.buttonUrl}" placeholder="e.g., book-appointment">
+    </div>
+    <div class="mb-3">
+      <label for="buttonText" class="form-label">Button Text</label>
+      <input type="text" class="form-control" id="buttonText" name="buttonText" value="${content.buttonText}" placeholder="e.g., Explore Dental Services">
     </div>
     <div class="mb-3">
       <label for="isActive" class="form-label">Active</label>
       <select class="form-select" id="isActive" name="isActive">
-        <option value="true" ${item.active ? 'selected' : ''}>Yes</option>
-        <option value="false" ${!item.active ? 'selected' : ''}>No</option>
-      </select>
-    </div>
-    <div class="mb-3">
-      <label for="displayOrder" class="form-label">Display Order</label>
-      <input type="number" class="form-control" id="displayOrder" name="displayOrder" value="${item.displayOrder}">
-    </div>
-    <div class="mb-3">
-      <label for="parentItemId" class="form-label">Parent Item</label>
-      <select class="form-select" id="parentItemId" name="parentItemId">
-        <option value="">None</option>
-        <c:forEach var="parent" items="${allItems}">
-          <option value="${parent.itemId}" ${parent.itemId == item.parentItemId ? 'selected' : ''}>${parent.itemName}</option>
-        </c:forEach>
-      </select>
-    </div>
-    <div class="mb-3">
-      <label for="itemType" class="form-label">Type</label>
-      <select class="form-select" id="itemType" name="itemType" required>
-        <option value="Feature" ${item.itemType == 'Feature' ? 'selected' : ''}>Feature</option>
-        <option value="Navigation" ${item.itemType == 'Navigation' ? 'selected' : ''}>Navigation</option>
+        <option value="true" ${content.isActive ? 'selected' : ''}>Yes</option>
+        <option value="false" ${!content.isActive ? 'selected' : ''}>No</option>
       </select>
     </div>
     <button type="submit" class="btn btn-success">Save Changes</button>
-    <a href="${pageContext.request.contextPath}/admin/system-items" class="btn btn-secondary">Cancel</a>
+    <a href="${pageContext.request.contextPath}/admin/page-content?pageName=${pageName}" class="btn btn-secondary">Cancel</a>
   </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

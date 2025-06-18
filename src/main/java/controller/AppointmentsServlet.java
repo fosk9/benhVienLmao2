@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 @WebServlet({"/appointments", "/appointments/edit", "/appointments/delete", "/appointments/details"})
 public class AppointmentsServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AppointmentsServlet.class.getName());
+    private static final int PAGE_SIZE = 5; // Display 5 appointments per page
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -89,13 +90,111 @@ public class AppointmentsServlet extends HttpServlet {
             int patientId = (int) session.getAttribute("patientId");
 
             if ("/appointments".equals(path)) {
-                List<Appointment> appointments = appointmentDAO.getAppointmentsByPatientId(patientId);
-                AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
-                for (Appointment appointment : appointments) {
-                    AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
-                    appointment.setAppointmentType(type);
+                // Get search parameters
+                String appointmentDate = request.getParameter("appointmentDate");
+                String timeSlot = request.getParameter("timeSlot");
+                Integer appointmentTypeId = null;
+                try {
+                    String typeIdParam = request.getParameter("appointmentTypeId");
+                    if (typeIdParam != null && !typeIdParam.isEmpty()) {
+                        appointmentTypeId = Integer.parseInt(typeIdParam);
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Invalid appointmentTypeId: " + request.getParameter("appointmentTypeId"));
                 }
+                // Sửa phần requiresSpecialist để nhận đúng giá trị Yes/No/All
+                Boolean requiresSpecialist = null;
+                String reqSpecParam = request.getParameter("requiresSpecialist");
+                if ("Yes".equalsIgnoreCase(reqSpecParam)) {
+                    requiresSpecialist = true;
+                } else if ("No".equalsIgnoreCase(reqSpecParam)) {
+                    requiresSpecialist = false;
+                }
+                String status = request.getParameter("status");
+                String sortBy = request.getParameter("sortBy");
+                String sortDir = request.getParameter("sortDir");
+
+                // Log search parameters for debugging
+                LOGGER.info("Processing search for patient_id=" + patientId +
+                        ", appointmentDate=" + appointmentDate +
+                        ", timeSlot=" + timeSlot +
+                        ", appointmentTypeId=" + appointmentTypeId +
+                        ", requiresSpecialist=" + requiresSpecialist +
+                        ", status=" + status +
+                        ", sortBy=" + sortBy +
+                        ", sortDir=" + sortDir);
+
+                // Get pagination parameters
+                int page = 1;
+                try {
+                    String pageParam = request.getParameter("page");
+                    if (pageParam != null && !pageParam.isEmpty()) {
+                        page = Integer.parseInt(pageParam);
+                        if (page < 1) page = 1;
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Invalid page parameter: " + request.getParameter("page"));
+                }
+
+                // Fetch appointments with search, sort, and pagination
+                List<Appointment> appointments = null;
+                int totalAppointments = 0;
+                try {
+                    appointments = appointmentDAO.searchAndSortAppointments(
+                            patientId, appointmentDate, timeSlot, appointmentTypeId, requiresSpecialist, status,
+                            sortBy, sortDir, page, PAGE_SIZE);
+
+                    // Calculate total pages
+                    totalAppointments = appointmentDAO.countFilteredAppointments(
+                            patientId, appointmentDate, timeSlot, appointmentTypeId, requiresSpecialist, status);
+                } catch (RuntimeException e) {
+                    LOGGER.severe("Error fetching appointments: " + e.getMessage());
+                    request.setAttribute("error", "Failed to load appointments. Please try again later.");
+                }
+
+                int totalPages = totalAppointments > 0 ? (int) Math.ceil((double) totalAppointments / PAGE_SIZE) : 1;
+
+                // Redirect to page 1 if current page exceeds total pages and no results
+                if (page > totalPages && totalAppointments > 0) {
+                    response.sendRedirect(request.getContextPath() + "/appointments?page=1" +
+                            (appointmentDate != null ? "&appointmentDate=" + appointmentDate : "") +
+                            (timeSlot != null ? "&timeSlot=" + timeSlot : "") +
+                            (appointmentTypeId != null ? "&appointmentTypeId=" + appointmentTypeId : "") +
+                            (requiresSpecialist != null ? "&requiresSpecialist=" + (requiresSpecialist ? "Yes" : "No") : "") +
+                            (status != null ? "&status=" + status : "") +
+                            (sortBy != null ? "&sortBy=" + sortBy : "") +
+                            (sortDir != null ? "&sortDir=" + sortDir : ""));
+                    return;
+                }
+
+                // Fetch patient for username
+                PatientDAO patientDAO = new PatientDAO();
+                Patient patient = patientDAO.getPatientById(patientId);
+                if (patient != null) {
+                    request.setAttribute("username", patient.getFullName());
+                } else {
+                    request.setAttribute("username", "User");
+                }
+
+                // Fetch appointment types for search form
+                AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
+                List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
+                request.setAttribute("appointmentTypes", appointmentTypes);
+
+                // Set attributes for JSP
                 request.setAttribute("appointments", appointments);
+                request.setAttribute("currentPage", page);
+                request.setAttribute("totalPages", totalPages);
+                request.setAttribute("sortBy", sortBy);
+                request.setAttribute("sortDir", sortDir);
+
+                // Set error message if no appointments found
+                if (appointments == null || appointments.isEmpty()) {
+                    request.setAttribute("error", totalAppointments == 0 && page == 1 ?
+                            "No appointments found. Try booking a new appointment." :
+                            "No appointments found matching your criteria.");
+                }
+
                 request.getRequestDispatcher("/Pact/appointments.jsp").forward(request, response);
             } else if ("/appointments/edit".equals(path)) {
                 int appointmentId = Integer.parseInt(request.getParameter("id"));
@@ -120,6 +219,7 @@ public class AppointmentsServlet extends HttpServlet {
         }
     }
 
+    // Load appointment details with type and doctor info
     private void loadAppointmentDetails(HttpServletRequest request, Appointment appointment) {
         AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
         AppointmentType type = appointmentTypeDAO.select(appointment.getAppointmentTypeId());

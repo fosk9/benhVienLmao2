@@ -109,8 +109,7 @@
                                     <h1 data-animation="fadeInUp" data-delay=".3s">Smile with Confidence</h1>
                                     <p data-animation="fadeInUp" data-delay=".6s">Transform your smile with our expert
                                         dental care services</p>
-                                    <a href="book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore
-                                        Dental Services</a>
+                                    <a href="appointment/list" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book An Appointment</a>
                                 </div>
                             </div>
                         </div>
@@ -223,7 +222,7 @@
                         </div>
                     </div>
                     <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="book-appointment" class="btn f-right sm-left">Explore Services</a>
+                        <a href="appointment/list" class="btn f-right sm-left">Explore Services</a>
                     </div>
                 </div>
             </div>

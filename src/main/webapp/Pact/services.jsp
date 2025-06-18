@@ -128,7 +128,7 @@
             </div>
           </div>
           <div class="col-xl-2 col-lg-3 col-md-4">
-            <a href="<c:url value='/appointments'/>" class="btn f-right sm-left">Use Services</a>
+            <a href="<c:url value='appointment/list'/>" class="btn f-right sm-left">Use Services</a>
           </div>
         </div>
       </div>

@@ -68,39 +68,39 @@ public class MainPageServlet extends HttpServlet {
         }
 
         // Fetch navigation items
-        List<SystemItem> navItems = new ArrayList<>();
-        try {
-            navItems = systemItemDAO.getActiveItemsByRoleAndType(role, "Navigation");
-            LOGGER.info("Fetched " + navItems.size() + " navigation items for role " + role);
-        } catch (SQLException e) {
-            LOGGER.severe("Error fetching navigation items: " + e.getMessage());
-        }
+//        List<SystemItem> navItems = new ArrayList<>();
+//        try {
+//            navItems = systemItemDAO.getActiveItemsByRoleAndType(role, "Navigation");
+//            LOGGER.info("Fetched " + navItems.size() + " navigation items for role " + role);
+//        } catch (SQLException e) {
+//            LOGGER.severe("Error fetching navigation items: " + e.getMessage());
+//        }
 
         // Fetch feature items
-        List<SystemItem> featureItems = new ArrayList<>();
-        try {
-            featureItems = systemItemDAO.getActiveItemsByRoleAndType(role, "Feature");
-            LOGGER.info("Fetched " + featureItems.size() + " feature items for role " + role);
-
-            //for debugging, listing feature items' isActive
-//            for (SystemItem item : featureItems) {
-//                LOGGER.info("Feature Item: " + item.getItemName() + ", Active: " + item.isActive());
-//            }
-        } catch (SQLException e) {
-            LOGGER.severe("Error fetching feature items: " + e.getMessage());
-        }
+//        List<SystemItem> featureItems = new ArrayList<>();
+//        try {
+//            featureItems = systemItemDAO.getActiveItemsByRoleAndType(role, "Feature");
+//            LOGGER.info("Fetched " + featureItems.size() + " feature items for role " + role);
+//
+//            //for debugging, listing feature items' isActive
+////            for (SystemItem item : featureItems) {
+////                LOGGER.info("Feature Item: " + item.getItemName() + ", Active: " + item.isActive());
+////            }
+//        } catch (SQLException e) {
+//            LOGGER.severe("Error fetching feature items: " + e.getMessage());
+//        }
 
         // Fetch page content
-        List<PageContent> pageContents = pageContentDAO.selectByPage("index");
-        LOGGER.info("Fetched " + pageContents.size() + " page contents for index");
+//        List<PageContent> pageContents = pageContentDAO.selectByPage("index");
+//        LOGGER.info("Fetched " + pageContents.size() + " page contents for index");
 
         // Set attributes
         request.setAttribute("recentBlogs", recentBlogs);
         request.setAttribute("services", services);
-        request.setAttribute("navItems", navItems);
-        request.setAttribute("featureItems", featureItems);
-        request.setAttribute("pageContents", pageContents);
-        request.setAttribute("editMode", editMode);
+//        request.setAttribute("navItems", navItems);
+//        request.setAttribute("featureItems", featureItems);
+//        request.setAttribute("pageContents", pageContents);
+//        request.setAttribute("editMode", editMode);
 
         // Forward to index.jsp
         LOGGER.info("Forwarding to index.jsp with editMode=" + editMode);
