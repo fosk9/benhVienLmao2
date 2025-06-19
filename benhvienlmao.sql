@@ -233,16 +233,20 @@ GO
 CREATE TABLE DoctorShifts
 (
     shift_id        INT PRIMARY KEY IDENTITY (1,1),
-    doctor_id       INT,
-    shift_date      DATE,
+    doctor_id       INT NOT NULL,
+    shift_date      DATE NOT NULL,
     time_slot       VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening', 'Night')),
-    status          VARCHAR(50) CHECK (status IN ('Scheduled', 'Rest', 'PendingApproval', 'Approved', 'Rejected')) DEFAULT 'Scheduled',
-    manager_id      INT,
-    requested_at    DATETIME DEFAULT GETDATE(),
-    approved_at     DATETIME,
+
+    status          VARCHAR(20) CHECK (status IN ('Working', 'PendingLeave', 'Leave', 'Rejected')) DEFAULT 'Working',
+
+    manager_id      INT,          -- Người duyệt đơn nghỉ
+    requested_at    DATETIME,     -- Thời gian xin nghỉ
+    approved_at     DATETIME,     -- Thời gian duyệt (dù là đồng ý hay từ chối)
+
     FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
     FOREIGN KEY (manager_id) REFERENCES Employees (employee_id)
 );
+
 GO
 
 -- Insert sample Roles
