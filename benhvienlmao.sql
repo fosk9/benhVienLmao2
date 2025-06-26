@@ -107,35 +107,35 @@ GO
 
 -- Category
 CREATE TABLE Category (
-    category_id TINYINT PRIMARY KEY IDENTITY(1,1),
-    category_name NVARCHAR(100) NOT NULL
+                          category_id TINYINT PRIMARY KEY IDENTITY(1,1),
+                          category_name NVARCHAR(100) NOT NULL
 );
 GO
 
 -- Blog
 CREATE TABLE Blog (
-    blog_id         INT PRIMARY KEY IDENTITY(1,1),
-    blog_name       NVARCHAR(255) NOT NULL,
-    blog_sub_content NVARCHAR(500),
-    content         NVARCHAR(MAX) NOT NULL,
-    blog_img        NVARCHAR(500),
-    author          NVARCHAR(255),
-    date            DATETIME DEFAULT GETDATE(),
-    category_id     TINYINT,
-    selected_banner BIT DEFAULT 0,
-    FOREIGN KEY (category_id) REFERENCES Category(category_id)
+                      blog_id         INT PRIMARY KEY IDENTITY(1,1),
+                      blog_name       NVARCHAR(255) NOT NULL,
+                      blog_sub_content NVARCHAR(500),
+                      content         NVARCHAR(MAX) NOT NULL,
+                      blog_img        NVARCHAR(500),
+                      author          NVARCHAR(255),
+                      date            DATETIME DEFAULT GETDATE(),
+                      category_id     TINYINT,
+                      selected_banner BIT DEFAULT 0,
+                      FOREIGN KEY (category_id) REFERENCES Category(category_id)
 );
 GO
 
 -- Comment
 CREATE TABLE Comment (
-    comment_id INT PRIMARY KEY IDENTITY(1,1),
-    blog_id    INT NOT NULL,
-    patient_id INT NOT NULL,
-    content    NVARCHAR(MAX) NOT NULL,
-    date       DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (blog_id) REFERENCES Blog(blog_id),
-    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
+                         comment_id INT PRIMARY KEY IDENTITY(1,1),
+                         blog_id    INT NOT NULL,
+                         patient_id INT NOT NULL,
+                         content    NVARCHAR(MAX) NOT NULL,
+                         date       DATETIME DEFAULT GETDATE(),
+                         FOREIGN KEY (blog_id) REFERENCES Blog(blog_id),
+                         FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
 );
 GO
 
@@ -259,7 +259,7 @@ GO
 
 -- Insert sample SystemItems (combining Features and NavigationItems)
 INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
-VALUES 
+VALUES
     ('Book Appointment', 'book-appointment', 'assets/img/icon/book_appointment.png', 1, NULL, NULL, 'Feature'),
     ('View Prescription', 'view-prescription', 'assets/img/icon/prescription.png', 1, NULL, NULL, 'Feature'),
     ('Manage Users', 'admin/users', 'assets/img/icon/manage_users.png', 1, NULL, NULL, 'Feature'),
@@ -280,7 +280,7 @@ GO
 
 -- Insert sample RoleSystemItems
 INSERT INTO RoleSystemItems (role_id, item_id)
-VALUES 
+VALUES
     (1, 1), -- Doctor: Book Appointment
     (1, 2), -- Doctor: View Prescription
     (3, 3), -- Admin: Manage Users
@@ -330,7 +330,7 @@ GO
 
 -- Insert dental AppointmentType with 2025 Vietnam market prices
 INSERT INTO AppointmentType (type_name, description, price)
-VALUES 
+VALUES
     ('Dental Checkup', 'Routine dental examination and consultation', 200000.00),
     ('Teeth Cleaning', 'Professional scaling and polishing', 800000.00),
     ('Teeth Whitening', 'Laser or home kit teeth whitening', 3000000.00),
@@ -348,19 +348,9 @@ VALUES
     ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
--- Insert sample Doctor Shifts
-INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status, manager_id, requested_at)
-VALUES (1, '2025-06-01', 'Morning', 'PendingApproval', 9, GETDATE()),
-       (1, '2025-06-01', 'Afternoon', 'Scheduled', NULL, GETDATE()),
-       (1, '2025-06-01', 'Evening', 'Scheduled', NULL, GETDATE()),
-       (1, '2025-06-01', 'Night', 'PendingApproval', 9, GETDATE()),
-       (2, '2025-06-02', 'Morning', 'Scheduled', NULL, GETDATE()),
-       (2, '2025-06-02', 'Afternoon', 'PendingApproval', 9, GETDATE());
-GO
-
 -- Insert sample Category
 INSERT INTO Category (category_name)
-VALUES 
+VALUES
     ('Khám bệnh'),
     ('Bệnh lý'),
     ('Chăm sóc sức khỏe'),
@@ -369,47 +359,47 @@ GO
 
 -- Insert sample Blog
 INSERT INTO Blog (blog_name, blog_sub_content, content, blog_img, author, date, category_id)
-VALUES 
-    (N'Khám bệnh định kỳ', 
+VALUES
+    (N'Khám bệnh định kỳ',
      N'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
      N'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
-     N'kham-suc-khoe-dinh-ky-la-gi.jpg', 
-     N'TS.BS Lê Văn C', 
-     '2025-06-21 00:00:00.000', 
+     N'kham-suc-khoe-dinh-ky-la-gi.jpg',
+     N'TS.BS Lê Văn C',
+     '2025-06-21 00:00:00.000',
      1),
-    (N'Phòng ngừa bệnh tim mạch', 
+    (N'Phòng ngừa bệnh tim mạch',
      N'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
      N'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
-     N'phong-ngua-tim-mach.jpg', 
-     N'Nguyễn Thị A', 
-     '2025-06-22 00:00:00.000', 
+     N'phong-ngua-tim-mach.jpg',
+     N'Nguyễn Thị A',
+     '2025-06-22 00:00:00.000',
      4),
-    (N'Chế độ ăn uống cho bệnh nhân tiểu đường', 
+    (N'Chế độ ăn uống cho bệnh nhân tiểu đường',
      N'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
      N'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
-     N'che-do-dinh-duong-phu-hop.jpg', 
-     N'TS.BS Trần Thị B', 
-     '2025-06-23 00:00:00.000', 
+     N'che-do-dinh-duong-phu-hop.jpg',
+     N'TS.BS Trần Thị B',
+     '2025-06-23 00:00:00.000',
      2),
-    (N'Điều trị ung thư', 
+    (N'Điều trị ung thư',
      N'Tổng quan về phương pháp điều trị ung thư hiện đại.',
      N'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
-     N'20201013_tri-ung-thu-1.jpg', 
-     N'Lê Thị C', 
-     '2025-06-24 00:00:00.000', 
+     N'20201013_tri-ung-thu-1.jpg',
+     N'Lê Thị C',
+     '2025-06-24 00:00:00.000',
      2),
-    (N'Chăm sóc sức khỏe người cao tuổi', 
+    (N'Chăm sóc sức khỏe người cao tuổi',
      N'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
      N'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
-     N'cham-soc-nguoi-gia.jpg', 
-     N'Nguyễn Minh D', 
-     '2025-06-25 00:00:00.000', 
+     N'cham-soc-nguoi-gia.jpg',
+     N'Nguyễn Minh D',
+     '2025-06-25 00:00:00.000',
      3);
 GO
 
 -- Insert sample Comment
 INSERT INTO Comment (blog_id, patient_id, content, date)
-VALUES 
+VALUES
     (1, 1, N'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định kỳ ngay.', '2025-06-21 10:30:00.000'),
     (1, 2, N'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
     (2, 3, N'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
@@ -421,3 +411,28 @@ VALUES
     (5, 1, N'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
     (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
 GO
+
+INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status)
+VALUES
+-- Doctor 1
+(1, '2025-06-23', 'Morning', 'Working'),
+(1, '2025-06-23', 'Afternoon', 'Working'),
+(1, '2025-06-24', 'Morning', 'PendingLeave'),
+(1, '2025-06-24', 'Afternoon', 'Working'),
+(1, '2025-06-25', 'Morning', 'Leave'),
+(1, '2025-06-25', 'Evening', 'Working'),
+(1, '2025-06-26', 'Night', 'Rejected'),
+(1, '2025-06-27', 'Morning', 'Working'),
+(1, '2025-06-28', 'Morning', 'Working'),
+(1, '2025-06-29', 'Evening', 'Working'),
+
+-- Doctor 2
+(2, '2025-06-23', 'Afternoon', 'Working'),
+(2, '2025-06-24', 'Morning', 'Working'),
+(2, '2025-06-25', 'Morning', 'Working'),
+(2, '2025-06-26', 'Afternoon', 'PendingLeave'),
+(2, '2025-06-26', 'Evening', 'Leave'),
+(2, '2025-06-27', 'Night', 'Rejected'),
+(2, '2025-06-28', 'Morning', 'Working'),
+(2, '2025-06-29', 'Morning', 'Working');
+

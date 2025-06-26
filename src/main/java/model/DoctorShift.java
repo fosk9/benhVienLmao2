@@ -1,11 +1,9 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -15,9 +13,9 @@ public class DoctorShift {
     private int shiftId;
     private int doctorId;
     private Date shiftDate;
-    /**
-     * timeSlot: one of "Morning", "Afternoon", "Evening", "Night"
-     */
     private String timeSlot;
     private String status;
+    private Integer managerId;
+    private Timestamp requestedAt;
+    private Timestamp approvedAt;
 }

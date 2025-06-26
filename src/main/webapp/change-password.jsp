@@ -85,7 +85,7 @@
 <body>
 
 <div class="login-container">
-  <h3>Đổi mật khẩu</h3>
+  <h3>Change Password</h3>
   <%
     String error = (String) request.getAttribute("error");
     String success = (String) request.getAttribute("success");
@@ -101,7 +101,7 @@
     <input type="password" name="old-password" placeholder="Current Password" required/>
     <input type="password" name="new-password" placeholder="New Password" required/>
     <input type="password" name="confirm-password" placeholder="Confirm Password" required/>
-    <input type="submit" value="Đổi mật khẩu"/>
+    <input type="submit" value="Change Password"/>
   </form>
 
   <div class="link-group mt-3">
