@@ -66,7 +66,7 @@
     <h3 class="widget_title" style="color: #2d2d2d;">Bài Viết Gần Nhất</h3>
     <c:forEach var="blog" items="${recentBlogs}">
       <div class="media post_item">
-        <img src="assets/img/${blog.blogImg}" alt="${blog.blogName}">
+        <img src="${pageContext.request.contextPath}/${blog.blogImg}" alt="${blog.blogName}">
         <div class="media-body">
           <a href="blog-detail?id=${blog.blogId}">
             <h3>${blog.blogName}</h3>

@@ -34,7 +34,7 @@ public class AddBlogControllerServlet extends HttpServlet {
         request.setAttribute("author", request.getAttribute("author"));
         request.setAttribute("categoryId", request.getAttribute("categoryId"));
 
-        request.getRequestDispatcher("add-blog.jsp").forward(request, response);
+        request.getRequestDispatcher("/Admin/add-blog-dashboard.jsp").forward(request, response);
     }
 
     // Phương thức xử lý yêu cầu POST (lưu blog)
@@ -139,8 +139,15 @@ public class AddBlogControllerServlet extends HttpServlet {
         // Lấy tên file gốc
         String fileName = new File(imagePart.getSubmittedFileName()).getName();
 
+        // Kiểm tra định dạng file ảnh
+        String lowerFileName = fileName.toLowerCase();
+        if (!(lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg") ||
+              lowerFileName.endsWith(".png") || lowerFileName.endsWith(".gif") || lowerFileName.endsWith(".webp"))) {
+            throw new IOException("Chỉ cho phép tải lên các file ảnh JPG, JPEG, PNG, GIF, WEBP.");
+        }
+
         // Tạo đường dẫn upload
-        String uploadPath = getServletContext().getRealPath("/assets/img");
+        String uploadPath = getServletContext().getRealPath("/assets/img/blog");
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
@@ -151,6 +158,6 @@ public class AddBlogControllerServlet extends HttpServlet {
         File file = new File(uploadDir, newFileName);
         imagePart.write(file.getAbsolutePath());
 
-        return newFileName;
+        return "assets/img/blog/" + newFileName;
     }
 }

@@ -100,13 +100,12 @@
         <!-- Blog List Left -->
         <div class="col-lg-8 mb-5 mb-lg-0">
           <div class="blog_left_sidebar">
-
             <!-- Kiểm tra nếu có kết quả tìm kiếm -->
             <c:if test="${not empty searchResults}">
               <c:forEach var="b" items="${searchResults}">
                 <article class="blog_item">
                   <div class="blog_item_img">
-                    <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
+                    <img class="card-img rounded-0" src="${pageContext.request.contextPath}/${b.blogImg}" alt="${b.blogName}">
                     <a href="#" class="blog_item_date">
                       <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
                       <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
@@ -114,9 +113,9 @@
                   </div>
                   <div class="blog_details">
                     <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
-                      <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
+                      <h2 class="font-weight-bold mb-2 blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
                     </a>
-                    <p>${b.blogSubContent}</p>
+                    <p class="font-weight-normal text-muted">${b.blogSubContent}</p>
                     <ul class="blog-info-link">
                       <li><a href="blog?categoryId=${b.categoryId}"><i class="fa fa-user"></i> ${b.categoryName}</a></li>
                       <li><i class="fa fa-comments"></i> ${b.commentCount} Comments</li>
@@ -131,7 +130,7 @@
               <c:forEach var="b" items="${blogListByCategory}">
                 <article class="blog_item">
                   <div class="blog_item_img">
-                    <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
+                    <img class="card-img rounded-0" src="${pageContext.request.contextPath}/${b.blogImg}" alt="${b.blogName}">
                     <a href="#" class="blog_item_date">
                       <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
                       <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
@@ -156,7 +155,7 @@
               <c:forEach var="b" items="${searchResults}">
                 <article class="blog_item">
                   <div class="blog_item_img">
-                    <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
+                    <img class="card-img rounded-0" src="${pageContext.request.contextPath}/${b.blogImg}" alt="${b.blogName}">
                     <a href="#" class="blog_item_date">
                       <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
                       <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>

@@ -25,42 +25,67 @@ public class BlogDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        try {
+            // Lấy tham số id từ request
+            String idParam = request.getParameter("id");
 
-        // Lấy tham số id từ request
-        String idParam = request.getParameter("id");
+            // Kiểm tra tham số id hợp lệ (phải là số dương)
+            if (idParam == null || !idParam.matches("\\d+")) {
+                // Nếu không hợp lệ, chuyển hướng về trang blog chính
+                response.sendRedirect(request.getContextPath() + "/blog");
+                return;
+            }
 
-        // Kiểm tra tham số id hợp lệ (phải là số dương)
-        if (idParam == null || !idParam.matches("\\d+")) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid blog ID");
-            return;
+            int blogId = Integer.parseInt(idParam);
+
+            // Lấy blog theo id
+            Blog blog = blogDAO.select(blogId);
+
+            // Kiểm tra nếu blog không tồn tại
+            if (blog == null) {
+                response.sendRedirect(request.getContextPath() + "/blog");
+                return;
+            }
+
+            // Lấy danh mục và bài viết gần nhất để hiển thị trong blog-sidebar
+            List<Category> categories = blogDAO.getCategoriesWithBlogCount();
+            List<Blog> recentBlogs = blogDAO.getRecentBlogs();
+
+            // Lấy số trang và số bình luận mỗi trang từ request
+            int currentPage = 1;  // Mặc định là trang 1
+            int commentsPerPage = 5;  // Số bình luận mỗi trang
+
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && pageParam.matches("\\d+")) {
+                currentPage = Integer.parseInt(pageParam);
+            }
+
+            // Tính toán offset (vị trí bắt đầu lấy bình luận)
+            int offset = (currentPage - 1) * commentsPerPage;
+
+            // Lấy tổng số bình luận
+            int totalComments = commentDAO.getTotalCommentsByBlogId(blogId);
+
+            // Tính số trang
+            int totalPages = (int) Math.ceil((double) totalComments / commentsPerPage);
+
+            // Lấy các bình luận của blog với phân trang
+            List<Comment> comments = commentDAO.getCommentsByBlogId(blogId, offset, commentsPerPage);
+
+            // Đưa các dữ liệu vào request để truyền đến JSP
+            request.setAttribute("blog", blog);
+            request.setAttribute("comments", comments);
+            request.setAttribute("categories", categories);
+            request.setAttribute("recentBlogs", recentBlogs);
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+
+            // Chuyển tiếp đến trang blog-detail.jsp
+            request.getRequestDispatcher("/blog-detail.jsp").forward(request, response);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi hệ thống: " + ex.getMessage());
         }
-
-        int blogId = Integer.parseInt(idParam);
-
-        // Lấy blog theo id
-        Blog blog = blogDAO.select(blogId);
-
-        // Kiểm tra nếu blog không tồn tại
-        if (blog == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Blog not found");
-            return;
-        }
-
-        // Lấy các bình luận của blog
-        List<Comment> comments = commentDAO.selectCommentsByBlogId(blogId);
-
-        // Lấy danh mục và bài viết gần nhất để hiển thị trong blog-sidebar
-        List<Category> categories = blogDAO.getCategoriesWithBlogCount();
-        List<Blog> recentBlogs = blogDAO.getRecentBlogs();
-
-        // Đưa các dữ liệu vào request để truyền đến JSP
-        request.setAttribute("blog", blog);
-        request.setAttribute("comments", comments);
-        request.setAttribute("categories", categories);
-        request.setAttribute("recentBlogs", recentBlogs);
-
-        // Chuyển tiếp đến trang blog-detail.jsp
-        request.getRequestDispatcher("/blog-detail.jsp").forward(request, response);
     }
 
     @Override
@@ -92,6 +117,14 @@ public class BlogDetailServlet extends HttpServlet {
                     patientImage = patient.getPatientAvaUrl();
 
                     java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+                    int blogIdInt;
+                    try {
+                        blogIdInt = Integer.parseInt(blogId);
+                    } catch (Exception e) {
+                        request.setAttribute("errorMessage", "ID bài viết không hợp lệ.");
+                        forwardWithError(request, response, email, content, blogId);
+                        return;
+                    }
                     Comment comment = Comment.builder()
                             .patientName(patient.getFullName())
                             .patientEmail(patient.getEmail())
@@ -99,7 +132,7 @@ public class BlogDetailServlet extends HttpServlet {
                             .patientImage(patientImage)
                             .content(content)
                             .date(currentDate)
-                            .blogId(Integer.parseInt(blogId))
+                            .blogId(blogIdInt)
                             .build();
 
                     System.out.println("Insert comment: " + comment);
@@ -127,7 +160,14 @@ public class BlogDetailServlet extends HttpServlet {
                     if (patient != null) {
                         String patientName = patient.getFullName();
                         java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
-
+                        int blogIdInt;
+                        try {
+                            blogIdInt = Integer.parseInt(blogId);
+                        } catch (Exception e) {
+                            request.setAttribute("errorMessage", "ID bài viết không hợp lệ.");
+                            forwardWithError(request, response, email, content, blogId);
+                            return;
+                        }
                         Comment comment = Comment.builder()
                                 .patientName(patientName)
                                 .patientId(patient.getPatientId())
@@ -135,7 +175,7 @@ public class BlogDetailServlet extends HttpServlet {
                                 .patientImage(patient.getPatientAvaUrl()) // Nếu không có ảnh từ bệnh nhân, để null
                                 .content(content)
                                 .date(currentDate)
-                                .blogId(Integer.parseInt(blogId))
+                                .blogId(blogIdInt)
                                 .build();
 
                         System.out.println("Insert comment: " + comment);
@@ -163,13 +203,31 @@ public class BlogDetailServlet extends HttpServlet {
         }
 
         // Khi có lỗi, load lại dữ liệu và forward về JSP
+        forwardWithError(request, response, email, content, blogId);
+    }
+
+    private void forwardWithError(HttpServletRequest request, HttpServletResponse response, String email, String content, String blogId)
+            throws ServletException, IOException {
         int blogIdInt = -1;
         try {
             blogIdInt = Integer.parseInt(blogId);
         } catch (Exception ignore) {}
 
         Blog blog = blogDAO.select(blogIdInt);
-        List<Comment> comments = commentDAO.selectCommentsByBlogId(blogIdInt);
+
+        List<Comment> comments;
+        try {
+            if (blogIdInt > 0) {
+                comments = commentDAO.selectCommentsByBlogId(blogIdInt);
+            } else {
+                comments = java.util.Collections.emptyList();
+                request.setAttribute("errorMessage", "Không tìm thấy ID bài viết để lấy bình luận.");
+            }
+        } catch (Exception ex) {
+            comments = java.util.Collections.emptyList();
+            request.setAttribute("errorMessage", "Lỗi khi lấy bình luận: " + ex.getMessage());
+        }
+
         List<Category> categories = blogDAO.getCategoriesWithBlogCount();
         List<Blog> recentBlogs = blogDAO.getRecentBlogs();
 

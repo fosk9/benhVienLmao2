@@ -8,57 +8,132 @@
   <meta charset="UTF-8">
   <title>Chi tiết bài viết</title>
   <jsp:include page="common-css.jsp"/>
+  <style>
+    .feature-img img {
+      width: 100%; /* Chiếm toàn bộ chiều rộng */
+      height: auto; /* Đảm bảo tỉ lệ ảnh không bị méo */
+      object-fit: cover; /* Đảm bảo ảnh không bị méo và được cắt sao cho vừa */
+    }
+
+    .comment-user-img {
+      width: 50px; /* Đặt kích thước ảnh đại diện */
+      height: 50px;
+      border-radius: 50%; /* Làm ảnh tròn */
+      object-fit: cover; /* Đảm bảo ảnh không bị méo */
+      margin-right: 15px; /* Khoảng cách giữa ảnh và tên người dùng */
+    }
+
+    .comment-user-img-default {
+      width: 50px;
+      height: 50px;
+      background-color: #ccc; /* Màu nền nếu không có ảnh */
+      border-radius: 50%; /* Làm ảnh tròn */
+      display: inline-block; /* Đảm bảo ảnh và bình luận nằm trên cùng một dòng */
+    }
+
+    .single-comment {
+      display: flex; /* Hiển thị các phần tử con theo chiều ngang */
+      margin-bottom: 15px; /* Khoảng cách giữa các bình luận */
+    }
+
+    .user {
+      display: flex; /* Đảm bảo ảnh và tên người dùng nằm cùng hàng */
+      align-items: center; /* Căn chỉnh ảnh và tên người dùng thẳng hàng */
+    }
+
+    .desc {
+      flex: 1; /* Cho phép nội dung bình luận chiếm phần còn lại */
+    }
+
+    .comment-user-img-wrapper {
+      margin-right: 15px; /* Khoảng cách giữa ảnh và nội dung bình luận */
+    }
+
+    .comment-user-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%; /* Làm cho ảnh tròn */
+      object-fit: cover;
+    }
+
+    /* CSS cho phân trang */
+    .pagination {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-top: -50px;
+      margin-bottom: -25px;
+    }
+
+    .pagination a {
+      padding: 5px 10px;
+      margin: 0 5px;
+      border-radius: 4px;
+      background-color: #e0e0e0;
+      color: #333;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .pagination a:hover {
+      background-color: black;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .pagination a.active {
+      background-color: white;
+      color: black;
+      border: 2px solid black;
+    }
+
+    .pagination a:disabled {
+      background-color: #d1d1d1;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    .pagination a:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.4);
+    }
+
+    /* Nút "Trước" và "Tiếp" */
+    .pagination .btn-hospital {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 5px;
+      background-color: #f3f4f6;
+      color: #374151;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 15px;
+    }
+
+    .pagination .btn-hospital:hover {
+      background-color: #e2e8f0;
+      color: black;
+    }
+
+    .pagination .btn-hospital:disabled {
+      background-color: #d1d5db;
+      color: #b1b5b7;
+    }
+
+    /* Giới hạn kích thước ảnh trong nội dung CKEditor/blog content */
+    .blog_details .content img,
+    .content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
 </head>
-<style>
-  .feature-img img {
-    width: 100%; /* Chiếm toàn bộ chiều rộng */
-    height: auto; /* Đảm bảo tỉ lệ ảnh không bị méo */
-    object-fit: cover; /* Đảm bảo ảnh không bị méo và được cắt sao cho vừa */
-  }
-
-  .comment-user-img {
-    width: 50px; /* Đặt kích thước ảnh đại diện */
-    height: 50px;
-    border-radius: 50%; /* Làm ảnh tròn */
-    object-fit: cover; /* Đảm bảo ảnh không bị méo */
-    margin-right: 15px; /* Khoảng cách giữa ảnh và tên người dùng */
-  }
-
-  .comment-user-img-default {
-    width: 50px;
-    height: 50px;
-    background-color: #ccc; /* Màu nền nếu không có ảnh */
-    border-radius: 50%; /* Làm ảnh tròn */
-    display: inline-block; /* Đảm bảo ảnh và bình luận nằm trên cùng một dòng */
-  }
-
-  .single-comment {
-    display: flex; /* Hiển thị các phần tử con theo chiều ngang */
-    margin-bottom: 15px; /* Khoảng cách giữa các bình luận */
-  }
-
-  .user {
-    display: flex; /* Đảm bảo ảnh và tên người dùng nằm cùng hàng */
-    align-items: center; /* Căn chỉnh ảnh và tên người dùng thẳng hàng */
-  }
-
-  .desc {
-    flex: 1; /* Cho phép nội dung bình luận chiếm phần còn lại */
-  }
-
-  .comment-user-img-wrapper {
-    margin-right: 15px; /* Khoảng cách giữa ảnh và nội dung bình luận */
-  }
-
-  .comment-user-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%; /* Làm cho ảnh tròn */
-    object-fit: cover;
-  }
-
-</style>
-
 <body>
 <jsp:include page="header.jsp"/>
 <main>
@@ -88,12 +163,10 @@
       <div class="row">
         <div class="col-lg-8 posts-list">
           <div class="single-post">
-            <div class="feature-img">
-              <img class="img-fluid" src="assets/img/${blog.blogImg}" alt="${blog.blogName}">
-            </div>
+            <h2 class="font-weight-bold mb-3" style="font-family: 'Times New Roman', Times, serif;">${blog.blogName}</h2>
             <div class="blog_details">
-              <p class="excert">${blog.blogSubContent}</p>
-              <div class="content">
+              <p class="font-weight-bold text-muted mb-4" style="font-size: 1.1rem; font-family: 'Times New Roman', Times, serif;">${blog.blogSubContent}</p>
+              <div class="content" style="font-size: 1rem; line-height: 1.8; text-align: justify;">
                 <p>${blog.content}</p>
               </div>
             </div>
@@ -132,6 +205,28 @@
               </div>
             </c:forEach>
 
+            <!-- Phân trang -->
+            <div class="pagination">
+              <c:if test="${currentPage > 1}">
+                <a href="${pageContext.request.contextPath}/blog-detail?id=${blog.blogId}&page=${currentPage - 1}" class="btn-hospital">
+                  &laquo; Trước
+                </a>
+              </c:if>
+
+              <c:forEach var="i" begin="1" end="${totalPages}" varStatus="status">
+                <a href="${pageContext.request.contextPath}/blog-detail?id=${blog.blogId}&page=${i}"
+                   class="btn-hospital <c:if test="${i == currentPage}">active</c:if>">
+                    ${i}
+                </a>
+              </c:forEach>
+
+              <c:if test="${currentPage < totalPages}">
+                <a href="${pageContext.request.contextPath}/blog-detail?id=${blog.blogId}&page=${currentPage + 1}" class="btn-hospital">
+                  Tiếp &raquo;
+                </a>
+              </c:if>
+            </div>
+
           </div>
 
           <!-- Comment Form -->
@@ -139,7 +234,7 @@
             <h4>Write a Comment</h4>
             <c:if test="${not empty errorMessage}">
               <div style="color:red;">
-                ${errorMessage}
+                  ${errorMessage}
                 <c:if test="${not empty errorCode}">
                   <span style="font-size: 0.9em; color: #888;">(Mã lỗi: ${errorCode})</span>
                 </c:if>
@@ -182,32 +277,17 @@
           </div>
         </div>
 
-        <script>
-          window.onload = function() {
-            // Lấy giá trị của userEmail từ các trường nhập liệu
-            var userEmail = document.getElementById("userEmail").value;
-
-            // Kiểm tra nếu cả userName và userEmail có dữ liệu
-            if (userName.trim() !== "" && userEmail.trim() !== "") {
-              // Nếu có dữ liệu, ẩn các trường nhập liệu
-              document.getElementById("userEmailGroup").style.display = "none";
-            } else {
-              // Nếu không có dữ liệu, hiển thị các trường nhập liệu
-              document.getElementById("userEmailGroup").style.display = "block";
-            }
-          }
-        </script>
-
         <!-- Sidebar -->
         <div class="col-lg-4">
           <jsp:include page="blog-sidebar.jsp"/>
         </div>
 
-        </div>
       </div>
+    </div>
     </div>
   </section>
 </main>
+
 <jsp:include page="footer.jsp"/>
 <jsp:include page="common-scripts.jsp"/>
 </body>

@@ -1,8 +1,9 @@
 package test;
 
 import model.Blog;
-import model.Category;
+import model.Comment;
 import view.BlogDAO;
+import view.CommentDAO;
 
 import java.sql.Date;
 import java.util.List;
@@ -11,130 +12,68 @@ public class BlogDAOTest {
 
     public static void main(String[] args) {
         BlogDAO blogDAO = new BlogDAO();
+        CommentDAO commentDAO = new CommentDAO();
 
-        testSelectAll(blogDAO);
-        testSearchBlogsByName(blogDAO);
-        testInsertUpdateDelete(blogDAO);
-        testGetPaginatedBlogs(blogDAO);
-        testGetBlogsByCategory(blogDAO);
-        testGetTotalBlogsCount(blogDAO);
-        testGetTotalBlogsCountByCategory(blogDAO);
-        testGetCategoriesWithBlogCount(blogDAO);
-        testGetRecentBlogs(blogDAO);
-        testSelectById(blogDAO);
+        // Kiểm tra phương thức delete
+        testDelete(blogDAO, commentDAO);
     }
 
-    private static void testSelectAll(BlogDAO blogDAO) {
-        System.out.println("== Test select() ==");
-        List<Blog> blogs = blogDAO.select();
-        for (Blog blog : blogs) {
-            System.out.println(blog);
-        }
-        System.out.println("Tổng số blog: " + blogs.size());
-        System.out.println("-----------------------------");
-    }
+    private static void testDelete(BlogDAO blogDAO, CommentDAO commentDAO) {
+        System.out.println("== Test delete() ==");
 
-    private static void testSearchBlogsByName(BlogDAO blogDAO) {
-        System.out.println("== Test searchBlogsByName() ==");
-        String searchKeyword = "C";
-        List<Blog> results = blogDAO.searchBlogsByName(searchKeyword, 0, 5);
-        for (Blog blog : results) {
-            System.out.println(blog);
-        }
-        System.out.println("Tổng số blog tìm được: " + results.size());
-        System.out.println("-----------------------------");
-    }
-
-    private static void testInsertUpdateDelete(BlogDAO blogDAO) {
-        System.out.println("== Test insert(), update(), delete() ==");
+        // Bước 1: Chèn một bài blog mới vào cơ sở dữ liệu để thử xóa
         Blog blog = new Blog();
-        blog.setBlogName("Test Blog");
-        blog.setBlogSubContent("Test Sub Content");
-        blog.setContent("Test Content");
+        blog.setBlogName("Test Blog for Deletion");
+        blog.setBlogSubContent("This blog is for testing delete.");
+        blog.setContent("Content for delete test");
         blog.setBlogImg("test.jpg");
         blog.setAuthor("Tester");
         blog.setDate(new Date(System.currentTimeMillis()));
         blog.setCategoryId(1);
 
+        // Chèn bài viết mới
         int insertResult = blogDAO.insert(blog);
         System.out.println("Insert result: " + insertResult);
 
         // Lấy blog vừa insert (giả sử blog_id tự tăng lớn nhất)
-        List<Blog> blogs = blogDAO.searchBlogsByName("Test Blog", 0, 1);
+        List<Blog> blogs = blogDAO.searchBlogsByName("Test Blog for Deletion", 0, 1);
         if (!blogs.isEmpty()) {
             Blog insertedBlog = blogs.get(0);
-            insertedBlog.setBlogName("Test Blog Updated");
-            int updateResult = blogDAO.update(insertedBlog);
-            System.out.println("Update result: " + updateResult);
+            int blogIdToDelete = insertedBlog.getBlogId();
 
-            int deleteResult = blogDAO.delete(insertedBlog.getBlogId());
+            // Bước 2: Chèn comment liên quan đến blog này
+            Comment comment = new Comment();
+            comment.setBlogId(blogIdToDelete);
+            comment.setPatientId(1); // Giả sử patient_id là 1
+            comment.setContent("Test Comment for Deletion");
+            comment.setDate(new Date(System.currentTimeMillis()));
+            int commentResult = commentDAO.insert(comment);
+            System.out.println("Insert comment result: " + commentResult);
+
+            // Bước 3: Kiểm tra trước khi xóa
+            System.out.println("Before Delete:");
+            List<Comment> commentsBeforeDelete = commentDAO.selectCommentsByBlogId(blogIdToDelete);
+            System.out.println("Comments before delete: " + commentsBeforeDelete.size());
+
+            // Bước 4: Thực hiện xóa
+            int deleteResult = blogDAO.delete(blogIdToDelete);
             System.out.println("Delete result: " + deleteResult);
-        }
-        System.out.println("-----------------------------");
-    }
 
-    private static void testGetPaginatedBlogs(BlogDAO blogDAO) {
-        System.out.println("== Test getPaginatedBlogs() ==");
-        List<Blog> blogs = blogDAO.getPaginatedBlogs(0, 3);
-        for (Blog blog : blogs) {
-            System.out.println(blog);
-        }
-        System.out.println("-----------------------------");
-    }
+            // Bước 5: Kiểm tra sau khi xóa
+            System.out.println("After Delete:");
+            Blog blogAfterDelete = blogDAO.select(blogIdToDelete);
+            if (blogAfterDelete == null) {
+                System.out.println("Blog đã bị xóa thành công.");
+            } else {
+                System.out.println("Blog chưa bị xóa.");
+            }
 
-    private static void testGetBlogsByCategory(BlogDAO blogDAO) {
-        System.out.println("== Test getBlogsByCategory() ==");
-        List<Blog> blogs = blogDAO.getBlogsByCategory(1, 0, 3);
-        for (Blog blog : blogs) {
-            System.out.println(blog);
-        }
-        System.out.println("-----------------------------");
-    }
-
-    private static void testGetTotalBlogsCount(BlogDAO blogDAO) {
-        System.out.println("== Test getTotalBlogsCount() ==");
-        int total = blogDAO.getTotalBlogsCount();
-        System.out.println("Tổng số blog: " + total);
-
-        System.out.println("== Test getTotalBlogsCount(String) ==");
-        int totalByKeyword = blogDAO.getTotalBlogsCount("C");
-        System.out.println("Tổng số blog theo từ khóa 'C': " + totalByKeyword);
-        System.out.println("-----------------------------");
-    }
-
-    private static void testGetTotalBlogsCountByCategory(BlogDAO blogDAO) {
-        System.out.println("== Test getTotalBlogsCountByCategory() ==");
-        int total = blogDAO.getTotalBlogsCountByCategory(1);
-        System.out.println("Tổng số blog của categoryId=1: " + total);
-        System.out.println("-----------------------------");
-    }
-
-    private static void testGetCategoriesWithBlogCount(BlogDAO blogDAO) {
-        System.out.println("== Test getCategoriesWithBlogCount() ==");
-        List<Category> categories = blogDAO.getCategoriesWithBlogCount();
-        for (Category c : categories) {
-            System.out.println("Category: " + c.getCategoryName() + ", Count: " + c.getBlogCount());
-        }
-        System.out.println("-----------------------------");
-    }
-
-    private static void testGetRecentBlogs(BlogDAO blogDAO) {
-        System.out.println("== Test getRecentBlogs() ==");
-        List<Blog> blogs = blogDAO.getRecentBlogs();
-        for (Blog blog : blogs) {
-            System.out.println(blog);
-        }
-        System.out.println("-----------------------------");
-    }
-
-    private static void testSelectById(BlogDAO blogDAO) {
-        System.out.println("== Test select(int... id) ==");
-        Blog blog = blogDAO.select(1);
-        if (blog != null) {
-            System.out.println(blog);
+            List<Comment> commentsAfterDelete = commentDAO.selectCommentsByBlogId(blogIdToDelete);
+            System.out.println("Comments after delete: " + commentsAfterDelete.size());
         } else {
-            System.out.println("Không tìm thấy blog với id=1");
+            System.out.println("Không tìm thấy blog cần xóa.");
         }
+
         System.out.println("-----------------------------");
     }
 }
