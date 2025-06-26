@@ -2,6 +2,7 @@ package controller;
 
 import model.Appointment;
 import model.Employee;
+import validation.DoctorValidator;
 import view.AppointmentDAO;
 
 import jakarta.servlet.ServletException;
@@ -50,9 +51,13 @@ public class DoctorCompletedHistoryServlet extends HttpServlet {
         String typeName = request.getParameter("typeName");
         String timeSlot = request.getParameter("timeSlot");
 
+        // Làm sạch dữ liệu nhập vào
+        fullName = DoctorValidator.cleanInput(fullName);
+        insuranceNumber = DoctorValidator.cleanInput(insuranceNumber);
+
         try {
             AppointmentDAO dao = new AppointmentDAO();
-            // Lấy danh sách các cuộc hẹn hoàn thành của bác sĩ
+            // Lấy tất cả các cuộc hẹn hoàn thành của bác sĩ
             List<Appointment> list = dao.getCompletedAppointmentsByDoctorId(doctor.getEmployeeId(), fullName, insuranceNumber, typeName, timeSlot);
 
             // Tính toán phân trang
@@ -89,5 +94,7 @@ public class DoctorCompletedHistoryServlet extends HttpServlet {
         }
     }
 }
+
+
 
 

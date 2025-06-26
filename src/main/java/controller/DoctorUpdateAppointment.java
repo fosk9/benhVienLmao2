@@ -3,12 +3,12 @@ package controller;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.Appointment;
 import model.Employee;
+import validation.DoctorValidator;
 import view.AppointmentDAO;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @WebServlet("/update-appointment")
 public class DoctorUpdateAppointment extends HttpServlet {
@@ -48,34 +48,55 @@ public class DoctorUpdateAppointment extends HttpServlet {
             int appointmentTypeId = Integer.parseInt(request.getParameter("appointmentTypeId"));
             String typeDescription = request.getParameter("typeDescription");
 
-            // Validate Patient Name
-            if (fullName == null || !isValidFullName(fullName)) {
-                request.setAttribute("errorMessage", "Invalid patient name.");
-                request.getRequestDispatcher("edit-appointment.jsp").forward(request, response);
+            // Kiểm tra tính hợp lệ của các trường nhập vào
+            String errorMessage = null;
+
+            // Kiểm tra tên
+            if (!DoctorValidator.isValidFullName(fullName)) {
+                errorMessage = "Họ tên không hợp lệ!";
+            }
+            // Kiểm tra số điện thoại
+            else if (!DoctorValidator.isValidPhoneNumber(phone)) {
+                errorMessage = "Số điện thoại không hợp lệ!";
+            }
+            // Kiểm tra số bảo hiểm
+            else if (!DoctorValidator.isValidInsuranceNumber(insuranceNumber)) {
+                errorMessage = "Số bảo hiểm không hợp lệ!";
+            }
+
+            // Nếu có lỗi, giữ lại trang chỉnh sửa và hiển thị thông báo lỗi
+            if (errorMessage != null) {
+                // Set thông báo lỗi
+                request.setAttribute("errorMessage", errorMessage);
+
+                // Giữ lại giá trị đã nhập
+                request.setAttribute("fullName", fullName);
+                request.setAttribute("phone", phone);
+                request.setAttribute("insuranceNumber", insuranceNumber);
+                request.setAttribute("dob", dob);
+                request.setAttribute("address", address);
+                request.setAttribute("emergencyContact", emergencyContact);
+                request.setAttribute("appointmentDate", appointmentDate);
+
+                // Trả về trang view-detail.jsp với chế độ chỉnh sửa
+                AppointmentDAO dao = new AppointmentDAO();
+                Appointment appointment = dao.getAppointmentDetailById(appointmentId);
+                request.setAttribute("appointment", appointment);
+
+                // Forward lại tới trang chỉnh sửa mà không chuyển hướng
+                request.getRequestDispatcher("doctor-view-detail.jsp").forward(request, response);
                 return;
             }
 
-            // Validate Phone
-            if (phone == null || !isValidPhone(phone)) {
-                request.setAttribute("errorMessage", "Invalid phone number. It must be 10 digits.");
-                request.getRequestDispatcher("edit-appointment.jsp").forward(request, response);
-                return;
-            }
-
-            // Validate Insurance Number (Remove spaces)
-            if (insuranceNumber != null) {
-                insuranceNumber = insuranceNumber.trim();
-            }
-
-            // Gọi DAO để cập nhật thông tin
+            // Nếu không có lỗi, gọi DAO để cập nhật thông tin
             AppointmentDAO dao = new AppointmentDAO();
-            boolean success = dao.updateAppointmentByDoctor(
+            dao.updateAppointmentByDoctor(
                     appointmentId, fullName, dob, gender, phone, address,
                     insuranceNumber, emergencyContact, status, appointmentDate,
                     appointmentTypeId, typeDescription
             );
 
-            // Quay lại trang detail
+            // Quay lại trang detail sau khi cập nhật thành công
             response.sendRedirect(request.getContextPath() + "/view-detail?id=" + appointmentId);
 
         } catch (Exception e) {
@@ -83,20 +104,7 @@ public class DoctorUpdateAppointment extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/error.jsp");
         }
     }
-
-    // Hàm validate patient name
-    private boolean isValidFullName(String fullName) {
-        // Loại bỏ khoảng trắng ở đầu và cuối, và kiểm tra giữa các từ có một khoảng trắng duy nhất
-        String trimmedName = fullName.trim().replaceAll("\\s+", " ");
-        if (!trimmedName.matches("[A-Za-z\\s]+")) {
-            return false; // Chỉ cho phép chữ cái và khoảng trắng
-        }
-        return trimmedName.equals(fullName.trim()); // Kiểm tra nếu không có khoảng trắng dư
-    }
-
-    // Hàm validate phone number
-    private boolean isValidPhone(String phone) {
-        // Kiểm tra phone là số và có đúng 10 chữ số
-        return phone != null && phone.matches("\\d{10}");
-    }
 }
+
+
+

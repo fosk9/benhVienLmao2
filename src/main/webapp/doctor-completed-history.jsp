@@ -122,37 +122,6 @@
       cursor: not-allowed;
     }
   </style>
-  <script>
-    function validateForm() {
-      // Lấy giá trị từ các trường tìm kiếm
-      var fullName = document.getElementById("fullName").value.trim();
-      var insuranceNumber = document.getElementById("insuranceNumber").value.trim();
-
-      // Xử lý khoảng trắng thừa trong fullName (Thay các khoảng trắng liên tiếp thành một khoảng trắng duy nhất)
-      fullName = fullName.replace(/\s+/g, ' ');
-
-      // Kiểm tra nếu fullName không có khoảng trắng liên tiếp và không bắt đầu/kết thúc với khoảng trắng
-      document.getElementById("fullName").value = fullName;
-
-      // Kiểm tra và xử lý khoảng trắng trong số bảo hiểm (loại bỏ tất cả khoảng trắng chỉ có trong chuỗi)
-      var formattedInsuranceNumber = insuranceNumber.replace(/\s+/g, '');
-
-      // Loại bỏ khoảng trắng ở đầu và cuối của số bảo hiểm
-      var trimmedInsuranceNumber = insuranceNumber.trim();
-
-      // Nếu số bảo hiểm có khoảng trắng ở giữa, loại bỏ chúng và hiển thị lại
-      document.getElementById("insuranceNumber").value = trimmedInsuranceNumber;
-
-      // Kiểm tra và thông báo lỗi nếu không có số bảo hiểm hợp lệ
-      if (formattedInsuranceNumber !== trimmedInsuranceNumber) {
-        alert("Insurance number cannot have spaces.");
-        return false; // Không gửi form khi số bảo hiểm có khoảng trắng
-      }
-
-      // Nếu mọi thứ hợp lệ, form sẽ được gửi
-      return true;
-    }
-  </script>
 </head>
 
 <body>
@@ -165,60 +134,29 @@
 
 <!-- Form tìm kiếm -->
 <div class="search-container">
-  <form action="completed-history" method="get" onsubmit="return validateForm()">
+  <form action="completed-history" method="get">
     <div class="search-fields">
       <input type="text" name="fullName" id="fullName" value="${fullName}" placeholder="Search by Full Name">
       <input type="text" name="insuranceNumber" id="insuranceNumber" value="${insuranceNumber}" placeholder="Search by INS">
       <select name="typeName">
         <option value="">Select Appointment Type</option>
         <option value="General Checkup" ${typeName == 'General Checkup' ? 'selected' : ''}>General Checkup</option>
-        <option value="Cardiology Consultation" ${typeName == 'Cardiology Consultation' ? 'selected' : ''}>
-          Cardiology Consultation
-        </option>
-        <option value="Gastroenterology Consultation" ${typeName == 'Gastroenterology Consultation' ? 'selected' : ''}>
-          Gastroenterology Consultation
-        </option>
-        <option value="Orthopedic Consultation" ${typeName == 'Orthopedic Consultation' ? 'selected' : ''}>
-          Orthopedic Consultation
-        </option>
-        <option value="Neurology Consultation" ${typeName == 'Neurology Consultation' ? 'selected' : ''}>Neurology
-          Consultation
-        </option>
-        <option value="Mental Health Consultation" ${typeName == 'Mental Health Consultation' ? 'selected' : ''}>
-          Mental Health Consultation
-        </option>
-        <option value="Psychotherapy Session" ${typeName == 'Psychotherapy Session' ? 'selected' : ''}>Psychotherapy
-          Session
-        </option>
-        <option value="Psychiatric Evaluation" ${typeName == 'Psychiatric Evaluation' ? 'selected' : ''}>Psychiatric
-          Evaluation
-        </option>
-        <option value="Stress and Anxiety Management" ${typeName == 'Stress and Anxiety Management' ? 'selected' : ''}>
-          Stress and Anxiety Management
-        </option>
-        <option value="Depression Counseling" ${typeName == 'Depression Counseling' ? 'selected' : ''}>Depression
-          Counseling
-        </option>
-        <option value="Periodic Health Checkup" ${typeName == 'Periodic Health Checkup' ? 'selected' : ''}>Periodic
-          Health Checkup
-        </option>
-        <option value="Gynecology Consultation" ${typeName == 'Gynecology Consultation' ? 'selected' : ''}>
-          Gynecology Consultation
-        </option>
-        <option value="Pediatric Consultation" ${typeName == 'Pediatric Consultation' ? 'selected' : ''}>Pediatric
-          Consultation
-        </option>
-        <option value="Ophthalmology Consultation" ${typeName == 'Ophthalmology Consultation' ? 'selected' : ''}>
-          Ophthalmology Consultation
-        </option>
-        <option value="ENT Consultation" ${typeName == 'ENT Consultation' ? 'selected' : ''}>ENT Consultation
-        </option>
-        <option value="On-Demand Consultation" ${typeName == 'On-Demand Consultation' ? 'selected' : ''}>On-Demand
-          Consultation
-        </option>
-        <option value="Emergency Consultation" ${typeName == 'Emergency Consultation' ? 'selected' : ''}>Emergency
-          Consultation
-        </option>
+        <option value="Cardiology Consultation" ${typeName == 'Cardiology Consultation' ? 'selected' : ''}>Cardiology Consultation</option>
+        <option value="Gastroenterology Consultation" ${typeName == 'Gastroenterology Consultation' ? 'selected' : ''}>Gastroenterology Consultation</option>
+        <option value="Orthopedic Consultation" ${typeName == 'Orthopedic Consultation' ? 'selected' : ''}>Orthopedic Consultation</option>
+        <option value="Neurology Consultation" ${typeName == 'Neurology Consultation' ? 'selected' : ''}>Neurology Consultation</option>
+        <option value="Mental Health Consultation" ${typeName == 'Mental Health Consultation' ? 'selected' : ''}>Mental Health Consultation</option>
+        <option value="Psychotherapy Session" ${typeName == 'Psychotherapy Session' ? 'selected' : ''}>Psychotherapy Session</option>
+        <option value="Psychiatric Evaluation" ${typeName == 'Psychiatric Evaluation' ? 'selected' : ''}>Psychiatric Evaluation</option>
+        <option value="Stress and Anxiety Management" ${typeName == 'Stress and Anxiety Management' ? 'selected' : ''}>Stress and Anxiety Management</option>
+        <option value="Depression Counseling" ${typeName == 'Depression Counseling' ? 'selected' : ''}>Depression Counseling</option>
+        <option value="Periodic Health Checkup" ${typeName == 'Periodic Health Checkup' ? 'selected' : ''}>Periodic Health Checkup</option>
+        <option value="Gynecology Consultation" ${typeName == 'Gynecology Consultation' ? 'selected' : ''}>Gynecology Consultation</option>
+        <option value="Pediatric Consultation" ${typeName == 'Pediatric Consultation' ? 'selected' : ''}>Pediatric Consultation</option>
+        <option value="Ophthalmology Consultation" ${typeName == 'Ophthalmology Consultation' ? 'selected' : ''}>Ophthalmology Consultation</option>
+        <option value="ENT Consultation" ${typeName == 'ENT Consultation' ? 'selected' : ''}>ENT Consultation</option>
+        <option value="On-Demand Consultation" ${typeName == 'On-Demand Consultation' ? 'selected' : ''}>On-Demand Consultation</option>
+        <option value="Emergency Consultation" ${typeName == 'Emergency Consultation' ? 'selected' : ''}>Emergency Consultation</option>
       </select>
       <select name="timeSlot">
         <option value="">Select Time Slot</option>

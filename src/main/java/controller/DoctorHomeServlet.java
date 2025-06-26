@@ -3,6 +3,7 @@ package controller;
 import model.Appointment;
 import model.Employee;
 import view.AppointmentDAO;
+import validation.DoctorValidator;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,15 +24,11 @@ public class DoctorHomeServlet extends HttpServlet {
         Object acc = (session != null) ? session.getAttribute("account") : null;
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
-
             response.sendRedirect("login.jsp");
             return;
         }
 
         Employee doctor = (Employee) acc;
-
-        System.out.println("Logged in as Doctor: " + doctor.getFullName());
-        System.out.println("Doctor ID from session: " + doctor.getEmployeeId());
 
         // List để chứa các cuộc hẹn của bác sĩ
         List<Appointment> list = new ArrayList<>();
@@ -51,9 +48,45 @@ public class DoctorHomeServlet extends HttpServlet {
             String typeName = request.getParameter("typeName");
             String timeSlot = request.getParameter("timeSlot");
 
-            // Lấy danh sách các cuộc hẹn của bác sĩ từ AppointmentDAO với tìm kiếm
-            AppointmentDAO dao = new AppointmentDAO();
-            list = dao.searchAppointments(doctor.getEmployeeId(), fullName, insuranceNumber, typeName, timeSlot);
+            // Làm sạch dữ liệu nhập vào
+            fullName = DoctorValidator.cleanInput(fullName);
+            insuranceNumber = DoctorValidator.cleanInput(insuranceNumber);
+
+            // Nếu không có giá trị tìm kiếm, hiển thị tất cả
+            if ((fullName == null || fullName.trim().isEmpty()) &&
+                    (insuranceNumber == null || insuranceNumber.trim().isEmpty()) &&
+                    (typeName == null || typeName.trim().isEmpty()) &&
+                    (timeSlot == null || timeSlot.trim().isEmpty())) {
+                // Nếu không có giá trị tìm kiếm, lấy tất cả các cuộc hẹn của bác sĩ
+                AppointmentDAO dao = new AppointmentDAO();
+                list = dao.getAppointmentsByDoctorId(doctor.getEmployeeId());
+            } else {
+                // Kiểm tra tính hợp lệ của fullName nếu có nhập
+                if (fullName != null && !fullName.trim().isEmpty() && !DoctorValidator.isValidFullName(fullName)) {
+                    request.setAttribute("error", "Please enter a valid full name");
+                    request.setAttribute("fullName", fullName);
+                    request.setAttribute("insuranceNumber", insuranceNumber);
+                    request.setAttribute("typeName", typeName);
+                    request.setAttribute("timeSlot", timeSlot);
+                    request.getRequestDispatcher("doctor-home.jsp").forward(request, response);
+                    return;
+                }
+
+                // Kiểm tra tính hợp lệ của insuranceNumber nếu có nhập
+                if (insuranceNumber != null && !insuranceNumber.trim().isEmpty() && !DoctorValidator.isValidInsuranceNumber(insuranceNumber)) {
+                    request.setAttribute("error", "Please enter a valid insurance number (only numbers and spaces allowed)");
+                    request.setAttribute("fullName", fullName);
+                    request.setAttribute("insuranceNumber", insuranceNumber);
+                    request.setAttribute("typeName", typeName);
+                    request.setAttribute("timeSlot", timeSlot);
+                    request.getRequestDispatcher("doctor-home.jsp").forward(request, response);
+                    return;
+                }
+
+                // Lấy danh sách các cuộc hẹn của bác sĩ từ AppointmentDAO với tìm kiếm
+                AppointmentDAO dao = new AppointmentDAO();
+                list = dao.searchAppointments(doctor.getEmployeeId(), fullName, insuranceNumber, typeName, timeSlot);
+            }
 
             // Tính toán phân trang
             int totalAppointments = list.size();
@@ -87,4 +120,6 @@ public class DoctorHomeServlet extends HttpServlet {
         }
     }
 }
+
+
 
