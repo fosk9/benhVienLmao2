@@ -1,6 +1,7 @@
 package view;
 
 import model.Appointment;
+import model.AppointmentType;
 import model.Patient;
 
 import java.sql.*;
@@ -111,6 +112,73 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return null;
     }
 
+    // Insert appointment and return the last inserted ID
+    public int insertAndReturnID(Appointment appointment) {
+        String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setInt(1, appointment.getPatientId());
+                // Set doctor_id to NULL if 0 (unassigned)
+                if (appointment.getDoctorId() == 0) {
+                    stmt.setNull(2, Types.INTEGER);
+                } else {
+                    stmt.setInt(2, appointment.getDoctorId());
+                }
+                stmt.setInt(3, appointment.getAppointmentTypeId());
+                stmt.setDate(4, appointment.getAppointmentDate());
+                stmt.setString(5, appointment.getTimeSlot());
+                stmt.setBoolean(6, appointment.isRequiresSpecialist());
+                stmt.setString(7, appointment.getStatus());
+                stmt.setTimestamp(8, appointment.getCreatedAt());
+                stmt.setTimestamp(9, appointment.getUpdatedAt());
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    LOGGER.severe("Failed to insert appointment: No rows affected for patient_id=" + appointment.getPatientId());
+                    throw new RuntimeException("Failed to insert appointment: No rows affected");
+                }
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int newId = generatedKeys.getInt(1);
+                        LOGGER.info("Inserted appointment for patient_id=" + appointment.getPatientId() + ", new appointment_id=" + newId);
+                        return newId;
+                    } else {
+                        LOGGER.severe("Failed to retrieve generated appointment_id after insert");
+                        throw new RuntimeException("Failed to retrieve appointment ID after insert");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("SQL Insert Exception for patient_id=" + appointment.getPatientId() + ": " + e.getMessage());
+            throw new RuntimeException("Failed to insert appointment: " + e.getMessage(), e);
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    // Fetch the last appointment ID
+    public int takeID() {
+        String query = "SELECT TOP 1 appointment_id FROM Appointments ORDER BY appointment_id DESC";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("appointment_id");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching last appointment ID: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch last appointment ID", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return -1; // Return -1 if no appointments found
+    }
+
+    // Insert appointment with error handling
     @Override
     public int insert(Appointment appointment) {
         String query = "INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -230,7 +298,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     public Appointment getAppointmentById(int appointmentId) {
-        String sql = "SELECT * FROM Appointments WHERE appointment_id = ?";
+        String sql = "SELECT a.*, at.type_name, at.description, at.price " +
+                "FROM Appointments a " +
+                "JOIN AppointmentType at ON a.appointmenttype_id = at.appointmenttype_id " +
+                "WHERE a.appointment_id = ?";
         Connection conn = null;
         try {
             conn = getConn();
@@ -238,7 +309,15 @@ public class AppointmentDAO extends DBContext<Appointment> {
                 ps.setInt(1, appointmentId);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    return mapResultSetToAppointment(rs);
+                    Appointment appointment = mapResultSetToAppointment(rs);
+                    AppointmentType type = AppointmentType.builder()
+                            .appointmentTypeId(rs.getInt("appointmenttype_id"))
+                            .typeName(rs.getString("type_name"))
+                            .description(rs.getString("description"))
+                            .price(rs.getBigDecimal("price"))
+                            .build();
+                    appointment.setAppointmentType(type);
+                    return appointment;
                 }
             }
         } catch (SQLException e) {
@@ -249,6 +328,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return null;
     }
+
 
     public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
         List<Appointment> appointments = new ArrayList<>();

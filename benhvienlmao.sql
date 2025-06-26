@@ -21,26 +21,33 @@ CREATE TABLE Roles
 );
 GO
 
--- Features (for access control)
-CREATE TABLE Features
+-- SystemItems (merged Features and NavigationItems)
+CREATE TABLE SystemItems
 (
-    feature_id   INT PRIMARY KEY IDENTITY (1,1),
-    feature_name NVARCHAR(255) NOT NULL
+    item_id        INT PRIMARY KEY IDENTITY (1,1),
+    item_name      NVARCHAR(255) NOT NULL,
+    item_url       NVARCHAR(255),
+    image_url      NVARCHAR(255),
+    is_active      BIT DEFAULT 1,
+    display_order  INT,
+    parent_item_id INT NULL,
+    item_type      VARCHAR(50) NOT NULL CHECK (item_type IN ('Feature', 'Navigation')),
+    FOREIGN KEY (parent_item_id) REFERENCES SystemItems(item_id)
 );
 GO
 
--- RoleFeatures (maps roles to features)
-CREATE TABLE RoleFeatures
+-- RoleSystemItems (maps roles to system items for access control)
+CREATE TABLE RoleSystemItems
 (
     id         INT PRIMARY KEY IDENTITY (1,1),
     role_id    INT,
-    feature_id INT,
+    item_id    INT,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id),
-    FOREIGN KEY (feature_id) REFERENCES Features (feature_id)
+    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id)
 );
 GO
 
--- Employees (removed specialization_id)
+-- Employees
 CREATE TABLE Employees
 (
     employee_id       INT PRIMARY KEY IDENTITY (1,1),
@@ -69,7 +76,7 @@ CREATE TABLE EmployeeHistory
 );
 GO
 
--- Doctor Details (added is_specialist, removed work_schedule)
+-- Doctor Details
 CREATE TABLE DoctorDetails
 (
     doctor_id      INT PRIMARY KEY,
@@ -98,46 +105,41 @@ CREATE TABLE Patients
 );
 GO
 
--- Bảng danh mục (Category)
+-- Category
 CREATE TABLE Category (
     category_id TINYINT PRIMARY KEY IDENTITY(1,1),
     category_name NVARCHAR(100) NOT NULL
 );
 GO
 
--- Bảng Blog (bài viết)
+-- Blog
 CREATE TABLE Blog (
     blog_id         INT PRIMARY KEY IDENTITY(1,1),
-    blog_name       NVARCHAR(255) NOT NULL,     -- Tiêu đề bài viết
-    blog_sub_content NVARCHAR(500),              -- Nội dung tóm tắt
-    content         NVARCHAR(MAX) NOT NULL,     -- Nội dung đầy đủ
-    blog_img        NVARCHAR(500),              -- Đường dẫn hình ảnh
-    author          NVARCHAR(255),              -- Tên tác giả
-    date            DATETIME DEFAULT GETDATE(), -- Ngày đăng
-    category_id     TINYINT,                    -- Danh mục
-    selected_banner BIT DEFAULT 0,              -- Có hiển thị nổi bật không (1 là có)
-
+    blog_name       NVARCHAR(255) NOT NULL,
+    blog_sub_content NVARCHAR(500),
+    content         NVARCHAR(MAX) NOT NULL,
+    blog_img        NVARCHAR(500),
+    author          NVARCHAR(255),
+    date            DATETIME DEFAULT GETDATE(),
+    category_id     TINYINT,
+    selected_banner BIT DEFAULT 0,
     FOREIGN KEY (category_id) REFERENCES Category(category_id)
 );
 GO
 
--- Bảng Comment (bình luận bài viết)
+-- Comment
 CREATE TABLE Comment (
     comment_id INT PRIMARY KEY IDENTITY(1,1),
-    blog_id    INT NOT NULL,             -- Bài viết được bình luận
-    patient_id INT NOT NULL,             -- Người bình luận
-    content    NVARCHAR(MAX) NOT NULL,   -- Nội dung bình luận
-    date       DATETIME DEFAULT GETDATE(),  -- Ngày bình luận
-
+    blog_id    INT NOT NULL,
+    patient_id INT NOT NULL,
+    content    NVARCHAR(MAX) NOT NULL,
+    date       DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (blog_id) REFERENCES Blog(blog_id),
     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
 );
 GO
 
-
-
-
-
+-- AppointmentType
 CREATE TABLE AppointmentType
 (
     appointmenttype_id INT PRIMARY KEY IDENTITY(1,1),
@@ -145,8 +147,9 @@ CREATE TABLE AppointmentType
     description NVARCHAR(255),
     price DECIMAL(12, 2) NOT NULL
 );
+GO
 
--- Appointments (restricted to Morning/Afternoon/Evening)
+-- Appointments
 CREATE TABLE Appointments
 (
     appointment_id INT PRIMARY KEY IDENTITY(1,1),
@@ -164,7 +167,6 @@ CREATE TABLE Appointments
     FOREIGN KEY (appointmenttype_id) REFERENCES AppointmentType(appointmenttype_id)
 );
 GO
-
 
 -- Diagnoses
 CREATE TABLE Diagnoses
@@ -227,23 +229,27 @@ CREATE TABLE Payments
 );
 GO
 
--- Doctor Shifts (Morning/Afternoon/Evening/Night with manager approval)
+-- Doctor Shifts
 CREATE TABLE DoctorShifts
 (
     shift_id        INT PRIMARY KEY IDENTITY (1,1),
-    doctor_id       INT,
-    shift_date      DATE,
+    doctor_id       INT NOT NULL,
+    shift_date      DATE NOT NULL,
     time_slot       VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening', 'Night')),
-    status          VARCHAR(50) CHECK (status IN ('Scheduled', 'Rest', 'PendingApproval', 'Approved', 'Rejected')) DEFAULT 'Scheduled',
-    manager_id      INT,
-    requested_at    DATETIME DEFAULT GETDATE(),
-    approved_at     DATETIME,
+
+    status          VARCHAR(20) CHECK (status IN ('Working', 'PendingLeave', 'Leave', 'Rejected')) DEFAULT 'Working',
+
+    manager_id      INT,          -- Người duyệt đơn nghỉ
+    requested_at    DATETIME,     -- Thời gian xin nghỉ
+    approved_at     DATETIME,     -- Thời gian duyệt (dù là đồng ý hay từ chối)
+
     FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
     FOREIGN KEY (manager_id) REFERENCES Employees (employee_id)
 );
+
 GO
 
--- Insert sample Roles (added Manager)
+-- Insert sample Roles
 INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
        ('Receptionist'),
@@ -251,15 +257,39 @@ VALUES ('Doctor'),
        ('Manager');
 GO
 
--- Insert sample Features
-INSERT INTO Features (feature_name)
-VALUES ('Book Appointment'),
-       ('View Prescription'),
-       ('Manage Users'),
-       ('View Statistics'),
-       ('Approve Doctor Shifts');
+-- Insert sample SystemItems (combining Features and NavigationItems)
+INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
+VALUES 
+    ('Book Appointment', 'book-appointment', 'assets/img/icon/book_appointment.png', 1, NULL, NULL, 'Feature'),
+    ('View Prescription', 'view-prescription', 'assets/img/icon/prescription.png', 1, NULL, NULL, 'Feature'),
+    ('Manage Users', 'admin/users', 'assets/img/icon/manage_users.png', 1, NULL, NULL, 'Feature'),
+    ('View Statistics', 'admin/statistics', 'assets/img/icon/statistics.png', 1, NULL, NULL, 'Feature'),
+    ('Approve Doctor Shifts', 'admin/shift-approval', 'assets/img/icon/shift_approval.png', 1, NULL, NULL, 'Feature'),
+    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 'assets/img/icon/services1.svg', 1, NULL, NULL, 'Feature'),
+    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 'assets/img/icon/services2.svg', 1, NULL, NULL, 'Feature'),
+    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 'assets/img/icon/services3.svg', 1, NULL, NULL, 'Feature'),
+    ('Home', 'index.jsp', NULL, 1, 1, NULL, 'Navigation'),
+    ('About', 'about.html', NULL, 1, 2, NULL, 'Navigation'),
+    ('Dental Services', 'services.html', NULL, 1, 3, NULL, 'Navigation'),
+    ('Blog', 'blog.jsp', NULL, 1, 4, NULL, 'Navigation'),
+    ('Blog', 'blog.jsp', NULL, 1, 1, 12, 'Navigation'),
+    ('Blog Details', 'blog-detail.jsp', NULL, 1, 2, 12, 'Navigation'),
+    ('Element', 'elements.html', NULL, 1, 3, 12, 'Navigation'),
+    ('Contact', 'contact.html', NULL, 1, 5, NULL, 'Navigation');
 GO
 
+-- Insert sample RoleSystemItems
+INSERT INTO RoleSystemItems (role_id, item_id)
+VALUES 
+    (1, 1), -- Doctor: Book Appointment
+    (1, 2), -- Doctor: View Prescription
+    (3, 3), -- Admin: Manage Users
+    (3, 4), -- Admin: View Statistics
+    (4, 5), -- Manager: Approve Doctor Shifts
+    (1, 6), -- Doctor: Teeth Whitening
+    (1, 7), -- Doctor: Dental Checkup
+    (1, 8); -- Doctor: Tooth Extraction
+GO
 
 -- Insert sample Patients
 INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact)
@@ -277,7 +307,7 @@ VALUES ('john_doe', '123456', N'John Doe', '1990-05-10', 'M', 'john@example.com'
        ('phamthanhnga', 'ptn111', N'Phạm Thanh Nga', '1992-11-11', 'F', 'nga.pham@example.com', '0912000007', N'64 Nguyễn Huệ, Nha Trang', 'INS55507', N'Lý Hương - 0972333444');
 GO
 
--- Insert sample Employees (added Manager)
+-- Insert sample Employees
 INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id)
 VALUES ('dr_smith', '123456', N'Dr. John Smith', '1980-03-15', 'M', 'john.smith@hospital.com', '0909000001', 1),
        ('dr_hoa', 'abcdef', N'Dr. Nguyễn Thị Hoa', '1985-06-22', 'F', 'hoa.nguyen@hospital.com', '0909000002', 1),
@@ -290,13 +320,14 @@ VALUES ('dr_smith', '123456', N'Dr. John Smith', '1980-03-15', 'M', 'john.smith@
        ('manager01', 'man123', N'Nguyễn Văn Quản Lý', '1975-05-10', 'M', 'manager01@hospital.com', '0912000001', 4);
 GO
 
--- Insert sample Doctor Details (updated with is_specialist)
+-- Insert sample Doctor Details
 INSERT INTO DoctorDetails (doctor_id, license_number, is_specialist, rating)
 VALUES (1, 'LIC12345', 1, 4.5),
        (2, 'LIC23456', 0, 4.7),
        (3, 'LIC34567', 1, 4.3),
        (4, 'LIC45678', 0, 4.8);
 GO
+
 -- Insert dental AppointmentType with 2025 Vietnam market prices
 INSERT INTO AppointmentType (type_name, description, price)
 VALUES 
@@ -317,8 +348,7 @@ VALUES
     ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
-
--- Insert sample Doctor Shifts (example with rest requests)
+-- Insert sample Doctor Shifts
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status, manager_id, requested_at)
 VALUES (1, '2025-06-01', 'Morning', 'PendingApproval', 9, GETDATE()),
        (1, '2025-06-01', 'Afternoon', 'Scheduled', NULL, GETDATE()),
@@ -328,67 +358,66 @@ VALUES (1, '2025-06-01', 'Morning', 'PendingApproval', 9, GETDATE()),
        (2, '2025-06-02', 'Afternoon', 'PendingApproval', 9, GETDATE());
 GO
 
--- Dữ liệu mẫu cho bảng Category (thêm các danh mục y tế)
+-- Insert sample Category
 INSERT INTO Category (category_name)
 VALUES 
-    ('Khám bệnh'),      -- Category ID = 1
-    ('Bệnh lý'),        -- Category ID = 2
-    ('Chăm sóc sức khỏe'),  -- Category ID = 3
-    ('Phòng ngừa bệnh');     -- Category ID = 4
+    ('Khám bệnh'),
+    ('Bệnh lý'),
+    ('Chăm sóc sức khỏe'),
+    ('Phòng ngừa bệnh');
+GO
 
--- Dữ liệu mẫu cho bảng Blog (Thêm bài viết liên quan đến y tế)
+-- Insert sample Blog
 INSERT INTO Blog (blog_name, blog_sub_content, content, blog_img, author, date, category_id)
 VALUES 
-    ('Khám bệnh định kỳ', 
-     'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
-     'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
-     'checkup_regular.jpg', 
-     'TS.BS Lê Văn C', 
+    (N'Khám bệnh định kỳ', 
+     N'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
+     N'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
+     N'kham-suc-khoe-dinh-ky-la-gi.jpg', 
+     N'TS.BS Lê Văn C', 
      '2025-06-21 00:00:00.000', 
-     1),  -- Thuộc danh mục "Khám bệnh"
-     
-    ('Phòng ngừa bệnh tim mạch', 
-     'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
-     'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
-     'heart_disease_prevention.jpg', 
-     'Nguyễn Thị A', 
+     1),
+    (N'Phòng ngừa bệnh tim mạch', 
+     N'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
+     N'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
+     N'phong-ngua-tim-mach.jpg', 
+     N'Nguyễn Thị A', 
      '2025-06-22 00:00:00.000', 
-     4),  -- Thuộc danh mục "Phòng ngừa bệnh"
-     
-    ('Chế độ ăn uống cho bệnh nhân tiểu đường', 
-     'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
-     'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
-     'diabetes_diet.jpg', 
-     'TS.BS Trần Thị B', 
+     4),
+    (N'Chế độ ăn uống cho bệnh nhân tiểu đường', 
+     N'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
+     N'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
+     N'che-do-dinh-duong-phu-hop.jpg', 
+     N'TS.BS Trần Thị B', 
      '2025-06-23 00:00:00.000', 
-     2),  -- Thuộc danh mục "Bệnh lý"
-     
-    ('Điều trị ung thư', 
-     'Tổng quan về phương pháp điều trị ung thư hiện đại.',
-     'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
-     'cancer_treatment.jpg', 
-     'Lê Thị C', 
+     2),
+    (N'Điều trị ung thư', 
+     N'Tổng quan về phương pháp điều trị ung thư hiện đại.',
+     N'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
+     N'20201013_tri-ung-thu-1.jpg', 
+     N'Lê Thị C', 
      '2025-06-24 00:00:00.000', 
-     2),  -- Thuộc danh mục "Bệnh lý"
-     
-    ('Chăm sóc sức khỏe người cao tuổi', 
-     'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
-     'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
-     'elderly_care.jpg', 
-     'Nguyễn Minh D', 
+     2),
+    (N'Chăm sóc sức khỏe người cao tuổi', 
+     N'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
+     N'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
+     N'cham-soc-nguoi-gia.jpg', 
+     N'Nguyễn Minh D', 
      '2025-06-25 00:00:00.000', 
-     3);  -- Thuộc danh mục "Chăm sóc sức khỏe"
+     3);
+GO
 
-	 -- Dữ liệu mẫu cho bảng Comment (Thêm bình luận cho các bài viết y tế)
+-- Insert sample Comment
 INSERT INTO Comment (blog_id, patient_id, content, date)
 VALUES 
-    (1, 1, 'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định kỳ ngay.', '2025-06-21 10:30:00.000'),
-    (1, 2, 'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
-    (2, 3, 'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
-    (2, 4, 'Tôi sẽ thay đổi chế độ ăn uống của mình để phòng ngừa bệnh tim mạch.', '2025-06-24 11:45:00.000'),
-    (3, 2, 'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.', '2025-06-25 16:25:00.000'),
-    (3, 3, 'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.', '2025-06-26 17:30:00.000'),
-    (4, 4, 'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.', '2025-06-27 10:20:00.000'),
-    (4, 1, 'Tôi rất muốn tìm hiểu thêm về các phương pháp điều trị ung thư hiện đại.', '2025-06-28 08:55:00.000'),
-    (5, 1, 'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
-    (5, 4, 'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
+    (1, 1, N'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định kỳ ngay.', '2025-06-21 10:30:00.000'),
+    (1, 2, N'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
+    (2, 3, N'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
+    (2, 4, N'Tôi sẽ thay đổi chế độ ăn uống của mình để phòng ngừa bệnh tim mạch.', '2025-06-24 11:45:00.000'),
+    (3, 2, N'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.', '2025-06-25 16:25:00.000'),
+    (3, 3, N'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.', '2025-06-26 17:30:00.000'),
+    (4, 4, N'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.', '2025-06-27 10:20:00.000'),
+    (4, 1, N'Tôi rất muốn tìm hiểu thêm về các phương pháp điều trị ung thư hiện đại.', '2025-06-28 08:55:00.000'),
+    (5, 1, N'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
+    (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
+GO

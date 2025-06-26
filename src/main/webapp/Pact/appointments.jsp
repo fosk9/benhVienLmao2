@@ -87,11 +87,14 @@
               <td>${appointment.timeSlot}</td>
               <td>
                 <c:choose>
-                  <c:when test="${not empty appointment.appointmentType}">
+                  <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.typeName}">
                     ${appointment.appointmentType.typeName}
                   </c:when>
                   <c:otherwise>
-                    N/A
+                    <span style="color:red;font-weight:bold;">Unknown Type</span>
+                    <script>
+                      console.warn("Appointment ID ${appointment.appointmentId} missing valid appointmentType: ", ${appointment.appointmentType});
+                    </script>
                   </c:otherwise>
                 </c:choose>
               </td>

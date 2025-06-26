@@ -1,4 +1,5 @@
 package controller;
+
 import jakarta.servlet.ServletException;
 import view.EmployeeDAO;
 import view.PatientDAO;
@@ -21,10 +22,20 @@ public class OtpVerificationServlet extends HttpServlet {
         if (correctOtp != null && correctOtp.equalsIgnoreCase(userInput)) {
             Patient tempPatient = (Patient) session.getAttribute("tempPatient");
             if (tempPatient != null) {
-                new PatientDAO().insert(tempPatient); // chỉ ghi vào DB nếu xác minh OTP thành công
+                PatientDAO patientDAO = new PatientDAO();
+                int patientId = patientDAO.insert(tempPatient); // Insert patient into DB
                 session.removeAttribute("tempPatient");
                 session.removeAttribute("otp");
-                response.sendRedirect("login.jsp?msg=register_success");
+
+                // Set patientId in session to simulate login
+//                session.setAttribute("patientId", patientId);
+
+                // Check if there's appointment form data to restore
+                if (session.getAttribute("appointmentFormData") != null) {
+                    response.sendRedirect("book-appointment");
+                } else {
+                    response.sendRedirect("login.jsp?msg=register_success");
+                }
                 return;
             }
 
@@ -36,4 +47,3 @@ public class OtpVerificationServlet extends HttpServlet {
         }
     }
 }
-
