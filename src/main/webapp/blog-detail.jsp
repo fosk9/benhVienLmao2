@@ -132,6 +132,69 @@
       display: block;
       margin: 0 auto;
     }
+
+    /* Modal styles */
+    .modal-img-viewer {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-img-viewer.active {
+      display: flex;
+    }
+    .modal-img-content {
+      max-width: 98vw;
+      max-height: 92vh;
+      border-radius: 8px;
+      box-shadow: 0 0 20px #000;
+      background: #fff;
+      padding: 10px 20px 20px 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .modal-img-content img {
+      max-width: 95vw;
+      max-height: 85vh;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: max-width 0.2s, max-height 0.2s;
+    }
+    .modal-img-caption {
+      color: #333;
+      font-size: 1.1rem;
+      margin-top: 5px;
+      text-align: center;
+      min-height: 22px;
+      max-width: 90vw;
+      word-break: break-word;
+    }
+    .modal-img-close, .modal-img-prev, .modal-img-next {
+      position: absolute;
+      top: 10px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+      transition: background 0.2s;
+    }
+    .modal-img-close:hover, .modal-img-prev:hover, .modal-img-next:hover {
+      background: rgba(0,0,0,0.8);
+    }
+    .modal-img-close { right: 10px; }
+    .modal-img-prev { left: 10px; top: 50%; transform: translateY(-50%); }
+    .modal-img-next { right: 10px; top: 50%; transform: translateY(-50%); }
   </style>
 </head>
 <body>
@@ -290,5 +353,110 @@
 
 <jsp:include page="footer.jsp"/>
 <jsp:include page="common-scripts.jsp"/>
+
+<!-- Modal Image Viewer -->
+<div id="modalImgViewer" class="modal-img-viewer">
+  <div class="modal-img-content">
+    <button class="modal-img-close" id="modalImgClose" title="Đóng">&times;</button>
+    <button class="modal-img-prev" id="modalImgPrev" title="Trước">&#8592;</button>
+    <img id="modalImgMain" src="" alt="Ảnh blog" />
+    <div class="modal-img-caption" id="modalImgCaption"></div>
+    <button class="modal-img-next" id="modalImgNext" title="Tiếp">&#8594;</button>
+  </div>
+</div>
+
+<script>
+  // Lấy tất cả ảnh trong phần nội dung blog (CKEditor)
+  document.addEventListener("DOMContentLoaded", function() {
+    const contentDiv = document.querySelector('.blog_details .content');
+    if (!contentDiv) return;
+
+    const images = Array.from(contentDiv.querySelectorAll('img'));
+    if (images.length === 0) return;
+
+    // Modal elements
+    const modal = document.getElementById('modalImgViewer');
+    const modalImg = document.getElementById('modalImgMain');
+    const modalCaption = document.getElementById('modalImgCaption');
+    const btnClose = document.getElementById('modalImgClose');
+    const btnPrev = document.getElementById('modalImgPrev');
+    const btnNext = document.getElementById('modalImgNext');
+
+    let currentIdx = 0;
+
+    // Mở modal khi click vào ảnh
+    images.forEach((img, idx) => {
+      img.style.cursor = "pointer";
+      img.addEventListener('click', function() {
+        currentIdx = idx;
+        showModalImg();
+      });
+    });
+
+    function showModalImg() {
+      const img = images[currentIdx];
+      modalImg.src = img.src;
+      // Lấy chú thích từ alt, nếu không có thì lấy title, nếu không có thì để rỗng
+      modalCaption.textContent = img.getAttribute('alt') || img.getAttribute('title') || '';
+      modal.classList.add('active');
+      updateNavButtons();
+    }
+
+    function updateNavButtons() {
+      btnPrev.style.display = currentIdx > 0 ? 'flex' : 'none';
+      btnNext.style.display = currentIdx < images.length - 1 ? 'flex' : 'none';
+    }
+
+    btnClose.onclick = function() {
+      modal.classList.remove('active');
+      modalImg.src = "";
+      modalCaption.textContent = "";
+    };
+
+    btnPrev.onclick = function(e) {
+      e.stopPropagation();
+      if (currentIdx > 0) {
+        currentIdx--;
+        showModalImg();
+      }
+    };
+
+    btnNext.onclick = function(e) {
+      e.stopPropagation();
+      if (currentIdx < images.length - 1) {
+        currentIdx++;
+        showModalImg();
+      }
+    };
+
+    // Đóng modal khi click ra ngoài ảnh
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        modalImg.src = "";
+        modalCaption.textContent = "";
+      }
+    });
+
+    // Đóng modal bằng phím ESC
+    document.addEventListener('keydown', function(e) {
+      if (modal.classList.contains('active')) {
+        if (e.key === "Escape") {
+          modal.classList.remove('active');
+          modalImg.src = "";
+          modalCaption.textContent = "";
+        }
+        if (e.key === "ArrowLeft" && currentIdx > 0) {
+          currentIdx--;
+          showModalImg();
+        }
+        if (e.key === "ArrowRight" && currentIdx < images.length - 1) {
+          currentIdx++;
+          showModalImg();
+        }
+      }
+    });
+  });
+</script>
 </body>
 </html>

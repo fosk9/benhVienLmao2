@@ -150,13 +150,19 @@ public class AddBlogControllerServlet extends HttpServlet {
         String uploadPath = getServletContext().getRealPath("/assets/img/blog");
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
+            boolean created = uploadDir.mkdirs();
+            System.out.println("[AddBlogControllerServlet] Tạo thư mục upload: " + uploadPath + " - " + created);
+        } else {
+            System.out.println("[AddBlogControllerServlet] Thư mục upload đã tồn tại: " + uploadPath);
         }
 
         // Tránh trùng tên file bằng cách thêm timestamp
         String newFileName = System.currentTimeMillis() + "_" + fileName;
         File file = new File(uploadDir, newFileName);
+
+        // Lưu file vào thư mục
         imagePart.write(file.getAbsolutePath());
+        System.out.println("[AddBlogControllerServlet] Đã lưu file ảnh vào: " + file.getAbsolutePath());
 
         return "assets/img/blog/" + newFileName;
     }
