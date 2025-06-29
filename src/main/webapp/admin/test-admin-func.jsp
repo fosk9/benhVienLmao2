@@ -70,11 +70,15 @@
         <c:if test="${not empty error}">
             <div class="alert alert-danger">${error}</div>
         </c:if>
-
+        <c:if test="${not empty imageError}">
+            <div class="alert alert-danger">${imageError}</div>
+        </c:if>
         <!-- Debugging Information -->
         <c:forEach var="content" items="${contents}">
             <p>Debug: Content ID=${content.contentId}, Active=${content.active}</p>
         </c:forEach>
+
+
 
         <!-- Content Area -->
         <div class="test-section">

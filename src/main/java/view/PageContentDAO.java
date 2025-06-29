@@ -45,12 +45,12 @@ public class PageContentDAO extends DBContext<PageContent> {
                         content.setContentId(rs.getInt("content_id"));
                         content.setPageName(rs.getString("page_name"));
                         content.setContentKey(rs.getString("content_key"));
-                        content.setContentValue(rs.getString("content_value"));
-                        content.setActive(rs.getBoolean("is_active")); // Maps to isActive
-                        content.setImageUrl(rs.getString("image_url"));
-                        content.setVideoUrl(rs.getString("video_url"));
-                        content.setButtonUrl(rs.getString("button_url"));
-                        content.setButtonText(rs.getString("button_text"));
+                        content.setContentValue(rs.getString("content_value")); // Handles NULL
+                        content.setActive(rs.getBoolean("is_active"));
+                        content.setImageUrl(rs.getString("image_url")); // Handles NULL
+                        content.setVideoUrl(rs.getString("video_url")); // Handles NULL
+                        content.setButtonUrl(rs.getString("button_url")); // Handles NULL
+                        content.setButtonText(rs.getString("button_text")); // Handles NULL
                         contents.add(content);
                     }
                 }
@@ -65,7 +65,7 @@ public class PageContentDAO extends DBContext<PageContent> {
 
     @Override
     public List<PageContent> select() {
-        return null;
+        return select(); // Default to fetching all PageContent entries
     }
 
     @Override
@@ -84,12 +84,12 @@ public class PageContentDAO extends DBContext<PageContent> {
                         content.setContentId(rs.getInt("content_id"));
                         content.setPageName(rs.getString("page_name"));
                         content.setContentKey(rs.getString("content_key"));
-                        content.setContentValue(rs.getString("content_value"));
+                        content.setContentValue(rs.getString("content_value")); // Handles NULL
                         content.setActive(rs.getBoolean("is_active"));
-                        content.setImageUrl(rs.getString("image_url"));
-                        content.setVideoUrl(rs.getString("video_url"));
-                        content.setButtonUrl(rs.getString("button_url"));
-                        content.setButtonText(rs.getString("button_text"));
+                        content.setImageUrl(rs.getString("image_url")); // Handles NULL
+                        content.setVideoUrl(rs.getString("video_url")); // Handles NULL
+                        content.setButtonUrl(rs.getString("button_url")); // Handles NULL
+                        content.setButtonText(rs.getString("button_text")); // Handles NULL
                     }
                 }
             }
@@ -115,12 +115,32 @@ public class PageContentDAO extends DBContext<PageContent> {
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, content.getPageName());
                 stmt.setString(2, content.getContentKey());
-                stmt.setString(3, content.getContentValue());
+                if (content.getContentValue() != null) {
+                    stmt.setString(3, content.getContentValue());
+                } else {
+                    stmt.setNull(3, java.sql.Types.NVARCHAR);
+                }
                 stmt.setBoolean(4, content.isActive());
-                stmt.setString(5, content.getImageUrl());
-                stmt.setString(6, content.getVideoUrl());
-                stmt.setString(7, content.getButtonUrl());
-                stmt.setString(8, content.getButtonText());
+                if (content.getImageUrl() != null) {
+                    stmt.setString(5, content.getImageUrl());
+                } else {
+                    stmt.setNull(5, java.sql.Types.NVARCHAR);
+                }
+                if (content.getVideoUrl() != null) {
+                    stmt.setString(6, content.getVideoUrl());
+                } else {
+                    stmt.setNull(6, java.sql.Types.NVARCHAR);
+                }
+                if (content.getButtonUrl() != null) {
+                    stmt.setString(7, content.getButtonUrl());
+                } else {
+                    stmt.setNull(7, java.sql.Types.NVARCHAR);
+                }
+                if (content.getButtonText() != null) {
+                    stmt.setString(8, content.getButtonText());
+                } else {
+                    stmt.setNull(8, java.sql.Types.NVARCHAR);
+                }
                 affectedRows = stmt.executeUpdate();
                 LOGGER.info("Inserted PageContent: " + content.getContentKey());
             }
@@ -146,12 +166,32 @@ public class PageContentDAO extends DBContext<PageContent> {
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, content.getPageName());
                 stmt.setString(2, content.getContentKey());
-                stmt.setString(3, content.getContentValue());
+                if (content.getContentValue() != null) {
+                    stmt.setString(3, content.getContentValue());
+                } else {
+                    stmt.setNull(3, java.sql.Types.NVARCHAR);
+                }
                 stmt.setBoolean(4, content.isActive());
-                stmt.setString(5, content.getImageUrl());
-                stmt.setString(6, content.getVideoUrl());
-                stmt.setString(7, content.getButtonUrl());
-                stmt.setString(8, content.getButtonText());
+                if (content.getImageUrl() != null) {
+                    stmt.setString(5, content.getImageUrl());
+                } else {
+                    stmt.setNull(5, java.sql.Types.NVARCHAR);
+                }
+                if (content.getVideoUrl() != null) {
+                    stmt.setString(6, content.getVideoUrl());
+                } else {
+                    stmt.setNull(6, java.sql.Types.NVARCHAR);
+                }
+                if (content.getButtonUrl() != null) {
+                    stmt.setString(7, content.getButtonUrl());
+                } else {
+                    stmt.setNull(7, java.sql.Types.NVARCHAR);
+                }
+                if (content.getButtonText() != null) {
+                    stmt.setString(8, content.getButtonText());
+                } else {
+                    stmt.setNull(8, java.sql.Types.NVARCHAR);
+                }
                 stmt.setInt(9, content.getContentId());
                 affectedRows = stmt.executeUpdate();
                 LOGGER.info("Updated PageContent ID: " + content.getContentId());

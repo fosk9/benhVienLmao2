@@ -42,9 +42,6 @@
         <div class="col-md-4 col-sm-6 mb-4">
           <div class="card admin-card h-100">
             <div class="card-body text-center">
-              <c:if test="${not empty feature.imageUrl}">
-                <img src="${pageContext.request.contextPath}/${feature.imageUrl}" alt="${feature.itemName}" class="mb-3" style="max-width: 50px;">
-              </c:if>
               <h5 class="card-title">${feature.itemName}</h5>
               <p class="card-text">Access ${feature.itemName} functionality.</p>
               <a href="${pageContext.request.contextPath}/${feature.itemUrl}" class="btn btn-success">Go to ${feature.itemName}</a>

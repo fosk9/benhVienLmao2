@@ -12,8 +12,11 @@ import view.SystemItemDAO;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 
 /**
  * Servlet for managing SystemItems in the admin panel.
@@ -120,20 +123,48 @@ public class AdminSystemItemsServlet extends HttpServlet {
         item.setParentItemId(parentItemId.isEmpty() ? null : Integer.parseInt(parentItemId));
         item.setItemType(request.getParameter("itemType"));
 
-        // Handle file upload
+        String imageError = null;
         Part filePart = request.getPart("imageFile");
         if (filePart != null && filePart.getSize() > 0) {
             String fileName = extractFileName(filePart);
             String savePath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
             File fileSaveDir = new File(savePath);
-            if (!fileSaveDir.exists()) {
-                fileSaveDir.mkdirs();
+
+            String contentType = filePart.getContentType();
+            String fileExtension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+
+            // Chỉ cho phép jpg, jpeg, png
+            boolean isImage = contentType.startsWith("image/")
+                    && (fileExtension.equals(".jpg") || fileExtension.equals(".jpeg") || fileExtension.equals(".png"));
+
+            if (!isImage) {
+                imageError = "File upload must be an image (jpg, jpeg, png).";
+                LOGGER.warning("Invalid image upload: " + fileName + " (" + contentType + ")");
+            } else {
+                if (!fileSaveDir.exists()) {
+                    fileSaveDir.mkdirs();
+                }
+                String filePath = savePath + File.separator + fileName;
+                filePart.write(filePath);
+                item.setImageUrl(UPLOAD_DIR + "/" + fileName);
             }
-            String filePath = savePath + File.separator + fileName;
-            filePart.write(filePath);
-            item.setImageUrl(UPLOAD_DIR + "/" + fileName);
         } else {
             item.setImageUrl(request.getParameter("existingImageUrl"));
+        }
+
+        if (imageError != null) {
+            // Đẩy lỗi lên frontend
+            request.setAttribute("imageError", imageError);
+            List<SystemItem> allItems = systemItemDAO.select();
+            request.setAttribute("allItems", allItems);
+            if ("add".equals(action)) {
+                request.getRequestDispatcher("/admin/system-items/add.jsp").forward(request, response);
+            } else if ("edit".equals(action)) {
+                item.setItemId(Integer.parseInt(request.getParameter("id")));
+                request.setAttribute("item", item);
+                request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
+            }
+            return;
         }
 
         if ("add".equals(action)) {

@@ -152,7 +152,7 @@ GO
 -- Appointments
 CREATE TABLE Appointments
 (
-    appointment_id INT PRIMARY KEY IDENTITY(1,1),
+    appointment_id INT PRIMARY KEY IDENTITY (1,1),
     patient_id INT,
     doctor_id INT,
     appointmenttype_id INT NOT NULL,
@@ -245,6 +245,21 @@ CREATE TABLE DoctorShifts
 );
 GO
 
+-- PageContent
+CREATE TABLE PageContent (
+    content_id INT PRIMARY KEY IDENTITY(1,1),
+    page_name VARCHAR(50) NOT NULL, -- e.g., 'index'
+    content_key VARCHAR(100) NOT NULL, -- e.g., 'slider1_caption', 'daily_dental_updates_title'
+    content_value NVARCHAR(MAX) NOT NULL, -- e.g., 'Smile with Confidence'
+    is_active BIT DEFAULT 1,
+    image_url NVARCHAR(255) NULL, -- URL for slider background image
+    video_url NVARCHAR(255) NULL, -- URL for video link
+    button_url NVARCHAR(255) NULL, -- URL for button link
+    button_text NVARCHAR(255) NULL, -- Text for button
+    UNIQUE (page_name, content_key)
+);
+GO
+
 -- Insert sample Roles
 INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
@@ -271,7 +286,9 @@ VALUES
     ('Blog', 'blog.jsp', NULL, 1, 1, 12, 'Navigation'),
     ('Blog Details', 'blog-detail.jsp', NULL, 1, 2, 12, 'Navigation'),
     ('Element', 'elements.html', NULL, 1, 3, 12, 'Navigation'),
-    ('Contact', 'contact.html', NULL, 1, 5, NULL, 'Navigation');
+    ('Contact', 'contact.html', NULL, 1, 5, NULL, 'Navigation'),
+    ('Manage System Items', 'admin/system-items', 'assets/img/icon/manage_system_items.png', 1, NULL, NULL, 'Feature'),
+    ('Edit Home Page', 'index?action=edit', 'assets/img/icon/edit_page.png', 1, 5, NULL, 'Feature');
 GO
 
 -- Insert sample RoleSystemItems
@@ -284,7 +301,9 @@ VALUES
     (4, 5), -- Manager: Approve Doctor Shifts
     (1, 6), -- Doctor: Teeth Whitening
     (1, 7), -- Doctor: Dental Checkup
-    (1, 8); -- Doctor: Tooth Extraction
+    (1, 8), -- Doctor: Tooth Extraction
+    (3, 17), -- Admin: Manage System Items
+    (3, 18); -- Admin: Edit Home Page
 GO
 
 -- Insert sample Patients
@@ -418,39 +437,47 @@ VALUES
     (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
 GO
 
--- Insert admin panel feature
-INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
-VALUES ('Manage System Items', 'admin/system-items', 'assets/img/icon/manage_system_items.png', 1, NULL, NULL, 'Feature');
-
--- Map to Admin role (role_id = 3)
-INSERT INTO RoleSystemItems (role_id, item_id)
-VALUES (3, (SELECT item_id FROM SystemItems WHERE item_name = 'Manage System Items'));
+-- Insert sample PageContent
+INSERT INTO PageContent (page_name, content_key, content_value, is_active, image_url, video_url, button_url, button_text)
+VALUES 
+    ('index', 'site_title', 'Dental Care | benhVienLmao', 1, NULL, NULL, NULL, NULL),
+    ('index', 'preloader_image', '', 1, 'assets/img/logo/loder.png', NULL, NULL, NULL),
+    ('index', 'header_logo', '', 1, 'assets/img/logo/logo.png', NULL, NULL, NULL),
+    ('index', 'header_login_button', 'Login', 1, NULL, NULL, 'login.jsp', 'Login'),
+    ('index', 'header_register_button', 'Register', 1, NULL, NULL, 'register.jsp', 'Register'),
+    ('index', 'slider1_caption', 'Smile with Confidence', 1, 'assets/img/slider1.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Explore Dental Services'),
+    ('index', 'slider1_subcaption', 'Transform your smile with our expert dental care services', 1, 'assets/img/slider1.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Explore Dental Services'),
+    ('index', 'slider2_caption', 'Healthy Teeth, Happy Life', 1, 'assets/img/slider2.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Book an Appointment'),
+    ('index', 'slider2_subcaption', 'Comprehensive dental solutions for all ages', 1, 'assets/img/slider2.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Book an Appointment'),
+    ('index', 'daily_dental_updates_title', 'Daily Dental Updates', 1, NULL, NULL, NULL, NULL),
+    ('index', 'daily_dental_updates_subtitle', 'Stay informed with the latest tips and news for a healthy smile', 1, NULL, NULL, NULL, NULL),
+    ('index', 'perfect_smile_title', 'Perfect Smile, Made Simple', 1, NULL, NULL, NULL, NULL),
+    ('index', 'perfect_smile_subtitle', 'Experience top-notch dental care tailored to your needs', 1, NULL, NULL, NULL, NULL),
+    ('index', 'perfect_smile_description', 'Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'about_image', '', 1, 'assets/img/gallery/about.png', NULL, NULL, NULL),
+    ('index', 'about_icon1', '', 1, 'assets/img/icon/about1.svg', NULL, NULL, NULL),
+    ('index', 'about_icon2', '', 1, 'assets/img/icon/about2.svg', NULL, NULL, NULL),
+    ('index', 'want_to_work_title', 'Bright Smile Healthy Teeth', 1, NULL, NULL, NULL, NULL),
+    ('index', 'want_to_work_subtitle', 'Discover personalized dental care that makes you smile', 1, NULL, NULL, NULL, NULL),
+    ('index', 'want_to_work_button', 'Explore Services', 1, NULL, NULL, 'appointment/list', 'Explore Services'),
+    ('index', 'service_description_6', 'Explore our Teeth Whitening services for a healthier smile.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'service_description_7', 'Explore our Dental Checkup services for a healthier smile.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'service_description_8', 'Explore our Tooth Extraction services for a healthier smile.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'video_section', '', 1, NULL, 'https://www.youtube.com/watch?v=up68UAfH0d0', NULL, NULL),
+    ('index', 'about_law_title', '100% Satisfaction Guaranteed', 1, NULL, NULL, NULL, NULL),
+    ('index', 'about_law_subtitle', 'Your perfect smile is our priority', 1, NULL, NULL, NULL, NULL),
+    ('index', 'about_law_button', 'Book a Dental Appointment', 1, NULL, NULL, 'book-appointment', 'Book a Dental Appointment'),
+    ('index', 'about_law_image', '', 1, 'assets/img/gallery/about2.png', NULL, NULL, NULL),
+    ('index', 'footer_logo', '', 1, 'assets/img/logo/logo2_footer.png', NULL, NULL, NULL),
+    ('index', 'footer_social_twitter', '', 1, NULL, NULL, '#', 'Twitter'),
+    ('index', 'footer_social_facebook', '', 1, NULL, NULL, 'https://bit.ly/sai4ull', 'Facebook'),
+    ('index', 'footer_social_pinterest', '', 1, NULL, NULL, '#', 'Pinterest'),
+    ('index', 'footer_newsletter_title', 'Subscribe to Our Newsletter', 1, NULL, NULL, NULL, NULL),
+    ('index', 'footer_newsletter_form', 'Email Address', 1, NULL, NULL, 'https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01', NULL),
+    ('index', 'footer_newsletter_button', 'Subscribe', 1, NULL, NULL, NULL, 'Subscribe'),
+    ('index', 'footer_newsletter_subtitle', 'Stay updated with the latest dental care tips and promotions.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'footer_copyright', 'Copyright &copy; All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>', 1, NULL, NULL, NULL, NULL),
+    ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL);
+	
 GO
 
-CREATE TABLE PageContent (
-    content_id INT PRIMARY KEY IDENTITY(1,1),
-    page_name VARCHAR(50) NOT NULL, -- e.g., 'index'
-    content_key VARCHAR(100) NOT NULL, -- e.g., 'slider1_caption', 'daily_dental_updates_title'
-    content_value NVARCHAR(MAX) NOT NULL, -- e.g., 'Smile with Confidence'
-    is_active BIT DEFAULT 1,
-    UNIQUE (page_name, content_key)
-);
-
-INSERT INTO PageContent (page_name, content_key, content_value, is_active)
-VALUES 
-    ('index', 'slider1_caption', 'Smile with Confidence', 1),
-    ('index', 'slider1_subcaption', 'Transform your smile with our expert dental care services', 1),
-    ('index', 'slider2_caption', 'Healthy Teeth, Happy Life', 1),
-    ('index', 'slider2_subcaption', 'Comprehensive dental solutions for all ages', 1),
-    ('index', 'daily_dental_updates_title', 'Daily Dental Updates', 1),
-    ('index', 'daily_dental_updates_subtitle', 'Stay informed with the latest tips and news for a healthy smile', 1),
-    ('index', 'perfect_smile_title', 'Perfect Smile, Made Simple', 1),
-    ('index', 'perfect_smile_subtitle', 'Experience top-notch dental care tailored to your needs', 1);
-
-	-- Add edit mode feature to SystemItems
-INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
-VALUES ('Edit Home Page', 'index?action=edit', 'assets/img/icon/edit_page.png', 1, 5, NULL, 'Feature');
-
--- Map to Admin role (role_id = 3)
-INSERT INTO RoleSystemItems (role_id, item_id)
-VALUES (3, (SELECT item_id FROM SystemItems WHERE item_name = 'Edit Home Page'));

@@ -20,7 +20,6 @@ import java.util.logging.Logger;
  * Servlet for managing PageContent in the admin panel.
  */
 @WebServlet("/admin/page-content")
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
 public class AdminPageContentServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminPageContentServlet.class.getName());
     private final PageContentDAO pageContentDAO = new PageContentDAO();
@@ -122,19 +121,48 @@ public class AdminPageContentServlet extends HttpServlet {
         content.setButtonText(request.getParameter("buttonText"));
 
         // Handle file upload
+        String imageError = null;
         Part filePart = request.getPart("imageFile");
         if (filePart != null && filePart.getSize() > 0) {
             String fileName = extractFileName(filePart);
             String savePath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
             File fileSaveDir = new File(savePath);
-            if (!fileSaveDir.exists()) {
-                fileSaveDir.mkdirs();
+
+            String contentType = filePart.getContentType();
+            String fileExtension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+
+            boolean isImage = contentType.startsWith("image/")
+                    && (fileExtension.equals(".jpg") || fileExtension.equals(".jpeg") || fileExtension.equals(".png"));
+
+            if (!isImage) {
+                imageError = "ONLY (jpg, jpeg, png).";
+                LOGGER.warning("Invalid image upload: " + fileName + " (" + contentType + ")");
+            } else {
+                if (!fileSaveDir.exists()) {
+                    fileSaveDir.mkdirs();
+                }
+                String filePath = savePath + File.separator + fileName;
+                filePart.write(filePath);
+                content.setImageUrl(UPLOAD_DIR + "/" + fileName);
             }
-            String filePath = savePath + File.separator + fileName;
-            filePart.write(filePath);
-            content.setImageUrl(UPLOAD_DIR + "/" + fileName);
         } else {
             content.setImageUrl(request.getParameter("existingImageUrl"));
+        }
+
+        if (imageError != null) {
+            // Đẩy lỗi lên frontend
+            request.setAttribute("imageError", imageError);
+            if ("add".equals(action)) {
+                request.setAttribute("content", content);
+                request.setAttribute("pageName", pageName);
+                request.getRequestDispatcher("/admin/page-content/add.jsp").forward(request, response);
+            } else if ("edit".equals(action)) {
+                content.setContentId(Integer.parseInt(request.getParameter("id")));
+                request.setAttribute("content", content);
+                request.setAttribute("pageName", pageName);
+                request.getRequestDispatcher("/admin/page-content/edit.jsp").forward(request, response);
+            }
+            return;
         }
 
         if ("add".equals(action)) {

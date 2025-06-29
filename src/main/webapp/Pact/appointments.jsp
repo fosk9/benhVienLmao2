@@ -342,10 +342,14 @@
                 <c:set var="now" value="<%= new java.sql.Timestamp(System.currentTimeMillis()) %>" />
                 <c:choose>
                   <c:when test="${appointment.appointmentDate.time > now.time}">
-                    <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
-                       class="btn btn-primary">Edit</a>
-                    <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
-                       class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                    <c:choose>
+                      <c:when test="${appointment.status == 'Unpay'}">
+                        <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
+                           class="btn btn-primary">Edit</a>
+                        <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
+                           class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                      </c:when>
+                    </c:choose>
                   </c:when>
                 </c:choose>
                 <a href="<c:url value='/appointments/details?id=${appointment.appointmentId}'/>"

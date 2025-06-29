@@ -117,6 +117,8 @@ public class AdminTestFuncServlet extends HttpServlet {
         String action = request.getParameter("action");
         if ("save".equals(action)) {
             String[] contentIds = request.getParameterValues("contentId");
+            boolean hasImageError = false;
+            String imageError = null;
             if (contentIds != null) {
                 for (String id : contentIds) {
                     PageContent content = new PageContent();
@@ -129,29 +131,52 @@ public class AdminTestFuncServlet extends HttpServlet {
                     content.setButtonUrl(request.getParameter("buttonUrl_" + id));
                     content.setButtonText(request.getParameter("buttonText_" + id));
 
-                    // Handle file upload
+                    // Handle file upload with image type check
                     Part filePart = request.getPart("imageFile_" + id);
                     if (filePart != null && filePart.getSize() > 0) {
                         String fileName = extractFileName(filePart);
-                        String savePath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-                        File fileSaveDir = new File(savePath);
-                        if (!fileSaveDir.exists()) {
-                            fileSaveDir.mkdirs();
+                        String contentType = filePart.getContentType();
+                        String fileExtension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+
+                        boolean isImage = contentType.startsWith("image/")
+                                && (fileExtension.equals(".jpg") || fileExtension.equals(".jpeg") || fileExtension.equals(".png"));
+
+                        if (!isImage) {
+                            imageError = "Chỉ cho phép tải lên file ảnh (jpg, jpeg, png).";
+                            LOGGER.warning("Invalid image upload: " + fileName + " (" + contentType + ")");
+                            hasImageError = true;
+                        } else {
+                            String savePath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+                            File fileSaveDir = new File(savePath);
+                            if (!fileSaveDir.exists()) {
+                                fileSaveDir.mkdirs();
+                            }
+                            String filePath = savePath + File.separator + fileName;
+                            filePart.write(filePath);
+                            content.setImageUrl(UPLOAD_DIR + "/" + fileName);
                         }
-                        String filePath = savePath + File.separator + fileName;
-                        filePart.write(filePath);
-                        content.setImageUrl(UPLOAD_DIR + "/" + fileName);
                     } else {
                         content.setImageUrl(request.getParameter("existingImageUrl_" + id));
                     }
 
-                    int updated = pageContentDAO.update(content);
-                    if (updated > 0) {
-                        LOGGER.info("Successfully updated PageContent ID: " + id);
-                    } else {
-                        LOGGER.warning("Failed to update PageContent ID: " + id);
+                    if (!hasImageError) {
+                        int updated = pageContentDAO.update(content);
+                        if (updated > 0) {
+                            LOGGER.info("Successfully updated PageContent ID: " + id);
+                        } else {
+                            LOGGER.warning("Failed to update PageContent ID: " + id);
+                        }
                     }
                 }
+            }
+            if (hasImageError) {
+                // Reload contents and show error
+                List<PageContent> contents = pageContentDAO.select("index");
+                request.setAttribute("contents", contents);
+                request.setAttribute("editMode", true);
+                request.setAttribute("imageError", imageError);
+                request.getRequestDispatcher("/admin/test-admin-func.jsp").forward(request, response);
+                return;
             }
             response.sendRedirect(request.getContextPath() + "/admin/test-admin-func");
         } else {
