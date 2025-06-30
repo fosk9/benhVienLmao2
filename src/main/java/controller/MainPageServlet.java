@@ -64,7 +64,7 @@ public class MainPageServlet extends HttpServlet {
             featureItems = systemItemDAO.getActiveItemsByRoleAndType(0, "Feature"); // Guest role
             LOGGER.info("Fetched " + featureItems.size() + " feature items for guest role");
             for (SystemItem item : featureItems) {
-                LOGGER.fine("Feature Item: ID=" + item.getItemId() + ", Name=" + item.getItemName() + ", URL=" + item.getItemUrl() + ", Active=" + item.isActive());
+                LOGGER.fine("Feature Item: ID=" + item.getItemId() + ", Name=" + item.getItemName() + ", URL=" + item.getItemUrl());
                 if (item.getItemId() <= 0) {
                     LOGGER.warning("Feature item with invalid itemId: " + item.getItemName() + " (itemId=" + item.getItemId() + ")");
                 }

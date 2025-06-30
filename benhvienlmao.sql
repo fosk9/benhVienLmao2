@@ -27,12 +27,8 @@ CREATE TABLE SystemItems
     item_id        INT PRIMARY KEY IDENTITY (1,1),
     item_name      NVARCHAR(255) NOT NULL,
     item_url       NVARCHAR(255),
-    image_url      NVARCHAR(255),
-    is_active      BIT DEFAULT 1,
     display_order  INT,
-    parent_item_id INT NULL,
-    item_type      VARCHAR(50) NOT NULL CHECK (item_type IN ('Feature', 'Navigation')),
-    FOREIGN KEY (parent_item_id) REFERENCES SystemItems(item_id)
+    item_type      VARCHAR(50) NOT NULL CHECK (item_type IN ('Feature', 'Navigation'))
 );
 GO
 
@@ -269,26 +265,26 @@ VALUES ('Doctor'),
 GO
 
 -- Insert sample SystemItems (combining Features and NavigationItems)
-INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
-VALUES 
-    ('Book Appointment', 'book-appointment', 'assets/img/icon/book_appointment.png', 1, NULL, NULL, 'Feature'),
-    ('View Prescription', 'view-prescription', 'assets/img/icon/prescription.png', 1, NULL, NULL, 'Feature'),
-    ('Manage Users', 'admin/users', 'assets/img/icon/manage_users.png', 1, NULL, NULL, 'Feature'),
-    ('View Statistics', 'admin/statistics', 'assets/img/icon/statistics.png', 1, NULL, NULL, 'Feature'),
-    ('Approve Doctor Shifts', 'admin/shift-approval', 'assets/img/icon/shift_approval.png', 1, NULL, NULL, 'Feature'),
-    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 'assets/img/icon/services1.svg', 1, NULL, NULL, 'Feature'),
-    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 'assets/img/icon/services2.svg', 1, NULL, NULL, 'Feature'),
-    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 'assets/img/icon/services3.svg', 1, NULL, NULL, 'Feature'),
-    ('Home', 'index.jsp', NULL, 1, 1, NULL, 'Navigation'),
-    ('About', 'about.html', NULL, 1, 2, NULL, 'Navigation'),
-    ('Dental Services', 'services.html', NULL, 1, 3, NULL, 'Navigation'),
-    ('Blog', 'blog.jsp', NULL, 1, 4, NULL, 'Navigation'),
-    ('Blog', 'blog.jsp', NULL, 1, 1, 12, 'Navigation'),
-    ('Blog Details', 'blog-detail.jsp', NULL, 1, 2, 12, 'Navigation'),
-    ('Element', 'elements.html', NULL, 1, 3, 12, 'Navigation'),
-    ('Contact', 'contact.html', NULL, 1, 5, NULL, 'Navigation'),
-    ('Manage System Items', 'admin/system-items', 'assets/img/icon/manage_system_items.png', 1, NULL, NULL, 'Feature'),
-    ('Manage System Contents', 'admin/contents', 'NULL', 1, 5, NULL, 'Feature');
+INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
+VALUES
+    ('Book Appointment', 'book-appointment', NULL, 'Feature'),
+    ('View Prescription', 'view-prescription', NULL, 'Feature'),
+    ('Manage Users', 'admin/users', NULL, 'Feature'),
+    ('View Statistics', 'admin/statistics', NULL, 'Feature'),
+    ('Approve Doctor Shifts', 'admin/shift-approval', NULL, 'Feature'),
+    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', NULL, 'Feature'),
+    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', NULL, 'Feature'),
+    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', NULL, 'Feature'),
+    ('Home', 'index.jsp', 1, 'Navigation'),
+    ('About', 'about.html', 2, 'Navigation'),
+    ('Dental Services', 'services.html', 3, 'Navigation'),
+    ('Blog', 'blog.jsp', 4, 'Navigation'),
+    ('Blog', 'blog.jsp', 1, 'Navigation'),
+    ('Blog Details', 'blog-detail.jsp', 2, 'Navigation'),
+    ('Element', 'elements.html', 3, 'Navigation'),
+    ('Contact', 'contact.html', 5, 'Navigation'),
+    ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
+    ('Manage System Contents', 'admin/contents', 5, 'Feature');
 GO
 
 -- Insert sample RoleSystemItems
@@ -480,4 +476,3 @@ VALUES
     ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL);
 	
 GO
-

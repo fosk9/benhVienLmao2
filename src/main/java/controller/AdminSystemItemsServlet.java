@@ -116,11 +116,9 @@ public class AdminSystemItemsServlet extends HttpServlet {
         SystemItem item = new SystemItem();
         item.setItemName(request.getParameter("itemName"));
         item.setItemUrl(request.getParameter("itemUrl"));
-        item.setActive(Boolean.parseBoolean(request.getParameter("isActive")));
         String displayOrder = request.getParameter("displayOrder");
         item.setDisplayOrder(displayOrder.isEmpty() ? null : Integer.parseInt(displayOrder));
         String parentItemId = request.getParameter("parentItemId");
-        item.setParentItemId(parentItemId.isEmpty() ? null : Integer.parseInt(parentItemId));
         item.setItemType(request.getParameter("itemType"));
 
         String imageError = null;
@@ -146,10 +144,8 @@ public class AdminSystemItemsServlet extends HttpServlet {
                 }
                 String filePath = savePath + File.separator + fileName;
                 filePart.write(filePath);
-                item.setImageUrl(UPLOAD_DIR + "/" + fileName);
             }
         } else {
-            item.setImageUrl(request.getParameter("existingImageUrl"));
         }
 
         if (imageError != null) {

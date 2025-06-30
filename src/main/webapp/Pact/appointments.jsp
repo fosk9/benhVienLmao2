@@ -295,12 +295,12 @@
         <table class="search-table">
             <form action="<c:url value='/appointments'/>" method="get" id="searchForm">
                 <tr>
-                    <td>Appointment Date</td>
-                    <td><input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${param.appointmentDate}"></td>
+                    <td style="text-align:left; width:50%;">Appointment Date</td>
+                    <td style="width:50%;"><input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${param.appointmentDate}"></td>
                 </tr>
                 <tr>
-                    <td>Type</td>
-                    <td>
+                    <td style="text-align:left; width:50%;">Type</td>
+                    <td style="width:50%;">
                         <select id="appointmentTypeId" name="appointmentTypeId" class="form-control">
                             <option value="">All</option>
                             <c:forEach var="type" items="${appointmentTypes}">
@@ -313,8 +313,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Status</td>
-                    <td>
+                    <td style="text-align:left; width:50%;">Status</td>
+                    <td style="width:50%;">
                         <select id="status" name="status" class="form-control">
                             <option value="">All</option>
                             <option value="Unpay" <c:if test="${param.status == 'Unpay'}">selected</c:if>>Unpaid</option>
@@ -324,8 +324,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Time Slot</td>
-                    <td>
+                    <td style="text-align:left; width:50%;">Time Slot</td>
+                    <td style="width:50%;">
                         <select id="timeSlot" name="timeSlot" class="form-control">
                             <option value="">All</option>
                             <option value="Morning" <c:if test="${param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
@@ -335,8 +335,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Request Specialist</td>
-                    <td>
+                    <td style="text-align:left; width:50%;">Request Specialist</td>
+                    <td style="width:50%;">
                         <select id="requiresSpecialist" name="requiresSpecialist" class="form-control">
                             <option value="">All</option>
                             <option value="Yes" <c:if test="${param.requiresSpecialist == 'Yes'}">selected</c:if>>Yes</option>
@@ -345,8 +345,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Sort By</td>
-                    <td>
+                    <td style="text-align:left; width:50%;">Sort By</td>
+                    <td style="width:50%;">
                         <select id="sortBy" name="sortBy" class="form-control" onchange="updateSortDir()">
                             <option value="">Default (Newest)</option>
                             <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'ASC'}">selected</c:if>>Date (Oldest to Newest)</option>
@@ -358,8 +358,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><button type="submit" class="btn btn-primary">Search</button></td>
-                    <td><button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button></td>
+                    <td style="text-align:center; width:50%;"><button type="submit" class="btn btn-primary">Search</button></td>
+                    <td style="text-align:center; width:50%;"><button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button></td>
                 </tr>
             </form>
         </table>
