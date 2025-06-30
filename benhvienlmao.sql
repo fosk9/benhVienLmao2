@@ -288,7 +288,7 @@ VALUES
     ('Element', 'elements.html', NULL, 1, 3, 12, 'Navigation'),
     ('Contact', 'contact.html', NULL, 1, 5, NULL, 'Navigation'),
     ('Manage System Items', 'admin/system-items', 'assets/img/icon/manage_system_items.png', 1, NULL, NULL, 'Feature'),
-    ('Edit Home Page', 'index?action=edit', 'assets/img/icon/edit_page.png', 1, 5, NULL, 'Feature');
+    ('Manage System Contents', 'admin/contents', 'NULL', 1, 5, NULL, 'Feature');
 GO
 
 -- Insert sample RoleSystemItems

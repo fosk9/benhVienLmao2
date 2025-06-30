@@ -45,17 +45,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/slick.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/nice-select.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
-    <style>
-        .edit-form {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .admin-header {
-            background-color: #28a745;
-            color: white;
-        }
-    </style>
 </head>
 <body>
 <!-- ? Preloader Start -->
@@ -176,252 +165,63 @@
         </div>
     </c:if>
 
-    <c:choose>
-        <c:when test="${editMode}">
-            <!-- Edit Mode -->
-            <div class="container mt-5">
-                <h2>Edit Index Page Content</h2>
-                <form action="${pageContext.request.contextPath}/index" method="post" enctype="multipart/form-data" class="edit-form">
-                    <input type="hidden" name="action" value="save">
-                    <!-- Page Content -->
-                    <h3>Page Content</h3>
-                    <c:choose>
-                        <c:when test="${empty pageContents}">
-                            <div class="alert alert-warning">No page content available to edit.</div>
-                        </c:when>
-                        <c:otherwise>
-                            <c:forEach var="content" items="${pageContents}">
-                                <div class="mb-4 border p-3 rounded">
-                                    <h5>Content ID: ${content.contentId}</h5>
-                                    <input type="hidden" name="contentId" value="${content.contentId}">
-                                    <div class="mb-3">
-                                        <label for="contentKey_${content.contentId}" class="form-label">Content Key</label>
-                                        <input type="text" class="form-control" id="contentKey_${content.contentId}" name="contentKey_${content.contentId}" value="${content.contentKey}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="contentValue_${content.contentId}" class="form-label">Content Value</label>
-                                        <textarea class="form-control" id="contentValue_${content.contentId}" name="contentValue_${content.contentId}" rows="3">${content.contentValue != null ? content.contentValue : ''}</textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="imageFile_${content.contentId}" class="form-label">Image</label>
-                                        <input type="file" class="form-control" id="imageFile_${content.contentId}" name="imageFile_${content.contentId}" accept="image/*">
-                                        <c:if test="${content.imageUrl != null}">
-                                            <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="Current Image" width="100" class="mt-2">
-                                            <input type="hidden" name="existingImageUrl_${content.contentId}" value="${content.imageUrl}">
-                                        </c:if>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="videoUrl_${content.contentId}" class="form-label">Video URL</label>
-                                        <input type="text" class="form-control" id="videoUrl_${content.contentId}" name="videoUrl_${content.contentId}" value="${content.videoUrl != null ? content.videoUrl : ''}" placeholder="e.g., https://www.youtube.com/watch?v=...">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="buttonUrl_${content.contentId}" class="form-label">Button URL</label>
-                                        <input type="text" class="form-control" id="buttonUrl_${content.contentId}" name="buttonUrl_${content.contentId}" value="${content.buttonUrl != null ? content.buttonUrl : ''}" placeholder="e.g., book-appointment">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="buttonText_${content.contentId}" class="form-label">Button Text</label>
-                                        <input type="text" class="form-control" id="buttonText_${content.contentId}" name="buttonText_${content.contentId}" value="${content.buttonText != null ? content.buttonText : ''}" placeholder="e.g., Explore Dental Services">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="isActive_${content.contentId}" class="form-label">Active</label>
-                                        <select class="form-select" id="isActive_${content.contentId}" name="isActive_${content.contentId}">
-                                            <option value="true" ${content.active ? 'selected' : ''}>Yes</option>
-                                            <option value="false" ${!content.active ? 'selected' : ''}>No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
-
-                    <!-- System Items -->
-                    <h3>Navigation and Feature Items</h3>
-                    <c:choose>
-                        <c:when test="${empty navItems && empty featureItems}">
-                            <div class="alert alert-warning">No system items available to edit.</div>
-                        </c:when>
-                        <c:otherwise>
-                            <c:forEach var="item" items="${navItems}">
-                                <div class="mb-4 border p-3 rounded">
-                                    <h5>Navigation Item ID: ${item.itemId}</h5>
-                                    <input type="hidden" name="itemId" value="${item.itemId}">
-                                    <div class="mb-3">
-                                        <label for="itemName_${item.itemId}" class="form-label">Item Name</label>
-                                        <input type="text" class="form-control" id="itemName_${item.itemId}" name="itemName_${item.itemId}" value="${item.itemName}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="itemUrl_${item.itemId}" class="form-label">Item URL</label>
-                                        <input type="text" class="form-control" id="itemUrl_${item.itemId}" name="itemUrl_${item.itemId}" value="${item.itemUrl != null ? item.itemUrl : ''}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="imageFile_${item.itemId}" class="form-label">Image</label>
-                                        <input type="file" class="form-control" id="imageFile_${item.itemId}" name="imageFile_${item.itemId}" accept="image/*">
-                                        <c:if test="${item.imageUrl != null}">
-                                            <img src="${pageContext.request.contextPath}/${item.imageUrl}" alt="Current Image" width="50" class="mt-2">
-                                            <input type="hidden" name="existingImageUrl_${item.itemId}" value="${item.imageUrl}">
-                                        </c:if>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="isActive_${item.itemId}" class="form-label">Active</label>
-                                        <select class="form-select" id="isActive_${item.itemId}" name="isActive_${item.itemId}">
-                                            <option value="true" ${item.active ? 'selected' : ''}>Yes</option>
-                                            <option value="false" ${!item.active ? 'selected' : ''}>No</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="displayOrder_${item.itemId}" class="form-label">Display Order</label>
-                                        <input type="number" class="form-control" id="displayOrder_${item.itemId}" name="displayOrder_${item.itemId}" value="${item.displayOrder != null ? item.displayOrder : ''}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="parentItemId_${item.itemId}" class="form-label">Parent Item</label>
-                                        <select class="form-select" id="parentItemId_${item.itemId}" name="parentItemId_${item.itemId}">
-                                            <option value="">None</option>
-                                            <c:forEach var="parent" items="${navItems}">
-                                                <option value="${parent.itemId}" ${parent.itemId == item.parentItemId ? 'selected' : ''}>${parent.itemName}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
-                                    <input type="hidden" name="itemType_${item.itemId}" value="Navigation">
-                                </div>
-                            </c:forEach>
-                            <c:forEach var="item" items="${featureItems}">
-                                <div class="mb-4 border p-3 rounded">
-                                    <h5>Feature Item ID: ${item.itemId}</h5>
-                                    <input type="hidden" name="itemId" value="${item.itemId}">
-                                    <div class="mb-3">
-                                        <label for="itemName_${item.itemId}" class="form-label">Item Name</label>
-                                        <input type="text" class="form-control" id="itemName_${item.itemId}" name="itemName_${item.itemId}" value="${item.itemName}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="itemUrl_${item.itemId}" class="form-label">Item URL</label>
-                                        <input type="text" class="form-control" id="itemUrl_${item.itemId}" name="itemUrl_${item.itemId}" value="${item.itemUrl != null ? item.itemUrl : ''}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="imageFile_${item.itemId}" class="form-label">Image</label>
-                                        <input type="file" class="form-control" id="imageFile_${item.itemId}" name="imageFile_${item.itemId}" accept="image/*">
-                                        <c:if test="${item.imageUrl != null}">
-                                            <img src="${pageContext.request.contextPath}/${item.imageUrl}" alt="Current Image" width="50" class="mt-2">
-                                            <input type="hidden" name="existingImageUrl_${item.itemId}" value="${item.imageUrl}">
-                                        </c:if>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="isActive_${item.itemId}" class="form-label">Active</label>
-                                        <select class="form-select" id="isActive_${item.itemId}" name="isActive_${item.itemId}">
-                                            <option value="true" ${item.active ? 'selected' : ''}>Yes</option>
-                                            <option value="false" ${!item.active ? 'selected' : ''}>No</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="displayOrder_${item.itemId}" class="form-label">Display Order</label>
-                                        <input type="number" class="form-control" id="displayOrder_${item.itemId}" name="displayOrder_${item.itemId}" value="${item.displayOrder != null ? item.displayOrder : ''}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="parentItemId_${item.itemId}" class="form-label">Parent Item</label>
-                                        <select class="form-select" id="parentItemId_${item.itemId}" name="parentItemId_${item.itemId}">
-                                            <option value="">None</option>
-                                            <c:forEach var="parent" items="${featureItems}">
-                                                <option value="${parent.itemId}" ${parent.itemId == item.parentItemId ? 'selected' : ''}>${parent.itemName}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
-                                    <input type="hidden" name="itemType_${item.itemId}" value="Feature">
-                                </div>
-                            </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
-
-                    <button type="submit" class="btn btn-success">Save Changes</button>
-                    <a href="${pageContext.request.contextPath}/index" class="btn btn-secondary">Cancel</a>
-                </form>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <!-- View Mode -->
-            <!--? Slider Area Start-->
-            <div class="slider-area">
-                <div class="slider-active dot-style">
-                    <c:choose>
-                        <c:when test="${empty pageContents}">
-                            <div class="single-slider d-flex align-items-center slider-height">
-                                <div class="container">
-                                    <div class="row align-items-center">
-                                        <div class="col-xl-7 col-lg-8 col-md-10">
-                                            <div class="hero-wrapper">
-                                                <div class="video-icon">
-                                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
-                                                       data-animation="bounceIn" data-delay=".4s">
-                                                        <i class="fas fa-play"></i>
-                                                    </a>
-                                                </div>
-                                                <div class="hero__caption">
-                                                    <h1 data-animation="fadeInUp" data-delay=".3s">No Slider Content</h1>
-                                                    <p data-animation="fadeInUp" data-delay=".6s">Contact admin to add slider content.</p>
-                                                    <a href="${pageContext.request.contextPath}/book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an Appointment</a>
-                                                </div>
-                                            </div>
+    <!--? Slider Area Start-->
+    <div class="slider-area">
+        <div class="slider-active dot-style">
+            <c:choose>
+                <c:when test="${empty pageContents}">
+                    <div class="single-slider d-flex align-items-center slider-height">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-xl-7 col-lg-8 col-md-10">
+                                    <div class="hero-wrapper">
+                                        <div class="video-icon">
+                                            <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                               data-animation="bounceIn" data-delay=".4s">
+                                                <i class="fas fa-play"></i>
+                                            </a>
+                                        </div>
+                                        <div class="hero__caption">
+                                            <h1 data-animation="fadeInUp" data-delay=".3s">No Slider Content</h1>
+                                            <p data-animation="fadeInUp" data-delay=".6s">Contact admin to add slider content.</p>
+                                            <a href="${pageContext.request.contextPath}/book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an Appointment</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="hasSlider" value="false" />
-                            <c:forEach var="content" items="${pageContents}" varStatus="loop">
-                                <c:catch var="exception">
-                                    <c:if test="${not empty content.pageName && content.pageName == 'index' && not empty content.contentKey && fn:startsWith(content.contentKey, 'slider') && content.active}">
-                                        <c:set var="hasSlider" value="true" />
-                                        <div class="single-slider d-flex align-items-center slider-height"
-                                                <c:if test="${content.imageUrl != null}">
-                                                    style="background-image: url('${pageContext.request.contextPath}/${content.imageUrl}'); background-size: cover;"
-                                                </c:if>>
-                                            <div class="container">
-                                                <div class="row align-items-center">
-                                                    <div class="col-xl-7 col-lg-8 col-md-10">
-                                                        <div class="hero-wrapper">
-                                                            <div class="video-icon">
-                                                                <a class="popup-video btn-icon" href="${content.videoUrl != null ? content.videoUrl : 'https://www.youtube.com/watch?v=up68UAfH0d0'}"
-                                                                   data-animation="bounceIn" data-delay=".4s">
-                                                                    <i class="fas fa-play"></i>
-                                                                </a>
-                                                            </div>
-                                                            <div class="hero__caption">
-                                                                <c:if test="${content.contentKey == 'slider1_caption' || content.contentKey == 'slider2_caption'}">
-                                                                    <h1 data-animation="fadeInUp" data-delay=".3s">${content.contentValue != null ? content.contentValue : 'No Caption'}</h1>
-                                                                </c:if>
-                                                                <c:if test="${content.contentKey == 'slider1_subcaption' || content.contentKey == 'slider2_subcaption'}">
-                                                                    <p data-animation="fadeInUp" data-delay=".6s">${content.contentValue != null ? content.contentValue : 'No Subcaption'}</p>
-                                                                </c:if>
-                                                                <c:if test="${content.buttonUrl != null && content.buttonText != null}">
-                                                                    <a href="${pageContext.request.contextPath}/${content.buttonUrl}" class="btn" data-animation="fadeInLeft" data-delay=".3s">${content.buttonText}</a>
-                                                                </c:if>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:if>
-                                </c:catch>
-                                <c:if test="${not empty exception}">
-                                    <div class="alert alert-warning">Error processing content: ${exception.message}</div>
-                                </c:if>
-                            </c:forEach>
-                            <c:if test="${!hasSlider}">
-                                <div class="single-slider d-flex align-items-center slider-height">
+                        </div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="hasSlider" value="false" />
+                    <c:forEach var="content" items="${pageContents}" varStatus="loop">
+                        <c:catch var="exception">
+                            <c:if test="${not empty content.pageName && content.pageName == 'index' && not empty content.contentKey && fn:startsWith(content.contentKey, 'slider') && content.active}">
+                                <c:set var="hasSlider" value="true" />
+                                <div class="single-slider d-flex align-items-center slider-height"
+                                        <c:if test="${content.imageUrl != null}">
+                                            style="background-image: url('${pageContext.request.contextPath}/${content.imageUrl}'); background-size: cover;"
+                                        </c:if>>
                                     <div class="container">
                                         <div class="row align-items-center">
                                             <div class="col-xl-7 col-lg-8 col-md-10">
                                                 <div class="hero-wrapper">
                                                     <div class="video-icon">
-                                                        <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                                        <a class="popup-video btn-icon" href="${content.videoUrl != null ? content.videoUrl : 'https://www.youtube.com/watch?v=up68UAfH0d0'}"
                                                            data-animation="bounceIn" data-delay=".4s">
                                                             <i class="fas fa-play"></i>
                                                         </a>
                                                     </div>
                                                     <div class="hero__caption">
-                                                        <h1 data-animation="fadeInUp" data-delay=".3s">No Slider Content</h1>
-                                                        <p data-animation="fadeInUp" data-delay=".6s">Contact admin to add slider content.</p>
-                                                        <a href="${pageContext.request.contextPath}/book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an Appointment</a>
+                                                        <c:if test="${content.contentKey == 'slider1_caption' || content.contentKey == 'slider2_caption'}">
+                                                            <h1 data-animation="fadeInUp" data-delay=".3s">${content.contentValue != null ? content.contentValue : 'No Caption'}</h1>
+                                                        </c:if>
+                                                        <c:if test="${content.contentKey == 'slider1_subcaption' || content.contentKey == 'slider2_subcaption'}">
+                                                            <p data-animation="fadeInUp" data-delay=".6s">${content.contentValue != null ? content.contentValue : 'No Subcaption'}</p>
+                                                        </c:if>
+                                                        <c:if test="${content.buttonUrl != null && content.buttonText != null}">
+                                                            <a href="${pageContext.request.contextPath}/${content.buttonUrl}" class="btn" data-animation="fadeInLeft" data-delay=".3s">${content.buttonText}</a>
+                                                        </c:if>
                                                     </div>
                                                 </div>
                                             </div>
@@ -429,321 +229,340 @@
                                     </div>
                                 </div>
                             </c:if>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
-            <!-- Slider Area End -->
-
-            <!-- Edit This Page Button for Admins -->
-            <c:if test="${sessionScope.role == 3 || sessionScope.role == 4}">
-                <div class="container mt-3">
-                    <a href="${pageContext.request.contextPath}/index?action=edit" class="btn btn-success">Edit This Page</a>
-                </div>
-            </c:if>
-
-            <!--? Latest News Area Start -->
-            <section class="latest-news-area section-padding30">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-7 col-md-9 col-sm-10">
-                            <div class="section-tittle text-center mb-70">
-                                <c:set var="newsTitleFound" value="false" />
-                                <c:set var="newsSubtitleFound" value="false" />
-                                <c:forEach var="content" items="${pageContents}">
-                                    <c:if test="${content.contentKey == 'daily_dental_updates_title' && content.active && content.contentValue != null}">
-                                        <c:set var="newsTitleFound" value="true" />
-                                        <h2>${content.contentValue}</h2>
-                                    </c:if>
-                                    <c:if test="${content.contentKey == 'daily_dental_updates_subtitle' && content.active && content.contentValue != null}">
-                                        <c:set var="newsSubtitleFound" value="true" />
-                                        <p>${content.contentValue}</p>
-                                    </c:if>
-                                </c:forEach>
-                                <c:if test="${!newsTitleFound}">
-                                    <h2>Daily Dental Updates</h2>
-                                </c:if>
-                                <c:if test="${!newsSubtitleFound}">
-                                    <p>Stay informed with the latest tips and news for a healthy smile</p>
-                                </c:if>
+                        </c:catch>
+                        <c:if test="${not empty exception}">
+                            <div class="alert alert-warning">Error processing content: ${exception.message}</div>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${!hasSlider}">
+                        <div class="single-slider d-flex align-items-center slider-height">
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col-xl-7 col-lg-8 col-md-10">
+                                        <div class="hero-wrapper">
+                                            <div class="video-icon">
+                                                <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                                   data-animation="bounceIn" data-delay=".4s">
+                                                    <i class="fas fa-play"></i>
+                                                </a>
+                                            </div>
+                                            <div class="hero__caption">
+                                                <h1 data-animation="fadeInUp" data-delay=".3s">No Slider Content</h1>
+                                                <p data-animation="fadeInUp" data-delay=".6s">Contact admin to add slider content.</p>
+                                                <a href="${pageContext.request.contextPath}/book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an Appointment</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
-                            <div class="col-lg-4 col-md-6 col-sm-12">
-                                <article class="blog_item">
-                                    <div class="blog_item_img">
-                                        <img class="card-img rounded-0" src="${pageContext.request.contextPath}/assets/img/${b.blogImg}" alt="${b.blogName}">
-                                        <a href="#" class="blog_item_date">
-                                            <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
-                                            <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
-                                        </a>
-                                    </div>
-                                    <div class="blog_details">
-                                        <a class="d-inline-block" href="${pageContext.request.contextPath}/blog-detail?id=${b.blogId}">
-                                            <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
-                                        </a>
-                                        <p>${b.blogSubContent}</p>
-                                        <ul class="blog-info-link">
-                                            <li><a href="${pageContext.request.contextPath}/blog?categoryId=${b.categoryId}"><i
-                                                    class="fa fa-user"></i> ${b.categoryName}</a></li>
-                                            <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
-                                        </ul>
-                                    </div>
-                                </article>
-                            </div>
+                    </c:if>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+    <!-- Slider Area End -->
+
+    <!--? Latest News Area Start -->
+    <section class="latest-news-area section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9 col-sm-10">
+                    <div class="section-tittle text-center mb-70">
+                        <c:set var="newsTitleFound" value="false" />
+                        <c:set var="newsSubtitleFound" value="false" />
+                        <c:forEach var="content" items="${pageContents}">
+                            <c:if test="${content.contentKey == 'daily_dental_updates_title' && content.active && content.contentValue != null}">
+                                <c:set var="newsTitleFound" value="true" />
+                                <h2>${content.contentValue}</h2>
+                            </c:if>
+                            <c:if test="${content.contentKey == 'daily_dental_updates_subtitle' && content.active && content.contentValue != null}">
+                                <c:set var="newsSubtitleFound" value="true" />
+                                <p>${content.contentValue}</p>
+                            </c:if>
                         </c:forEach>
+                        <c:if test="${!newsTitleFound}">
+                            <h2>Daily Dental Updates</h2>
+                        </c:if>
+                        <c:if test="${!newsSubtitleFound}">
+                            <p>Stay informed with the latest tips and news for a healthy smile</p>
+                        </c:if>
                     </div>
                 </div>
-            </section>
-            <!-- Latest News Area End -->
-            <!--? About-2 Area Start -->
-            <div class="about-area2 section-padding40">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-lg-7 col-md-12">
-                            <div class="about-img">
-                                <c:set var="aboutImageFound" value="false" />
+            </div>
+            <div class="row">
+                <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <article class="blog_item">
+                            <div class="blog_item_img">
+                                <img class="card-img rounded-0" src="${pageContext.request.contextPath}/assets/img/${b.blogImg}" alt="${b.blogName}">
+                                <a href="#" class="blog_item_date">
+                                    <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
+                                    <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
+                                </a>
+                            </div>
+                            <div class="blog_details">
+                                <a class="d-inline-block" href="${pageContext.request.contextPath}/blog-detail?id=${b.blogId}">
+                                    <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
+                                </a>
+                                <p>${b.blogSubContent}</p>
+                                <ul class="blog-info-link">
+                                    <li><a href="${pageContext.request.contextPath}/blog?categoryId=${b.categoryId}"><i
+                                            class="fa fa-user"></i> ${b.categoryName}</a></li>
+                                    <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
+                                </ul>
+                            </div>
+                        </article>
+                    </div>
+                </c:forEach>
+            </div>
+        </div>
+    </section>
+    <!-- Latest News Area End -->
+    <!--? About-2 Area Start -->
+    <div class="about-area2 section-padding40">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7 col-md-12">
+                    <div class="about-img">
+                        <c:set var="aboutImageFound" value="false" />
+                        <c:forEach var="content" items="${pageContents}">
+                            <c:if test="${content.contentKey == 'about_image' && content.active && content.imageUrl != null}">
+                                <c:set var="aboutImageFound" value="true" />
+                                <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="">
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!aboutImageFound}">
+                            <img src="${pageContext.request.contextPath}/assets/img/gallery/about.png" alt="">
+                        </c:if>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-12">
+                    <div class="about-caption">
+                        <div class="section-tittle mb-35">
+                            <c:set var="aboutTitleFound" value="false" />
+                            <c:forEach var="content" items="${pageContents}">
+                                <c:if test="${content.contentKey == 'perfect_smile_title' && content.active && content.contentValue != null}">
+                                    <c:set var="aboutTitleFound" value="true" />
+                                    <h2>${content.contentValue}</h2>
+                                </c:if>
+                            </c:forEach>
+                            <c:if test="${!aboutTitleFound}">
+                                <h2>Perfect Smile, Made Simple</h2>
+                            </c:if>
+                        </div>
+                        <c:set var="aboutSubtitleFound" value="false" />
+                        <c:set var="aboutDescFound" value="false" />
+                        <c:forEach var="content" items="${pageContents}">
+                            <c:if test="${content.contentKey == 'perfect_smile_subtitle' && content.active && content.contentValue != null}">
+                                <c:set var="aboutSubtitleFound" value="true" />
+                                <p class="pera-top mb-40">${content.contentValue}</p>
+                            </c:if>
+                            <c:if test="${content.contentKey == 'perfect_smile_description' && content.active && content.contentValue != null}">
+                                <c:set var="aboutDescFound" value="true" />
+                                <p class="pera-bottom mb-30">${content.contentValue}</p>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!aboutSubtitleFound}">
+                            <p class="pera-top mb-40">Experience top-notch dental care tailored to your needs</p>
+                        </c:if>
+                        <c:if test="${!aboutDescFound}">
+                            <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.</p>
+                        </c:if>
+                        <div class="icon-about">
+                            <c:set var="aboutIcon1Found" value="false" />
+                            <c:set var="aboutIcon2Found" value="false" />
+                            <c:forEach var="content" items="${pageContents}">
+                                <c:if test="${content.contentKey == 'about_icon1' && content.active && content.imageUrl != null}">
+                                    <c:set var="aboutIcon1Found" value="true" />
+                                    <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="" class="mr-20">
+                                </c:if>
+                                <c:if test="${content.contentKey == 'about_icon2' && content.active && content.imageUrl != null}">
+                                    <c:set var="aboutIcon2Found" value="true" />
+                                    <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="">
+                                </c:if>
+                            </c:forEach>
+                            <c:if test="${!aboutIcon1Found}">
+                                <img src="${pageContext.request.contextPath}/assets/img/icon/about1.svg" alt="" class="mr-20">
+                            </c:if>
+                            <c:if test="${!aboutIcon2Found}">
+                                <img src="${pageContext.request.contextPath}/assets/img/icon/about2.svg" alt="">
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About-2 Area End -->
+    <section class="wantToWork-area section-bg3" data-background="${pageContext.request.contextPath}/assets/img/gallery/section_bg01.png">
+        <div class="container">
+            <div class="wants-wrapper w-padding2">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-xl-7 col-lg-9 col-md-8">
+                        <div class="wantToWork-caption wantToWork-caption2">
+                            <c:set var="wantToWorkTitleFound" value="false" />
+                            <c:set var="wantToWorkSubtitleFound" value="false" />
+                            <c:forEach var="content" items="${pageContents}">
+                                <c:if test="${content.contentKey == 'want_to_work_title' && content.active && content.contentValue != null}">
+                                    <c:set var="wantToWorkTitleFound" value="true" />
+                                    <h2>${content.contentValue}</h2>
+                                </c:if>
+                                <c:if test="${content.contentKey == 'want_to_work_subtitle' && content.active && content.contentValue != null}">
+                                    <c:set var="wantToWorkSubtitleFound" value="true" />
+                                    <p>${content.contentValue}</p>
+                                </c:if>
+                            </c:forEach>
+                            <c:if test="${!wantToWorkTitleFound}">
+                                <h2>Bright Smile Healthy Teeth</h2>
+                            </c:if>
+                            <c:if test="${!wantToWorkSubtitleFound}">
+                                <p>Discover personalized dental care that makes you smile</p>
+                            </c:if>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4">
+                        <c:set var="wantToWorkButtonFound" value="false" />
+                        <c:forEach var="content" items="${pageContents}">
+                            <c:if test="${content.contentKey == 'want_to_work_button' && content.active && content.buttonUrl != null && content.buttonText != null}">
+                                <c:set var="wantToWorkButtonFound" value="true" />
+                                <a href="${pageContext.request.contextPath}/${content.buttonUrl}" class="btn f-right sm-left">${content.buttonText}</a>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!wantToWorkButtonFound}">
+                            <a href="${pageContext.request.contextPath}/appointment/list" class="btn f-right sm-left">Explore Services</a>
+                        </c:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--? Services Area Start -->
+    <div class="service-area">
+        <div class="container">
+            <div class="row">
+                <c:forEach var="feature" items="${featureItems}" varStatus="loop">
+                    <c:if test="${feature.active && feature.itemId != null}">
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="single-cat text-center mb-50">
+                                <div class="cat-icon">
+                                    <c:choose>
+                                        <c:when test="${feature.imageUrl != null}">
+                                            <img src="${pageContext.request.contextPath}/${feature.imageUrl}" alt="${feature.itemName}">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${pageContext.request.contextPath}/assets/img/icon/default_service.svg" alt="${feature.itemName}">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <div class="cat-cap">
+                                    <h5>
+                                        <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}">
+                                                ${feature.itemName}
+                                        </a>
+                                    </h5>
+                                    <c:set var="serviceDescFound" value="false" />
+                                    <c:forEach var="content" items="${pageContents}">
+                                        <c:if test="${content.contentKey == 'service_description_' + feature.itemId.toString() && content.active && content.contentValue != null}">
+                                            <c:set var="serviceDescFound" value="true" />
+                                            <p>${content.contentValue}</p>
+                                        </c:if>
+                                    </c:forEach>
+                                    <c:if test="${!serviceDescFound}">
+                                        <p>No description available for ${feature.itemName}.</p>
+                                    </c:if>
+                                    <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}" class="plus-btn"><i class="ti-plus"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+                </c:forEach>
+            </div>
+        </div>
+    </div>
+    <!-- Services Area End -->
+    <!--? video_start -->
+    <div class="container">
+        <div class="video-area section-bg2 d-flex align-items-center" data-background="${pageContext.request.contextPath}/assets/img/gallery/video-bg.png">
+            <div class="video-wrap position-relative">
+                <div class="video-icon">
+                    <c:set var="videoSectionFound" value="false" />
+                    <c:forEach var="content" items="${pageContents}">
+                        <c:if test="${content.contentKey == 'video_section' && content.active && content.videoUrl != null}">
+                            <c:set var="videoSectionFound" value="true" />
+                            <a class="popup-video btn-icon" href="${content.videoUrl}"><i class="fas fa-play"></i></a>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${!videoSectionFound}">
+                        <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i class="fas fa-play"></i></a>
+                    </c:if>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- video_end -->
+    <!--? About Law Start-->
+    <section class="about-low-area mt-30">
+        <div class="container">
+            <div class="about-cap-wrapper">
+                <div class="row">
+                    <div class="col-xl-5 col-lg-6 col-md-10 offset-xl-1">
+                        <div class="about-caption mb-50">
+                            <div class="section-tittle mb-35">
+                                <c:set var="aboutLawTitleFound" value="false" />
                                 <c:forEach var="content" items="${pageContents}">
-                                    <c:if test="${content.contentKey == 'about_image' && content.active && content.imageUrl != null}">
-                                        <c:set var="aboutImageFound" value="true" />
+                                    <c:if test="${content.contentKey == 'about_law_title' && content.active && content.contentValue != null}">
+                                        <c:set var="aboutLawTitleFound" value="true" />
+                                        <h2>${content.contentValue}</h2>
+                                    </c:if>
+                                </c:forEach>
+                                <c:if test="${!aboutLawTitleFound}">
+                                    <h2>100% Satisfaction Guaranteed</h2>
+                                </c:if>
+                            </div>
+                            <c:set var="aboutLawSubtitleFound" value="false" />
+                            <c:forEach var="content" items="${pageContents}">
+                                <c:if test="${content.contentKey == 'about_law_subtitle' && content.active && content.contentValue != null}">
+                                    <c:set var="aboutLawSubtitleFound" value="true" />
+                                    <p>${content.contentValue}</p>
+                                </c:if>
+                            </c:forEach>
+                            <c:if test="${!aboutLawSubtitleFound}">
+                                <p>Your perfect smile is our priority</p>
+                            </c:if>
+                            <c:set var="aboutLawButtonFound" value="false" />
+                            <c:forEach var="content" items="${pageContents}">
+                                <c:if test="${content.contentKey == 'about_law_button' && content.active && content.buttonUrl != null && content.buttonText != null}">
+                                    <c:set var="aboutLawButtonFound" value="true" />
+                                    <a href="${pageContext.request.contextPath}/${content.buttonUrl}" class="border-btn">${content.buttonText}</a>
+                                </c:if>
+                            </c:forEach>
+                            <c:if test="${!aboutLawButtonFound}">
+                                <a href="${pageContext.request.contextPath}/book-appointment" class="border-btn">Book a Dental Appointment</a>
+                            </c:if>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="about-img">
+                            <div class="about-font-img">
+                                <c:set var="aboutLawImageFound" value="false" />
+                                <c:forEach var="content" items="${pageContents}">
+                                    <c:if test="${content.contentKey == 'about_law_image' && content.active && content.imageUrl != null}">
+                                        <c:set var="aboutLawImageFound" value="true" />
                                         <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="">
                                     </c:if>
                                 </c:forEach>
-                                <c:if test="${!aboutImageFound}">
-                                    <img src="${pageContext.request.contextPath}/assets/img/gallery/about.png" alt="">
+                                <c:if test="${!aboutLawImageFound}">
+                                    <img src="${pageContext.request.contextPath}/assets/img/gallery/about2.png" alt="">
                                 </c:if>
-                            </div>
-                        </div>
-                        <div class="col-lg-5 col-md-12">
-                            <div class="about-caption">
-                                <div class="section-tittle mb-35">
-                                    <c:set var="aboutTitleFound" value="false" />
-                                    <c:forEach var="content" items="${pageContents}">
-                                        <c:if test="${content.contentKey == 'perfect_smile_title' && content.active && content.contentValue != null}">
-                                            <c:set var="aboutTitleFound" value="true" />
-                                            <h2>${content.contentValue}</h2>
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!aboutTitleFound}">
-                                        <h2>Perfect Smile, Made Simple</h2>
-                                    </c:if>
-                                </div>
-                                <c:set var="aboutSubtitleFound" value="false" />
-                                <c:set var="aboutDescFound" value="false" />
-                                <c:forEach var="content" items="${pageContents}">
-                                    <c:if test="${content.contentKey == 'perfect_smile_subtitle' && content.active && content.contentValue != null}">
-                                        <c:set var="aboutSubtitleFound" value="true" />
-                                        <p class="pera-top mb-40">${content.contentValue}</p>
-                                    </c:if>
-                                    <c:if test="${content.contentKey == 'perfect_smile_description' && content.active && content.contentValue != null}">
-                                        <c:set var="aboutDescFound" value="true" />
-                                        <p class="pera-bottom mb-30">${content.contentValue}</p>
-                                    </c:if>
-                                </c:forEach>
-                                <c:if test="${!aboutSubtitleFound}">
-                                    <p class="pera-top mb-40">Experience top-notch dental care tailored to your needs</p>
-                                </c:if>
-                                <c:if test="${!aboutDescFound}">
-                                    <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.</p>
-                                </c:if>
-                                <div class="icon-about">
-                                    <c:set var="aboutIcon1Found" value="false" />
-                                    <c:set var="aboutIcon2Found" value="false" />
-                                    <c:forEach var="content" items="${pageContents}">
-                                        <c:if test="${content.contentKey == 'about_icon1' && content.active && content.imageUrl != null}">
-                                            <c:set var="aboutIcon1Found" value="true" />
-                                            <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="" class="mr-20">
-                                        </c:if>
-                                        <c:if test="${content.contentKey == 'about_icon2' && content.active && content.imageUrl != null}">
-                                            <c:set var="aboutIcon2Found" value="true" />
-                                            <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="">
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!aboutIcon1Found}">
-                                        <img src="${pageContext.request.contextPath}/assets/img/icon/about1.svg" alt="" class="mr-20">
-                                    </c:if>
-                                    <c:if test="${!aboutIcon2Found}">
-                                        <img src="${pageContext.request.contextPath}/assets/img/icon/about2.svg" alt="">
-                                    </c:if>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- About-2 Area End -->
-            <section class="wantToWork-area section-bg3" data-background="${pageContext.request.contextPath}/assets/img/gallery/section_bg01.png">
-                <div class="container">
-                    <div class="wants-wrapper w-padding2">
-                        <div class="row align-items-center justify-content-between">
-                            <div class="col-xl-7 col-lg-9 col-md-8">
-                                <div class="wantToWork-caption wantToWork-caption2">
-                                    <c:set var="wantToWorkTitleFound" value="false" />
-                                    <c:set var="wantToWorkSubtitleFound" value="false" />
-                                    <c:forEach var="content" items="${pageContents}">
-                                        <c:if test="${content.contentKey == 'want_to_work_title' && content.active && content.contentValue != null}">
-                                            <c:set var="wantToWorkTitleFound" value="true" />
-                                            <h2>${content.contentValue}</h2>
-                                        </c:if>
-                                        <c:if test="${content.contentKey == 'want_to_work_subtitle' && content.active && content.contentValue != null}">
-                                            <c:set var="wantToWorkSubtitleFound" value="true" />
-                                            <p>${content.contentValue}</p>
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!wantToWorkTitleFound}">
-                                        <h2>Bright Smile Healthy Teeth</h2>
-                                    </c:if>
-                                    <c:if test="${!wantToWorkSubtitleFound}">
-                                        <p>Discover personalized dental care that makes you smile</p>
-                                    </c:if>
-                                </div>
-                            </div>
-                            <div class="col-xl-2 col-lg-3 col-md-4">
-                                <c:set var="wantToWorkButtonFound" value="false" />
-                                <c:forEach var="content" items="${pageContents}">
-                                    <c:if test="${content.contentKey == 'want_to_work_button' && content.active && content.buttonUrl != null && content.buttonText != null}">
-                                        <c:set var="wantToWorkButtonFound" value="true" />
-                                        <a href="${pageContext.request.contextPath}/${content.buttonUrl}" class="btn f-right sm-left">${content.buttonText}</a>
-                                    </c:if>
-                                </c:forEach>
-                                <c:if test="${!wantToWorkButtonFound}">
-                                    <a href="${pageContext.request.contextPath}/appointment/list" class="btn f-right sm-left">Explore Services</a>
-                                </c:if>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!--? Services Area Start -->
-            <div class="service-area">
-                <div class="container">
-                    <div class="row">
-                        <c:forEach var="feature" items="${featureItems}" varStatus="loop">
-                            <c:if test="${feature.active}">
-                                <div class="col-lg-4 col-md-6 col-sm-6">
-                                    <div class="single-cat text-center mb-50">
-                                        <div class="cat-icon">
-                                            <c:choose>
-                                                <c:when test="${feature.imageUrl != null}">
-                                                    <img src="${pageContext.request.contextPath}/${feature.imageUrl}" alt="${feature.itemName}">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/assets/img/icon/default_service.svg" alt="${feature.itemName}">
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                        <div class="cat-cap">
-                                            <h5>
-                                                <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}">
-                                                        ${feature.itemName}
-                                                </a>
-                                            </h5>
-                                            <c:set var="serviceDescFound" value="false" />
-                                            <c:forEach var="content" items="${pageContents}">
-                                                <c:if test="${content.contentKey == 'service_description_' + feature.itemId && content.active && content.contentValue != null}">
-                                                    <c:set var="serviceDescFound" value="true" />
-                                                    <p>${content.contentValue}</p>
-                                                </c:if>
-                                            </c:forEach>
-                                            <c:if test="${!serviceDescFound}">
-                                                <p>No description available for ${feature.itemName}.</p>
-                                            </c:if>
-                                            <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}" class="plus-btn"><i class="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </c:if>
-                        </c:forEach>
-                    </div>
-                </div>
-            </div>
-            <!-- Services Area End -->
-            <!--? video_start -->
-            <div class="container">
-                <div class="video-area section-bg2 d-flex align-items-center" data-background="${pageContext.request.contextPath}/assets/img/gallery/video-bg.png">
-                    <div class="video-wrap position-relative">
-                        <div class="video-icon">
-                            <c:set var="videoSectionFound" value="false" />
-                            <c:forEach var="content" items="${pageContents}">
-                                <c:if test="${content.contentKey == 'video_section' && content.active && content.videoUrl != null}">
-                                    <c:set var="videoSectionFound" value="true" />
-                                    <a class="popup-video btn-icon" href="${content.videoUrl}"><i class="fas fa-play"></i></a>
-                                </c:if>
-                            </c:forEach>
-                            <c:if test="${!videoSectionFound}">
-                                <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i class="fas fa-play"></i></a>
-                            </c:if>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- video_end -->
-            <!--? About Law Start-->
-            <section class="about-low-area mt-30">
-                <div class="container">
-                    <div class="about-cap-wrapper">
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-6 col-md-10 offset-xl-1">
-                                <div class="about-caption mb-50">
-                                    <div class="section-tittle mb-35">
-                                        <c:set var="aboutLawTitleFound" value="false" />
-                                        <c:forEach var="content" items="${pageContents}">
-                                            <c:if test="${content.contentKey == 'about_law_title' && content.active && content.contentValue != null}">
-                                                <c:set var="aboutLawTitleFound" value="true" />
-                                                <h2>${content.contentValue}</h2>
-                                            </c:if>
-                                        </c:forEach>
-                                        <c:if test="${!aboutLawTitleFound}">
-                                            <h2>100% Satisfaction Guaranteed</h2>
-                                        </c:if>
-                                    </div>
-                                    <c:set var="aboutLawSubtitleFound" value="false" />
-                                    <c:forEach var="content" items="${pageContents}">
-                                        <c:if test="${content.contentKey == 'about_law_subtitle' && content.active && content.contentValue != null}">
-                                            <c:set var="aboutLawSubtitleFound" value="true" />
-                                            <p>${content.contentValue}</p>
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!aboutLawSubtitleFound}">
-                                        <p>Your perfect smile is our priority</p>
-                                    </c:if>
-                                    <c:set var="aboutLawButtonFound" value="false" />
-                                    <c:forEach var="content" items="${pageContents}">
-                                        <c:if test="${content.contentKey == 'about_law_button' && content.active && content.buttonUrl != null && content.buttonText != null}">
-                                            <c:set var="aboutLawButtonFound" value="true" />
-                                            <a href="${pageContext.request.contextPath}/${content.buttonUrl}" class="border-btn">${content.buttonText}</a>
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!aboutLawButtonFound}">
-                                        <a href="${pageContext.request.contextPath}/book-appointment" class="border-btn">Book a Dental Appointment</a>
-                                    </c:if>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-12">
-                                <div class="about-img">
-                                    <div class="about-font-img">
-                                        <c:set var="aboutLawImageFound" value="false" />
-                                        <c:forEach var="content" items="${pageContents}">
-                                            <c:if test="${content.contentKey == 'about_law_image' && content.active && content.imageUrl != null}">
-                                                <c:set var="aboutLawImageFound" value="true" />
-                                                <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="">
-                                            </c:if>
-                                        </c:forEach>
-                                        <c:if test="${!aboutLawImageFound}">
-                                            <img src="${pageContext.request.contextPath}/assets/img/gallery/about2.png" alt="">
-                                        </c:if>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!-- About Law End-->
-        </c:otherwise>
-    </c:choose>
+        </div>
+    </section>
+    <!-- About Law End-->
 </main>
 <footer>
     <div class="footer-wrappr section-bg3" data-background="${pageContext.request.contextPath}/assets/img/gallery/footer-bg.png">
@@ -907,7 +726,7 @@
                                     </c:if>
                                 </c:forEach>
                                 <c:if test="${!copyrightFound}">
-                                    <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+                                    <p>Copyright © <script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
                                 </c:if>
                             </div>
                         </div>
