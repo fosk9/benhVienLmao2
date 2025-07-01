@@ -8,170 +8,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="common-css.jsp"/>
+    <meta charset="UTF-8">
     <title>Doctor's Weekly Schedule</title>
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 70px; /* để nội dung không bị header che mất */
+        }
+        @media (max-width: 576px) {
+            .navbar span {
+                font-size: 14px;
+            }
+        }
+        body { padding-top: 70px; }
+        .badge { font-size: 90%; }
+    </style>
 </head>
 <body>
-<jsp:include page="header.jsp"/>
+<!-- Minimal Header with Back Button -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
+    <div class="container">
+        <a href="/doctor-home" class="btn btn-outline-primary">
+            &larr; Back to Doctor Home
+        </a>
+        <span class="ml-auto font-weight-bold text-secondary">Doctor's Weekly Schedule</span>
+    </div>
+</nav>
 
-<main>
 
+<main class="container mt-4">
     <!-- Filter Form -->
-    <div class="container mt-5">
-        <form id="weekSelectorForm" method="get" action="doctor-schedule" class="form-inline mb-4">
-        <label for="year" class="mr-2">Year:</label>
-            <select name="year" id="yearSelect" class="form-control mr-3">
-                <c:forEach var="y" items="${years}">
-                    <option value="${y}" ${y == selectedYear ? "selected" : ""}>${y}</option>
-                </c:forEach>
-            </select>
+    <form id="weekSelectorForm" method="get" action="doctor-schedule" class="form-inline mb-4 flex-wrap">
+        <label for="yearSelect" class="mr-2">Year:</label>
+        <select name="year" id="yearSelect" class="form-control mr-3 mb-2">
+            <c:forEach var="y" items="${years}">
+                <option value="${y}" <c:if test="${y == selectedYear}">selected</c:if>>${y}</option>
+            </c:forEach>
+        </select>
 
-            <label for="startDate" class="mr-2">Week:</label>
-                <select name="startDate" id="weekSelect" class="form-control mr-3">
-                    <c:forEach var="w" items="${weeks}">
-                        <c:set var="start" value="${w[0]}"/>
-                        <c:set var="end" value="${w[1]}"/>
-                        <option value="${start}" ${start == selectedWeekStart ? "selected" : ""}>
-                            <fmt:formatDate value="${start}" pattern="dd/MM"/> - <fmt:formatDate value="${end}" pattern="dd/MM"/>
-                        </option>
-                    </c:forEach>
-                </select>
-        </form>
+        <label for="weekSelect" class="mr-2">Week:</label>
+        <select name="startDate" id="weekSelect" class="form-control mb-2">
+            <c:forEach var="w" items="${weeks}">
+                <c:set var="start" value="${w[0]}" />
+                <c:set var="end" value="${w[1]}" />
+                <option value="${start}" <c:if test="${start == selectedWeekStart}">selected</c:if>>
+                    <fmt:formatDate value="${start}" pattern="dd/MM"/> - <fmt:formatDate value="${end}" pattern="dd/MM"/>
+                </option>
+            </c:forEach>
+        </select>
+    </form>
 
-        <!-- Week Navigation -->
-        <div class="row mb-4">
-            <div class="col-md-4 text-left">
-                <a href="doctor-schedule?startDate=${selectedWeekStart}&year=${selectedYear}&weekOffset=-1"
-                   class="genric-btn primary circle arrow"><< Previous Week</a>
-            </div>
-            <div class="col-md-4 text-center">
-                <h5>${weekRange}</h5>
-            </div>
-            <div class="col-md-4 text-right">
-                <a href="doctor-schedule?startDate=${selectedWeekStart}&year=${selectedYear}&weekOffset=1"
-                   class="genric-btn primary circle arrow">Next Week >></a>
-            </div>
+    <!-- Navigation Buttons -->
+    <div class="row mb-4">
+        <div class="col-md-4 text-left">
+            <a href="doctor-schedule?startDate=${selectedWeekStart}&year=${selectedYear}&weekOffset=-1"
+               class="btn btn-outline-primary btn-sm">&laquo; Previous Week</a>
+        </div>
+        <div class="col-md-4 text-center">
+            <h5>${weekRange}</h5>
+        </div>
+        <div class="col-md-4 text-right">
+            <a href="doctor-schedule?startDate=${selectedWeekStart}&year=${selectedYear}&weekOffset=1"
+               class="btn btn-outline-primary btn-sm">Next Week &raquo;</a>
         </div>
     </div>
 
     <!-- Schedule Table -->
-    <div class="container mb-5">
-        <div class="table-responsive">
-            <table class="table table-bordered text-center">
-                <thead class="thead-light">
-                <tr>
-                    <th>Day of Week</th>
-                    <th>Monday</th>
-                    <th>Tuesday</th>
-                    <th>Wednesday</th>
-                    <th>Thursday</th>
-                    <th>Friday</th>
-                    <th>Saturday</th>
-                    <th>Sunday</th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <%
-                        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("dd/MM");
-                        Date monday = (Date) request.getAttribute("monday");
-                        java.util.Calendar calHeader = java.util.Calendar.getInstance();
-                        if (monday != null) {
-                            calHeader.setTime(monday);
-                            for (int i = 0; i < 7; i++) {
-                    %>
-                    <th><%= df.format(calHeader.getTime()) %></th>
-                    <%
-                            calHeader.add(java.util.Calendar.DAY_OF_MONTH, 1);
-                        }
-                    } else {
-                    %>
-                    <td colspan="7" class="text-danger">[Error: 'monday' not set]</td>
-                    <%
-                        }
-                    %>
-                </tr>
-                </thead>
-
-                <tbody>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center">
+            <thead class="thead-light">
+            <tr>
+                <th>Shift</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+            <tr>
+                <th></th>
                 <%
-                    String[] slots = {"Morning", "Afternoon", "Evening", "Night"};
+                    java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("dd/MM");
+                    Date monday = (Date) request.getAttribute("monday");
                     java.util.Calendar cal = java.util.Calendar.getInstance();
-
-                    for (String slot : slots) {
+                    if (monday != null) {
                         cal.setTime(monday);
-                %>
-                <tr>
-                    <td><strong><%= slot %>
-                    </strong></td>
-                    <%
                         for (int i = 0; i < 7; i++) {
-                            Date day = new Date(cal.getTimeInMillis());
-                            Map<String, DoctorShift> dayShifts = ((Map<Date, Map<String, DoctorShift>>) request.getAttribute("shiftMap")).get(day);
-                            DoctorShift shift = (dayShifts != null) ? dayShifts.get(slot) : null;
-                    %>
-                    <td>
-                        <% if (shift != null) { %>
-                        <%
-                            String badgeClass = "badge-light";
-                            switch (shift.getStatus()) {
-                                case "Working":
-                                    badgeClass = "badge-success";
-                                    break;
-                                case "PendingLeave":
-                                    badgeClass = "badge-warning";
-                                    break;
-                                case "Leave":
-                                    badgeClass = "badge-secondary";
-                                    break;
-                                case "Rejected":
-                                    badgeClass = "badge-danger";
-                                    break;
-                            }
-                        %>
-                        <div class="badge <%= badgeClass %>">
-                            <%= shift.getStatus() %>
-                        </div>
-                        <% } else { %>
-                        <span class="text-muted">-</span>
-                        <% } %>
-                    </td>
-                    <%
-                            cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
-                        }
-                    %>
-                </tr>
+                %>
+                <th><%= df.format(cal.getTime()) %></th>
+                <%
+                        cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                    }
+                } else {
+                %>
+                <td colspan="7" class="text-danger">[Error: 'monday' not set]</td>
                 <%
                     }
                 %>
-                </tbody>
-            </table>
-        </div>
+            </tr>
+            </thead>
+            <tbody>
+            <%
+                String[] slots = {"Morning", "Afternoon", "Evening", "Night"};
+                cal.setTime(monday);
+                for (String slot : slots) {
+                    cal.setTime(monday);
+            %>
+            <tr>
+                <td><strong><%= slot %></strong></td>
+                <%
+                    for (int i = 0; i < 7; i++) {
+                        Date day = new Date(cal.getTimeInMillis());
+                        Map<String, DoctorShift> dayShifts = ((Map<Date, Map<String, DoctorShift>>) request.getAttribute("shiftMap")).get(day);
+                        DoctorShift shift = (dayShifts != null) ? dayShifts.get(slot) : null;
+                %>
+                <td>
+                    <% if (shift != null) {
+                        String badgeClass = "badge-secondary";
+                        switch (shift.getStatus()) {
+                            case "Working": badgeClass = "badge-success"; break;
+                            case "PendingLeave": badgeClass = "badge-warning"; break;
+                            case "Leave": badgeClass = "badge-secondary"; break;
+                            case "Rejected": badgeClass = "badge-danger"; break;
+                        }
+                    %>
+                    <span class="badge <%= badgeClass %>"><%= shift.getStatus() %></span>
+                    <% } else { %>
+                    <span class="text-muted">-</span>
+                    <% } %>
+                </td>
+                <%
+                        cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                    }
+                %>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
     </div>
-
 </main>
 
-<jsp:include page="footer.jsp"/>
-<jsp:include page="common-scripts.jsp"/>
-
-<!-- JS: Auto-submit form when year/week changes -->
+<!-- Minimal JS just for form auto-submit -->
 <script>
-    window.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("weekSelectorForm");
-        const yearSelect = document.getElementById("yearSelect");
-        const weekSelect = document.getElementById("weekSelect");
+    document.getElementById("yearSelect").addEventListener("change", function () {
+        // Reset startDate khi đổi năm
+        document.getElementById("weekSelect").selectedIndex = 0; // hoặc .value = '';
+        document.getElementById("weekSelectorForm").submit();
+    });
 
-        if (yearSelect && weekSelect && form) {
-            yearSelect.addEventListener("change", function () {
-                form.submit(); // submit form khi thay đổi năm
-            });
-
-            weekSelect.addEventListener("change", function () {
-                form.submit(); // submit form khi chọn tuần
-            });
-        }
+    document.getElementById("weekSelect").addEventListener("change", function () {
+        document.getElementById("weekSelectorForm").submit();
     });
 </script>
-
 
 </body>
 </html>

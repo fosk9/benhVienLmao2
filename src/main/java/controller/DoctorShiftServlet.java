@@ -49,55 +49,54 @@ public class DoctorShiftServlet extends HttpServlet {
     }
 
     private void showWeeklySchedule(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         Employee doctor = (Employee) req.getSession().getAttribute("account");
         if (doctor == null) {
             resp.sendRedirect("login.jsp");
             return;
         }
+
         int doctorId = doctor.getEmployeeId();
         String weekStartParam = req.getParameter("startDate");
         String yearParam = req.getParameter("year");
         String offsetParam = req.getParameter("weekOffset");
 
-        LocalDate mondayLD;
-        int selectedYear;
+        // 1. Lấy selectedYear từ request trước
+        int selectedYear = (yearParam != null && !yearParam.isEmpty())
+                ? Integer.parseInt(yearParam)
+                : LocalDate.now().getYear();
 
+// 2. Generate weeks list ngay theo selectedYear
+        List<Date[]> weeks = ScheduleUtils.generateWeekRangesOfYear(selectedYear);
+        req.setAttribute("weeks", weeks);
+
+// 3. Xử lý mondayLD
+        LocalDate mondayLD;
         if (weekStartParam != null && !weekStartParam.isEmpty()) {
             mondayLD = LocalDate.parse(weekStartParam);
             int weekOffset = offsetParam != null ? Integer.parseInt(offsetParam) : 0;
             mondayLD = mondayLD.plusWeeks(weekOffset);
-            selectedYear = mondayLD.getYear();
         } else {
-            int weekOffset = offsetParam != null ? Integer.parseInt(offsetParam) : 0;
-            mondayLD = LocalDate.now().plusWeeks(weekOffset).with(DayOfWeek.MONDAY);
-            selectedYear = mondayLD.getYear();
+            mondayLD = weeks.get(0)[0].toLocalDate(); // tuần đầu tiên
         }
 
-
-        // Lấy danh sách các tuần trong năm đã chọn
-        List<Date[]> weeks = ScheduleUtils.generateWeekRangesOfYear(selectedYear);
 
         Date monday = Date.valueOf(mondayLD);
         Date sunday = Date.valueOf(mondayLD.plusDays(6));
 
         List<DoctorShift> shifts = shiftDAO.selectByDoctorAndDateRange(doctorId, monday, sunday);
         Map<Date, Map<String, DoctorShift>> shiftMap = new TreeMap<>();
-
         for (DoctorShift shift : shifts) {
-            shiftMap.computeIfAbsent(shift.getShiftDate(), d -> new HashMap<>()).put(shift.getTimeSlot(), shift);
+            shiftMap.computeIfAbsent(shift.getShiftDate(), d -> new HashMap<>())
+                    .put(shift.getTimeSlot(), shift);
         }
 
-        // Thuộc tính trả về cho view
         req.setAttribute("shiftMap", shiftMap);
         req.setAttribute("monday", monday);
         req.setAttribute("sunday", sunday);
         req.setAttribute("weekRange", monday + " To " + sunday);
-
         req.setAttribute("doctorId", doctorId);
         req.setAttribute("selectedYear", selectedYear);
         req.setAttribute("selectedWeekStart", monday);
-        req.setAttribute("weeks", weeks);
         req.setAttribute("years", ScheduleUtils.generateYearList());
 
         req.getRequestDispatcher("doctor-schedule.jsp").forward(req, resp);
