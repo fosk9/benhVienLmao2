@@ -70,8 +70,6 @@
                         <thead class="thead-dark" style="font-weight: 600;">
                         <tr>
                             <th style="padding: 6px 10px;">Number</th>
-                            <th style="padding: 6px 10px;">Insurance Number</th>
-                            <th style="padding: 6px 10px;">Patient Name</th>
                             <th style="padding: 6px 10px;">Appointment Type</th>
                             <th style="padding: 6px 10px;">Appointment Date</th>
                             <th style="padding: 6px 10px;">Status</th>
@@ -90,8 +88,6 @@
                                     <c:if test="${loop.index >= start && loop.index < end}">
                                         <tr style="text-align: center;">
                                             <td style="padding: 6px 10px;">${loop.index - start + 1}</td>
-                                            <td style="padding: 6px 10px;">${a.insuranceNumber}</td>
-                                            <td style="padding: 6px 10px;">${a.patientFullName}</td>
                                             <td style="padding: 6px 10px;">${a.appointmentType}</td>
                                             <td style="padding: 6px 10px;">
                                                 <c:choose>
