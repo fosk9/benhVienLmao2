@@ -1,5 +1,6 @@
 package view;
 
+import dto.ConsultationHistoryDTO;
 import model.Appointment;
 import model.AppointmentType;
 import model.Patient;
@@ -15,6 +16,104 @@ public class AppointmentDAO extends DBContext<Appointment> {
     public AppointmentDAO() {
         super();
     }
+
+    public List<ConsultationHistoryDTO> searchAndSortCompletedByDoctor(int doctorId, String search,
+                                                                       String sortBy, String sortDir,
+                                                                       int page, int recordsPerPage) {
+        List<ConsultationHistoryDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+                    SELECT a.appointment_id, a.appointment_date, a.time_slot,
+                           t.type_name AS appointmentTypeName,
+                           p.full_name AS patientName,
+                           a.status
+                    FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.doctor_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND p.full_name LIKE ? ");
+        }
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            sql.append(" ORDER BY ");
+            switch (sortBy) {
+                case "appointment_date", "time_slot", "status" -> sql.append("a.").append(sortBy);
+                case "patientName" -> sql.append("p.full_name");
+                case "appointmentTypeName" -> sql.append("t.type_name");
+                default -> sql.append("a.appointment_date");
+            }
+
+            if ("desc".equalsIgnoreCase(sortDir)) {
+                sql.append(" DESC ");
+            } else {
+                sql.append(" ASC ");
+            }
+        } else {
+            sql.append(" ORDER BY a.appointment_date DESC ");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+
+        Connection conn = null;
+        try {
+            conn = getConn();
+            PreparedStatement stmt = conn.prepareStatement(sql.toString());
+            int paramIndex = 1;
+            stmt.setInt(paramIndex++, doctorId);
+
+            if (search != null && !search.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + search + "%");
+            }
+
+            stmt.setInt(paramIndex++, (page - 1) * recordsPerPage);
+            stmt.setInt(paramIndex, recordsPerPage);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                ConsultationHistoryDTO dto = ConsultationHistoryDTO.builder()
+                        .appointmentId(rs.getInt("appointment_id"))
+                        .appointmentDate(rs.getDate("appointment_date"))
+                        .timeSlot(rs.getString("time_slot"))
+                        .appointmentTypeName(rs.getString("appointmentTypeName"))
+                        .patientName(rs.getString("patientName"))
+                        .status(rs.getString("status"))
+                        .build();
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error in searchAndSortCompletedByDoctor: " + e.getMessage());
+            throw new RuntimeException("Error fetching completed appointments with search/sort", e);
+        } finally {
+            closeConnection(conn);
+        }
+
+        return list;
+    }
+
+    public int countSearchCompletedByDoctor(int doctorId, String search) {
+        String sql = """
+                    SELECT COUNT(*)
+                    FROM Appointments a
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.doctor_id = ? AND a.status = 'Completed'
+                      AND p.full_name LIKE ?
+                """;
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setString(2, "%" + (search == null ? "" : search.trim()) + "%");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            LOGGER.severe("Error counting consultations: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
 
     public List<Patient> getPatientsByShift(int doctorId, Date shiftDate, String timeSlot) {
         List<Patient> patients = new ArrayList<>();
