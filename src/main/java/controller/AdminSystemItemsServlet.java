@@ -6,17 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
 import model.SystemItem;
 import view.SystemItemDAO;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
+import java.util.stream.Collectors;
 
 /**
  * Servlet for managing SystemItems in the admin panel.
@@ -25,7 +21,6 @@ import java.util.regex.Pattern;
 public class AdminSystemItemsServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminSystemItemsServlet.class.getName());
     private final SystemItemDAO systemItemDAO = new SystemItemDAO();
-    private static final String UPLOAD_DIR = "assets/img/uploads";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -57,17 +52,12 @@ public class AdminSystemItemsServlet extends HttpServlet {
 
         switch (action) {
             case "add":
-                // Fetch all SystemItems for parent item dropdown
-                List<SystemItem> allItems = systemItemDAO.select();
-                request.setAttribute("allItems", allItems);
                 request.getRequestDispatcher("/admin/system-items/add.jsp").forward(request, response);
                 break;
             case "edit":
                 int id = Integer.parseInt(request.getParameter("id"));
                 SystemItem item = systemItemDAO.select(id);
-                allItems = systemItemDAO.select();
                 request.setAttribute("item", item);
-                request.setAttribute("allItems", allItems);
                 request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
                 break;
             case "delete":
@@ -82,8 +72,32 @@ public class AdminSystemItemsServlet extends HttpServlet {
                 break;
             case "list":
             default:
-                allItems = systemItemDAO.select();
-                request.setAttribute("items", allItems);
+                List<SystemItem> allItems = systemItemDAO.select();
+
+                // Lọc theo search nếu có, xử lý khoảng trắng
+                String searchName = request.getParameter("searchName");
+                String searchUrl = request.getParameter("searchUrl");
+                String searchType = request.getParameter("searchType");
+
+                if (searchName != null) searchName = searchName.trim();
+                if (searchUrl != null) searchUrl = searchUrl.trim();
+                if (searchType != null) searchType = searchType.trim();
+
+                List<SystemItem> filteredItems = allItems;
+                if ((searchName != null && !searchName.isEmpty()) ||
+                    (searchUrl != null && !searchUrl.isEmpty()) ||
+                    (searchType != null && !searchType.isEmpty())) {
+                    String finalSearchName = searchName;
+                    String finalSearchUrl = searchUrl;
+                    String finalSearchType = searchType;
+                    filteredItems = allItems.stream()
+                        .filter(systemItem -> (finalSearchName == null || finalSearchName.isEmpty() || systemItem.getItemName().toLowerCase().contains(finalSearchName.toLowerCase())))
+                        .filter(systemItem -> (finalSearchUrl == null || finalSearchUrl.isEmpty() || (systemItem.getItemUrl() != null && systemItem.getItemUrl().toLowerCase().contains(finalSearchUrl.toLowerCase()))))
+                        .filter(systemItem -> (finalSearchType == null || finalSearchType.isEmpty() || (systemItem.getItemType() != null && systemItem.getItemType().equalsIgnoreCase(finalSearchType))))
+                        .collect(Collectors.toList());
+                }
+
+                request.setAttribute("items", filteredItems);
                 request.getRequestDispatcher("/admin/system-items/list.jsp").forward(request, response);
                 break;
         }
@@ -117,51 +131,8 @@ public class AdminSystemItemsServlet extends HttpServlet {
         item.setItemName(request.getParameter("itemName"));
         item.setItemUrl(request.getParameter("itemUrl"));
         String displayOrder = request.getParameter("displayOrder");
-        item.setDisplayOrder(displayOrder.isEmpty() ? null : Integer.parseInt(displayOrder));
-        String parentItemId = request.getParameter("parentItemId");
+        item.setDisplayOrder(displayOrder == null || displayOrder.isEmpty() ? null : Integer.parseInt(displayOrder));
         item.setItemType(request.getParameter("itemType"));
-
-        String imageError = null;
-        Part filePart = request.getPart("imageFile");
-        if (filePart != null && filePart.getSize() > 0) {
-            String fileName = extractFileName(filePart);
-            String savePath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-            File fileSaveDir = new File(savePath);
-
-            String contentType = filePart.getContentType();
-            String fileExtension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
-
-            // Chỉ cho phép jpg, jpeg, png
-            boolean isImage = contentType.startsWith("image/")
-                    && (fileExtension.equals(".jpg") || fileExtension.equals(".jpeg") || fileExtension.equals(".png"));
-
-            if (!isImage) {
-                imageError = "File upload must be an image (jpg, jpeg, png).";
-                LOGGER.warning("Invalid image upload: " + fileName + " (" + contentType + ")");
-            } else {
-                if (!fileSaveDir.exists()) {
-                    fileSaveDir.mkdirs();
-                }
-                String filePath = savePath + File.separator + fileName;
-                filePart.write(filePath);
-            }
-        } else {
-        }
-
-        if (imageError != null) {
-            // Đẩy lỗi lên frontend
-            request.setAttribute("imageError", imageError);
-            List<SystemItem> allItems = systemItemDAO.select();
-            request.setAttribute("allItems", allItems);
-            if ("add".equals(action)) {
-                request.getRequestDispatcher("/admin/system-items/add.jsp").forward(request, response);
-            } else if ("edit".equals(action)) {
-                item.setItemId(Integer.parseInt(request.getParameter("id")));
-                request.setAttribute("item", item);
-                request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
-            }
-            return;
-        }
 
         if ("add".equals(action)) {
             int inserted = systemItemDAO.insert(item);
@@ -181,15 +152,5 @@ public class AdminSystemItemsServlet extends HttpServlet {
         }
 
         response.sendRedirect(request.getContextPath() + "/admin/system-items");
-    }
-
-    private String extractFileName(Part part) {
-        String contentDisposition = part.getHeader("content-disposition");
-        for (String cd : contentDisposition.split(";")) {
-            if (cd.trim().startsWith("filename")) {
-                return cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-            }
-        }
-        return null;
     }
 }

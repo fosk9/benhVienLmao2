@@ -15,11 +15,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Servlet for managing PageContent in the admin panel.
  */
-@WebServlet("/admin/page-content")
+@WebServlet("/admin/contents")
+@MultipartConfig
 public class AdminPageContentServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminPageContentServlet.class.getName());
     private final PageContentDAO pageContentDAO = new PageContentDAO();
@@ -56,15 +58,15 @@ public class AdminPageContentServlet extends HttpServlet {
 
         switch (action) {
             case "add":
-                request.setAttribute("pageName", pageName);
-                request.getRequestDispatcher("/admin/page-content/add.jsp").forward(request, response);
+                // Provide an empty PageContent object for the form (for pageName binding)
+                request.setAttribute("content", new PageContent());
+                request.getRequestDispatcher("/admin/contents/add.jsp").forward(request, response);
                 break;
             case "edit":
                 int id = Integer.parseInt(request.getParameter("id"));
                 PageContent content = pageContentDAO.select(id);
                 request.setAttribute("content", content);
-                request.setAttribute("pageName", pageName);
-                request.getRequestDispatcher("/admin/page-content/edit.jsp").forward(request, response);
+                request.getRequestDispatcher("/admin/contents/edit.jsp").forward(request, response);
                 break;
             case "delete":
                 id = Integer.parseInt(request.getParameter("id"));
@@ -74,14 +76,78 @@ public class AdminPageContentServlet extends HttpServlet {
                 } else {
                     LOGGER.warning("Failed to delete PageContent ID: " + id);
                 }
-                response.sendRedirect(request.getContextPath() + "/admin/page-content?pageName=" + (pageName != null ? pageName : ""));
+                response.sendRedirect(request.getContextPath() + "/admin/contents?action=list");
                 break;
             case "list":
             default:
-                List<PageContent> contents = pageContentDAO.select(pageName);
-                request.setAttribute("contents", contents);
-                request.setAttribute("pageName", pageName);
-                request.getRequestDispatcher("/admin/page-content/list.jsp").forward(request, response);
+                List<PageContent> allContents = pageContentDAO.select(pageName);
+
+                // Search/filter logic for all fields except ID
+                String searchPageName = request.getParameter("searchPageName");
+                String searchKey = request.getParameter("searchKey");
+                String searchValue = request.getParameter("searchValue");
+                String searchActive = request.getParameter("searchActive");
+                String searchVideoUrl = request.getParameter("searchVideoUrl");
+                String searchButtonUrl = request.getParameter("searchButtonUrl");
+                String searchButtonText = request.getParameter("searchButtonText");
+
+                if (searchPageName != null) searchPageName = searchPageName.trim();
+                if (searchKey != null) searchKey = searchKey.trim();
+                if (searchValue != null) searchValue = searchValue.trim();
+                if (searchActive != null) searchActive = searchActive.trim();
+                if (searchVideoUrl != null) searchVideoUrl = searchVideoUrl.trim();
+                if (searchButtonUrl != null) searchButtonUrl = searchButtonUrl.trim();
+                if (searchButtonText != null) searchButtonText = searchButtonText.trim();
+
+                List<PageContent> filteredContents = allContents;
+                if ((searchPageName != null && !searchPageName.isEmpty()) ||
+                    (searchKey != null && !searchKey.isEmpty()) ||
+                    (searchValue != null && !searchValue.isEmpty()) ||
+                    (searchActive != null && !searchActive.isEmpty()) ||
+                    (searchVideoUrl != null && !searchVideoUrl.isEmpty()) ||
+                    (searchButtonUrl != null && !searchButtonUrl.isEmpty()) ||
+                    (searchButtonText != null && !searchButtonText.isEmpty())) {
+                    String finalSearchPageName = searchPageName;
+                    String finalSearchKey = searchKey;
+                    String finalSearchValue = searchValue;
+                    String finalSearchActive = searchActive;
+                    String finalSearchVideoUrl = searchVideoUrl;
+                    String finalSearchButtonUrl = searchButtonUrl;
+                    String finalSearchButtonText = searchButtonText;
+                    filteredContents = allContents.stream()
+                        .filter(pc -> (finalSearchPageName == null || finalSearchPageName.isEmpty() || (pc.getPageName() != null && pc.getPageName().toLowerCase().contains(finalSearchPageName.toLowerCase()))))
+                        .filter(pc -> (finalSearchKey == null || finalSearchKey.isEmpty() || (pc.getContentKey() != null && pc.getContentKey().toLowerCase().contains(finalSearchKey.toLowerCase()))))
+                        .filter(pc -> (finalSearchValue == null || finalSearchValue.isEmpty() || (pc.getContentValue() != null && pc.getContentValue().toLowerCase().contains(finalSearchValue.toLowerCase()))))
+                        .filter(pc -> (finalSearchActive == null || finalSearchActive.isEmpty() ||
+                            (finalSearchActive.equals("true") && pc.isActive()) ||
+                            (finalSearchActive.equals("false") && !pc.isActive())))
+                        .filter(pc -> (finalSearchVideoUrl == null || finalSearchVideoUrl.isEmpty() || (pc.getVideoUrl() != null && pc.getVideoUrl().toLowerCase().contains(finalSearchVideoUrl.toLowerCase()))))
+                        .filter(pc -> (finalSearchButtonUrl == null || finalSearchButtonUrl.isEmpty() || (pc.getButtonUrl() != null && pc.getButtonUrl().toLowerCase().contains(finalSearchButtonUrl.toLowerCase()))))
+                        .filter(pc -> (finalSearchButtonText == null || finalSearchButtonText.isEmpty() || (pc.getButtonText() != null && pc.getButtonText().toLowerCase().contains(finalSearchButtonText.toLowerCase()))))
+                        .collect(Collectors.toList());
+                }
+
+                // Pagination
+                int pageSize = 10;
+                int currentPage = 1;
+                String pageParam = request.getParameter("page");
+                if (pageParam != null) {
+                    try {
+                        currentPage = Integer.parseInt(pageParam);
+                        if (currentPage < 1) currentPage = 1;
+                    } catch (NumberFormatException ignored) {}
+                }
+                int totalItems = filteredContents.size();
+                int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+                if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+                int fromIndex = (currentPage - 1) * pageSize;
+                int toIndex = Math.min(fromIndex + pageSize, totalItems);
+                List<PageContent> pageContents = filteredContents.subList(fromIndex, toIndex);
+
+                request.setAttribute("contents", pageContents);
+                request.setAttribute("currentPage", currentPage);
+                request.setAttribute("totalPages", totalPages);
+                request.getRequestDispatcher("/admin/contents/list.jsp").forward(request, response);
                 break;
         }
     }
@@ -110,7 +176,6 @@ public class AdminPageContentServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        String pageName = request.getParameter("pageName");
         PageContent content = new PageContent();
         content.setPageName(request.getParameter("pageName"));
         content.setContentKey(request.getParameter("contentKey"));
@@ -154,13 +219,11 @@ public class AdminPageContentServlet extends HttpServlet {
             request.setAttribute("imageError", imageError);
             if ("add".equals(action)) {
                 request.setAttribute("content", content);
-                request.setAttribute("pageName", pageName);
-                request.getRequestDispatcher("/admin/page-content/add.jsp").forward(request, response);
+                request.getRequestDispatcher("/admin/contents/add.jsp").forward(request, response);
             } else if ("edit".equals(action)) {
                 content.setContentId(Integer.parseInt(request.getParameter("id")));
                 request.setAttribute("content", content);
-                request.setAttribute("pageName", pageName);
-                request.getRequestDispatcher("/admin/page-content/edit.jsp").forward(request, response);
+                request.getRequestDispatcher("/admin/contents/edit.jsp").forward(request, response);
             }
             return;
         }
@@ -182,7 +245,7 @@ public class AdminPageContentServlet extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/page-content?pageName=" + (pageName != null ? pageName : ""));
+        response.sendRedirect(request.getContextPath() + "/admin/contents?action=list");
     }
 
     private String extractFileName(Part part) {

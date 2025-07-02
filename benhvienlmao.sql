@@ -138,7 +138,7 @@ GO
 -- AppointmentType
 CREATE TABLE AppointmentType
 (
-    appointmenttype_id INT PRIMARY KEY IDENTITY(1,1),
+    appointmenttype_id INT PRIMARY KEY IDENTITY (1,1),
     type_name NVARCHAR(100) NOT NULL,
     description NVARCHAR(255),
     price DECIMAL(12, 2) NOT NULL
@@ -269,7 +269,8 @@ INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
 VALUES
     ('Book Appointment', 'book-appointment', NULL, 'Feature'),
     ('View Prescription', 'view-prescription', NULL, 'Feature'),
-    ('Manage Users', 'admin/users', NULL, 'Feature'),
+    ('Manage Employees', 'admin/manageEmployees', NULL, 'Feature'),
+    ('Manage Patients', 'admin/managePatients', NULL, 'Feature'),
     ('View Statistics', 'admin/statistics', NULL, 'Feature'),
     ('Approve Doctor Shifts', 'admin/shift-approval', NULL, 'Feature'),
     ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', NULL, 'Feature'),
@@ -284,22 +285,28 @@ VALUES
     ('Element', 'elements.html', 3, 'Navigation'),
     ('Contact', 'contact.html', 5, 'Navigation'),
     ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
-    ('Manage System Contents', 'admin/contents', 5, 'Feature');
+    ('Manage System Contents', 'admin/contents', 5, 'Feature'),
+    ('Admin Home', 'admin/home', NULL, 'Navigation'),
+    ('Add New Content', 'admin/content/add', NULL, 'Navigation');
 GO
 
 -- Insert sample RoleSystemItems
 INSERT INTO RoleSystemItems (role_id, item_id)
 VALUES 
-    (1, 1), -- Doctor: Book Appointment
-    (1, 2), -- Doctor: View Prescription
-    (3, 3), -- Admin: Manage Users
-    (3, 4), -- Admin: View Statistics
-    (4, 5), -- Manager: Approve Doctor Shifts
-    (1, 6), -- Doctor: Teeth Whitening
-    (1, 7), -- Doctor: Dental Checkup
-    (1, 8), -- Doctor: Tooth Extraction
+    (1, 1),  -- Doctor: Book Appointment
+    (1, 2),  -- Doctor: View Prescription
+    (1, 7),  -- Doctor: Teeth Whitening
+    (1, 8),  -- Doctor: Dental Checkup
+    (1, 9),  -- Doctor: Tooth Extraction
+    (3, 3),  -- Admin: Manage Employees
+    (3, 4),  -- Admin: Manage Patients
+    (3, 5),  -- Admin: View Statistics
+    (3, 6),  -- Admin: Approve Doctor Shifts
     (3, 17), -- Admin: Manage System Items
-    (3, 18); -- Admin: Edit Home Page
+    (3, 18), -- Admin: Manage System Contents
+    (3, 19), -- Admin: Admin Home
+    (3, 20), -- Admin: Add New Content
+    (4, 6);  -- Manager: Approve Doctor Shifts
 GO
 
 -- Insert sample Patients
@@ -474,5 +481,19 @@ VALUES
     ('index', 'footer_newsletter_subtitle', 'Stay updated with the latest dental care tips and promotions.', 1, NULL, NULL, NULL, NULL),
     ('index', 'footer_copyright', 'Copyright &copy; All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>', 1, NULL, NULL, NULL, NULL),
     ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL);
-	
+GO
+
+-- Insert sample EmployeeHistory
+INSERT INTO EmployeeHistory (employee_id, role_id, date)
+VALUES 
+    (5, 2, '2020-01-15'), -- admin01 started as Receptionist
+    (5, 3, '2022-03-10'), -- admin01 promoted to Admin
+    (6, 2, '2021-06-01'), -- recept01 started as Receptionist
+    (7, 3, '2023-09-01'), -- admin02 started as Admin
+    (8, 2, '2022-12-15'), -- recept02 started as Receptionist
+    (9, 4, '2020-07-01'), -- manager01 started as Manager
+    (9, 3, '2021-11-20'), -- manager01 temporarily assigned as Admin
+    (9, 4, '2022-01-05'), -- manager01 returned to Manager
+    (1, 1, '2019-05-01'), -- dr_smith started as Doctor
+    (2, 1, '2020-08-01'); -- dr_hoa started as Doctor
 GO

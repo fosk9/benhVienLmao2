@@ -4,53 +4,91 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Manage Page Content - benhVienLmao</title>
+  <title>Manage System Items - benhVienLmao</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
 </head>
+
+<header class="admin-header py-3 mb-4">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a href="${pageContext.request.contextPath}/admin/home" class="btn btn-light btn-sm">Home</a>
+    <div>
+      <a href="${pageContext.request.contextPath}/logout" class="btn btn-light btn-sm">Logout</a>
+    </div>
+  </div>
+</header>
+
 <body>
 <div class="container mt-5">
-  <h2>Manage Page Content</h2>
-  <a href="${pageContext.request.contextPath}/admin/page-content?action=add&pageName=${pageName}" class="btn btn-success mb-3">Add New Content</a>
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Page Name</th>
-      <th>Content Key</th>
-      <th>Content Value</th>
-      <th>Image</th>
-      <th>Video URL</th>
-      <th>Button URL</th>
-      <th>Button Text</th>
-      <th>Active</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <c:forEach var="content" items="${contents}">
+  <h2>Manage System Items</h2>
+  <a href="${pageContext.request.contextPath}/admin/system-items?action=add" class="btn btn-success mb-3">Add New Item</a>
+
+  <!-- Search Form (styled like content) -->
+  <form class="mb-4" method="get" action="${pageContext.request.contextPath}/admin/system-items">
+    <input type="hidden" name="action" value="list">
+    <table class="search-table">
       <tr>
-        <td>${content.contentId}</td>
-        <td>${content.pageName}</td>
-        <td>${content.contentKey}</td>
-        <td>${content.contentValue}</td>
+        <td>Name</td>
+        <td><input type="text" class="form-control" name="searchName" value="${param.searchName}"></td>
+      </tr>
+      <tr>
+        <td>URL</td>
+        <td><input type="text" class="form-control" name="searchUrl" value="${param.searchUrl}"></td>
+      </tr>
+      <tr>
+        <td>Type</td>
         <td>
-          <c:if test="${not empty content.imageUrl}">
-            <img src="${pageContext.request.contextPath}/${content.imageUrl}" alt="Image" width="50">
-          </c:if>
-        </td>
-        <td>${content.videoUrl}</td>
-        <td>${content.buttonUrl}</td>
-        <td>${content.buttonText}</td>
-        <td>${content.isActive ? 'Yes' : 'No'}</td>
-        <td>
-          <a href="${pageContext.request.contextPath}/admin/page-content?action=edit&id=${content.contentId}&pageName=${pageName}" class="btn btn-primary btn-sm">Edit</a>
-          <a href="${pageContext.request.contextPath}/admin/page-content?action=delete&id=${content.contentId}&pageName=${pageName}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+          <select class="form-select" name="searchType">
+            <option value="">All Types</option>
+            <option value="Feature" ${param.searchType == 'Feature' ? 'selected' : ''}>Feature</option>
+            <option value="Navigation" ${param.searchType == 'Navigation' ? 'selected' : ''}>Navigation</option>
+          </select>
         </td>
       </tr>
-    </c:forEach>
-    </tbody>
-  </table>
+      <tr>
+        <td style="text-align:center;"><button type="submit" class="btn btn-primary">Search</button></td>
+        <td style="text-align:center;"><a href="${pageContext.request.contextPath}/admin/system-items?action=list" class="btn btn-secondary">Reset</a></td>
+      </tr>
+    </table>
+  </form>
+  <!-- End Search Form -->
+
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="table table-bordered mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>URL</th>
+            <th>Display Order</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="item" items="${items}">
+          <tr>
+            <td>${item.itemId}</td>
+            <td>${item.itemName}</td>
+            <td>${item.itemUrl}</td>
+            <td>${item.displayOrder}</td>
+            <td>${item.itemType}</td>
+            <td>
+              <a href="${pageContext.request.contextPath}/admin/system-items?action=edit&id=${item.itemId}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="${pageContext.request.contextPath}/admin/system-items?action=delete&id=${item.itemId}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+          </tr>
+        </c:forEach>
+        <c:if test="${empty items}">
+          <tr>
+            <td colspan="6" class="text-center">No items found.</td>
+          </tr>
+        </c:if>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
