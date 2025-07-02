@@ -53,7 +53,7 @@ public class BlogDetailServlet extends HttpServlet {
 
             // Lấy số trang và số bình luận mỗi trang từ request
             int currentPage = 1;  // Mặc định là trang 1
-            int commentsPerPage = 5;  // Số bình luận mỗi trang
+            int commentsPerPage = 3;  // Số bình luận mỗi trang
 
             String pageParam = request.getParameter("page");
             if (pageParam != null && pageParam.matches("\\d+")) {

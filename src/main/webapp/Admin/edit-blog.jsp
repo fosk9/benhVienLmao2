@@ -477,7 +477,7 @@
               <input type="file" class="form-control" id="blogImage" name="blogImage" accept="image/*" onchange="previewImage(this)">
               <div class="file-upload-text">Chấp nhận JPG, PNG, GIF (tối đa 5MB)</div>
               <c:if test="${not empty blog.blogImg}">
-                <img id="imagePreview" class="image-preview" alt="Preview" src="${blog.blogImg}" style="display:block;">
+                <img id="imagePreview" class="image-preview" alt="Preview" src="${pageContext.request.contextPath}/${blog.blogImg}" style="display:block;">
               </c:if>
               <c:if test="${empty blog.blogImg}">
                 <img id="imagePreview" class="image-preview" alt="Preview" style="display:none;">
@@ -512,7 +512,7 @@
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- CKEditor 5 -->
+<!-- CKEditor 4 -->
 <script src="${pageContext.request.contextPath}/assets/ckeditor_4.20.2_full/ckeditor/ckeditor.js"></script>
 <script>
   CKEDITOR.replace('content', {
@@ -538,6 +538,11 @@
   function previewImage(input) {
     const file = input.files[0];
     const preview = document.getElementById('imagePreview');
+    // Lưu lại src ảnh cũ để có thể trả lại nếu không chọn file mới
+    const oldSrc = preview.getAttribute('data-old-src') || preview.src;
+    if (!preview.getAttribute('data-old-src')) {
+      preview.setAttribute('data-old-src', oldSrc);
+    }
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -546,8 +551,13 @@
       };
       reader.readAsDataURL(file);
     } else {
-      preview.src = '';
-      preview.style.display = 'none';
+      // Nếu không chọn file mới, trả lại ảnh cũ (nếu có)
+      preview.src = oldSrc;
+      if (oldSrc && oldSrc !== '') {
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
     }
   }
 

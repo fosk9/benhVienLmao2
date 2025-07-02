@@ -23,28 +23,63 @@ public class UploadImageBlogServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Lấy ảnh từ CKEditor (name = upload) mặc định là "upload"
-        Part filePart = request.getPart("upload");
-        String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-        String randomFileName = UUID.randomUUID().toString() + fileExtension;
-
-        // Đường dẫn lưu trên server
-        String uploadPath = getServletContext().getRealPath("") + File.separator + IMAGE_UPLOAD_DIR;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
-
-        // Ghi file vào thư mục đích
-        String fullPath = uploadPath + File.separator + randomFileName;
-        filePart.write(fullPath);
-
-        // Trả về URL để CKEditor chèn vào content
-        String fileUrl = request.getContextPath() + "/" + IMAGE_UPLOAD_DIR + randomFileName;
-
         response.setContentType("text/html;charset=UTF-8");
-        response.getWriter().write(
-                "<script>window.parent.CKEDITOR.tools.callFunction(" +
-                        request.getParameter("CKEditorFuncNum") +
-                        ", '" + fileUrl + "', '');</script>");
+        PrintWriter out = response.getWriter();
+
+        try {
+            Part filePart = request.getPart("upload");
+
+            if (filePart == null || filePart.getSize() == 0) {
+                sendError(out, request, "Không tìm thấy file ảnh.");
+                return;
+            }
+
+            String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            String fileExtension = "";
+
+            int dotIndex = originalFileName.lastIndexOf(".");
+            if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+                fileExtension = originalFileName.substring(dotIndex).toLowerCase();
+            } else {
+                sendError(out, request, "Định dạng file không hợp lệ.");
+                return;
+            }
+
+            // Kiểm tra định dạng hợp lệ
+            if (!fileExtension.matches("\\.(jpg|jpeg|png|gif|webp)")) {
+                sendError(out, request, "Chỉ hỗ trợ các định dạng ảnh: JPG, JPEG, PNG, GIF, WEBP.");
+                return;
+            }
+
+            // Sinh tên file ngẫu nhiên để tránh trùng tên file cũ
+            String randomFileName = UUID.randomUUID().toString() + fileExtension;
+
+            // Lấy đường dẫn tuyệt đối đến thư mục upload ảnh trong webapp
+            String uploadPath = getServletContext().getRealPath("") + File.separator + IMAGE_UPLOAD_DIR;
+
+            // Tạo thư mục upload nếu chưa tồn tại
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            // Đường dẫn đầy đủ đến file sẽ lưu trên server
+            String fullPath = uploadPath + File.separator + randomFileName;
+
+            // Lưu file ảnh vào thư mục upload
+            filePart.write(fullPath);
+
+            // Trả về URL ảnh để hiển thị trong CKEditor
+            String fileUrl = request.getContextPath() + "/" + IMAGE_UPLOAD_DIR + randomFileName;
+            String callback = request.getParameter("CKEditorFuncNum");
+
+            out.println("<script>window.parent.CKEDITOR.tools.callFunction(" + callback + ", '" + fileUrl + "', '');</script>");
+
+        } catch (Exception e) {
+            sendError(response.getWriter(), request, "Lỗi khi upload ảnh: " + e.getMessage());
+        }
+    }
+
+    private void sendError(PrintWriter out, HttpServletRequest request, String message) {
+        String callback = request.getParameter("CKEditorFuncNum");
+        out.println("<script>window.parent.CKEDITOR.tools.callFunction(" + callback + ", '', '" + message + "');</script>");
     }
 }
