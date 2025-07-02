@@ -16,6 +16,48 @@ public class AppointmentDAO extends DBContext<Appointment> {
         super();
     }
 
+    public List<Patient> getPatientsByShift(int doctorId, Date shiftDate, String timeSlot) {
+        List<Patient> patients = new ArrayList<>();
+        String query = """
+                    SELECT DISTINCT p.*
+                    FROM Appointments a
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.doctor_id = ? AND a.appointment_date = ? AND a.time_slot = ?
+                """;
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, doctorId);
+                stmt.setDate(2, shiftDate);
+                stmt.setString(3, timeSlot);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    Patient patient = Patient.builder()
+                            .patientId(rs.getInt("patient_id"))
+                            .username(rs.getString("username"))
+                            .passwordHash(rs.getString("password_hash"))
+                            .fullName(rs.getString("full_name"))
+                            .dob(rs.getDate("dob"))
+                            .gender(rs.getString("gender"))
+                            .email(rs.getString("email"))
+                            .phone(rs.getString("phone"))
+                            .address(rs.getString("address"))
+                            .insuranceNumber(rs.getString("insurance_number"))
+                            .emergencyContact(rs.getString("emergency_contact"))
+                            .build();
+                    patients.add(patient);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching patients by shift: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch patients by shift", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return patients;
+    }
+
     public void createAppointment(Appointment appointment) {
         String query = "INSERT INTO Appointments (patient_id, appointment_date, appointmenttype_id, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;

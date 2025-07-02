@@ -347,6 +347,30 @@ VALUES
     ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
+INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
+VALUES
+-- Doctor 1 - 2025-06-23 Morning
+(1, 1, 1, '2025-06-23', 'Morning', 'Confirmed'),
+(2, 1, 1, '2025-06-23', 'Morning', 'Confirmed'),
+-- Doctor 1 - 2025-06-23 Afternoon
+(3, 1, 1, '2025-06-23', 'Afternoon', 'Confirmed'),
+-- Doctor 1 - 2025-06-24 Afternoon
+(4, 1, 1, '2025-06-24', 'Afternoon', 'Confirmed'),
+-- Doctor 1 - 2025-06-25 Evening
+(5, 1, 1, '2025-06-25', 'Evening', 'Confirmed'),
+-- Doctor 1 - 2025-06-27 Morning
+(6, 1, 1, '2025-06-27', 'Morning', 'Confirmed'),
+-- Doctor 2 - 2025-06-23 Afternoon
+(7, 2, 1, '2025-06-23', 'Afternoon', 'Confirmed'),
+-- Doctor 2 - 2025-06-24 Morning
+(8, 2, 1, '2025-06-24', 'Morning', 'Confirmed'),
+-- Doctor 2 - 2025-06-25 Morning
+(9, 2, 1, '2025-06-25', 'Morning', 'Confirmed'),
+-- Doctor 2 - 2025-06-28 Morning
+(10, 2, 1, '2025-06-28', 'Morning', 'Confirmed'),
+-- Doctor 2 - 2025-06-29 Morning
+(11, 2, 1, '2025-06-29', 'Morning', 'Confirmed');
+
 -- Insert sample Category
 INSERT INTO Category (category_name)
 VALUES

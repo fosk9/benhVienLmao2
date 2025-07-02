@@ -102,6 +102,27 @@
                                 </c:if>
                             </td>
                         </tr>
+                        <tr>
+                            <th>Patients in this shift</th>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${empty patients}">
+                                        <span class="text-muted">No appointments for this shift.</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <ul class="list-unstyled mb-0">
+                                            <c:forEach var="p" items="${patients}">
+                                                <li>
+                                                    <a href="PatientDetails?id=${p.patientId}" class="text-primary">
+                                                        <i class="fa fa-user"></i>${p.fullName}
+                                                    </a>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
                     </table>
                     <c:if test="${shift.status != 'Leave' and shift.status != 'PendingLeave'}">
                         <form action="request-doctor-leave" method="post"
