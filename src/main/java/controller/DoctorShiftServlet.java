@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorShift;
 import model.Employee;
+import model.Patient;
+import view.AppointmentDAO;
 import view.DoctorShiftDAO;
 import util.ScheduleUtils;
 
@@ -114,8 +116,18 @@ public class DoctorShiftServlet extends HttpServlet {
         int shiftId = Integer.parseInt(req.getParameter("shiftId"));
         DoctorShift shift = shiftDAO.select(shiftId);
         req.setAttribute("shift", shift);
+
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        List<Patient> patients = appointmentDAO.getPatientsByShift(
+                shift.getDoctorId(),
+                shift.getShiftDate(),
+                shift.getTimeSlot()
+        );
+        req.setAttribute("patients", patients); // Gửi danh sách bệnh nhân
+
         req.getRequestDispatcher("doctor-shift-detail.jsp").forward(req, resp);
     }
+
 
     private void handleLeaveRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int shiftId = Integer.parseInt(req.getParameter("shiftId"));
