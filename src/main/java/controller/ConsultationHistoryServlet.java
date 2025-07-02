@@ -84,7 +84,7 @@ public class ConsultationHistoryServlet extends HttpServlet {
         req.setAttribute("totalPages", totalPages);
         req.setAttribute("recordsPerPage", recordsPerPage);
 
-        req.getRequestDispatcher("consultation_history.jsp").forward(req, resp);
+        req.getRequestDispatcher("consultation-history.jsp").forward(req, resp);
     }
 
 
@@ -115,7 +115,7 @@ public class ConsultationHistoryServlet extends HttpServlet {
         req.setAttribute("prescriptions", prescriptions);
         req.setAttribute("treatments", treatments);
 
-        req.getRequestDispatcher("consultation_history_detail.jsp").forward(req, resp);
+        req.getRequestDispatcher("consultation-history-detail.jsp").forward(req, resp);
     }
 
 }
