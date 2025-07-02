@@ -16,20 +16,27 @@
         body {
             padding-top: 70px; /* để nội dung không bị header che mất */
         }
+
         @media (max-width: 576px) {
             .navbar span {
                 font-size: 14px;
             }
         }
-        body { padding-top: 70px; }
-        .badge { font-size: 90%; }
+
+        body {
+            padding-top: 70px;
+        }
+
+        .badge {
+            font-size: 90%;
+        }
     </style>
 </head>
 <body>
 <!-- Minimal Header with Back Button -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
     <div class="container">
-        <a href="/doctor-home" class="btn btn-outline-primary">
+        <a href="${pageContext.request.contextPath}/doctor-home" class="btn btn-outline-primary">
             &larr; Back to Doctor Home
         </a>
         <span class="ml-auto font-weight-bold text-secondary">Doctor's Weekly Schedule</span>
@@ -50,10 +57,11 @@
         <label for="weekSelect" class="mr-2">Week:</label>
         <select name="startDate" id="weekSelect" class="form-control mb-2">
             <c:forEach var="w" items="${weeks}">
-                <c:set var="start" value="${w[0]}" />
-                <c:set var="end" value="${w[1]}" />
+                <c:set var="start" value="${w[0]}"/>
+                <c:set var="end" value="${w[1]}"/>
                 <option value="${start}" <c:if test="${start == selectedWeekStart}">selected</c:if>>
-                    <fmt:formatDate value="${start}" pattern="dd/MM"/> - <fmt:formatDate value="${end}" pattern="dd/MM"/>
+                    <fmt:formatDate value="${start}" pattern="dd/MM"/> - <fmt:formatDate value="${end}"
+                                                                                         pattern="dd/MM"/>
                 </option>
             </c:forEach>
         </select>
@@ -98,7 +106,8 @@
                         cal.setTime(monday);
                         for (int i = 0; i < 7; i++) {
                 %>
-                <th><%= df.format(cal.getTime()) %></th>
+                <th><%= df.format(cal.getTime()) %>
+                </th>
                 <%
                         cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
                     }
@@ -118,7 +127,8 @@
                     cal.setTime(monday);
             %>
             <tr>
-                <td><strong><%= slot %></strong></td>
+                <td><strong><%= slot %>
+                </strong></td>
                 <%
                     for (int i = 0; i < 7; i++) {
                         Date day = new Date(cal.getTimeInMillis());
@@ -129,13 +139,23 @@
                     <% if (shift != null) {
                         String badgeClass = "badge-secondary";
                         switch (shift.getStatus()) {
-                            case "Working": badgeClass = "badge-success"; break;
-                            case "PendingLeave": badgeClass = "badge-warning"; break;
-                            case "Leave": badgeClass = "badge-secondary"; break;
-                            case "Rejected": badgeClass = "badge-danger"; break;
+                            case "Working":
+                                badgeClass = "badge-success";
+                                break;
+                            case "PendingLeave":
+                                badgeClass = "badge-warning";
+                                break;
+                            case "Leave":
+                                badgeClass = "badge-secondary";
+                                break;
+                            case "Rejected":
+                                badgeClass = "badge-danger";
+                                break;
                         }
                     %>
-                    <span class="badge <%= badgeClass %>"><%= shift.getStatus() %></span>
+                    <a href="doctor-shift-detail?shiftId=<%= shift.getShiftId() %>" class="badge <%= badgeClass %>">
+                        <%= shift.getStatus() %>
+                    </a>
                     <% } else { %>
                     <span class="text-muted">-</span>
                     <% } %>
@@ -154,12 +174,18 @@
 <!-- Minimal JS just for form auto-submit -->
 <script>
     document.getElementById("yearSelect").addEventListener("change", function () {
-        // Reset startDate khi đổi năm
-        document.getElementById("weekSelect").selectedIndex = 0; // hoặc .value = '';
+        // Reset weekSelect nhưng xóa name="startDate" để form không gửi param này lên
+        const weekSelect = document.getElementById("weekSelect");
+
+        // ✅ Bỏ name để không gửi startDate nữa
+        weekSelect.removeAttribute("name");
+
         document.getElementById("weekSelectorForm").submit();
     });
 
     document.getElementById("weekSelect").addEventListener("change", function () {
+        // Đặt lại name để gửi startDate khi chọn tuần
+        document.getElementById("weekSelect").setAttribute("name", "startDate");
         document.getElementById("weekSelectorForm").submit();
     });
 </script>

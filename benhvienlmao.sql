@@ -246,7 +246,6 @@ CREATE TABLE DoctorShifts
     FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
     FOREIGN KEY (manager_id) REFERENCES Employees (employee_id)
 );
-
 GO
 
 -- Insert sample Roles

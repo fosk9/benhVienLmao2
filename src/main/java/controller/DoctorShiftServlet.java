@@ -65,20 +65,27 @@ public class DoctorShiftServlet extends HttpServlet {
                 ? Integer.parseInt(yearParam)
                 : LocalDate.now().getYear();
 
-// 2. Generate weeks list ngay theo selectedYear
+        // 2. Generate weeks list ngay theo selectedYear
         List<Date[]> weeks = ScheduleUtils.generateWeekRangesOfYear(selectedYear);
         req.setAttribute("weeks", weeks);
 
-// 3. Xử lý mondayLD
+        // 3. Xử lý mondayLD
         LocalDate mondayLD;
         if (weekStartParam != null && !weekStartParam.isEmpty()) {
+            // Có sẵn startDate từ form
             mondayLD = LocalDate.parse(weekStartParam);
             int weekOffset = offsetParam != null ? Integer.parseInt(offsetParam) : 0;
             mondayLD = mondayLD.plusWeeks(weekOffset);
+        } else if (yearParam != null && !yearParam.isEmpty()) {
+            // ✅ Có year nhưng chưa có startDate => lấy tuần đầu tiên của năm đó
+            int year = Integer.parseInt(yearParam);
+            List<Date[]> weeksOfYear = ScheduleUtils.generateWeekRangesOfYear(year);
+            mondayLD = weeksOfYear.get(0)[0].toLocalDate();
         } else {
-            mondayLD = weeks.get(0)[0].toLocalDate(); // tuần đầu tiên
+            // ✅ Trường hợp đầu tiên, mặc định lấy tuần hiện tại
+            LocalDate today = LocalDate.now();
+            mondayLD = today.with(DayOfWeek.MONDAY);
         }
-
 
         Date monday = Date.valueOf(mondayLD);
         Date sunday = Date.valueOf(mondayLD.plusDays(6));
@@ -115,6 +122,9 @@ public class DoctorShiftServlet extends HttpServlet {
         int doctorId = Integer.parseInt(req.getParameter("doctorId"));
 
         shiftDAO.markPendingLeave(shiftId, doctorId);
-        resp.sendRedirect("doctor-schedule?doctorId=" + doctorId);
+
+        // Gửi message qua query string
+        resp.sendRedirect(req.getContextPath() + "/doctor-shift-detail?shiftId=" + shiftId + "&msg=Leave+request+submitted+successfully");
     }
+
 }
