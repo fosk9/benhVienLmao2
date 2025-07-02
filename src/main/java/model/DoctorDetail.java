@@ -11,6 +11,6 @@ import java.math.BigDecimal;
 public class DoctorDetail {
     private int doctorId;
     private String licenseNumber;
-    private String workSchedule;
+    private boolean specialist;
     private BigDecimal rating;
 }
