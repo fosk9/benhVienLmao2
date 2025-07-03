@@ -60,8 +60,11 @@ CREATE TABLE Employees
     phone             VARCHAR(20),
     role_id           INT                 NOT NULL,
     employee_ava_url  NVARCHAR(255),
+    created_at        DATETIME DEFAULT GETDATE(),
+    acc_status            BIT DEFAULT 1,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id)
 );
+
 GO
 
 -- Employee History
@@ -101,7 +104,9 @@ CREATE TABLE Patients
     address           NVARCHAR(255),
     patient_ava_url   NVARCHAR(255),
     insurance_number  VARCHAR(100),
-    emergency_contact NVARCHAR(255)
+    emergency_contact NVARCHAR(255),
+	created_at        DATETIME DEFAULT GETDATE(),
+    acc_status        BIT DEFAULT 1
 );
 GO
 
@@ -350,12 +355,12 @@ GO
 
 -- Insert sample Doctor Shifts
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status, manager_id, requested_at)
-VALUES (1, '2025-06-01', 'Morning', 'PendingApproval', 9, GETDATE()),
-       (1, '2025-06-01', 'Afternoon', 'Scheduled', NULL, GETDATE()),
-       (1, '2025-06-01', 'Evening', 'Scheduled', NULL, GETDATE()),
-       (1, '2025-06-01', 'Night', 'PendingApproval', 9, GETDATE()),
-       (2, '2025-06-02', 'Morning', 'Scheduled', NULL, GETDATE()),
-       (2, '2025-06-02', 'Afternoon', 'PendingApproval', 9, GETDATE());
+VALUES (1, '2025-06-01', 'Morning', 'PendingLeave', 9, GETDATE()),
+       (1, '2025-06-01', 'Afternoon', 'Working', NULL, GETDATE()),
+       (1, '2025-06-01', 'Evening', 'Working', NULL, GETDATE()),
+       (1, '2025-06-01', 'Night', 'PendingLeave', 9, GETDATE()),
+       (2, '2025-06-02', 'Morning', 'Working', NULL, GETDATE()),
+       (2, '2025-06-02', 'Afternoon', 'PendingLeave', 9, GETDATE());
 GO
 
 -- Insert sample Category

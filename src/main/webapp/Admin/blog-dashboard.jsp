@@ -586,6 +586,12 @@
           </a>
         </li>
         <li>
+          <a href="${pageContext.request.contextPath}/update-user-role" class="nav-link active">
+            <i class="fas fa-users-cog"></i>
+            <span>Quản lý quyền</span>
+          </a>
+        </li>
+        <li>
           <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link active">
             <i class="fas fa-blog"></i>
             <span>Blog</span>
