@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.sql.Date;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsultationHistoryDTO {
+@Builder
+public class ExaminationHistoryDTO {
     private int appointmentId;
     private Date appointmentDate;
     private String timeSlot;
@@ -19,4 +19,3 @@ public class ConsultationHistoryDTO {
     private String patientName;
     private String status;
 }
-
