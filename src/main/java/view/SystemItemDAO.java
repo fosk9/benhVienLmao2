@@ -17,7 +17,7 @@ public class SystemItemDAO extends DBContext<SystemItem> {
     private static final Logger LOGGER = Logger.getLogger(SystemItemDAO.class.getName());
 
     public SystemItemDAO() {
-        super();
+        super(); // Use default DBContext constructor
     }
 
     /**
@@ -26,7 +26,7 @@ public class SystemItemDAO extends DBContext<SystemItem> {
     @Override
     public List<SystemItem> select() {
         List<SystemItem> items = new ArrayList<>();
-        String sql = "SELECT item_id, item_name, item_url, display_order, item_type FROM SystemItems";
+        String sql = "SELECT * FROM SystemItems";
         Connection conn = null;
         try {
             conn = getConn();
@@ -57,7 +57,7 @@ public class SystemItemDAO extends DBContext<SystemItem> {
     public SystemItem select(int... id) {
         if (id.length == 0) return null;
         SystemItem item = null;
-        String sql = "SELECT item_id, item_name, item_url, display_order, item_type FROM SystemItems WHERE item_id = ?";
+        String sql = "SELECT * FROM SystemItems WHERE item_id = ?";
         Connection conn = null;
         try {
             conn = getConn();
@@ -172,9 +172,9 @@ public class SystemItemDAO extends DBContext<SystemItem> {
      */
     public List<SystemItem> getActiveItemsByRoleAndType(int roleId, String itemType) {
         List<SystemItem> items = new ArrayList<>();
-        String sql = "SELECT si.item_id, si.item_name, si.item_url, si.display_order, si.item_type FROM SystemItems si " +
+        String sql = "SELECT si.* FROM SystemItems si " +
                 "JOIN RoleSystemItems rsi ON si.item_id = rsi.item_id " +
-                "WHERE rsi.role_id = ? AND si.item_type = ?";
+                "WHERE rsi.role_id = ? AND si.item_type = ?"; // is_active removed, as field no longer exists
         Connection conn = null;
         try {
             conn = getConn();
