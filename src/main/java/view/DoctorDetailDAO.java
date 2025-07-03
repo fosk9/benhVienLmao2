@@ -1,6 +1,7 @@
 package view;
 
 import model.DoctorDetail;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +16,10 @@ public class DoctorDetailDAO extends DBContext<DoctorDetail> {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(DoctorDetail.builder()
-                        .doctorId(rs.getInt("doctor_id"))
-                        .licenseNumber(rs.getString("license_number"))
-                        .workSchedule(rs.getString("work_schedule"))
-                        .rating(rs.getBigDecimal("rating"))
-                        .build());
+                list.add(mapResultSetToDoctorDetail(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // nên thay bằng logger nếu có
         }
         return list;
     }
@@ -37,12 +33,7 @@ public class DoctorDetailDAO extends DBContext<DoctorDetail> {
             ps.setInt(1, id[0]);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return DoctorDetail.builder()
-                            .doctorId(rs.getInt("doctor_id"))
-                            .licenseNumber(rs.getString("license_number"))
-                            .workSchedule(rs.getString("work_schedule"))
-                            .rating(rs.getBigDecimal("rating"))
-                            .build();
+                    return mapResultSetToDoctorDetail(rs);
                 }
             }
         } catch (SQLException e) {
@@ -53,12 +44,12 @@ public class DoctorDetailDAO extends DBContext<DoctorDetail> {
 
     @Override
     public int insert(DoctorDetail d) {
-        String sql = "INSERT INTO DoctorDetails (doctor_id, license_number, work_schedule, rating) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO DoctorDetails (doctor_id, license_number, is_specialist, rating) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, d.getDoctorId());
             ps.setString(2, d.getLicenseNumber());
-            ps.setString(3, d.getWorkSchedule());
+            ps.setBoolean(3, d.isSpecialist());
             ps.setBigDecimal(4, d.getRating());
             return ps.executeUpdate();
         } catch (SQLException e) {
@@ -69,11 +60,11 @@ public class DoctorDetailDAO extends DBContext<DoctorDetail> {
 
     @Override
     public int update(DoctorDetail d) {
-        String sql = "UPDATE DoctorDetails SET license_number = ?, work_schedule = ?, rating = ? WHERE doctor_id = ?";
+        String sql = "UPDATE DoctorDetails SET license_number = ?, is_specialist = ?, rating = ? WHERE doctor_id = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, d.getLicenseNumber());
-            ps.setString(2, d.getWorkSchedule());
+            ps.setBoolean(2, d.isSpecialist());
             ps.setBigDecimal(3, d.getRating());
             ps.setInt(4, d.getDoctorId());
             return ps.executeUpdate();
@@ -95,5 +86,14 @@ public class DoctorDetailDAO extends DBContext<DoctorDetail> {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private DoctorDetail mapResultSetToDoctorDetail(ResultSet rs) throws SQLException {
+        return DoctorDetail.builder()
+                .doctorId(rs.getInt("doctor_id"))
+                .licenseNumber(rs.getString("license_number"))
+                .specialist(rs.getBoolean("is_specialist"))
+                .rating(rs.getBigDecimal("rating"))
+                .build();
     }
 }

@@ -11,9 +11,10 @@ import java.sql.Timestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Diagnosis {
-    private int diagnosisId;
+public class Treatment {
+    private int treatmentId;
     private int appointmentId;
-    private String notes;
+    private String treatmentType;
+    private String treatmentNotes;
     private Timestamp createdAt;
 }

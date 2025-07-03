@@ -4,7 +4,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Employee;
-import model.Specialization;
 import validation.InputSanitizer;
 import view.EmployeeDAO;
 import view.SpecializationDAO;
@@ -28,7 +27,6 @@ public class DoctorListServlet extends HttpServlet {
 
         int page = 1;
         int recordsPerPage = 5;
-        int specializationId = 0;
 
         try {
             String pageParam = request.getParameter("page");
@@ -48,31 +46,20 @@ public class DoctorListServlet extends HttpServlet {
             recordsPerPage = 5;
         }
 
-        try {
-            if (specializationParam != null && !specializationParam.isEmpty()) {
-                specializationId = Integer.parseInt(specializationParam);
-            }
-        } catch (NumberFormatException e) {
-            specializationId = 0;
-        }
-
         EmployeeDAO employeeDAO = new EmployeeDAO();
         SpecializationDAO specializationDAO = new SpecializationDAO();
 
         // Phân trang, filter, sort cho bác sĩ
         List<Employee> doctors = employeeDAO.searchFilterSortDoctors(
-                search, gender, specializationId, sortBy, sortDir, page, recordsPerPage);
-        int totalRecords = employeeDAO.countFilteredDoctors(search, gender, specializationId);
+                search, gender, sortBy, sortDir, page, recordsPerPage);
+        int totalRecords = employeeDAO.countFilteredDoctors(search, gender);
 
         int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
-        List<Specialization> specializations = specializationDAO.select();
 
         request.setAttribute("doctors", doctors);
-        request.setAttribute("specializations", specializations);
         request.setAttribute("search", search);
         request.setAttribute("gender", gender);
-        request.setAttribute("specialization", specializationId);
         request.setAttribute("sortBy", sortBy);
         request.setAttribute("sortDir", sortDir);
         request.setAttribute("currentPage", page);
