@@ -478,3 +478,122 @@ VALUES
     ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL);
 	
 GO
+
+-- Insert multiple appointments for nguyenlan (patient_id = 2)
+INSERT INTO Appointments (
+    patient_id, 
+    doctor_id, 
+    appointmenttype_id, 
+    appointment_date, 
+    time_slot, 
+    requires_specialist, 
+    status, 
+    created_at, 
+    updated_at
+)
+VALUES 
+    -- Appointment 1: Dental Checkup
+    (2, 1, 1, '2025-01-15', 'Morning', 0, 'Completed', '2025-01-10 10:00:00', '2025-01-15 12:00:00'),
+    -- Appointment 2: Teeth Cleaning
+    (2, 2, 2, '2025-03-20', 'Afternoon', 0, 'Confirmed', '2025-03-15 14:00:00', '2025-03-20 15:00:00'),
+    -- Appointment 3: Teeth Whitening
+    (2, 3, 3, '2025-06-10', 'Evening', 1, 'Pending', '2025-06-05 09:00:00', NULL),
+    -- Appointment 4: Composite Filling
+    (2, 4, 4, '2025-09-05', 'Morning', 0, 'Completed', '2025-08-30 11:00:00', '2025-09-05 13:00:00'),
+    -- Appointment 5: Orthodontic Consultation
+    (2, 1, 13, '2025-11-12', 'Afternoon', 1, 'Unpay', '2025-11-07 16:00:00', NULL);
+GO
+
+-- Insert corresponding Diagnoses
+INSERT INTO Diagnoses (
+    appointment_id, 
+    notes, 
+    created_at
+)
+VALUES 
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-01-15'), 
+     'Mild plaque buildup detected. Recommended regular cleaning.', 
+     '2025-01-15 12:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-03-20'), 
+     'Moderate tartar accumulation. Scaling and polishing performed.', 
+     '2025-03-20 15:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-06-10'), 
+     'Teeth staining observed. Whitening procedure scheduled.', 
+     '2025-06-10 20:00:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-09-05'), 
+     'Small cavity on molar #17. Composite filling applied.', 
+     '2025-09-05 13:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-11-12'), 
+     'Misaligned teeth detected. Recommended orthodontic evaluation.', 
+     '2025-11-12 15:00:00');
+GO
+
+-- Insert corresponding Prescriptions
+INSERT INTO Prescriptions (
+    appointment_id, 
+    medication_details, 
+    created_at
+)
+VALUES 
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-01-15'), 
+     'Prescribed fluoride toothpaste for daily use.', 
+     '2025-01-15 12:45:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-03-20'), 
+     'Recommended antiseptic mouthwash twice daily for 2 weeks.', 
+     '2025-03-20 15:45:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-06-10'), 
+     'No medication prescribed. Post-whitening sensitivity gel provided.', 
+     '2025-06-10 20:15:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-09-05'), 
+     'Analgesic (Ibuprofen 400mg) for 2 days post-filling if needed.', 
+     '2025-09-05 13:45:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-11-12'), 
+     'No medication prescribed. Awaiting orthodontic plan.', 
+     '2025-11-12 15:15:00');
+GO
+
+-- Insert corresponding Treatments
+INSERT INTO Treatment (
+    appointment_id, 
+    treatment_type, 
+    treatment_notes, 
+    created_at
+)
+VALUES 
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-01-15'), 
+     'Dental Examination', 
+     'Routine checkup completed. Oral hygiene instructions provided.', 
+     '2025-01-15 12:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-03-20'), 
+     'Scaling and Polishing', 
+     'Professional cleaning performed. Patient advised on flossing techniques.', 
+     '2025-03-20 15:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-06-10'), 
+     'Teeth Whitening', 
+     'Laser whitening procedure planned. Pre-treatment assessment completed.', 
+     '2025-06-10 20:00:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-09-05'), 
+     'Composite Filling', 
+     'Filling applied to molar #17. Patient reported no discomfort.', 
+     '2025-09-05 13:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-11-12'), 
+     'Orthodontic Consultation', 
+     'Initial consultation for braces. X-rays taken for analysis.', 
+     '2025-11-12 15:00:00');
+GO
+
+-- Insert corresponding Feedbacks
+INSERT INTO Feedbacks (
+    employee_id, 
+    patient_id, 
+    rating, 
+    comments, 
+    created_at
+)
+VALUES 
+    (1, 2, 5, 'Dr. Smith was very professional and explained everything clearly.', '2025-01-15 13:00:00'),
+    (2, 2, 4, 'Teeth cleaning was thorough, but the session took longer than expected.', '2025-03-20 16:00:00'),
+    (3, 2, 5, 'Dr. Lee was patient and answered all my questions about whitening.', '2025-06-10 20:30:00'),
+    (4, 2, 5, 'Filling procedure was quick and painless. Highly recommend Dr. Linh.', '2025-09-05 14:00:00'),
+    (1, 2, 4, 'Good consultation, but waiting time was a bit long.', '2025-11-12 15:30:00');
+GO

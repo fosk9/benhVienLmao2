@@ -19,6 +19,9 @@
 </head>
 <body>
 <main>
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="<c:url value='/appointments'/>" class="btn btn-secondary">Back</a>
+    </div>
     <div class="container mt-5">
         <h2>Payment for Appointment</h2>
         <c:if test="${not empty error}">
@@ -56,9 +59,12 @@
                     </table>
                 </div>
                 <div id="button-container">
-                    <button type="button" id="create-payment-link-btn"
-                        <c:if test="${appointment.status != 'Unpay'}">disabled</c:if>
-                    >Tạo Link thanh toán</button>
+                    <form method="post" action="/benhVienLmao_war_exploded/payment">
+                        <input type="hidden" name="appointmentId" value="${appointment.appointmentId}" />
+                        <button type="submit" id="create-payment-link-btn"
+                            <c:if test="${appointment.status != 'Unpay'}">disabled</c:if>
+                        >Comfirm pay</button>
+                    </form>
                 </div>
                 <div id="embeded-payment-container"></div>
             </div>
@@ -66,10 +72,8 @@
     </div>
 </main>
 <script>
-    // Truyền appointmentId cho index.js
     window.PAYMENT_APPOINTMENT_ID = "${appointment.appointmentId}";
 </script>
 <script src="https://cdn.payos.vn/payos-checkout/v1/stable/payos-initialize.js"></script>
-<script src="<c:url value='/payment/index.js'/>"></script>
 </body>
 </html>

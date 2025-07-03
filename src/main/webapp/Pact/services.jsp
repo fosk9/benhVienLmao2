@@ -66,7 +66,7 @@
                 <nav>
                   <ul id="navigation">
                     <li><a href="<c:url value='/appointments'/>">Appointments</a></li>
-                    <li><a href="<c:url value='/payment'/>">Payment</a></li>
+                    <li><a href="<c:url value='/treatment/history'/>">Treatment history</a></li>
                     <li><a href="<c:url value='/services'/>">Services</a></li>
                     <li><a href="<c:url value='/pactDetails'/>">Account</a>
                       <ul class="submenu">

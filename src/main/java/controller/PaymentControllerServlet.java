@@ -13,6 +13,7 @@ import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
+import vn.payos.type.PaymentLinkData;
 
 @WebServlet("/payment")
 public class PaymentControllerServlet extends HttpServlet {
@@ -31,25 +32,41 @@ public class PaymentControllerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String appointmentIdStr = req.getParameter("appointmentId");
-        if (appointmentIdStr == null) {
+        String payosOrderCode = req.getParameter("orderCode");
+        String payosStatus = req.getParameter("status");
+        // Nếu có callback từ PayOS (thanh toán thành công hoặc huỷ)
+        if (appointmentIdStr != null && payosStatus != null) {
+            if (payosStatus.equalsIgnoreCase("PAID")) {
+                try {
+                    int appointmentId = Integer.parseInt(appointmentIdStr);
+                    AppointmentDAO appointmentDAO = new AppointmentDAO();
+                    appointmentDAO.updateStatus(appointmentId, "PENDING");
+                } catch (Exception ex) {
+                    // log error
+                }
+            }
+            // Dù là PAID hay CANCEL đều về trang appointments
             resp.sendRedirect(req.getContextPath() + "/appointments");
             return;
         }
-        int appointmentId;
+        String appointmentId;
         try {
-            appointmentId = Integer.parseInt(appointmentIdStr);
-        } catch (NumberFormatException e) {
+            appointmentId = req.getParameter("appointmentId");
+            if (appointmentId == null) {
+                resp.sendRedirect(req.getContextPath() + "/appointments");
+                return;
+            }
+            AppointmentDAO appointmentDAO = new AppointmentDAO();
+            Appointment appointment = appointmentDAO.getAppointmentDetailById(Integer.parseInt(appointmentId));
+            if (appointment == null) {
+                resp.sendRedirect(req.getContextPath() + "/appointments");
+                return;
+            }
+            req.setAttribute("appointment", appointment);
+            req.getRequestDispatcher("/payment/payment.jsp").forward(req, resp);
+        } catch (Exception e) {
             resp.sendRedirect(req.getContextPath() + "/appointments");
-            return;
         }
-        AppointmentDAO appointmentDAO = new AppointmentDAO();
-        Appointment appointment = appointmentDAO.getAppointmentDetailById(appointmentId);
-        if (appointment == null) {
-            resp.sendRedirect(req.getContextPath() + "/appointments");
-            return;
-        }
-        req.setAttribute("appointment", appointment);
-        req.getRequestDispatcher("/payment/payment.jsp").forward(req, resp);
     }
 
     @Override
@@ -95,17 +112,17 @@ public class PaymentControllerServlet extends HttpServlet {
                     .orderCode(orderCode)
                     .amount(price)
                     .description("Thanh toán lịch khám #" + appointmentId)
-                    .returnUrl(domain + "appointments/details?id=" + appointmentId)
-                    .cancelUrl(domain + "appointments/details?id=" + appointmentId)
+                    .returnUrl(domain + "payment?appointmentId=" + appointmentId + "&status=PAID")
+                    .cancelUrl(domain + "payment?appointmentId=" + appointmentId + "&status=CANCEL")
                     .item(itemData)
                     .build();
 
             CheckoutResponseData result = payOS.createPaymentLink(paymentData);
+            String checkoutUrl = result.getCheckoutUrl();
 
-            resp.setContentType("application/json");
-            PrintWriter out = resp.getWriter();
-            out.print(result.toString());
-            out.flush();
+            resp.setHeader("Location", checkoutUrl); // Redirect to PayOS checkout page
+            resp.setStatus(HttpServletResponse.SC_FOUND); // 302 Found
+            return;
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.setContentType("application/json");

@@ -43,6 +43,12 @@ public class AppointmentsServlet extends HttpServlet {
             }
 
             Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
+            // Nếu status là 'PAID' từ PayOS, cập nhật sang PENDING
+            String payosStatus = request.getParameter("status");
+            if (payosStatus != null && payosStatus.equalsIgnoreCase("PAID") && appointment != null && !"PENDING".equalsIgnoreCase(appointment.getStatus())) {
+                appointmentDAO.updateStatus(appointmentId, "PENDING");
+                appointment = appointmentDAO.getAppointmentById(appointmentId); // reload
+            }
             if (appointment == null) {
                 LOGGER.warning("Appointment not found for ID: " + appointmentId);
                 response.sendRedirect(request.getContextPath() + "/login");
