@@ -1,6 +1,7 @@
 package view;
 
 import dto.ConsultationHistoryDTO;
+import dto.ExaminationHistoryDTO;
 import model.Appointment;
 import model.AppointmentType;
 import model.Patient;
@@ -15,6 +16,118 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
     public AppointmentDAO() {
         super();
+    }
+
+    public List<ExaminationHistoryDTO> searchAndSortCompletedByPatient(int patientId, String search, String sortBy, String sortDir, int page, int recordsPerPage) {
+        List<ExaminationHistoryDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+                    SELECT a.appointment_id, a.appointment_date, a.time_slot,
+                           t.type_name AS appointmentTypeName,
+                           p.full_name AS patientName,
+                           a.status
+                    FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.patient_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (t.type_name LIKE ? OR a.time_slot LIKE ?) ");
+        }
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            sql.append(" ORDER BY ").append(switch (sortBy) {
+                case "appointment_date" -> "a.appointment_date";
+                case "appointment_type" -> "t.type_name";
+                default -> "a.appointment_id";
+            }).append(" ").append("desc".equalsIgnoreCase(sortDir) ? "DESC" : "ASC");
+        } else {
+            sql.append(" ORDER BY a.appointment_date DESC");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int i = 1;
+            ps.setInt(i++, patientId);
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(i++, "%" + search + "%");
+                ps.setString(i++, "%" + search + "%");
+            }
+            ps.setInt(i++, (page - 1) * recordsPerPage);
+            ps.setInt(i, recordsPerPage);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new ExaminationHistoryDTO(
+                            rs.getInt("appointment_id"),
+                            rs.getDate("appointment_date"),
+                            rs.getString("time_slot"),
+                            rs.getString("appointmentTypeName"),
+                            rs.getString("patientName"),
+                            rs.getString("status")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int countSearchCompletedByPatient(int patientId, String search) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT COUNT(*) FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    WHERE a.patient_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (t.type_name LIKE ? OR a.time_slot LIKE ?) ");
+        }
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int i = 1;
+            ps.setInt(i++, patientId);
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(i++, "%" + search + "%");
+                ps.setString(i, "%" + search + "%");
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Appointment> getUnassignedAppointments() {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Appointments WHERE doctor_id IS NULL";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int assignDoctor(int appointmentId, int doctorId) {
+        String sql = "UPDATE Appointments SET doctor_id = ?, updated_at = GETDATE() WHERE appointment_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public List<ConsultationHistoryDTO> searchAndSortCompletedByDoctor(int doctorId, String search,
@@ -33,7 +146,13 @@ public class AppointmentDAO extends DBContext<Appointment> {
                 """);
 
         if (search != null && !search.isEmpty()) {
-            sql.append(" AND p.full_name LIKE ? ");
+            sql.append("""
+                        AND (
+                            p.full_name LIKE ? OR 
+                            a.time_slot LIKE ? OR 
+                            t.type_name LIKE ?
+                        )
+                    """);
         }
 
         if (sortBy != null && !sortBy.isEmpty()) {
@@ -64,7 +183,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
             stmt.setInt(paramIndex++, doctorId);
 
             if (search != null && !search.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + search + "%");
+                String keyword = "%" + search.trim() + "%";
+                stmt.setString(paramIndex++, keyword); // full_name
+                stmt.setString(paramIndex++, keyword); // time_slot
+                stmt.setString(paramIndex++, keyword); // type_name
             }
 
             stmt.setInt(paramIndex++, (page - 1) * recordsPerPage);
@@ -93,27 +215,45 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     public int countSearchCompletedByDoctor(int doctorId, String search) {
-        String sql = """
+        StringBuilder sql = new StringBuilder("""
                     SELECT COUNT(*)
                     FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
                     JOIN Patients p ON a.patient_id = p.patient_id
                     WHERE a.doctor_id = ? AND a.status = 'Completed'
-                      AND p.full_name LIKE ?
-                """;
+                """);
+
+        if (search != null && !search.isEmpty()) {
+            sql.append("""
+                        AND (
+                            p.full_name LIKE ? OR 
+                            a.time_slot LIKE ? OR 
+                            t.type_name LIKE ?
+                        )
+                    """);
+        }
 
         try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, doctorId);
-            ps.setString(2, "%" + (search == null ? "" : search.trim()) + "%");
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, doctorId);
+
+            if (search != null && !search.isEmpty()) {
+                String keyword = "%" + search.trim() + "%";
+                ps.setString(paramIndex++, keyword);
+                ps.setString(paramIndex++, keyword);
+                ps.setString(paramIndex++, keyword);
+            }
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
         } catch (SQLException e) {
             LOGGER.severe("Error counting consultations: " + e.getMessage());
             throw new RuntimeException(e);
         }
+
         return 0;
     }
-
 
     public List<Patient> getPatientsByShift(int doctorId, Date shiftDate, String timeSlot) {
         List<Patient> patients = new ArrayList<>();
@@ -493,10 +633,12 @@ public class AppointmentDAO extends DBContext<Appointment> {
     }
 
     private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
+        int doctorId = rs.getObject("doctor_id") == null ? 0 : rs.getInt("doctor_id");
+
         return Appointment.builder()
                 .appointmentId(rs.getInt("appointment_id"))
                 .patientId(rs.getInt("patient_id"))
-                .doctorId(rs.getInt("doctor_id"))
+                .doctorId(doctorId)
                 .appointmentTypeId(rs.getInt("appointmenttype_id"))
                 .appointmentDate(rs.getDate("appointment_date"))
                 .timeSlot(rs.getString("time_slot"))

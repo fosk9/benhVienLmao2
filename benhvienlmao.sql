@@ -392,6 +392,13 @@ INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment
 VALUES (1, 1, 1, '2025-06-10', 'Morning', 'Completed'),
        (2, 1, 2, '2025-06-11', 'Afternoon', 'Completed'),
        (3, 1, 3, '2025-06-12', 'Evening', 'Completed');
+INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
+VALUES
+-- Ca khám đã hoàn thành cho bệnh nhân 1
+(1, 1, 2, '2025-06-15', 'Morning', 'Completed'),
+(1, 2, 1, '2025-06-17', 'Afternoon', 'Completed'),
+(1, 2, 3, '2025-06-20', 'Evening', 'Completed');
+
 
 INSERT INTO Diagnoses (appointment_id, notes)
 VALUES (12, N'General check-up. Patient is healthy. No issues detected.'),
@@ -476,24 +483,23 @@ GO
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status)
 VALUES
 -- Doctor 1
-(1, '2025-06-23', 'Morning', 'Working'),
-(1, '2025-06-23', 'Afternoon', 'Working'),
-(1, '2025-06-24', 'Morning', 'PendingLeave'),
-(1, '2025-06-24', 'Afternoon', 'Working'),
-(1, '2025-06-25', 'Morning', 'Leave'),
-(1, '2025-06-25', 'Evening', 'Working'),
-(1, '2025-06-26', 'Night', 'Rejected'),
-(1, '2025-06-27', 'Morning', 'Working'),
-(1, '2025-06-28', 'Morning', 'Working'),
-(1, '2025-06-29', 'Evening', 'Working'),
+(1, '2025-07-03', 'Morning', 'Working'),
+(1, '2025-07-03', 'Afternoon', 'Working'),
+(1, '2025-07-04', 'Morning', 'PendingLeave'),
+(1, '2025-07-04', 'Afternoon', 'Working'),
+(1, '2025-07-05', 'Morning', 'Leave'),
+(1, '2025-07-05', 'Evening', 'Working'),
+(1, '2025-07-06', 'Night', 'Rejected'),
+(1, '2025-07-07', 'Morning', 'Working'),
+(1, '2025-07-08', 'Morning', 'Working'),
+(1, '2025-07-09', 'Evening', 'Working'),
 
 -- Doctor 2
-(2, '2025-06-23', 'Afternoon', 'Working'),
-(2, '2025-06-24', 'Morning', 'Working'),
-(2, '2025-06-25', 'Morning', 'Working'),
-(2, '2025-06-26', 'Afternoon', 'PendingLeave'),
-(2, '2025-06-26', 'Evening', 'Leave'),
-(2, '2025-06-27', 'Night', 'Rejected'),
-(2, '2025-06-28', 'Morning', 'Working'),
-(2, '2025-06-29', 'Morning', 'Working');
-
+(2, '2025-07-03', 'Afternoon', 'Working'),
+(2, '2025-07-04', 'Morning', 'Working'),
+(2, '2025-07-05', 'Morning', 'Working'),
+(2, '2025-07-06', 'Afternoon', 'PendingLeave'),
+(2, '2025-07-06', 'Evening', 'Leave'),
+(2, '2025-07-07', 'Night', 'Rejected'),
+(2, '2025-07-08', 'Morning', 'Working'),
+(2, '2025-07-09', 'Morning', 'Working');

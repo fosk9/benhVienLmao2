@@ -8,6 +8,27 @@ import java.util.List;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
 
+    public List<DoctorShift> getDoctorsForSlot(Date date, String timeSlot) {
+        List<DoctorShift> list = new ArrayList<>();
+        String sql = """
+                    SELECT * FROM DoctorShifts
+                    WHERE shift_date = ? AND time_slot = ? AND status = 'Working'
+                """;
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, date);
+            ps.setString(2, timeSlot);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToDoctorShift(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     @Override
     public List<DoctorShift> select() {
         List<DoctorShift> list = new ArrayList<>();
