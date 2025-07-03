@@ -219,8 +219,10 @@ CREATE TABLE Payments
     appointment_id INT,
     amount         DECIMAL(10, 2),
     method         VARCHAR(50),
-    status         VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded')),
-    payment_date   DATETIME,
+    status         VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded', 'Cancel')),
+    pay_content    VARCHAR(255),
+    created_at     DATETIME DEFAULT GETDATE(),
+    paid_at        DATETIME,
     FOREIGN KEY (appointment_id) REFERENCES Appointments (appointment_id)
 );
 GO

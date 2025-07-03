@@ -416,6 +416,8 @@
                                                    class="btn btn-primary">Edit</a>
                                                 <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
                                                    class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                                <a href="<c:url value='/payment?appointmentId=${appointment.appointmentId}'/>"
+                                                   class="btn btn-success">Pay</a>
                                             </c:when>
                                         </c:choose>
                                     </c:when>
