@@ -26,6 +26,45 @@
     <link rel="stylesheet" href="assets/css/slick.css">
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Enhanced CSS Files -->
+    <link rel="stylesheet" href="assets/css/common-template.css">
+    <link rel="stylesheet" href="assets/css/dental-specific.css">
+    <link rel="stylesheet" href="assets/css/image-utilities.css">
+    <link rel="stylesheet" href="assets/css/enhanced-accordion.css">
+
+    <style>
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #5aac4e 0%, #4a9142 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-section {
+            background: linear-gradient(135deg, #f8fffe 0%, #e8f5f3 100%);
+            min-height: 100vh;
+            padding: 80px 0;
+        }
+
+        .feature-item {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: #5a6c57;
+        }
+    </style>
 </head>
 <body>
 <!-- ? Preloader Start -->
@@ -34,7 +73,7 @@
         <div class="preloader-inner position-relative">
             <div class="preloader-circle"></div>
             <div class="preloader-img pere-text">
-                <img src="assets/img/logo/loder.png" alt="">
+                <img src="assets/img/logo/loder.png" alt="" class="img-optimized">
             </div>
         </div>
     </div>
@@ -49,7 +88,9 @@
                     <!-- Logo -->
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="index.jsp"><img src="assets/img/logo/logo.png" alt=""></a>
+                            <a href="index.jsp">
+                                <img src="assets/img/logo/logo.png" alt="Dental Care Logo" class="img-fluid img-optimized">
+                            </a>
                         </div>
                     </div>
                     <div class="col-xl-10 col-lg-10 col-md-10">
@@ -93,317 +134,357 @@
 <main>
     <!--? Slider Area Start-->
     <div class="slider-area">
-        <div class="slider-active dot-style">
-            <!-- Slider Single -->
-            <div class="single-slider d-flex align-items-center slider-height">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-xl-7 col-lg-8 col-md-10 ">
-                            <div class="hero-wrapper">
-                                <!-- Video icon -->
-                                <div class="video-icon">
-                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
-                                       data-animation="bounceIn" data-delay=".4s">
-                                        <i class="fas fa-play"></i>
+        <div class="hero-image" style="background-image: url('assets/img/hero/h1_hero.png');">
+            <div class="hero-overlay"></div>
+            <div class="slider-active dot-style">
+                <!-- Slider Single -->
+                <div class="single-slider d-flex align-items-center slider-height">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-xl-7 col-lg-8 col-md-10 ">
+                                <div class="hero-wrapper">
+                                    <!-- Video icon -->
+                                    <div class="video-icon">
+                                        <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                           data-animation="bounceIn" data-delay=".4s">
+                                            <i class="fas fa-play"></i>
+                                        </a>
+                                    </div>
+                                    <div class="hero__caption">
+                                        <h1 data-animation="fadeInUp" data-delay=".3s">Smile with Confidence</h1>
+                                        <p data-animation="fadeInUp" data-delay=".6s">Transform your smile with our expert
+                                            dental care services</p>
+                                        <a href="book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore
+                                            Dental Services</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slider Single -->
+                <div class="single-slider d-flex align-items-center slider-height">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-xl-7 col-lg-8 col-md-10 ">
+                                <div class="hero-wrapper">
+                                    <!-- Video icon -->
+                                    <div class="video-icon">
+                                        <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
+                                           data-animation="bounceIn" data-delay=".4s">
+                                            <i class="fas fa-play"></i>
+                                        </a>
+                                    </div>
+                                    <div class="hero__caption">
+                                        <h1 data-animation="fadeInUp" data-delay=".3s">Healthy Teeth, Happy Life</h1>
+                                        <p data-animation="fadeInUp" data-delay=".6s">Comprehensive dental solutions for all
+                                            ages</p>
+                                        <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an
+                                            Appointment</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slider Area End -->
+        <!--? Latest News Area Start -->
+        <section class="latest-news-area section-padding30">
+            <div class="container">
+                <!-- Section Tittle -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-7 col-md-9 col-sm-10">
+                        <div class="section-tittle text-center mb-70">
+                            <h2>Daily Dental Updates</h2>
+                            <p>Stay informed with the latest tips and news for a healthy smile</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <article class="blog_item">
+                                <div class="blog_item_img">
+                                    <img class="img-fluid"
+                                         src="assets/img/${b.blogImg}"
+                                         alt="${b.blogName}">
+                                    <a href="#" class="blog_item_date">
+                                        <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
+                                        <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
                                     </a>
                                 </div>
-                                <div class="hero__caption">
-                                    <h1 data-animation="fadeInUp" data-delay=".3s">Smile with Confidence</h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Transform your smile with our expert
-                                        dental care services</p>
-                                    <a href="book-appointment" class="btn" data-animation="fadeInLeft" data-delay=".3s">Explore
-                                        Dental Services</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Slider Single -->
-            <div class="single-slider d-flex align-items-center slider-height">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-xl-7 col-lg-8 col-md-10 ">
-                            <div class="hero-wrapper">
-                                <!-- Video icon -->
-                                <div class="video-icon">
-                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"
-                                       data-animation="bounceIn" data-delay=".4s">
-                                        <i class="fas fa-play"></i>
+                                <div class="blog_details">
+                                    <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
+                                        <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
                                     </a>
+                                    <p>${b.blogSubContent}</p>
+                                    <ul class="blog-info-link">
+                                        <li><a href="blog?categoryId=${b.categoryId}"><i
+                                                class="fa fa-user"></i> ${b.categoryName}</a></li>
+                                        <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
+                                    </ul>
                                 </div>
-                                <div class="hero__caption">
-                                    <h1 data-animation="fadeInUp" data-delay=".3s">Healthy Teeth, Happy Life</h1>
-                                    <p data-animation="fadeInUp" data-delay=".6s">Comprehensive dental solutions for all
-                                        ages</p>
-                                    <a href="#" class="btn" data-animation="fadeInLeft" data-delay=".3s">Book an
-                                        Appointment</a>
+                            </article>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </section>
+        <!-- Latest News Area End -->
+        <!--? About-2 Area Start -->
+        <div class="about-area2 section-padding40">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 col-md-12">
+                        <!-- about-img -->
+                        <div class="about-img enhanced-image">
+                            <img src="assets/img/gallery/about.png"
+                                 alt="About Dental Care"
+                                 class="img-fluid img-rounded-lg img-shadow img-optimized">
+                            <div class="image-overlay">
+                                <div class="overlay-content">
+                                    <h3>Perfect Dental Care</h3>
+                                    <p>Professional & Caring</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Slider Area End -->
-    <!--? Latest News Area Start -->
-    <section class="latest-news-area section-padding30">
-        <div class="container">
-            <!-- Section Tittle -->
-            <div class="row justify-content-center">
-                <div class="col-lg-7 col-md-9 col-sm-10">
-                    <div class="section-tittle text-center mb-70">
-                        <h2>Daily Dental Updates</h2>
-                        <p>Stay informed with the latest tips and news for a healthy smile</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                        <article class="blog_item">
-                            <div class="blog_item_img">
-                                <img class="card-img rounded-0" src="assets/img/${b.blogImg}" alt="${b.blogName}">
-                                <a href="#" class="blog_item_date">
-                                    <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
-                                    <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
-                                </a>
+                    <div class="col-lg-5 col-md-12">
+                        <div class="about-caption">
+                            <!-- Section Tittle -->
+                            <div class="section-tittle mb-35">
+                                <h2>Perfect Smile, Made Simple</h2>
                             </div>
-                            <div class="blog_details">
-                                <a class="d-inline-block" href="blog-detail?id=${b.blogId}">
-                                    <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
-                                </a>
-                                <p>${b.blogSubContent}</p>
-                                <ul class="blog-info-link">
-                                    <li><a href="blog?categoryId=${b.categoryId}"><i
-                                            class="fa fa-user"></i> ${b.categoryName}</a></li>
-                                    <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
-                                </ul>
+                            <p class="pera-top mb-40">Experience top-notch dental care tailored to your needs</p>
+                            <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure
+                                your dental health and comfort. From routine check-ups to advanced treatments, we've got you
+                                covered.</p>
+                            <div class="icon-about">
+                                <img src="assets/img/icon/about1.svg" alt="Quality Care" class="mr-20 img-optimized service-icon">
+                                <img src="assets/img/icon/about2.svg" alt="Professional Service" class="img-optimized service-icon">
                             </div>
-                        </article>
-                    </div>
-                </c:forEach>
-            </div>
-        </div>
-    </section>
-    <!-- Latest News Area End -->
-    <!--? About-2 Area Start -->
-    <div class="about-area2 section-padding40">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-7 col-md-12">
-                    <!-- about-img -->
-                    <div class="about-img ">
-                        <img src="assets/img/gallery/about.png" alt="">
-                    </div>
-                </div>
-                <div class="col-lg-5 col-md-12">
-                    <div class="about-caption">
-                        <!-- Section Tittle -->
-                        <div class="section-tittle mb-35">
-                            <h2>Perfect Smile, Made Simple</h2>
-                        </div>
-                        <p class="pera-top mb-40">Experience top-notch dental care tailored to your needs</p>
-                        <p class="pera-bottom mb-30">Our team of skilled dentists uses the latest technology to ensure
-                            your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you
-                            covered.</p>
-                        <div class="icon-about">
-                            <img src="assets/img/icon/about1.svg" alt="" class=" mr-20">
-                            <img src="assets/img/icon/about2.svg" alt="">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- About-2 Area End -->
-    <section class="wantToWork-area section-bg3" data-background="assets/img/gallery/section_bg01.png">
-        <div class="container">
-            <div class="wants-wrapper w-padding2">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-xl-7 col-lg-9 col-md-8">
-                        <div class="wantToWork-caption wantToWork-caption2">
-                            <h2>Bright Smile <br>Healthy Teeth</h2>
-                            <p>Discover personalized dental care that makes you smile</p>
+        <!-- About-2 Area End -->
+        <section class="wantToWork-area section-bg3" data-background="assets/img/gallery/section_bg01.png">
+            <div class="container">
+                <div class="wants-wrapper w-padding2">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-xl-7 col-lg-9 col-md-8">
+                            <div class="wantToWork-caption wantToWork-caption2">
+                                <h2>Bright Smile <br>Healthy Teeth</h2>
+                                <p>Discover personalized dental care that makes you smile</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-3 col-md-4">
-                        <a href="book-appointment" class="btn f-right sm-left">Explore Services</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--? Services Area Start -->
-    <div class="service-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services1.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="book-appointment?appointmentTypeId=1">Teeth Whitening</a></h5>
-                            <p>Achieve a brighter smile with our safe and effective whitening treatments.</p>
-                            <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services2.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="book-appointment?appointmentTypeId=1">Dental Checkup</a></h5>
-                            <p>Restore your smile with durable and natural-looking dental implants.</p>
-                            <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="single-cat text-center mb-50">
-                        <div class="cat-icon">
-                            <img src="assets/img/icon/services3.svg" alt="">
-                        </div>
-                        <div class="cat-cap">
-                            <h5><a href="book-appointment?appointmentTypeId=6">Tooth Extraction</a></h5>
-                            <p>Straighten your teeth with our advanced braces and aligner solutions.</p>
-                            <a href="book-appointment?appointmentTypeId=6" class="plus-btn"><i class="ti-plus"></i></a>
+                        <div class="col-xl-2 col-lg-3 col-md-4">
+                            <a href="book-appointment" class="btn f-right sm-left">Explore Services</a>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
+        <!--? Services Area Start -->
+        <div class="service-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="single-cat text-center mb-50">
+                            <div class="cat-icon service-icon">
+                                <img src="assets/img/icon/services1.svg" alt="Teeth Whitening" class="img-optimized">
+                            </div>
+                            <div class="cat-cap">
+                                <h5><a href="book-appointment?appointmentTypeId=1">Teeth Whitening</a></h5>
+                                <p>Achieve a brighter smile with our safe and effective whitening treatments.</p>
+                                <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="single-cat text-center mb-50">
+                            <div class="cat-icon service-icon">
+                                <img src="assets/img/icon/services2.svg" alt="Dental Checkup" class="img-optimized">
+                            </div>
+                            <div class="cat-cap">
+                                <h5><a href="book-appointment?appointmentTypeId=1">Dental Checkup</a></h5>
+                                <p>Restore your smile with durable and natural-looking dental implants.</p>
+                                <a href="book-appointment?appointmentTypeId=1" class="plus-btn"><i class="ti-plus"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="single-cat text-center mb-50">
+                            <div class="cat-icon service-icon">
+                                <img src="assets/img/icon/services3.svg" alt="Tooth Extraction" class="img-optimized">
+                            </div>
+                            <div class="cat-cap">
+                                <h5><a href="book-appointment?appointmentTypeId=6">Tooth Extraction</a></h5>
+                                <p>Straighten your teeth with our advanced braces and aligner solutions.</p>
+                                <a href="book-appointment?appointmentTypeId=6" class="plus-btn"><i class="ti-plus"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <!-- Services Area End -->
-    <!--? Services List Area Start -->
-    <div class="accordion compact-accordion" id="servicesAccordion">
-        <c:forEach var="service" items="${services}" varStatus="loop">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-${service.appointmentTypeId}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapse-${service.appointmentTypeId}" aria-expanded="false"
-                            aria-controls="collapse-${service.appointmentTypeId}">
-                            ${service.typeName}
-                    </button>
-                </h2>
-                <div id="collapse-${service.appointmentTypeId}" class="accordion-collapse collapse"
-                     aria-labelledby="heading-${service.appointmentTypeId}" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        <p class="service-description">${service.description != null ? service.description : 'No description available.'}</p>
-                        <p class="service-price">
-                            <strong>Price:</strong>
-                            <fmt:formatNumber value="${service.price}" type="currency" currencyCode="VND"
-                                              maxFractionDigits="0"/>
+        <!-- Services Area End -->
+        <!-- Enhanced Services List Area Start -->
+        <section class="services-section py-5" style="background: linear-gradient(135deg, #f8fffe 0%, #e8f5f3 100%); min-height: 100vh;">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-8 text-center">
+                        <h2 style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #5aac4e 0%, #4a9142 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            Our Dental Services
+                        </h2>
+                        <p style="font-size: 1.1rem; color: #6c757d; max-width: 600px; margin: 0 auto;">
+                            Comprehensive dental care with modern technology and expert professionals
                         </p>
-                        <a href="book-appointment?appointmentTypeId=${service.appointmentTypeId}"
-                           class="btn btn-sm btn-outline-success">
-                            Book Now
+                    </div>
+                </div>
+
+                <div class="accordion compact-accordion" id="servicesAccordion">
+                    <c:forEach var="service" items="${services}" varStatus="loop">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-${service.appointmentTypeId}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse-${service.appointmentTypeId}" aria-expanded="false"
+                                        aria-controls="collapse-${service.appointmentTypeId}">
+                                        ${service.typeName}
+                                </button>
+                            </h2>
+                            <div id="collapse-${service.appointmentTypeId}" class="accordion-collapse collapse"
+                                 aria-labelledby="heading-${service.appointmentTypeId}" data-bs-parent="#servicesAccordion">
+                                <div class="accordion-body">
+                                    <p class="service-description">${service.description != null ? service.description : 'Professional dental treatment with state-of-the-art equipment and experienced specialists.'}</p>
+                                    <p class="service-price">
+                                        <strong>Investment:</strong>
+                                        <fmt:formatNumber value="${service.price}" type="currency" currencyCode="VND"
+                                                          maxFractionDigits="0"/>
+                                    </p>
+                                    <a href="book-appointment?appointmentTypeId=${service.appointmentTypeId}"
+                                       class="btn btn-sm btn-outline-success">
+                                        Book Appointment
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </section>
+        <!-- Enhanced Services List Area End -->
+
+        <!--? Testimonial Area Start -->
+        <section class="testimonial-area testimonial-padding fix">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class=" col-lg-9">
+                        <div class="about-caption">
+                            <!-- Testimonial Start -->
+                            <div class="h1-testimonial-active dot-style">
+                                <!-- Single Testimonial -->
+                                <div class="single-testimonial position-relative">
+                                    <div class="testimonial-caption">
+                                        <img src="assets/img/icon/quotes-sign.png" alt="Quote" class="quotes-sign img-optimized">
+                                        <p>"The dental care I received was exceptional. My smile has never looked better,
+                                            and the process was so comfortable!"</p>
+                                    </div>
+                                    <!-- founder -->
+                                    <div class="testimonial-founder d-flex align-items-center">
+                                        <div class="founder-img enhanced-image">
+                                            <img src="assets/img/icon/testimonial.png"
+                                                 alt="Jane Smith"
+                                                 class="img-circle img-border img-shadow img-optimized">
+                                        </div>
+                                        <div class="founder-text">
+                                            <span>Jane Smith</span>
+                                            <p>Happy Patient</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Single Testimonial -->
+                                <div class="single-testimonial position-relative">
+                                    <div class="testimonial-caption">
+                                        <img src="assets/img/icon/quotes-sign.png" alt="Quote" class="quotes-sign img-optimized">
+                                        <p>"From consultation to treatment, the team was professional and caring. Highly
+                                            recommend their services!"</p>
+                                    </div>
+                                    <!-- founder -->
+                                    <div class="testimonial-founder d-flex align-items-center">
+                                        <div class="founder-img enhanced-image">
+                                            <img src="assets/img/icon/testimonial.png"
+                                                 alt="John Doe"
+                                                 class="img-circle img-border img-shadow img-optimized">
+                                        </div>
+                                        <div class="founder-text">
+                                            <span>John Doe</span>
+                                            <p>Satisfied Client</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Testimonial End -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--? Testimonial Area End -->
+        <!--? video_start -->
+        <div class="container">
+            <div class="video-area section-bg2 d-flex align-items-center enhanced-image" data-background="assets/img/gallery/video-bg.png">
+                <div class="video-wrap position-relative">
+                    <div class="video-icon">
+                        <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0">
+                            <i class="fas fa-play"></i>
                         </a>
                     </div>
                 </div>
+                <div class="image-overlay">
+                    <div class="overlay-content">
+                        <h3>Watch Our Story</h3>
+                        <p>Discover Our Dental Excellence</p>
+                    </div>
+                </div>
             </div>
-        </c:forEach>
+        </div>
+        <!-- video_end -->
+
+        <!--? About Law Start-->
+        <section class="about-low-area mt-30">
+            <div class="container">
+                <div class="about-cap-wrapper">
+                    <div class="row">
+                        <div class="col-xl-5 col-lg-6 col-md-10 offset-xl-1">
+                            <div class="about-caption mb-50">
+                                <!-- Section Tittle -->
+                                <div class="section-tittle mb-35">
+                                    <h2>100% Satisfaction Guaranteed</h2>
+                                </div>
+                                <p>Your perfect smile is our priority</p>
+                                <a href="about.html" class="border-btn">Book a Dental Appointment</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <!-- about-img -->
+                            <div class="about-img enhanced-image">
+                                <div class="about-font-img">
+                                    <img src="assets/img/gallery/about2.png"
+                                         alt="Dental Satisfaction"
+                                         class="img-fluid img-rounded-lg img-shadow img-optimized image-floating">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- About Law End-->
     </div>
-
-    <!-- Services List Area End -->
-
-    <!--? Testimonial Area Start -->
-    <section class="testimonial-area testimonial-padding fix">
-        <div class="container">
-            <div class="row align-items-center justify-content-center">
-                <div class=" col-lg-9">
-                    <div class="about-caption">
-                        <!-- Testimonial Start -->
-                        <div class="h1-testimonial-active dot-style">
-                            <!-- Single Testimonial -->
-                            <div class="single-testimonial position-relative">
-                                <div class="testimonial-caption">
-                                    <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"The dental care I received was exceptional. My smile has never looked better,
-                                        and the process was so comfortable!"</p>
-                                </div>
-                                <!-- founder -->
-                                <div class="testimonial-founder d-flex align-items-center">
-                                    <div class="founder-img">
-                                        <img src="assets/img/icon/testimonial.png" alt="">
-                                    </div>
-                                    <div class="founder-text">
-                                        <span>Jane Smith</span>
-                                        <p>Happy Patient</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Single Testimonial -->
-                            <div class="single-testimonial position-relative">
-                                <div class="testimonial-caption">
-                                    <img src="assets/img/icon/quotes-sign.png" alt="" class="quotes-sign">
-                                    <p>"From consultation to treatment, the team was professional and caring. Highly
-                                        recommend their services!"</p>
-                                </div>
-                                <!-- founder -->
-                                <div class="testimonial-founder d-flex align-items-center">
-                                    <div class="founder-img">
-                                        <img src="assets/img/icon/testimonial.png" alt="">
-                                    </div>
-                                    <div class="founder-text">
-                                        <span>John Doe</span>
-                                        <p>Satisfied Client</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Testimonial End -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!--? Testimonial Area End -->
-    <!--? video_start -->
-    <div class="container">
-        <div class="video-area section-bg2 d-flex align-items-center" data-background="assets/img/gallery/video-bg.png">
-            <div class="video-wrap position-relative">
-                <div class="video-icon">
-                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i
-                            class="fas fa-play"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- video_end -->
-
-    <!--? About Law Start-->
-    <section class="about-low-area mt-30">
-        <div class="container">
-            <div class="about-cap-wrapper">
-                <div class="row">
-                    <div class="col-xl-5 col-lg-6 col-md-10 offset-xl-1">
-                        <div class="about-caption mb-50">
-                            <!-- Section Tittle -->
-                            <div class="section-tittle mb-35">
-                                <h2>100% Satisfaction Guaranteed</h2>
-                            </div>
-                            <p>Your perfect smile is our priority</p>
-                            <a href="about.html" class="border-btn">Book a Dental Appointment</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <!-- about-img -->
-                        <div class="about-img">
-                            <div class="about-font-img">
-                                <img src="assets/img/gallery/about2.png" alt="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- About Law End-->
 </main>
 <footer>
     <div class="footer-wrappr section-bg3" data-background="assets/img/gallery/footer-bg.png">
@@ -414,7 +495,11 @@
                         <div class="single-footer-caption mb-50">
                             <!-- logo -->
                             <div class="footer-logo mb-25">
-                                <a href="index.jsp"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
+                                <a href="index.jsp">
+                                    <img src="assets/img/logo/logo2_footer.png"
+                                         alt="Dental Care Footer Logo"
+                                         class="img-fluid img-optimized">
+                                </a>
                             </div>
                             <div class="header-area">
                                 <div class="main-header main-header2">
@@ -527,5 +612,6 @@
 <script src="./assets/js/plugins.js"></script>
 <script src="./assets/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

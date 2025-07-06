@@ -1,0 +1,500 @@
+/* Enhanced Accordion Styles - Chỉ CSS */
+
+/* Container chính cho accordion */
+.accordion.compact-accordion,
+#servicesAccordion {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8fffe 0%, #e8f5f3 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(90, 172, 78, 0.1);
+    position: relative;
+}
+
+/* Styling cho từng accordion item */
+.accordion .accordion-item {
+    border: none !important;
+    margin-bottom: 16px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideInLeft 0.6s ease forwards;
+}
+
+/* Staggered animation cho các items */
+.accordion .accordion-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.accordion .accordion-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.accordion .accordion-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.accordion .accordion-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+.accordion .accordion-item:nth-child(5) {
+    animation-delay: 0.5s;
+}
+.accordion .accordion-item:nth-child(6) {
+    animation-delay: 0.6s;
+}
+.accordion .accordion-item:nth-child(7) {
+    animation-delay: 0.7s;
+}
+.accordion .accordion-item:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Hover effect cho accordion items */
+.accordion .accordion-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(90, 172, 78, 0.15);
+}
+
+/* Header styling */
+.accordion .accordion-header {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Button styling */
+.accordion .accordion-button {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%) !important;
+    border: none !important;
+    padding: 24px 28px 24px 70px !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    color: #2d5a3d !important;
+    border-radius: 16px !important;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: none !important;
+    text-align: left;
+}
+
+/* Icon circle cho mỗi service */
+.accordion .accordion-button::before {
+    content: "🦷";
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #5aac4e, #4a9142);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(90, 172, 78, 0.3);
+}
+
+/* Custom icons cho từng service */
+.accordion .accordion-button[aria-controls*="1"]::before {
+    content: "🔍";
+}
+.accordion .accordion-button[aria-controls*="2"]::before {
+    content: "✨";
+}
+.accordion .accordion-button[aria-controls*="3"]::before {
+    content: "💡";
+}
+.accordion .accordion-button[aria-controls*="4"]::before {
+    content: "🔧";
+}
+.accordion .accordion-button[aria-controls*="5"]::before {
+    content: "🛠️";
+}
+.accordion .accordion-button[aria-controls*="6"]::before {
+    content: "🦷";
+}
+.accordion .accordion-button[aria-controls*="7"]::before {
+    content: "⚕️";
+}
+.accordion .accordion-button[aria-controls*="8"]::before {
+    content: "🔬";
+}
+.accordion .accordion-button[aria-controls*="9"]::before {
+    content: "💎";
+}
+.accordion .accordion-button[aria-controls*="10"]::before {
+    content: "👑";
+}
+.accordion .accordion-button[aria-controls*="11"]::before {
+    content: "⚡";
+}
+.accordion .accordion-button[aria-controls*="12"]::before {
+    content: "🔗";
+}
+.accordion .accordion-button[aria-controls*="13"]::before {
+    content: "📋";
+}
+.accordion .accordion-button[aria-controls*="14"]::before {
+    content: "🦷";
+}
+.accordion .accordion-button[aria-controls*="15"]::before {
+    content: "✨";
+}
+
+/* Active/expanded state */
+.accordion .accordion-button:not(.collapsed) {
+    background: linear-gradient(135deg, #5aac4e 0%, #4a9142 100%) !important;
+    color: white !important;
+    box-shadow: 0 8px 24px rgba(90, 172, 78, 0.3) !important;
+}
+
+.accordion .accordion-button:not(.collapsed)::before {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Focus state */
+.accordion .accordion-button:focus {
+    box-shadow: 0 0 0 3px rgba(90, 172, 78, 0.2) !important;
+    border: none !important;
+}
+
+/* Custom arrow */
+.accordion .accordion-button::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%235aac4e' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E") !important;
+    background-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    transition: transform 0.3s ease !important;
+}
+
+.accordion .accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E") !important;
+    transform: rotate(180deg) !important;
+}
+
+/* Collapse content */
+.accordion .accordion-collapse {
+    border: none !important;
+}
+
+/* Body content */
+.accordion .accordion-body {
+    padding: 0 28px 28px 70px !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+    border-radius: 0 0 16px 16px;
+}
+
+/* Service description */
+.accordion .service-description {
+    color: #5a6c57;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Price styling */
+.accordion .service-price {
+    background: linear-gradient(135deg, #e8f5f3 0%, #d4edda 100%);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border-left: 4px solid #5aac4e;
+    font-size: 1rem;
+}
+
+.accordion .service-price strong {
+    color: #2d5a3d;
+    font-size: 1.1rem;
+}
+
+/* Enhanced book button */
+.accordion .btn {
+    background: linear-gradient(135deg, #5aac4e 0%, #4a9142 100%) !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 25px !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 16px rgba(90, 172, 78, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.accordion .btn::after {
+    content: "→";
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+    margin-left: 4px;
+}
+
+.accordion .btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(90, 172, 78, 0.4) !important;
+    color: white !important;
+}
+
+.accordion .btn:hover::after {
+    transform: translateX(4px);
+}
+
+/* Add feature highlights if not exist */
+.accordion .accordion-body::after {
+    content: "✓ Professional Treatment  ✓ Modern Equipment  ✓ Expert Care  ✓ Quality Guarantee";
+    display: block;
+    margin: 15px 0;
+    padding: 12px 16px;
+    background: rgba(90, 172, 78, 0.1);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #2d5a3d;
+    border-left: 3px solid #5aac4e;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .accordion.compact-accordion,
+    #servicesAccordion {
+        margin: 20px 10px;
+        padding: 20px 15px;
+    }
+
+    .accordion .accordion-button {
+        padding: 20px 24px 20px 60px !important;
+        font-size: 1rem !important;
+    }
+
+    .accordion .accordion-button::before {
+        left: 20px;
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .accordion .accordion-body {
+        padding: 0 24px 24px 60px !important;
+    }
+}
+
+/* Loading animation for the whole accordion */
+.accordion.compact-accordion,
+#servicesAccordion {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease 0.2s forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pulse effect for icons */
+.accordion .accordion-button::before {
+    animation: iconPulse 3s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%,
+    100% {
+        box-shadow: 0 4px 12px rgba(90, 172, 78, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(90, 172, 78, 0.5);
+    }
+}
+
+/* Smooth transitions for all elements */
+* {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced Typography for Blog Section */
+.latest-news-area .section-tittle h2 {
+    font-size: 3rem !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, #5aac4e 0%, #4a9142 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem !important;
+}
+
+.latest-news-area .section-tittle p {
+    font-size: 1.3rem !important;
+    color: #6c757d;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* Blog Item Typography */
+.blog_item .blog_details h2.blog-head {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    margin-bottom: 1rem !important;
+}
+
+.blog_item .blog_details p {
+    font-size: 1.1rem !important;
+    line-height: 1.7 !important;
+    color: #666 !important;
+}
+
+/* Blog Info Links */
+.blog-info-link li a {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+/* Hero Section Typography */
+.hero__caption h1 {
+    font-size: 3.5rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.hero__caption p {
+    font-size: 1.4rem !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 2rem !important;
+}
+
+/* About Section Typography */
+.about-caption .section-tittle h2 {
+    font-size: 2.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    color: #2d5a3d !important;
+}
+
+.about-caption .pera-top,
+.about-caption .pera-bottom {
+    font-size: 1.2rem !important;
+    line-height: 1.7 !important;
+    color: #5a6c57 !important;
+}
+
+/* Want to Work Section Typography */
+.wantToWork-caption h2 {
+    font-size: 3.2rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    color: white !important;
+}
+
+.wantToWork-caption p {
+    font-size: 1.3rem !important;
+    line-height: 1.6 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Service Cards Typography */
+.single-cat .cat-cap h5 a {
+    font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+}
+
+.single-cat .cat-cap p {
+    font-size: 1.1rem !important;
+    line-height: 1.6 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Testimonial Typography */
+.testimonial-caption p {
+    font-size: 1.3rem !important;
+    line-height: 1.7 !important;
+    font-style: italic !important;
+    color: #2d5a3d !important;
+}
+
+.testimonial-founder .founder-text span {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: #2d5a3d !important;
+}
+
+.testimonial-founder .founder-text p {
+    font-size: 1rem !important;
+    color: #5a6c57 !important;
+}
+
+/* Mobile Responsive Typography */
+@media (max-width: 768px) {
+    .latest-news-area .section-tittle h2 {
+        font-size: 2.2rem !important;
+    }
+
+    .latest-news-area .section-tittle p {
+        font-size: 1.1rem !important;
+    }
+
+    .hero__caption h1 {
+        font-size: 2.5rem !important;
+    }
+
+    .hero__caption p {
+        font-size: 1.2rem !important;
+    }
+
+    .about-caption .section-tittle h2 {
+        font-size: 2.2rem !important;
+    }
+
+    .wantToWork-caption h2 {
+        font-size: 2.5rem !important;
+    }
+
+    .blog_item .blog_details h2.blog-head {
+        font-size: 1.3rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .latest-news-area .section-tittle h2 {
+        font-size: 1.8rem !important;
+    }
+
+    .hero__caption h1 {
+        font-size: 2rem !important;
+    }
+
+    .about-caption .section-tittle h2 {
+        font-size: 1.8rem !important;
+    }
+
+    .wantToWork-caption h2 {
+        font-size: 2rem !important;
+    }
+}
