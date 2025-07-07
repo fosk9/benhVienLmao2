@@ -200,4 +200,33 @@ public class SystemItemDAO extends DBContext<SystemItem> {
         }
         return items;
     }
+
+    /**
+     * Lấy danh sách SystemItem loại Navigation, sắp xếp theo display_order.
+     */
+    public List<SystemItem> getNavigationItems() {
+        List<SystemItem> items = new ArrayList<>();
+        String sql = "SELECT * FROM SystemItems WHERE item_type = 'Navigation' ORDER BY display_order ASC";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    SystemItem item = new SystemItem();
+                    item.setItemId(rs.getInt("item_id"));
+                    item.setItemName(rs.getString("item_name"));
+                    item.setItemUrl(rs.getString("item_url"));
+                    item.setDisplayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null);
+                    item.setItemType(rs.getString("item_type"));
+                    items.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching Navigation SystemItems: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return items;
+    }
 }

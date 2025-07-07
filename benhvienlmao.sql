@@ -138,7 +138,7 @@ GO
 -- AppointmentType
 CREATE TABLE AppointmentType
 (
-    appointmenttype_id INT PRIMARY KEY IDENTITY(1,1),
+    appointmenttype_id INT PRIMARY KEY IDENTITY (1,1),
     type_name NVARCHAR(100) NOT NULL,
     description NVARCHAR(255),
     price DECIMAL(12, 2) NOT NULL
@@ -263,7 +263,8 @@ INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
        ('Receptionist'),
        ('Admin'),
-       ('Manager');
+       ('Manager'),
+       ('Patient'); -- NEW: Added Patient role for patient-specific access control
 GO
 
 -- Insert sample SystemItems (combining Features and NavigationItems)
@@ -281,12 +282,20 @@ VALUES
     ('About', 'about.html', 2, 'Navigation'),
     ('Dental Services', 'services.html', 3, 'Navigation'),
     ('Blog', 'blog.jsp', 4, 'Navigation'),
-    ('Blog', 'blog.jsp', 1, 'Navigation'),
     ('Blog Details', 'blog-detail.jsp', 2, 'Navigation'),
     ('Element', 'elements.html', 3, 'Navigation'),
     ('Contact', 'contact.html', 5, 'Navigation'),
     ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
-    ('Manage System Contents', 'admin/contents', 5, 'Feature');
+    ('Manage System Contents', 'admin/contents', 5, 'Feature'),
+    -- Patient-specific navigation items
+    ('Appointments', 'appointments', 1, 'Navigation'),
+    ('Treatment History', 'treatment/history', 2, 'Navigation'),
+    ('Account', 'pactDetails', 4, 'Navigation'),
+    ('Logout', 'logout', 5, 'Navigation'),
+    ('My Profile', 'MyProfile', 6, 'Navigation'),
+    ('Change Password', 'change-password', 7, 'Navigation'),
+    ('Blog', 'blog', 8, 'Navigation'),
+    ('Book Appointment', 'book-appointment', 9, 'Navigation');
 GO
 
 -- Insert sample RoleSystemItems
@@ -300,8 +309,17 @@ VALUES
     (1, 6), -- Doctor: Teeth Whitening
     (1, 7), -- Doctor: Dental Checkup
     (1, 8), -- Doctor: Tooth Extraction
-    (3, 17), -- Admin: Manage System Items
-    (3, 18); -- Admin: Edit Home Page
+    (3, 16), -- Admin: Manage System Items
+    (3, 17), -- Admin: Manage System Contents
+    -- NEW: Map patient role to navigation items
+    (5, 18), -- Patient: Appointments
+    (5, 19), -- Patient: Treatment History
+    (5, 20), -- Patient: Account
+    (5, 21), -- Patient: Logout
+    (5, 22), -- Patient: My Profile
+    (5, 23), -- Patient: Change Password
+    (5, 24), -- Patient: Blog
+    (5, 25); -- Patient: Book Appointment
 GO
 
 -- Insert sample Patients
@@ -476,7 +494,6 @@ VALUES
     ('index', 'footer_newsletter_subtitle', 'Stay updated with the latest dental care tips and promotions.', 1, NULL, NULL, NULL, NULL),
     ('index', 'footer_copyright', 'Copyright &copy; All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>', 1, NULL, NULL, NULL, NULL),
     ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL);
-	
 GO
 
 -- Insert multiple appointments for nguyenlan (patient_id = 2)
