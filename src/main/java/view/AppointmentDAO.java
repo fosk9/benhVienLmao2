@@ -1,5 +1,7 @@
 package view;
 
+import dto.ConsultationHistoryDTO;
+import dto.ExaminationHistoryDTO;
 import model.Appointment;
 import model.AppointmentType;
 import model.Patient;
@@ -687,4 +689,284 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return completedAppointments;
     }
+
+    public List<ConsultationHistoryDTO> searchAndSortCompletedByDoctor(int doctorId, String search,
+                                                                       String sortBy, String sortDir,
+                                                                       int page, int recordsPerPage) {
+        List<ConsultationHistoryDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+                    SELECT a.appointment_id, a.appointment_date, a.time_slot,
+                           t.type_name AS appointmentTypeName,
+                           p.full_name AS patientName,
+                           a.status
+                    FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.doctor_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.isEmpty()) {
+            sql.append("""
+                        AND (
+                            p.full_name LIKE ? OR 
+                            a.time_slot LIKE ? OR 
+                            t.type_name LIKE ?
+                        )
+                    """);
+        }
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            sql.append(" ORDER BY ");
+            switch (sortBy) {
+                case "appointment_date", "time_slot", "status" -> sql.append("a.").append(sortBy);
+                case "patientName" -> sql.append("p.full_name");
+                case "appointmentTypeName" -> sql.append("t.type_name");
+                default -> sql.append("a.appointment_date");
+            }
+
+            if ("desc".equalsIgnoreCase(sortDir)) {
+                sql.append(" DESC ");
+            } else {
+                sql.append(" ASC ");
+            }
+        } else {
+            sql.append(" ORDER BY a.appointment_date DESC ");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ");
+
+        Connection conn = null;
+        try {
+            conn = getConn();
+            PreparedStatement stmt = conn.prepareStatement(sql.toString());
+            int paramIndex = 1;
+            stmt.setInt(paramIndex++, doctorId);
+
+            if (search != null && !search.isEmpty()) {
+                String keyword = "%" + search.trim() + "%";
+                stmt.setString(paramIndex++, keyword); // full_name
+                stmt.setString(paramIndex++, keyword); // time_slot
+                stmt.setString(paramIndex++, keyword); // type_name
+            }
+
+            stmt.setInt(paramIndex++, (page - 1) * recordsPerPage);
+            stmt.setInt(paramIndex, recordsPerPage);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                ConsultationHistoryDTO dto = ConsultationHistoryDTO.builder()
+                        .appointmentId(rs.getInt("appointment_id"))
+                        .appointmentDate(rs.getDate("appointment_date"))
+                        .timeSlot(rs.getString("time_slot"))
+                        .appointmentTypeName(rs.getString("appointmentTypeName"))
+                        .patientName(rs.getString("patientName"))
+                        .status(rs.getString("status"))
+                        .build();
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error in searchAndSortCompletedByDoctor: " + e.getMessage());
+            throw new RuntimeException("Error fetching completed appointments with search/sort", e);
+        } finally {
+            closeConnection(conn);
+        }
+
+        return list;
+    }
+
+    public int countSearchCompletedByDoctor(int doctorId, String search) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT COUNT(*)
+                    FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.doctor_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.isEmpty()) {
+            sql.append("""
+                        AND (
+                            p.full_name LIKE ? OR 
+                            a.time_slot LIKE ? OR 
+                            t.type_name LIKE ?
+                        )
+                    """);
+        }
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, doctorId);
+
+            if (search != null && !search.isEmpty()) {
+                String keyword = "%" + search.trim() + "%";
+                ps.setString(paramIndex++, keyword);
+                ps.setString(paramIndex++, keyword);
+                ps.setString(paramIndex++, keyword);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            LOGGER.severe("Error counting consultations: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        return 0;
+    }
+
+    public List<Patient> getPatientsByShift(int doctorId, Date shiftDate, String timeSlot) {
+        List<Patient> patients = new ArrayList<>();
+        String query = """
+                    SELECT DISTINCT p.*
+                    FROM Appointments a
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.doctor_id = ? AND a.appointment_date = ? AND a.time_slot = ?
+                """;
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, doctorId);
+                stmt.setDate(2, shiftDate);
+                stmt.setString(3, timeSlot);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    Patient patient = Patient.builder()
+                            .patientId(rs.getInt("patient_id"))
+                            .username(rs.getString("username"))
+                            .passwordHash(rs.getString("password_hash"))
+                            .fullName(rs.getString("full_name"))
+                            .dob(rs.getDate("dob"))
+                            .gender(rs.getString("gender"))
+                            .email(rs.getString("email"))
+                            .phone(rs.getString("phone"))
+                            .address(rs.getString("address"))
+                            .insuranceNumber(rs.getString("insurance_number"))
+                            .emergencyContact(rs.getString("emergency_contact"))
+                            .build();
+                    patients.add(patient);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching patients by shift: " + e.getMessage());
+            throw new RuntimeException("Failed to fetch patients by shift", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return patients;
+    }
+
+    public List<ExaminationHistoryDTO> searchAndSortCompletedByPatient(int patientId, String search, String sortBy, String sortDir, int page, int recordsPerPage) {
+        List<ExaminationHistoryDTO> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+                    SELECT a.appointment_id, a.appointment_date, a.time_slot,
+                           t.type_name AS appointmentTypeName,
+                           p.full_name AS patientName,
+                           a.status
+                    FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    JOIN Patients p ON a.patient_id = p.patient_id
+                    WHERE a.patient_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (t.type_name LIKE ? OR a.time_slot LIKE ?) ");
+        }
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            sql.append(" ORDER BY ").append(switch (sortBy) {
+                case "appointment_date" -> "a.appointment_date";
+                case "appointment_type" -> "t.type_name";
+                default -> "a.appointment_id";
+            }).append(" ").append("desc".equalsIgnoreCase(sortDir) ? "DESC" : "ASC");
+        } else {
+            sql.append(" ORDER BY a.appointment_date DESC");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int i = 1;
+            ps.setInt(i++, patientId);
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(i++, "%" + search + "%");
+                ps.setString(i++, "%" + search + "%");
+            }
+            ps.setInt(i++, (page - 1) * recordsPerPage);
+            ps.setInt(i, recordsPerPage);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new ExaminationHistoryDTO(
+                            rs.getInt("appointment_id"),
+                            rs.getDate("appointment_date"),
+                            rs.getString("time_slot"),
+                            rs.getString("appointmentTypeName"),
+                            rs.getString("patientName"),
+                            rs.getString("status")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int countSearchCompletedByPatient(int patientId, String search) {
+        StringBuilder sql = new StringBuilder("""
+                    SELECT COUNT(*) FROM Appointments a
+                    JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                    WHERE a.patient_id = ? AND a.status = 'Completed'
+                """);
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (t.type_name LIKE ? OR a.time_slot LIKE ?) ");
+        }
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int i = 1;
+            ps.setInt(i++, patientId);
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(i++, "%" + search + "%");
+                ps.setString(i, "%" + search + "%");
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Appointment> getUnassignedAppointments() {
+        List<Appointment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Appointments WHERE doctor_id IS NULL";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int assignDoctor(int appointmentId, int doctorId) {
+        String sql = "UPDATE Appointments SET doctor_id = ?, updated_at = GETDATE() WHERE appointment_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }
