@@ -95,4 +95,27 @@ public class TreatmentDAO {
         }
         return list;
     }
+
+    public List<Treatment> getByAppointmentId(int appointmentId) {
+        List<Treatment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Treatment WHERE appointment_id = ? ORDER BY created_at DESC";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Treatment t = new Treatment(
+                        rs.getInt("treatment_id"),
+                        rs.getInt("appointment_id"),
+                        rs.getString("treatment_type"),
+                        rs.getString("treatment_notes"),
+                        rs.getTimestamp("created_at")
+                );
+                list.add(t);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
