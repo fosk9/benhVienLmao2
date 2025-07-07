@@ -33,10 +33,9 @@ public class ServicesServlet extends HttpServlet {
         PatientDAO patientDAO = new PatientDAO();
         Patient patient = patientDAO.getPatientByUsername(username);
 
-        // Fetch navigation items for patient role (role_id for Patient assumed as 5, adjust as per your DB)
+        // Fetch navigation items for patient role (role_id = 5)
         SystemItemDAO systemItemDAO = new SystemItemDAO();
-        int patientRoleId = 5; // Adjust based on actual role_id for Patient in Roles table
-        List<SystemItem> systemItems = systemItemDAO.getActiveItemsByRoleAndType(patientRoleId, "Navigation");
+        List<SystemItem> systemItems = systemItemDAO.getActiveItemsByRoleAndType(5, "Navigation");
 
         if (patient != null) {
             session.setAttribute("patientId", patient.getPatientId());
