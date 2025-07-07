@@ -13,7 +13,9 @@
 <jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
+
     <h2 class="mb-4">Patient Details</h2>
+    <a href="PatientList" class="btn btn-outline-primary">Back to List</a>
 
     <c:if test="${not empty message}">
         <div class="alert alert-info alert-dismissible fade show" role="alert">

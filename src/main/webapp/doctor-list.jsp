@@ -34,16 +34,6 @@
                 <option value="F" ${param.gender == 'F' ? 'selected' : ''}>Female</option>
             </select>
         </div>
-        <div class="col-md-3">
-            <select name="specialization" class="form-select">
-                <option value="" ${empty param.specialization ? 'selected' : ''}>Filter by specialization</option>
-                <c:forEach var="spec" items="${specializations}">
-                    <option value="${spec.specializationId}" ${param.specialization == spec.specializationId.toString() ? 'selected' : ''}>
-                            ${spec.name}
-                    </option>
-                </c:forEach>
-            </select>
-        </div>
         <div class="col-md-2">
             <select name="sortBy" class="form-select">
                 <option value="" ${empty param.sortBy ? 'selected' : ''}>Sort by</option>
@@ -75,7 +65,6 @@
                 <th>Gender</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Specialization</th>
                 <th>Details</th>
             </tr>
             </thead>
@@ -95,14 +84,7 @@
                     <td>${doc.email}</td>
                     <td>${doc.phone}</td>
                     <td>
-                        <c:forEach var="spec" items="${specializations}">
-                            <c:if test="${spec.specializationId == doc.specializationId}">
-                                ${spec.name}
-                            </c:if>
-                        </c:forEach>
-                    </td>
-                    <td>
-                        <a href="DoctorDetails?id=${doc.employeeId}" class="btn btn-sm btn-outline-info">View</a>
+                        <a href="doctor-details?id=${doc.employeeId}" class="btn btn-sm btn-outline-info">View</a>
                     </td>
                 </tr>
             </c:forEach>
