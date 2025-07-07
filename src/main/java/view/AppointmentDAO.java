@@ -551,29 +551,4 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
         return appointments;
     }
-
-
-
-    //PhongLPH
-
-//    public boolean updateAppointmentType(int appointmentId, String appointmentType) {
-//        // SQL query để cập nhật loại cuộc hẹn
-//        String sql = "UPDATE Appointments SET appointment_type = ? WHERE appointment_id = ?";
-//
-//        try (Connection conn = getConn();
-//             PreparedStatement ps = conn.prepareStatement(sql)) {
-//
-//            // Cập nhật loại cuộc hẹn
-//            ps.setString(1, appointmentType);  // Gán giá trị appointmentType vào tham số đầu tiên
-//            ps.setInt(2, appointmentId);        // Gán giá trị appointmentId vào tham số thứ hai
-//
-//            // Thực thi câu lệnh UPDATE và kiểm tra số lượng bản ghi bị ảnh hưởng
-//            int affectedRows = ps.executeUpdate();
-//            return affectedRows > 0;  // Nếu có ít nhất một bản ghi bị ảnh hưởng, trả về true
-//        } catch (SQLException e) {
-//            e.printStackTrace();  // In ra lỗi nếu có
-//            return false;         // Nếu có lỗi, trả về false
-//        }
-//    }
-
 }
