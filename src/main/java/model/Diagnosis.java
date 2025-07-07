@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
+import java.sql.Timestamp;
 
 @Data
 @Builder
@@ -14,5 +15,5 @@ public class Diagnosis {
     private int diagnosisId;
     private int appointmentId;
     private String notes;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 }

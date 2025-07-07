@@ -93,6 +93,22 @@ public class PatientDAO extends DBContext<Patient> {
         return patients;
     }
 
+    public Patient getPatientById(int patientId) {
+        String sql = "SELECT * FROM Patients WHERE patient_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToPatient(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public int countFiltered(String search, String gender) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Patients WHERE 1=1");
 

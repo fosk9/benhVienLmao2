@@ -2,7 +2,7 @@ package model;
 
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 @Data
 @Builder
@@ -10,8 +10,11 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Comment {
     private int commentId;
-    private String content;
-    private Timestamp createdAt;
     private int blogId;
     private int patientId;
+    private String content;
+    private Date date;
+
+    // Optional: Patient name (nếu JOIN bảng Patient sau này)
+    private String patientName;
 }

@@ -1,32 +1,26 @@
 package test;
 
-import model.Appointment;
 import view.AppointmentDAO;
+import model.Appointment;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 public class AppointmentDAOTest {
     public static void main(String[] args) {
-//
-        int doctorId = 1;
+        AppointmentDAO dao = new AppointmentDAO();
 
-        // Tạo đối tượng của lớp chứa hàm getAppointmentsByDoctorId
-        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        // Thay doctorId này bằng ID đang có trong CSDL
+        int testDoctorId = 1;
 
-        // Lấy danh sách các cuộc hẹn
-        List<Appointment> appointments = appointmentDAO.getAppointmentsByDoctorId(doctorId);
+        List<Appointment> appointments = dao.getAppointmentsByDoctorId(testDoctorId);
 
-        // Kiểm tra và in kết quả
-        if (appointments != null && !appointments.isEmpty()) {
-            System.out.println("Danh sách các cuộc hẹn của bác sĩ với ID " + doctorId + ":");
-            for (Appointment appointment : appointments) {
-                // Giả sử bạn đã định nghĩa phương thức toString() trong lớp Appointment để hiển thị thông tin cần thiết
-                System.out.println(appointment);
-            }
-        } else {
-            System.out.println("Không có cuộc hẹn nào cho bác sĩ với ID " + doctorId);
+        System.out.println("Appointments for doctor ID: " + testDoctorId);
+        for (Appointment appt : appointments) {
+            System.out.println("ID: " + appt.getAppointmentId()
+                    + ", Patient: " + appt.getPatientId()
+                    + ", Date: " + appt.getAppointmentDate()
+                    + ", Type: " + (appt.getAppointmentType() != null ? appt.getAppointmentType().getTypeName() : "N/A")
+                    + ", Status: " + appt.getStatus());
         }
     }
 }

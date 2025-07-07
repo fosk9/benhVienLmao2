@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
 
-    public List<Employee> searchFilterSortDoctors(String search, String gender, Integer specializationId,
+    public List<Employee> searchFilterSortDoctors(String search, String gender,
                                                   String sortBy, String sortDir,
                                                   int page, int recordsPerPage) {
         List<Employee> list = new ArrayList<>();
@@ -61,7 +61,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         return list;
     }
 
-    public int countFilteredDoctors(String search, String gender, Integer specializationId) {
+    public int countFilteredDoctors(String search, String gender) {
         int count = 0;
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Employees WHERE role_id = 1 ");
 

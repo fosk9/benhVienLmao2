@@ -58,10 +58,10 @@
                                         <li><a href="index.html">Home</a></li>
                                         <li><a href="about.html">About</a></li>
                                         <li><a href="services.html">Services</a></li>
-                                        <li><a href="blog.html">Blog</a>
+                                        <li><a href="blog.jsp">Blog</a>
                                             <ul class="submenu">
-                                                <li><a href="blog.html">Blog</a></li>
-                                                <li><a href="blog_details.html">Blog Details</a></li>
+                                                <li><a href="blog.jsp">Blog</a></li>
+                                                <li><a href="#">#</a></li>
                                                 <li><a href="elements.html">Element</a></li>
                                             </ul>
                                         </li>
