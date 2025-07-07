@@ -53,14 +53,6 @@ public class DoctorViewDetailServlet extends HttpServlet {
                 return;
             }
 
-            // Truyền appointmentType list nếu đang ở chế độ edit
-            String isEdit = request.getParameter("edit");
-            if ("true".equals(isEdit)) {
-                AppointmentTypeDAO typeDAO = new AppointmentTypeDAO();
-                List<AppointmentType> appointmentTypes = typeDAO.getAllAppointmentTypes();
-                request.setAttribute("appointmentTypes", appointmentTypes);
-            }
-
             request.setAttribute("appointment", appointment);
             request.getRequestDispatcher("doctor-view-detail.jsp").forward(request, response);
 

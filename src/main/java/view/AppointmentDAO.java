@@ -1002,4 +1002,30 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return appointments;
     }
 
+    public List<AppointmentType> getAllAppointmentTypes() {
+        List<AppointmentType> appointmentTypes = new ArrayList<>();
+        String sql = "SELECT appointmenttype_id, type_name, description, price FROM AppointmentType";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                AppointmentType type = AppointmentType.builder()
+                        .appointmentTypeId(rs.getInt("appointmenttype_id"))
+                        .typeName(rs.getString("type_name"))
+                        .description(rs.getString("description"))
+                        .price(rs.getBigDecimal("price"))
+                        .build();
+                appointmentTypes.add(type);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return appointmentTypes;
+    }
+
+
 }
