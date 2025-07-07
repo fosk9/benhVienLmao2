@@ -84,7 +84,7 @@ public class DoctorUpdateAppointment extends HttpServlet {
                 request.setAttribute("appointment", appointment);
 
                 // Forward lại tới trang chỉnh sửa mà không chuyển hướng
-                request.getRequestDispatcher("doctor-view-detail.jsp").forward(request, response);
+                request.getRequestDispatcher("view-detail").forward(request, response);
                 return;
             }
 
