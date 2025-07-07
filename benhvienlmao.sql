@@ -263,7 +263,8 @@ INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
        ('Receptionist'),
        ('Admin'),
-       ('Manager');
+       ('Manager'),
+       ('Patient'); -- Added Patient role for patient-specific access control
 GO
 
 -- Insert sample SystemItems (combining Features and NavigationItems)
@@ -281,15 +282,22 @@ VALUES
     ('Home', 'index.jsp', 1, 'Navigation'),
     ('About', 'about.html', 2, 'Navigation'),
     ('Dental Services', 'services.html', 3, 'Navigation'),
-    ('Blog', 'blog.jsp', 4, 'Navigation'),
-    ('Blog', 'blog.jsp', 1, 'Navigation'),
-    ('Blog Details', 'blog-detail.jsp', 2, 'Navigation'),
-    ('Element', 'elements.html', 3, 'Navigation'),
-    ('Contact', 'contact.html', 5, 'Navigation'),
+    ('Blog', 'blog', 4, 'Navigation'), -- Unified Blog entry with correct URL
+    ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),
+    ('Contact', 'contact.html', 6, 'Navigation'),
     ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
-    ('Manage System Contents', 'admin/contents', 5, 'Feature'),
+    ('Manage System Contents', 'admin/contents', NULL, 'Feature'),
     ('Admin Home', 'admin/home', NULL, 'Navigation'),
-    ('Add New Content', 'admin/content/add', NULL, 'Navigation');
+    ('Add New Content', 'admin/content/add', NULL, 'Navigation'),
+    -- Patient-specific navigation items
+    ('Appointments', 'appointments', 1, 'Navigation'),
+    ('Treatment History', 'treatment/history', 2, 'Navigation'),
+    ('Services', 'services', 3, 'Navigation'),
+    ('Account', 'pactDetails', 4, 'Navigation'),
+    ('Logout', 'logout', 5, 'Navigation'),
+    ('My Profile', 'MyProfile', 6, 'Navigation'),
+    ('Change Password', 'change-password', 7, 'Navigation'),
+    ('Book Appointment', 'book-appointment', 8, 'Navigation');
 GO
 
 -- Insert sample RoleSystemItems
@@ -304,11 +312,21 @@ VALUES
     (3, 4),  -- Admin: Manage Patients
     (3, 5),  -- Admin: View Statistics
     (3, 6),  -- Admin: Approve Doctor Shifts
-    (3, 17), -- Admin: Manage System Items
-    (3, 18), -- Admin: Manage System Contents
-    (3, 19), -- Admin: Admin Home
-    (3, 20), -- Admin: Add New Content
-    (4, 6);  -- Manager: Approve Doctor Shifts
+    (3, 16), -- Admin: Manage System Items
+    (3, 17), -- Admin: Manage System Contents
+    (3, 18), -- Admin: Admin Home
+    (3, 19), -- Admin: Add New Content
+    (4, 6),  -- Manager: Approve Doctor Shifts
+    -- Patient-specific mappings (role_id = 5 for Patient)
+    (5, 13), -- Patient: Blog
+    (5, 20), -- Patient: Appointments
+    (5, 21), -- Patient: Treatment History
+    (5, 22), -- Patient: Services
+    (5, 23), -- Patient: Account
+    (5, 24), -- Patient: Logout
+    (5, 25), -- Patient: My Profile
+    (5, 26), -- Patient: Change Password
+    (5, 27); -- Patient: Book Appointment
 GO
 
 -- Insert sample Patients
@@ -481,7 +499,7 @@ VALUES
     ('index', 'footer_newsletter_form', 'Email Address', 1, NULL, NULL, 'https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01', NULL),
     ('index', 'footer_newsletter_button', 'Subscribe', 1, NULL, NULL, NULL, 'Subscribe'),
     ('index', 'footer_newsletter_subtitle', 'Stay updated with the latest dental care tips and promotions.', 1, NULL, NULL, NULL, NULL),
-    ('index', 'footer_copyright', 'Copyright &copy; All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>', 1, NULL, NULL, NULL, NULL),
+    ('index', 'footer_copyright', 'Copyright © All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>', 1, NULL, NULL, NULL, NULL),
     ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL);
 GO
 
@@ -498,4 +516,123 @@ VALUES
     (9, 4, '2022-01-05'), -- manager01 returned to Manager
     (1, 1, '2019-05-01'), -- dr_smith started as Doctor
     (2, 1, '2020-08-01'); -- dr_hoa started as Doctor
+GO
+
+-- Insert multiple appointments for nguyenlan (patient_id = 2)
+INSERT INTO Appointments (
+    patient_id, 
+    doctor_id, 
+    appointmenttype_id, 
+    appointment_date, 
+    time_slot, 
+    requires_specialist, 
+    status, 
+    created_at, 
+    updated_at
+)
+VALUES 
+    -- Appointment 1: Dental Checkup
+    (2, 1, 1, '2025-01-15', 'Morning', 0, 'Completed', '2025-01-10 10:00:00', '2025-01-15 12:00:00'),
+    -- Appointment 2: Teeth Cleaning
+    (2, 2, 2, '2025-03-20', 'Afternoon', 0, 'Confirmed', '2025-03-15 14:00:00', '2025-03-20 15:00:00'),
+    -- Appointment 3: Teeth Whitening
+    (2, 3, 3, '2025-06-10', 'Evening', 1, 'Pending', '2025-06-05 09:00:00', NULL),
+    -- Appointment 4: Composite Filling
+    (2, 4, 4, '2025-09-05', 'Morning', 0, 'Completed', '2025-08-30 11:00:00', '2025-09-05 13:00:00'),
+    -- Appointment 5: Orthodontic Consultation
+    (2, 1, 13, '2025-11-12', 'Afternoon', 1, 'Unpay', '2025-11-07 16:00:00', NULL);
+GO
+
+-- Insert corresponding Diagnoses
+INSERT INTO Diagnoses (
+    appointment_id, 
+    notes, 
+    created_at
+)
+VALUES 
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-01-15'), 
+     'Mild plaque buildup detected. Recommended regular cleaning.', 
+     '2025-01-15 12:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-03-20'), 
+     'Moderate tartar accumulation. Scaling and polishing performed.', 
+     '2025-03-20 15:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-06-10'), 
+     'Teeth staining observed. Whitening procedure scheduled.', 
+     '2025-06-10 20:00:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-09-05'), 
+     'Small cavity on molar #17. Composite filling applied.', 
+     '2025-09-05 13:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-11-12'), 
+     'Misaligned teeth detected. Recommended orthodontic evaluation.', 
+     '2025-11-12 15:00:00');
+GO
+
+-- Insert corresponding Prescriptions
+INSERT INTO Prescriptions (
+    appointment_id, 
+    medication_details, 
+    created_at
+)
+VALUES 
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-01-15'), 
+     'Prescribed fluoride toothpaste for daily use.', 
+     '2025-01-15 12:45:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-03-20'), 
+     'Recommended antiseptic mouthwash twice daily for 2 weeks.', 
+     '2025-03-20 15:45:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-06-10'), 
+     'No medication prescribed. Post-whitening sensitivity gel provided.', 
+     '2025-06-10 20:15:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-09-05'), 
+     'Analgesic (Ibuprofen 400mg) for 2 days post-filling if needed.', 
+     '2025-09-05 13:45:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-11-12'), 
+     'No medication prescribed. Awaiting orthodontic plan.', 
+     '2025-11-12 15:15:00');
+GO
+
+-- Insert corresponding Treatments
+INSERT INTO Treatment (
+    appointment_id, 
+    treatment_type, 
+    treatment_notes, 
+    created_at
+)
+VALUES 
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-01-15'), 
+     'Dental Examination', 
+     'Routine checkup completed. Oral hygiene instructions provided.', 
+     '2025-01-15 12:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-03-20'), 
+     'Scaling and Polishing', 
+     'Professional cleaning performed. Patient advised on flossing techniques.', 
+     '2025-03-20 15:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-06-10'), 
+     'Teeth Whitening', 
+     'Laser whitening procedure planned. Pre-treatment assessment completed.', 
+     '2025-06-10 20:00:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-09-05'), 
+     'Composite Filling', 
+     'Filling applied to molar #17. Patient reported no discomfort.', 
+     '2025-09-05 13:30:00'),
+    ((SELECT appointment_id FROM Appointments WHERE patient_id = 2 AND appointment_date = '2025-11-12'), 
+     'Orthodontic Consultation', 
+     'Initial consultation for braces. X-rays taken for analysis.', 
+     '2025-11-12 15:00:00');
+GO
+
+-- Insert corresponding Feedbacks
+INSERT INTO Feedbacks (
+    employee_id, 
+    patient_id, 
+    rating, 
+    comments, 
+    created_at
+)
+VALUES 
+    (1, 2, 5, 'Dr. Smith was very professional and explained everything clearly.', '2025-01-15 13:00:00'),
+    (2, 2, 4, 'Teeth cleaning was thorough, but the session took longer than expected.', '2025-03-20 16:00:00'),
+    (3, 2, 5, 'Dr. Lee was patient and answered all my questions about whitening.', '2025-06-10 20:30:00'),
+    (4, 2, 5, 'Filling procedure was quick and painless. Highly recommend Dr. Linh.', '2025-09-05 14:00:00'),
+    (1, 2, 4, 'Good consultation, but waiting time was a bit long.', '2025-11-12 15:30:00');
 GO
