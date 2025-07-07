@@ -36,11 +36,11 @@ public class PaymentControllerServlet extends HttpServlet {
         String payosStatus = req.getParameter("status");
         // Nếu có callback từ PayOS (thanh toán thành công hoặc huỷ)
         if (appointmentIdStr != null && payosStatus != null) {
-            if (payosStatus.equalsIgnoreCase("PAID")) {
+            if (payosStatus.equalsIgnoreCase("Paid")) {
                 try {
                     int appointmentId = Integer.parseInt(appointmentIdStr);
                     AppointmentDAO appointmentDAO = new AppointmentDAO();
-                    appointmentDAO.updateStatus(appointmentId, "PENDING");
+                    appointmentDAO.updateStatus(appointmentId, "Pending");
                 } catch (Exception ex) {
                     // log error
                 }
@@ -102,18 +102,23 @@ public class PaymentControllerServlet extends HttpServlet {
                     ? appointment.getAppointmentType().getPrice().intValue()
                     : 2000;
 
+            // Patient ID for the description
+            Integer patientId = appointment.getPatient() != null ? appointment.getPatient().getPatientId() : null;
+
+            // Create the payment link data
             ItemData itemData = ItemData.builder()
                     .name(serviceName)
                     .quantity(1)
                     .price(price)
                     .build();
 
+            // Create the payment data
             PaymentData paymentData = PaymentData.builder()
                     .orderCode(orderCode)
                     .amount(price)
-                    .description("Thanh toán lịch khám #" + appointmentId)
-                    .returnUrl(domain + "payment?appointmentId=" + appointmentId + "&status=PAID")
-                    .cancelUrl(domain + "payment?appointmentId=" + appointmentId + "&status=CANCEL")
+                    .description("#" + patientId + "_# " + appointmentId + "_" + serviceName)
+                    .returnUrl(domain + "payment?appointmentId=" + appointmentId + "&status=Paid")
+                    .cancelUrl(domain + "payment?appointmentId=" + appointmentId + "&status=Cancelled")
                     .item(itemData)
                     .build();
 
