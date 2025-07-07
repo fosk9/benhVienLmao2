@@ -9,9 +9,9 @@
 <p style="text-align:center;"><strong>More information about the license is available <a href="https://colorlib.com/wp/licence/">here</a></strong>.</p>
 
 <style>
-img {
-  margin: 0 auto;
-  display: block;
-  margin-top: 20%;
-}
+    img {
+        margin: 0 auto;
+        display: block;
+        margin-top: 20%;
+    }
 </style>

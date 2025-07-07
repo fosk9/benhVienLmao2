@@ -21,5 +21,5 @@ public class Employee {
     private String email;
     private String phone;
     private int roleId;
-    private Integer specializationId; // Nullable
+    private String employeeAvaUrl; // Nullable, can be empty string
 }

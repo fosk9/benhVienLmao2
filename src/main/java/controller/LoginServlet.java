@@ -1,5 +1,3 @@
-
-
 package controller;
 
 import jakarta.servlet.ServletException;
@@ -44,8 +42,23 @@ public class LoginServlet extends HttpServlet {
             Employee employee = employeeDAO.login(username, password);
             if (employee != null) {
                 session.setAttribute("account", employee);
+                session.setAttribute("username", username);
+                session.setAttribute("role", employee.getRoleId());
                 session.setAttribute("login-as", "employee");
-                response.sendRedirect("index.html");
+
+
+                if (employee.getRoleId() == 1) {
+                    response.sendRedirect(request.getContextPath() + "/doctor-home");
+                } else if (employee.getRoleId() == 2) {
+                    response.sendRedirect(request.getContextPath() + "/receptionist-home");
+                } else if (employee.getRoleId() == 3) {
+                    response.sendRedirect(request.getContextPath() + "/admin/home");
+                } else if (employee.getRoleId() == 4) {
+                    response.sendRedirect(request.getContextPath() + "/manager-home");
+                }
+                else {
+                    response.sendRedirect(request.getContextPath() + "/index.html");
+                }
                 return;
             } else {
                 request.setAttribute("username", username);
@@ -59,11 +72,11 @@ public class LoginServlet extends HttpServlet {
         }
         request.setAttribute("username", username);
         request.setAttribute("password", password);
-        request.getRequestDispatcher("Login.jsp").forward(request, response);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("Login.jsp").forward(request, response);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }

@@ -16,5 +16,7 @@ public class Payment {
     private double amount;
     private String method;
     private String status;
-    private LocalDateTime paymentDate;
+    private String payContent;
+    private LocalDateTime createdAt;
+    private LocalDateTime paidAt;
 }

@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>My Appointments</title>
+    <title>${sessionScope.username != null ? sessionScope.username : 'User'}'s Appointments</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="<c:url value='/assets/css/bootstrap.min.css'/>">
@@ -21,6 +22,234 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+    <style>
+        /* Consistent font with index.jsp, scaled up */
+        body, .table th, .table td, .btn, .form-control, label {
+            font-family: "Segoe UI", sans-serif;
+            font-size: 1.8rem; /* Increased from 1.4rem */
+        }
+
+        /* Title styling */
+        h2 {
+            text-align: center;
+            margin: 40px 0; /* Increased from 30px */
+            font-size: 2.6rem; /* Increased from 2rem */
+            color: #28a745;
+        }
+
+        /* Table styling */
+        .card {
+            border-radius: 15px; /* Increased from 12px */
+            overflow: hidden;
+            border: 2px solid #28a745; /* Increased from 1px */
+            margin-top: 30px; /* Increased from 20px */
+        }
+
+        .table {
+            border-radius: 15px; /* Increased from 12px */
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: #f1f8f1;
+            color: #28a745;
+            font-weight: bold;
+            padding: 15px; /* Increased from 8px */
+        }
+
+        .table-bordered {
+            border: 2px solid #28a745; /* Increased from 1px */
+        }
+
+        .table-bordered th, .table-bordered td {
+            border: 2px solid #28a745; /* Increased from 1px */
+            padding: 15px; /* Increased from 8px */
+        }
+
+        /* Button styling */
+        .btn {
+            font-size: 1.6rem; /* Increased from 1.2rem */
+            padding: 16px 32px; /* Increased from 12px 24px */
+            border-radius: 8px; /* Increased from 6px */
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #138496;
+        }
+
+        .btn + .btn {
+            margin-left: 15px; /* Increased from 10px */
+        }
+
+        /* Search form table styling */
+        .search-table {
+            width: 100%;
+            max-width: 600px; /* Increased from 500px */
+            margin: 30px auto; /* Increased from 20px */
+            background-color: #f1f8f1;
+            padding: 25px; /* Increased from 15px */
+            border-radius: 25px; /* Increased from 20px */
+            border: 2px solid #28a745; /* Increased from 1px */
+        }
+
+        .search-table td {
+            padding: 12px; /* Increased from 8px */
+            vertical-align: middle;
+        }
+
+        .search-table td:first-child {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.8rem; /* Increased from 1.2rem */
+            width: 40%;
+            text-align: right;
+        }
+
+        .search-table td:last-child {
+            width: 60%;
+        }
+
+        .search-table .form-control {
+            font-size: 1.6rem; /* Increased from 1.2rem */
+            height: 50px; /* Increased for larger inputs */
+            width: 100%;
+        }
+
+        .search-table .btn {
+            font-size: 1.6rem; /* Increased from 1.2rem */
+            padding: 14px 28px; /* Increased from 10px 20px */
+            border-radius: 8px; /* Increased from 6px */
+        }
+
+        .search-table .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .search-table .btn-primary:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+
+        .search-table .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .search-table .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+
+        /* Pagination styling */
+        .pagination {
+            justify-content: center;
+            margin-top: 30px; /* Increased from 20px */
+        }
+
+        .page-link {
+            font-size: 1.6rem; /* Increased from 1.2rem */
+            color: #28a745;
+            border-color: #28a745;
+            padding: 12px 18px; /* Increased from default */
+        }
+
+        .page-link:hover {
+            background-color: #f1f8f1;
+            color: #218838;
+        }
+
+        .page-item.active .page-link {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+
+        .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: #dc3545;
+            font-size: 1.6rem; /* Increased from 1.2rem */
+            text-align: center;
+            margin-bottom: 30px; /* Increased from 20px */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .table th, .table td {
+                font-size: 1.6rem; /* Increased from 1.2rem */
+            }
+
+            .btn {
+                font-size: 1.4rem; /* Increased from 1rem */
+                padding: 12px 24px; /* Increased from 8px 16px */
+            }
+
+            h2 {
+                font-size: 2.2rem; /* Increased from 1.8rem */
+            }
+
+            .search-table {
+                padding: 15px; /* Increased from 10px */
+                max-width: 100%;
+            }
+
+            .search-table td:first-child, .search-table td:last-child {
+                font-size: 1.6rem; /* Increased from 1.1rem */
+                padding: 8px; /* Increased from 5px */
+            }
+
+            .search-table .form-control {
+                font-size: 1.4rem; /* Increased from 1.1rem */
+                height: 45px; /* Adjusted for mobile */
+            }
+
+            .search-table .btn {
+                font-size: 1.4rem; /* Increased from 1.1rem */
+                padding: 10px 20px; /* Increased from 8px 16px */
+            }
+        }
+
+        /* Flexbox for appointment order (if needed) */
+        #flex {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #a { order: 1; }
+        #b { order: 2; }
+        #c { order: 3; }
+    </style>
 </head>
 <body>
 <header>
@@ -39,9 +268,7 @@
                                 <nav>
                                     <ul id="navigation">
                                         <li><a href="<c:url value='/pactHome'/>">Home</a></li>
-                                        <li><a href="<c:url value='/services'/>">Services</a></li>
                                         <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>
-                                        <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>
                                         <li><a href="<c:url value='/logout'/>">Logout</a></li>
                                     </ul>
                                 </nav>
@@ -58,7 +285,87 @@
 </header>
 <main>
     <div class="container mt-5">
-        <h2>My Appointments</h2>
+        <!-- Display user's appointments title -->
+        <h2>${sessionScope.username != null ? sessionScope.username : 'User'}'s Appointments</h2>
+        <!-- Display error message if set -->
+        <c:if test="${not empty error}">
+            <div class="error-message">${error}</div>
+        </c:if>
+        <!-- Search Form Start -->
+        <table class="search-table">
+            <form action="<c:url value='/appointments'/>" method="get" id="searchForm">
+                <tr>
+                    <td style="text-align:left; width:50%;">Appointment Date</td>
+                    <td style="width:50%;"><input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${param.appointmentDate}"></td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; width:50%;">Type</td>
+                    <td style="width:50%;">
+                        <select id="appointmentTypeId" name="appointmentTypeId" class="form-control">
+                            <option value="">All</option>
+                            <c:forEach var="type" items="${appointmentTypes}">
+                                <option value="${type.appointmentTypeId}"
+                                        <c:if test="${param.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
+                                        ${type.typeName}
+                                </option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; width:50%;">Status</td>
+                    <td style="width:50%;">
+                        <select id="status" name="status" class="form-control">
+                            <option value="">All</option>
+                            <option value="Unpay" <c:if test="${param.status == 'Unpay'}">selected</c:if>>Unpaid</option>
+                            <option value="Confirmed" <c:if test="${param.status == 'Confirmed'}">selected</c:if>>Confirmed</option>
+                            <option value="Cancelled" <c:if test="${param.status == 'Cancelled'}">selected</c:if>>Cancelled</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; width:50%;">Time Slot</td>
+                    <td style="width:50%;">
+                        <select id="timeSlot" name="timeSlot" class="form-control">
+                            <option value="">All</option>
+                            <option value="Morning" <c:if test="${param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
+                            <option value="Afternoon" <c:if test="${param.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
+                            <option value="Evening" <c:if test="${param.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; width:50%;">Request Specialist</td>
+                    <td style="width:50%;">
+                        <select id="requiresSpecialist" name="requiresSpecialist" class="form-control">
+                            <option value="">All</option>
+                            <option value="Yes" <c:if test="${param.requiresSpecialist == 'Yes'}">selected</c:if>>Yes</option>
+                            <option value="No" <c:if test="${param.requiresSpecialist == 'No'}">selected</c:if>>No</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; width:50%;">Sort By</td>
+                    <td style="width:50%;">
+                        <select id="sortBy" name="sortBy" class="form-control" onchange="updateSortDir()">
+                            <option value="">Default (Newest)</option>
+                            <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'ASC'}">selected</c:if>>Date (Oldest to Newest)</option>
+                            <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'DESC'}">selected</c:if>>Date (Newest to Oldest)</option>
+                            <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'ASC'}">selected</c:if>>Type (A-Z)</option>
+                            <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'DESC'}">selected</c:if>>Type (Z-A)</option>
+                        </select>
+                        <input type="hidden" id="sortDir" name="sortDir" value="${sortDir}">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center; width:50%;"><button type="submit" class="btn btn-primary">Search</button></td>
+                    <td style="text-align:center; width:50%;"><button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button></td>
+                </tr>
+            </form>
+        </table>
+        <!-- Search Form End -->
+
+        <!-- Display appointments in a table -->
         <div class="card">
             <div class="card-body">
                 <table class="table table-bordered">
@@ -66,7 +373,9 @@
                     <tr>
                         <th>ID</th>
                         <th>Appointment Date</th>
+                        <th>Time Slot</th>
                         <th>Type</th>
+                        <th>Requires Specialist</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -75,21 +384,102 @@
                     <c:forEach var="appointment" items="${appointments}">
                         <tr>
                             <td>${appointment.appointmentId}</td>
-                            <td>${appointment.appointmentDate}</td>
-                            <td>${appointment.appointmentType}</td>
+                            <td><fmt:formatDate value="${appointment.appointmentDate}" pattern="yyyy-MM-dd"/></td>
+                            <td>${appointment.timeSlot}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.typeName}">
+                                        ${appointment.appointmentType.typeName}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span style="color:red;font-weight:bold;">Unknown Type</span>
+                                        <script>
+                                            console.warn("Appointment ID ${appointment.appointmentId} missing valid appointmentType: ", ${appointment.appointmentType});
+                                        </script>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${appointment.requiresSpecialist}">Yes</c:when>
+                                    <c:otherwise>No</c:otherwise>
+                                </c:choose>
+                            </td>
                             <td>${appointment.status}</td>
                             <td>
-                                <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
-                                   class="btn btn-sm btn-primary">Edit</a>
-                                <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
-                                   class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                <c:set var="now" value="<%= new java.sql.Timestamp(System.currentTimeMillis()) %>"/>
+                                <c:choose>
+                                    <c:when test="${appointment.appointmentDate.time > now.time}">
+                                        <c:choose>
+                                            <c:when test="${appointment.status == 'Unpay'}">
+                                                <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
+                                                   class="btn btn-primary">Edit</a>
+                                                <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
+                                                   class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                                <a href="<c:url value='/payment?appointmentId=${appointment.appointmentId}'/>"
+                                                   class="btn btn-success">Pay</a>
+                                            </c:when>
+                                        </c:choose>
+                                    </c:when>
+                                </c:choose>
                                 <a href="<c:url value='/appointments/details?id=${appointment.appointmentId}'/>"
-                                   class="btn btn-sm btn-info">Details</a>
+                                   class="btn btn-info">Details</a>
                             </td>
                         </tr>
                     </c:forEach>
+                    <c:if test="${empty appointments}">
+                        <tr>
+                            <td colspan="7" class="text-center">No appointments found.</td>
+                        </tr>
+                    </c:if>
                     </tbody>
                 </table>
+                <!-- Pagination controls -->
+                <nav>
+                    <ul class="pagination">
+                        <!-- Previous page link -->
+                        <li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
+                            <a class="page-link" href="<c:url value='/appointments'>
+                                <c:param name='page' value='${currentPage - 1}'/>
+                                <c:param name='appointmentDate' value='${param.appointmentDate}'/>
+                                <c:param name='timeSlot' value='${param.timeSlot}'/>
+                                <c:param name='appointmentTypeId' value='${param.appointmentTypeId}'/>
+                                <c:param name='requiresSpecialist' value='${param.requiresSpecialist}'/>
+                                <c:param name='status' value='${param.status}'/>
+                                <c:param name='sortBy' value='${sortBy}'/>
+                                <c:param name='sortDir' value='${sortDir}'/>
+                            </c:url>">Previous</a>
+                        </li>
+                        <!-- Page numbers -->
+                        <c:forEach begin="1" end="${totalPages}" var="i">
+                            <li class="page-item <c:if test='${currentPage == i}'>active</c:if>">
+                                <a class="page-link" href="<c:url value='/appointments'>
+                                    <c:param name='page' value='${i}'/>
+                                    <c:param name='appointmentDate' value='${param.appointmentDate}'/>
+                                    <c:param name='timeSlot' value='${param.timeSlot}'/>
+                                    <c:param name='appointmentTypeId' value='${param.appointmentTypeId}'/>
+                                    <c:param name='requiresSpecialist' value='${param.requiresSpecialist}'/>
+                                    <c:param name='status' value='${param.status}'/>
+                                    <c:param name='sortBy' value='${sortBy}'/>
+                                    <c:param name='sortDir' value='${sortDir}'/>
+                                </c:url>">${i}</a>
+                            </li>
+                        </c:forEach>
+                        <!-- Next page link -->
+                        <li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
+                            <a class="page-link" href="<c:url value='/appointments'>
+                                <c:param name='page' value='${currentPage + 1}'/>
+                                <c:param name='appointmentDate' value='${param.appointmentDate}'/>
+                                <c:param name='timeSlot' value='${param.timeSlot}'/>
+                                <c:param name='appointmentTypeId' value='${param.appointmentTypeId}'/>
+                                <c:param name='requiresSpecialist' value='${param.requiresSpecialist}'/>
+                                <c:param name='status' value='${param.status}'/>
+                                <c:param name='sortBy' value='${sortBy}'/>
+                                <c:param name='sortDir' value='${sortDir}'/>
+                            </c:url>">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
@@ -174,5 +564,27 @@
 <script src="<c:url value='/assets/js/jquery.ajaxchimp.min.js'/>"></script>
 <script src="<c:url value='/assets/js/plugins.js'/>"></script>
 <script src="<c:url value='/assets/js/main.js'/>"></script>
+<script>
+    // Update sort direction based on sortBy selection
+    function updateSortDir() {
+        const sortBySelect = document.getElementById('sortBy');
+        const sortDirInput = document.getElementById('sortDir');
+        const selectedOption = sortBySelect.selectedOptions[0].text;
+        if (selectedOption.includes('(Z-A)') || selectedOption.includes('Newest') || selectedOption.includes('Latest')) {
+            sortDirInput.value = 'DESC';
+        } else {
+            sortDirInput.value = 'ASC';
+        }
+        document.getElementById('searchForm').submit();
+    }
+
+    // Reset search form to default values
+    function resetForm() {
+        const form = document.getElementById('searchForm');
+        form.reset();
+        document.getElementById('sortDir').value = 'DESC';
+        form.submit();
+    }
+</script>
 </body>
 </html>
