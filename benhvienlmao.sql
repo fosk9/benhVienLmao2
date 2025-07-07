@@ -21,16 +21,14 @@ CREATE TABLE Roles
 );
 GO
 
--- SystemItems (merged Features and NavigationItems)
+-- SystemItems (merged Features and NavigationItems, removed parent_item_id)
 CREATE TABLE SystemItems
 (
-    item_id        INT PRIMARY KEY IDENTITY (1,1),
-    item_name      NVARCHAR(255) NOT NULL,
-    item_url       NVARCHAR(255),
-    display_order  INT,
-    parent_item_id INT           NULL,
-    item_type      VARCHAR(50)   NOT NULL CHECK (item_type IN ('Feature', 'Navigation')),
-    FOREIGN KEY (parent_item_id) REFERENCES SystemItems (item_id)
+    item_id       INT PRIMARY KEY IDENTITY (1,1),
+    item_name     NVARCHAR(255) NOT NULL,
+    item_url      NVARCHAR(255),
+    display_order INT,
+    item_type     VARCHAR(50) NOT NULL CHECK (item_type IN ('Feature', 'Navigation'))
 );
 GO
 
@@ -239,13 +237,10 @@ CREATE TABLE DoctorShifts
     doctor_id    INT  NOT NULL,
     shift_date   DATE NOT NULL,
     time_slot    VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening', 'Night')),
-
     status       VARCHAR(20) CHECK (status IN ('Working', 'PendingLeave', 'Leave', 'Rejected')) DEFAULT 'Working',
-
-    manager_id   INT,      -- Người duyệt đơn nghỉ
-    requested_at DATETIME, -- Thời gian xin nghỉ
-    approved_at  DATETIME, -- Thời gian duyệt (dù là đồng ý hay từ chối)
-
+    manager_id   INT,
+    requested_at DATETIME,
+    approved_at  DATETIME,
     FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
     FOREIGN KEY (manager_id) REFERENCES Employees (employee_id)
 );
@@ -254,14 +249,14 @@ GO
 -- PageContent
 CREATE TABLE PageContent (
     content_id INT PRIMARY KEY IDENTITY(1,1),
-    page_name VARCHAR(50) NOT NULL, -- e.g., 'index'
-    content_key VARCHAR(100) NOT NULL, -- e.g., 'slider1_caption', 'daily_dental_updates_title'
-    content_value NVARCHAR(MAX) NOT NULL, -- e.g., 'Smile with Confidence'
+    page_name VARCHAR(50) NOT NULL,
+    content_key VARCHAR(100) NOT NULL,
+    content_value NVARCHAR(MAX) NOT NULL,
     is_active BIT DEFAULT 1,
-    image_url NVARCHAR(255) NULL, -- URL for slider background image
-    video_url NVARCHAR(255) NULL, -- URL for video link
-    button_url NVARCHAR(255) NULL, -- URL for button link
-    button_text NVARCHAR(255) NULL, -- Text for button
+    image_url NVARCHAR(255) NULL,
+    video_url NVARCHAR(255) NULL,
+    button_url NVARCHAR(255) NULL,
+    button_text NVARCHAR(255) NULL,
     UNIQUE (page_name, content_key)
 );
 GO
@@ -272,10 +267,10 @@ VALUES ('Doctor'),
        ('Receptionist'),
        ('Admin'),
        ('Manager'),
-       ('Patient'); -- Added Patient role for patient-specific access control
+       ('Patient');
 GO
 
--- Insert sample SystemItems (combining Features and NavigationItems)
+-- Insert sample SystemItems
 INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
 VALUES
     ('Book Appointment', 'book-appointment', NULL, 'Feature'),
@@ -284,13 +279,13 @@ VALUES
     ('Manage Patients', 'admin/managePatients', NULL, 'Feature'),
     ('View Statistics', 'admin/statistics', NULL, 'Feature'),
     ('Approve Doctor Shifts', 'admin/shift-approval', NULL, 'Feature'),
-    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', NULL, 'Feature'),
-    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', NULL, 'Feature'),
-    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', NULL, 'Feature'),
+    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
+    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
+    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
     ('Home', 'index.jsp', 1, 'Navigation'),
     ('About', 'about.html', 2, 'Navigation'),
     ('Dental Services', 'services.html', 3, 'Navigation'),
-    ('Blog', 'blog', 4, 'Navigation'), -- Unified Blog entry with correct URL
+    ('Blog', 'blog', 4, 'Navigation'),
     ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),
     ('Contact', 'contact.html', 6, 'Navigation'),
     ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
@@ -306,27 +301,6 @@ VALUES
     ('My Profile', 'MyProfile', 6, 'Navigation'),
     ('Change Password', 'change-password', 7, 'Navigation'),
     ('Book Appointment', 'book-appointment', 8, 'Navigation');
-INSERT INTO SystemItems (item_name, item_url, image_url, is_active, display_order, parent_item_id, item_type)
-VALUES ('Book Appointment', 'book-appointment', 'assets/img/icon/book_appointment.png', 1, NULL, NULL, 'Feature'),
-       ('View Prescription', 'view-prescription', 'assets/img/icon/prescription.png', 1, NULL, NULL, 'Feature'),
-       ('Manage Users', 'admin/users', 'assets/img/icon/manage_users.png', 1, NULL, NULL, 'Feature'),
-       ('View Statistics', 'admin/statistics', 'assets/img/icon/statistics.png', 1, NULL, NULL, 'Feature'),
-       ('Approve Doctor Shifts', 'admin/shift-approval', 'assets/img/icon/shift_approval.png', 1, NULL, NULL,
-        'Feature'),
-       ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 'assets/img/icon/services1.svg', 1, NULL, NULL,
-        'Feature'),
-       ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 'assets/img/icon/services2.svg', 1, NULL, NULL,
-        'Feature'),
-       ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 'assets/img/icon/services3.svg', 1, NULL, NULL,
-        'Feature'),
-       ('Home', 'index.jsp', NULL, 1, 1, NULL, 'Navigation'),
-       ('About', 'about.html', NULL, 1, 2, NULL, 'Navigation'),
-       ('Dental Services', 'services.html', NULL, 1, 3, NULL, 'Navigation'),
-       ('Blog', 'blog.jsp', NULL, 1, 4, NULL, 'Navigation'),
-       ('Blog', 'blog.jsp', NULL, 1, 1, 12, 'Navigation'),
-       ('Blog Details', 'blog-detail.jsp', NULL, 1, 2, 12, 'Navigation'),
-       ('Element', 'elements.html', NULL, 1, 3, 12, 'Navigation'),
-       ('Contact', 'contact.html', NULL, 1, 5, NULL, 'Navigation');
 GO
 
 -- Insert sample RoleSystemItems
@@ -359,32 +333,19 @@ VALUES
 GO
 
 -- Insert sample Patients
-INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number,
-                      emergency_contact)
-VALUES ('john_doe', '123456', N'John Doe', '1990-05-10', 'M', 'john@example.com', '0901234567',
-        N'123 Nguyễn Trãi, Hà Nội', 'INS12345', N'Jane Doe - 0912345678'),
-       ('nguyenlan', 'abcdef', N'Nguyễn Lan', '1995-08-15', 'F', 'lan@example.com', '0987654321',
-        N'456 Lê Lợi, Đà Nẵng', 'INS67890', N'Nguyễn Văn An - 0909876543'),
-       ('tranbaominh', '654321', N'Trần Bảo Minh', '1988-03-25', 'M', 'minhtran@example.com', '0938123456',
-        N'789 Phan Đình Phùng, TP.HCM', 'INS11223', N'Lê Thị Hoa - 0922334455'),
-       ('lethanhha', '112233', N'Lê Thanh Hà', '1992-12-05', 'F', 'ha.le@example.com', '0944556677',
-        N'101 Lý Thường Kiệt, Huế', 'INS44556', N'Ngô Quốc Dũng - 0977998855'),
-       ('phamthutrang', 'pass123', N'Phạm Thu Trang', '1999-07-22', 'F', 'trangpham@example.com', '0911223344',
-        N'99 Trần Hưng Đạo, Nha Trang', 'INS99887', N'Phạm Đức Anh - 0933445566'),
-       ('phamquang', 'pq123', N'Phạm Quang', '1991-01-10', 'M', 'quang.pham@example.com', '0912000001',
-        N'12 Lý Chính Thắng, Hà Nội', 'INS55501', N'Nguyễn Hà - 0912333444'),
-       ('dothanhtruc', 'dttruc', N'Đỗ Thanh Trúc', '1996-02-12', 'F', 'truc.do@example.com', '0912000002',
-        N'15 Pasteur, Đà Nẵng', 'INS55502', N'Lê Quang - 0922333444'),
-       ('hoangminhduc', 'hmd123', N'Hoàng Minh Đức', '1993-07-08', 'M', 'duc.hoang@example.com', '0912000003',
-        N'99 Trần Phú, TP.HCM', 'INS55503', N'Phạm Lan - 0932333444'),
-       ('tranthikieu', 'tk123', N'Trần Thị Kiều', '1997-05-22', 'F', 'kieu.tran@example.com', '0912000004',
-        N'71 Lê Văn Sỹ, Biên Hòa', 'INS55504', N'Trịnh Hùng - 0942333444'),
-       ('nguyenthihong', 'nth456', N'Nguyễn Thị Hồng', '1990-03-30', 'F', 'hong.nguyen@example.com', '0912000005',
-        N'52 Nguyễn Tri Phương, Huế', 'INS55505', N'Lê Minh - 0952333444'),
-       ('letrungkieu', 'ltk789', N'Lê Trung Kiều', '1994-09-09', 'M', 'kieu.le@example.com', '0912000006',
-        N'18 Hoàng Văn Thụ, Hải Phòng', 'INS55506', N'Ngô Bình - 0962333444'),
-       ('phamthanhnga', 'ptn111', N'Phạm Thanh Nga', '1992-11-11', 'F', 'nga.pham@example.com', '0912000007',
-        N'64 Nguyễn Huệ, Nha Trang', 'INS55507', N'Lý Hương - 0972333444');
+INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, insurance_number, emergency_contact)
+VALUES ('john_doe', '123456', N'John Doe', '1990-05-10', 'M', 'john@example.com', '0901234567', N'123 Nguyễn Trãi, Hà Nội', 'INS12345', N'Jane Doe - 0912345678'),
+       ('nguyenlan', 'abcdef', N'Nguyễn Lan', '1995-08-15', 'F', 'lan@example.com', '0987654321', N'456 Lê Lợi, Đà Nẵng', 'INS67890', N'Nguyễn Văn An - 0909876543'),
+       ('tranbaominh', '654321', N'Trần Bảo Minh', '1988-03-25', 'M', 'minhtran@example.com', '0938123456', N'789 Phan Đình Phùng, TP.HCM', 'INS11223', N'Lê Thị Hoa - 0922334455'),
+       ('lethanhha', '112233', N'Lê Thanh Hà', '1992-12-05', 'F', 'ha.le@example.com', '0944556677', N'101 Lý Thường Kiệt, Huế', 'INS44556', N'Ngô Quốc Dũng - 0977998855'),
+       ('phamthutrang', 'pass123', N'Phạm Thu Trang', '1999-07-22', 'F', 'trangpham@example.com', '0911223344', N'99 Trần Hưng Đạo, Nha Trang', 'INS99887', N'Phạm Đức Anh - 0933445566'),
+       ('phamquang', 'pq123', N'Phạm Quang', '1991-01-10', 'M', 'quang.pham@example.com', '0912000001', N'12 Lý Chính Thắng, Hà Nội', 'INS55501', N'Nguyễn Hà - 0912333444'),
+       ('dothanhtruc', 'dttruc', N'Đỗ Thanh Trúc', '1996-02-12', 'F', 'truc.do@example.com', '0912000002', N'15 Pasteur, Đà Nẵng', 'INS55502', N'Lê Quang - 0922333444'),
+       ('hoangminhduc', 'hmd123', N'Hoàng Minh Đức', '1993-07-08', 'M', 'duc.hoang@example.com', '0912000003', N'99 Trần Phú, TP.HCM', 'INS55503', N'Phạm Lan - 0932333444'),
+       ('tranthikieu', 'tk123', N'Trần Thị Kiều', '1997-05-22', 'F', 'kieu.tran@example.com', '0912000004', N'71 Lê Văn Sỹ, Biên Hòa', 'INS55504', N'Trịnh Hùng - 0942333444'),
+       ('nguyenthihong', 'nth456', N'Nguyễn Thị Hồng', '1990-03-30', 'F', 'hong.nguyen@example.com', '0912000005', N'52 Nguyễn Tri Phương, Huế', 'INS55505', N'Lê Minh - 0952333444'),
+       ('letrungkieu', 'ltk789', N'Lê Trung Kiều', '1994-09-09', 'M', 'kieu.le@example.com', '0912000006', N'18 Hoàng Văn Thụ, Hải Phòng', 'INS55506', N'Ngô Bình - 0962333444'),
+       ('phamthanhnga', 'ptn111', N'Phạm Thanh Nga', '1992-11-11', 'F', 'nga.pham@example.com', '0912000007', N'64 Nguyễn Huệ, Nha Trang', 'INS55507', N'Lý Hương - 0972333444');
 GO
 
 -- Insert sample Employees
@@ -427,56 +388,60 @@ VALUES ('Dental Checkup', 'Routine dental examination and consultation', 200000.
        ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
+-- Insert sample Appointments
 INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
 VALUES
--- Doctor 1 - 2025-06-23 Morning
-(1, 1, 1, '2025-06-23', 'Morning', 'Confirmed'),
-(2, 1, 1, '2025-06-23', 'Morning', 'Confirmed'),
--- Doctor 1 - 2025-06-23 Afternoon
-(3, 1, 1, '2025-06-23', 'Afternoon', 'Confirmed'),
--- Doctor 1 - 2025-06-24 Afternoon
-(4, 1, 1, '2025-06-24', 'Afternoon', 'Confirmed'),
--- Doctor 1 - 2025-06-25 Evening
-(5, 1, 1, '2025-06-25', 'Evening', 'Confirmed'),
--- Doctor 1 - 2025-06-27 Morning
-(6, 1, 1, '2025-06-27', 'Morning', 'Confirmed'),
--- Doctor 2 - 2025-06-23 Afternoon
-(7, 2, 1, '2025-06-23', 'Afternoon', 'Confirmed'),
--- Doctor 2 - 2025-06-24 Morning
-(8, 2, 1, '2025-06-24', 'Morning', 'Confirmed'),
--- Doctor 2 - 2025-06-25 Morning
-(9, 2, 1, '2025-06-25', 'Morning', 'Confirmed'),
--- Doctor 2 - 2025-06-28 Morning
-(10, 2, 1, '2025-06-28', 'Morning', 'Confirmed'),
--- Doctor 2 - 2025-06-29 Morning
-(11, 2, 1, '2025-06-29', 'Morning', 'Confirmed');
--- Bác sĩ 1: có 3 ca khám đã hoàn thành
-INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
-VALUES (1, 1, 1, '2025-06-10', 'Morning', 'Completed'),
-       (2, 1, 2, '2025-06-11', 'Afternoon', 'Completed'),
-       (3, 1, 3, '2025-06-12', 'Evening', 'Completed');
-INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
-VALUES
--- Ca khám đã hoàn thành cho bệnh nhân 1
-(1, 1, 2, '2025-06-15', 'Morning', 'Completed'),
-(1, 2, 1, '2025-06-17', 'Afternoon', 'Completed'),
-(1, 2, 3, '2025-06-20', 'Evening', 'Completed');
+    -- Doctor 1 - 2025-06-23 Morning
+    (1, 1, 1, '2025-06-23', 'Morning', 'Confirmed'),
+    (2, 1, 1, '2025-06-23', 'Morning', 'Confirmed'),
+    -- Doctor 1 - 2025-06-23 Afternoon
+    (3, 1, 1, '2025-06-23', 'Afternoon', 'Confirmed'),
+    -- Doctor 1 - 2025-06-24 Afternoon
+    (4, 1, 1, '2025-06-24', 'Afternoon', 'Confirmed'),
+    -- Doctor 1 - 2025-06-25 Evening
+    (5, 1, 1, '2025-06-25', 'Evening', 'Confirmed'),
+    -- Doctor 1 - 2025-06-27 Morning
+    (6, 1, 1, '2025-06-27', 'Morning', 'Confirmed'),
+    -- Doctor 2 - 2025-06-23 Afternoon
+    (7, 2, 1, '2025-06-23', 'Afternoon', 'Confirmed'),
+    -- Doctor 2 - 2025-06-24 Morning
+    (8, 2, 1, '2025-06-24', 'Morning', 'Confirmed'),
+    -- Doctor 2 - 2025-06-25 Morning
+    (9, 2, 1, '2025-06-25', 'Morning', 'Confirmed'),
+    -- Doctor 2 - 2025-06-28 Morning
+    (10, 2, 1, '2025-06-28', 'Morning', 'Confirmed'),
+    -- Doctor 2 - 2025-06-29 Morning
+    (11, 2, 1, '2025-06-29', 'Morning', 'Confirmed'),
+    -- Doctor 1: Completed appointments
+    (1, 1, 1, '2025-06-10', 'Morning', 'Completed'),
+    (2, 1, 2, '2025-06-11', 'Afternoon', 'Completed'),
+    (3, 1, 3, '2025-06-12', 'Evening', 'Completed'),
+    -- Additional completed appointments for patient 1
+    (1, 1, 2, '2025-06-15', 'Morning', 'Completed'),
+    (1, 2, 1, '2025-06-17', 'Afternoon', 'Completed'),
+    (1, 2, 3, '2025-06-20', 'Evening', 'Completed');
+GO
 
-
+-- Insert sample Diagnoses
 INSERT INTO Diagnoses (appointment_id, notes)
 VALUES (12, N'General check-up. Patient is healthy. No issues detected.'),
        (13, N'Tartar removal. Slight plaque buildup found.'),
        (14, N'Teeth whitening with laser. Teeth slightly sensitive after treatment.');
+GO
 
+-- Insert sample Prescriptions
 INSERT INTO Prescriptions (appointment_id, medication_details)
 VALUES (12, N'No medication needed.'),
        (13, N'Antiseptic mouthwash, use twice a day.'),
        (14, N'Paracetamol 500mg if needed for pain, do not exceed 3 tablets per day.');
+GO
 
+-- Insert sample Treatment
 INSERT INTO Treatment (appointment_id, treatment_type, treatment_notes)
 VALUES (12, N'General Check-up', N'No treatment required. Periodic monitoring only.'),
        (13, N'Teeth Cleaning', N'Tartar removed and teeth polished.'),
        (14, N'Teeth Whitening', N'Laser technology used at the clinic.');
+GO
 
 -- Insert sample Category
 INSERT INTO Category (category_name)
@@ -531,38 +496,126 @@ VALUES (1, 1, N'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định
        (1, 2, N'Khám bệnh định kỳ thực sự rất quan trọng, tôi sẽ chủ động đi khám mỗi năm.', '2025-06-22 14:15:00.000'),
        (2, 3, N'Bài viết này giúp tôi hiểu hơn về cách phòng ngừa bệnh tim, cảm ơn bác sĩ.', '2025-06-23 09:00:00.000'),
        (2, 4, N'Tôi sẽ thay đổi chế độ ăn uống của mình để phòng ngừa bệnh tim mạch.', '2025-06-24 11:45:00.000'),
-       (3, 2, N'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.',
-        '2025-06-25 16:25:00.000'),
-       (3, 3, N'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.',
-        '2025-06-26 17:30:00.000'),
-       (4, 4, N'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.',
-        '2025-06-27 10:20:00.000'),
+       (3, 2, N'Bài viết này rất dễ hiểu, tôi sẽ thay đổi chế độ ăn uống cho phù hợp với bệnh tiểu đường của mình.', '2025-06-25 16:25:00.000'),
+       (3, 3, N'Cảm ơn bài viết, tôi sẽ tìm hiểu thêm về các thực phẩm phù hợp cho bệnh nhân tiểu đường.', '2025-06-26 17:30:00.000'),
+       (4, 4, N'Điều trị ung thư ngày nay đã có nhiều tiến bộ, tôi rất hy vọng vào những phương pháp điều trị mới.', '2025-06-27 10:20:00.000'),
        (4, 1, N'Tôi rất muốn tìm hiểu thêm về các phương pháp điều trị ung thư hiện đại.', '2025-06-28 08:55:00.000'),
-       (5, 1, N'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.',
-        '2025-06-29 12:10:00.000'),
+       (5, 1, N'Chăm sóc người cao tuổi rất quan trọng, tôi sẽ áp dụng các lời khuyên này cho ông bà của tôi.', '2025-06-29 12:10:00.000'),
        (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
 GO
 
+-- Insert sample DoctorShifts
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status)
 VALUES
--- Doctor 1
-(1, '2025-07-03', 'Morning', 'Working'),
-(1, '2025-07-03', 'Afternoon', 'Working'),
-(1, '2025-07-04', 'Morning', 'PendingLeave'),
-(1, '2025-07-04', 'Afternoon', 'Working'),
-(1, '2025-07-05', 'Morning', 'Leave'),
-(1, '2025-07-05', 'Evening', 'Working'),
-(1, '2025-07-06', 'Night', 'Rejected'),
-(1, '2025-07-07', 'Morning', 'Working'),
-(1, '2025-07-08', 'Morning', 'Working'),
-(1, '2025-07-09', 'Evening', 'Working'),
+    -- Doctor 1
+    (1, '2025-07-03', 'Morning', 'Working'),
+    (1, '2025-07-03', 'Afternoon', 'Working'),
+    (1, '2025-07-04', 'Morning', 'PendingLeave'),
+    (1, '2025-07-04', 'Afternoon', 'Working'),
+    (1, '2025-07-05', 'Morning', 'Leave'),
+    (1, '2025-07-05', 'Evening', 'Working'),
+    (1, '2025-07-06', 'Night', 'Rejected'),
+    (1, '2025-07-07', 'Morning', 'Working'),
+    (1, '2025-07-08', 'Morning', 'Working'),
+    (1, '2025-07-09', 'Evening', 'Working'),
+    -- Doctor 2
+    (2, '2025-07-03', 'Afternoon', 'Working'),
+    (2, '2025-07-04', 'Morning', 'Working'),
+    (2, '2025-07-05', 'Morning', 'Working'),
+    (2, '2025-07-06', 'Afternoon', 'PendingLeave'),
+    (2, '2025-07-06', 'Evening', 'Leave'),
+    (2, '2025-07-07', 'Night', 'Rejected'),
+    (2, '2025-07-08', 'Morning', 'Working'),
+    (2, '2025-07-09', 'Morning', 'Working');
+GO
 
--- Doctor 2
-(2, '2025-07-03', 'Afternoon', 'Working'),
-(2, '2025-07-04', 'Morning', 'Working'),
-(2, '2025-07-05', 'Morning', 'Working'),
-(2, '2025-07-06', 'Afternoon', 'PendingLeave'),
-(2, '2025-07-06', 'Evening', 'Leave'),
-(2, '2025-07-07', 'Night', 'Rejected'),
-(2, '2025-07-08', 'Morning', 'Working'),
-(2, '2025-07-09', 'Morning', 'Working');
+-- Insert sample PageContent for pactHome (services.jsp)
+INSERT INTO PageContent (page_name, content_key, content_value, is_active, image_url, video_url, button_url, button_text)
+VALUES 
+	('index', 'site_title', 'Dental Care | benhVienLmao', 1, NULL, NULL, NULL, NULL),
+    ('index', 'preloader_image', '', 1, 'assets/img/logo/loder.png', NULL, NULL, NULL),
+    ('index', 'header_logo', '', 1, 'assets/img/logo/logo.png', NULL, NULL, NULL),
+    ('index', 'header_login_button', 'Login', 1, NULL, NULL, 'login.jsp', 'Login'),
+    ('index', 'header_register_button', 'Register', 1, NULL, NULL, 'register.jsp', 'Register'),
+    ('index', 'slider1_caption', 'Smile with Confidence', 1, 'assets/img/slider1.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Explore Dental Services'),
+    ('index', 'slider1_subcaption', 'Transform your smile with our expert dental care services', 1, 'assets/img/slider1.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Explore Dental Services'),
+    ('index', 'slider2_caption', 'Healthy Teeth, Happy Life', 1, 'assets/img/slider2.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Book an Appointment'),
+    ('index', 'slider2_subcaption', 'Comprehensive dental solutions for all ages', 1, 'assets/img/slider2.jpg', 'https://www.youtube.com/watch?v=up68UAfH0d0', 'book-appointment', 'Book an Appointment'),
+    ('index', 'daily_dental_updates_title', 'Daily Dental Updates', 1, NULL, NULL, NULL, NULL),
+    ('index', 'daily_dental_updates_subtitle', 'Stay informed with the latest tips and news for a healthy smile', 1, NULL, NULL, NULL, NULL),
+    ('index', 'perfect_smile_title', 'Perfect Smile, Made Simple', 1, NULL, NULL, NULL, NULL),
+    ('index', 'perfect_smile_subtitle', 'Experience top-notch dental care tailored to your needs', 1, NULL, NULL, NULL, NULL),
+    ('index', 'perfect_smile_description', 'Our team of skilled dentists uses the latest technology to ensure your dental health and comfort. From routine check-ups to advanced treatments, we’ve got you covered.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'about_image', '', 1, 'assets/img/gallery/about.png', NULL, NULL, NULL),
+    ('index', 'about_icon1', '', 1, 'assets/img/icon/about1.svg', NULL, NULL, NULL),
+    ('index', 'about_icon2', '', 1, 'assets/img/icon/about2.svg', NULL, NULL, NULL),
+    ('index', 'want_to_work_title', 'Bright Smile Healthy Teeth', 1, NULL, NULL, NULL, NULL),
+    ('index', 'want_to_work_subtitle', 'Discover personalized dental care that makes you smile', 1, NULL, NULL, NULL, NULL),
+    ('index', 'want_to_work_button', 'Explore Services', 1, NULL, NULL, 'appointment/list', 'Explore Services'),
+    ('index', 'service_description_6', 'Explore our Teeth Whitening services for a healthier smile.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'service_description_7', 'Explore our Dental Checkup services for a healthier smile.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'service_description_8', 'Explore our Tooth Extraction services for a healthier smile.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'video_section', '', 1, NULL, 'https://www.youtube.com/watch?v=up68UAfH0d0', NULL, NULL),
+    ('index', 'about_law_title', '100% Satisfaction Guaranteed', 1, NULL, NULL, NULL, NULL),
+    ('index', 'about_law_subtitle', 'Your perfect smile is our priority', 1, NULL, NULL, NULL, NULL),
+    ('index', 'about_law_button', 'Book a Dental Appointment', 1, NULL, NULL, 'book-appointment', 'Book a Dental Appointment'),
+    ('index', 'about_law_image', '', 1, 'assets/img/gallery/about2.png', NULL, NULL, NULL),
+    ('index', 'footer_logo', '', 1, 'assets/img/logo/logo2_footer.png', NULL, NULL, NULL),
+    ('index', 'footer_social_twitter', '', 1, NULL, NULL, '#', 'Twitter'),
+    ('index', 'footer_social_facebook', '', 1, NULL, NULL, 'https://bit.ly/sai4ull', 'Facebook'),
+    ('index', 'footer_social_pinterest', '', 1, NULL, NULL, '#', 'Pinterest'),
+    ('index', 'footer_newsletter_title', 'Subscribe to Our Newsletter', 1, NULL, NULL, NULL, NULL),
+    ('index', 'footer_newsletter_form', 'Email Address', 1, NULL, NULL, 'https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&id=92a4423d01', NULL),
+    ('index', 'footer_newsletter_button', 'Subscribe', 1, NULL, NULL, NULL, 'Subscribe'),
+    ('index', 'footer_newsletter_subtitle', 'Stay updated with the latest dental care tips and promotions.', 1, NULL, NULL, NULL, NULL),
+    ('index', 'footer_copyright', 'Copyright &copy; All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>', 1, NULL, NULL, NULL, NULL),
+    ('index', 'scroll_up_button', 'Go to Top', 1, NULL, NULL, '#', NULL),
+    ('pactHome', 'site_title', 'Health | Template', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'favicon', '', 1, 'assets/img/favicon.ico', NULL, NULL, NULL),
+    ('pactHome', 'preloader_image', '', 1, 'assets/img/logo/loder.png', NULL, NULL, NULL),
+    ('pactHome', 'header_logo', '', 1, 'assets/img/logo/logo.png', NULL, '/pactHome', NULL),
+    ('pactHome', 'slider_caption', 'Hello ${patient.firstName}', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'slider_subcaption', 'Register for a health check-up to receive exclusive offers', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'want_to_work_title', 'Happy mind <br>Healthy life', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'want_to_work_subtitle', 'Are you experiencing any of the following issues?<br> Register early to receive offers', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'want_to_work_button', 'Use Services', 1, NULL, NULL, 'appointment/list', 'Use Services'),
+    ('pactHome', 'service_icon_7', '', 1, 'assets/img/icon/services1.svg', NULL, NULL, NULL), -- Teeth Whitening
+    ('pactHome', 'service_title_7', 'Comprehensive General Checkup', 1, NULL, NULL, 'book-appointment?type=General Checkup', 'Comprehensive General Checkup'),
+    ('pactHome', 'service_description_7', 'Feeling off or overdue for a health screening? Our thorough checkup assesses your overall wellness to catch issues early.', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'service_button_7', '', 1, NULL, NULL, 'book-appointment?type=General Checkup', NULL),
+    ('pactHome', 'service_icon_8', '', 1, 'assets/img/icon/services2.svg', NULL, NULL, NULL), -- Dental Checkup
+    ('pactHome', 'service_title_8', 'Mental Health Support', 1, NULL, NULL, 'book-appointment?type=Mental Health Consultation', 'Mental Health Support'),
+    ('pactHome', 'service_description_8', 'Struggling with stress, anxiety, or low mood? Book a consultation with our compassionate mental health specialists.', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'service_button_8', '', 1, NULL, NULL, 'book-appointment?type=Mental Health Consultation', NULL),
+    ('pactHome', 'service_icon_9', '', 1, 'assets/img/icon/services3.svg', NULL, NULL, NULL), -- Tooth Extraction
+    ('pactHome', 'service_title_9', 'Routine Health Monitoring', 1, NULL, NULL, 'book-appointment?type=Periodic Health Checkup', 'Routine Health Monitoring'),
+    ('pactHome', 'service_description_9', 'Stay proactive about your health. Schedule a periodic checkup to monitor your well-being and secure peace of mind.', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'service_button_9', '', 1, NULL, NULL, 'book-appointment?type=Periodic Health Checkup', NULL),
+    ('pactHome', 'video_background', '', 1, 'assets/img/gallery/video-bg.png', NULL, NULL, NULL),
+    ('pactHome', 'video_url', '', 1, NULL, 'https://www.youtube.com/watch?v=up68UAfH0d0', NULL, NULL),
+    ('pactHome', 'testimonial1_quote', 'I am very satisfied with the hospital''s entire process, thorough and professional.', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'testimonial1_author', 'Nguyen Thi Mai', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'testimonial1_role', 'Homemaker', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'testimonial1_image', '', 1, 'assets/img/icon/quotes-sign.png', NULL, NULL, NULL),
+    ('pactHome', 'testimonial1_author_image', '', 1, 'assets/img/icon/testimonial.png', NULL, NULL, NULL),
+    ('pactHome', 'testimonial2_quote', 'I detected my illness early and received timely treatment, thanks to the team of expert doctors.', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'testimonial2_author', 'Le Minh Quan', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'testimonial2_role', 'IT Professional', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'testimonial2_image', '', 1, 'assets/img/icon/quotes-sign.png', NULL, NULL, NULL),
+    ('pactHome', 'testimonial2_author_image', '', 1, 'assets/img/icon/testimonial.png', NULL, NULL, NULL),
+    ('pactHome', 'about_law_title', '100% Satisfaction Guaranteed.', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'about_law_description', 'Over 1,000 customers visit daily and are seen immediately because they booked early', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'about_law_button', 'Book Appointment', 1, NULL, NULL, 'book-appointment', 'Book Appointment'),
+    ('pactHome', 'about_law_image', '', 1, 'assets/img/gallery/about2.png', NULL, NULL, NULL),
+    ('pactHome', 'footer_logo', '', 1, 'assets/img/logo/logo2_footer.png', NULL, NULL, NULL),
+    ('pactHome', 'footer_menu_home', 'Home', 1, NULL, NULL, '/pactHome', 'Home'),
+    ('pactHome', 'footer_menu_about', 'About', 1, NULL, NULL, '/about', 'About'),
+    ('pactHome', 'footer_menu_services', 'Services', 1, NULL, NULL, '/services', 'Services'),
+    ('pactHome', 'footer_menu_blog', 'Blog', 1, NULL, NULL, '/blog', 'Blog'),
+    ('pactHome', 'footer_menu_contact', 'Contact', 1, NULL, NULL, '/contact', 'Contact'),
+    ('pactHome', 'footer_social_twitter', '', 1, NULL, NULL, '#', 'Twitter'),
+    ('pactHome', 'footer_social_facebook', '', 1, NULL, NULL, 'https://bit.ly/sai4ull', 'Facebook'),
+    ('pactHome', 'footer_social_pinterest', '', 1, NULL, NULL, '#', 'Pinterest'),
+    ('pactHome', 'footer_copyright', 'Group 3 - SE1903 - SWP391 Summer2025', 1, NULL, NULL, NULL, NULL),
+    ('pactHome', 'scroll_up_title', 'Go to Top', 1, NULL, NULL, '#', NULL);
+GO
