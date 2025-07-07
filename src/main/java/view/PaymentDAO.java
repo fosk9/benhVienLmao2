@@ -116,6 +116,37 @@ public class PaymentDAO extends DBContext<Payment> {
         return list;
     }
 
+    // Get payments by a list of appointmentIds
+    public List<Payment> getPaymentsByAppointmentIds(List<Integer> appointmentIds) {
+        if (appointmentIds == null || appointmentIds.isEmpty()) return new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Payments WHERE appointment_id IN (");
+        for (int i = 0; i < appointmentIds.size(); i++) {
+            sql.append("?");
+            if (i < appointmentIds.size() - 1) sql.append(",");
+        }
+        sql.append(") ORDER BY created_at DESC");
+        List<Payment> list = new ArrayList<>();
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+                for (int i = 0; i < appointmentIds.size(); i++) {
+                    ps.setInt(i + 1, appointmentIds.get(i));
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(mapResultSetToPayment(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(conn);
+        }
+        return list;
+    }
+
     // Map ResultSet to Payment
     private Payment mapResultSetToPayment(ResultSet rs) throws SQLException {
         return Payment.builder()

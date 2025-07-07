@@ -616,7 +616,11 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
     // Get appointment details with patient info
     public Appointment getAppointmentDetailById(int appointmentId) {
-        String sql = "SELECT a.*, p.patient_id, p.username, p.password_hash, p.full_name, p.dob, p.gender, p.email, p.phone, p.address, p.insurance_number, p.emergency_contact FROM Appointments a JOIN Patients p ON a.patient_id = p.patient_id WHERE a.appointment_id = ?";
+        String sql = "SELECT a.*, p.patient_id, p.username, p.password_hash, p.full_name, p.dob, p.gender, p.email, p.phone, p.address, p.insurance_number, p.emergency_contact, at.appointmenttype_id, at.type_name, at.description, at.price " +
+                "FROM Appointments a " +
+                "JOIN Patients p ON a.patient_id = p.patient_id " +
+                "LEFT JOIN AppointmentType at ON a.appointmenttype_id = at.appointmenttype_id " +
+                "WHERE a.appointment_id = ?";
         Connection conn = null;
         try {
             conn = getConn();
@@ -639,6 +643,16 @@ public class AppointmentDAO extends DBContext<Appointment> {
                             .emergencyContact(rs.getString("emergency_contact"))
                             .build();
                     a.setPatient(patient);
+                    // Set AppointmentType if available
+                    if (rs.getObject("appointmenttype_id") != null) {
+                        model.AppointmentType type = model.AppointmentType.builder()
+                                .appointmentTypeId(rs.getInt("appointmenttype_id"))
+                                .typeName(rs.getString("type_name"))
+                                .description(rs.getString("description"))
+                                .price(rs.getBigDecimal("price"))
+                                .build();
+                        a.setAppointmentType(type);
+                    }
                     return a;
                 }
             }
