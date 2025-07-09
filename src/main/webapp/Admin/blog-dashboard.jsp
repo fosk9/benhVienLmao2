@@ -47,12 +47,6 @@
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/update-user-role" class="nav-link">
-            <i class="fas fa-users-cog"></i>
-            <span>User Management</span>
-          </a>
-        </li>
-        <li>
           <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link active">
             <i class="fas fa-blog"></i>
             <span>Blog</span>

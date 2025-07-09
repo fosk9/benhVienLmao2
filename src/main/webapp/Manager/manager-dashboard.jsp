@@ -47,6 +47,12 @@
           </a>
         </li>
         <li>
+          <a href="${pageContext.request.contextPath}/update-user-role" class="nav-link active">
+            <i class="fas fa-users-cog"></i>
+            <span>User Management</span>
+          </a>
+        </li>
+        <li>
           <a href="${pageContext.request.contextPath}/manager/staff-management" class="nav-link">
             <i class="fas fa-users"></i>
             <span>Staff Management</span>
@@ -168,7 +174,7 @@
       <!-- Filter Section -->
       <div class="filter-section">
         <form method="get" action="${pageContext.request.contextPath}/manager/dashboard">
-          <div class="filter-row-improved">
+          <div class="filter-row-improved" style="display: grid;grid-template-columns: 2fr 1fr 1fr;gap: 30px;align-items: end">
             <div class="search-group">
               <label>Search Staff/Department</label>
               <div class="search-wrapper">
@@ -178,18 +184,7 @@
                        value="">
               </div>
             </div>
-            <div class="form-group">
-              <label>Department</label>
-              <select class="form-control" id="departmentFilter" name="departmentId">
-                <option value="">All Departments</option>
-                <option value="1">Cardiology</option>
-                <option value="2">Emergency</option>
-                <option value="3">Pediatrics</option>
-                <option value="4">Surgery</option>
-                <option value="5">Radiology</option>
-              </select>
-            </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 0;">
               <label>Role</label>
               <select class="form-control" id="roleFilter" name="role">
                 <option value="">All Roles</option>
@@ -200,7 +195,7 @@
               </select>
             </div>
             <div class="filter-button-row">
-              <button type="submit" class="btn-hospital btn-primary btn-filter">
+              <button type="submit" class="btn-hospital btn-primary btn-filter" style="padding: 12px 60px">
                 <i class="fas fa-filter mr-2"></i>Filter
               </button>
             </div>

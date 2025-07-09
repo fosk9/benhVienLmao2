@@ -30,7 +30,7 @@ public class UpdateUserRoleController extends HttpServlet {
         String keyword = request.getParameter("keyword");
         String roleFilter = request.getParameter("role");
         String statusFilter = request.getParameter("status");
-
+        
         int currentPage = 1;
         int recordsPerPage = 5;
         String pageParam = request.getParameter("page");
@@ -68,59 +68,59 @@ public class UpdateUserRoleController extends HttpServlet {
         System.out.println("[UpdateUserRoleController][GET] keyword=" + keyword + ", role=" + roleFilter + ", status=" + statusInt + ", page=" + currentPage);
 
         List<User> userList;
-        int totalUsers;
+        int totalUsers = userDAO.countAllUsers(); // Tổng user toàn hệ thống
+        int totalUsersByFilter;
 
         try {
             if (keyword != null && !keyword.isEmpty() && roleFilter != null && !roleFilter.isEmpty() && statusInt != null) {
                 // Cả 3 điều kiện
                 userList = userDAO.searchByKeywordRoleStatus(keyword, roleFilter, statusInt, offset, recordsPerPage);
-                totalUsers = userDAO.countByKeywordRoleStatus(keyword, roleFilter, statusInt);
+                totalUsersByFilter = userDAO.countByKeywordRoleStatus(keyword, roleFilter, statusInt);
 
             } else if (keyword != null && !keyword.isEmpty() && roleFilter != null && !roleFilter.isEmpty()) {
                 // keyword + role
                 userList = userDAO.searchByKeywordAndRole(keyword, roleFilter, offset, recordsPerPage);
-                totalUsers = userDAO.countByKeywordAndRole(keyword, roleFilter);
+                totalUsersByFilter = userDAO.countByKeywordAndRole(keyword, roleFilter);
 
             } else if (keyword != null && !keyword.isEmpty() && statusInt != null) {
                 // keyword + status
                 userList = userDAO.searchByKeywordAndStatus(keyword, statusInt, offset, recordsPerPage);
-                totalUsers = userDAO.countByKeywordAndStatus(keyword, statusInt);
+                totalUsersByFilter = userDAO.countByKeywordAndStatus(keyword, statusInt);
 
             } else if (roleFilter != null && !roleFilter.isEmpty() && statusInt != null) {
                 // role + status
                 userList = userDAO.searchByRoleAndStatus(roleFilter, statusInt, offset, recordsPerPage);
-                totalUsers = userDAO.countByRoleAndStatus(roleFilter, statusInt);
+                totalUsersByFilter = userDAO.countByRoleAndStatus(roleFilter, statusInt);
 
             } else if (keyword != null && !keyword.isEmpty()) {
                 // chỉ keyword
                 userList = userDAO.searchByKeyword(keyword, offset, recordsPerPage);
-                totalUsers = userDAO.countByKeyword(keyword);
+                totalUsersByFilter = userDAO.countByKeyword(keyword);
 
             } else if (roleFilter != null && !roleFilter.isEmpty()) {
                 // chỉ role
                 userList = userDAO.searchByRole(roleFilter, offset, recordsPerPage);
-                totalUsers = userDAO.countByRole(roleFilter);
+                totalUsersByFilter = userDAO.countByRole(roleFilter);
 
             } else if (statusInt != null) {
                 // chỉ status
                 userList = userDAO.searchByStatus(statusInt, offset, recordsPerPage);
-                totalUsers = userDAO.countByStatus(statusInt);
+                totalUsersByFilter = userDAO.countByStatus(statusInt);
 
             } else {
                 // không có gì
                 userList = userDAO.selectPagedUsers(offset, recordsPerPage);
-                totalUsers = userDAO.countAllUsers();
+                totalUsersByFilter = totalUsers;
             }
         } catch (Exception e) {
             e.printStackTrace();
             userList = userDAO.selectPagedUsers(0, recordsPerPage);
-            totalUsers = userDAO.countAllUsers();
+            totalUsersByFilter = totalUsers;
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi truy vấn dữ liệu.");
         }
 
-
         List<Role> roles = roleDAO.select();
-        int totalPages = (int) Math.ceil(totalUsers * 1.0 / recordsPerPage);
+        int totalPages = (int) Math.ceil(totalUsersByFilter * 1.0 / recordsPerPage);
 
         request.setAttribute("keyword", keyword);
         request.setAttribute("role", roleFilter);
@@ -129,6 +129,7 @@ public class UpdateUserRoleController extends HttpServlet {
         request.setAttribute("userList", userList);
         request.setAttribute("allRoles", roles);
         request.setAttribute("totalUsers", totalUsers);
+        request.setAttribute("totalUsersByFilter", totalUsersByFilter);
         request.setAttribute("totalDoctors", userDAO.countEmployeeByRole("Doctor"));
         request.setAttribute("totalReceptionists", userDAO.countEmployeeByRole("Receptionist"));
         request.setAttribute("totalPatients", userDAO.countPatients());
@@ -136,7 +137,7 @@ public class UpdateUserRoleController extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", currentPage);
 
-        request.getRequestDispatcher("Admin/update-user-role.jsp").forward(request, response);
+        request.getRequestDispatcher("Manager/update-user-role.jsp").forward(request, response);
     }
 
     @Override
@@ -146,22 +147,20 @@ public class UpdateUserRoleController extends HttpServlet {
         // Logger
         System.out.println("[UpdateUserRoleController][POST] action=" + action);
 
-        // Trường hợp xóa tài khoản
         if (action != null && action.startsWith("delete_")) {
             try {
                 int id = Integer.parseInt(action.substring("delete_".length()));
-                User user = userDAO.getUserById(id);
+                String source = request.getParameter("source_" + id); // Lấy từ JSP
+                System.out.println("[UpdateUserRoleController][POST] delete ID=" + id + ", source=" + source);
+                User user = userDAO.getUserByIdAndSource(id, source);
 
-                if (user != null) {
-                    if ("employee".equalsIgnoreCase(user.getSource())) {
-                        userDAO.deleteEmployee(id);
-                    } else if ("patient".equalsIgnoreCase(user.getSource())) {
-                        userDAO.deletePatient(id);
-                    }
-                    request.getSession().setAttribute("successMessage", "Đã xóa tài khoản " + user.getFullName());
-                } else {
-                    request.getSession().setAttribute("errorMessage", "Không tìm thấy người dùng để xóa.");
+                if ("employee".equalsIgnoreCase(source)) {
+                    userDAO.deleteEmployee(id);
+                } else if ("patient".equalsIgnoreCase(source)) {
+                    userDAO.deletePatient(id);
                 }
+
+                request.getSession().setAttribute("successMessage", "Đã xóa tài khoản " + user.getFullName());
             } catch (Exception e) {
                 e.printStackTrace();
                 request.getSession().setAttribute("errorMessage", "Lỗi khi xóa tài khoản.");
@@ -171,34 +170,31 @@ public class UpdateUserRoleController extends HttpServlet {
             return;
         }
 
-        // Trường hợp cập nhật role hoặc status
         if (action != null && action.startsWith("update_")) {
             try {
                 int id = Integer.parseInt(action.substring("update_".length()));
-                User user = userDAO.getUserById(id);
 
                 String roleParam = "newRole_" + id;
                 String statusParam = "newStatus_" + id;
+                String sourceParam = request.getParameter("source_" + id);
+
                 String roleName = request.getParameter(roleParam);
                 String statusStr = request.getParameter(statusParam);
+                User user = userDAO.getUserByIdAndSource(id, sourceParam);
 
-                System.out.println("[UpdateUserRoleController][POST] update id=" + id + ", role=" + roleName + ", status=" + statusStr);
+                System.out.println("[UpdateUserRoleController][POST] update ID=" + id + ", source=" + sourceParam + ", role=" + roleName + ", status=" + statusStr);
 
-                if (user != null) {
-                    if ("employee".equalsIgnoreCase(user.getSource()) && roleName != null) {
-                        int roleId = roleDAO.getRoleIdByName(roleName);
-                        userDAO.updateEmployeeRole(id, roleId);
-                    }
-
-                    if (statusStr != null) {
-                        int accStatus = Integer.parseInt(statusStr);
-                        userDAO.updateAccStatus(id, accStatus, user.getSource());
-                    }
-
-                    request.getSession().setAttribute("successMessage", "Cập nhật thành công cho " + user.getFullName());
-                } else {
-                    request.getSession().setAttribute("errorMessage", "Không tìm thấy người dùng để cập nhật.");
+                if ("employee".equalsIgnoreCase(sourceParam) && roleName != null) {
+                    int roleId = roleDAO.getRoleIdByName(roleName);
+                    userDAO.updateEmployeeRole(id, roleId);
                 }
+
+                if (statusStr != null) {
+                    int accStatus = Integer.parseInt(statusStr);
+                    userDAO.updateAccStatus(id, accStatus, sourceParam); // sử dụng sourceParam từ form
+                }
+
+                request.getSession().setAttribute("successMessage", "Cập nhật thành công cho " + user.getFullName());
             } catch (Exception e) {
                 e.printStackTrace();
                 request.getSession().setAttribute("errorMessage", "Lỗi khi cập nhật tài khoản.");
@@ -208,9 +204,7 @@ public class UpdateUserRoleController extends HttpServlet {
             return;
         }
 
-        // Nếu không có action hợp lệ
         request.getSession().setAttribute("errorMessage", "Yêu cầu không hợp lệ.");
         response.sendRedirect("update-user-role");
     }
-
 }

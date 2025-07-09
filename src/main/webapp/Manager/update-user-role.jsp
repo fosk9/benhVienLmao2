@@ -24,13 +24,13 @@
     <div class="hospital-header">
       <div class="hospital-logo">
         <div class="hospital-icon">
-          <a href="Admin/home-admin-dashboard.jsp">
-            <i class="fas fa-stethoscope"></i>
+          <a href="${pageContext.request.contextPath}/manager/dashboard">
+            <i class="fas fa-user-tie"></i>
           </a>
         </div>
         <div>
-          <a href="Admin/home-admin-dashboard.jsp" style="text-decoration: none;">
-            <h2 class="hospital-title">Hospital Admin</h2>
+          <a href="${pageContext.request.contextPath}/manager/dashboard" style="text-decoration: none;">
+            <h2 class="hospital-title">Manager Portal</h2>
             <p class="hospital-subtitle">Hospital Management</p>
           </a>
         </div>
@@ -41,9 +41,9 @@
     <nav class="nav-menu">
       <ul>
         <li>
-          <a href="Admin/home-admin-dashboard.jsp" class="nav-link">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+          <a href="${pageContext.request.contextPath}/manager/dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
           </a>
         </li>
         <li>
@@ -53,19 +53,37 @@
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link">
-            <i class="fas fa-blog"></i>
-            <span>Blog</span>
+          <a href="${pageContext.request.contextPath}/manager/staff-management" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Staff Management</span>
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link">
-            <i class="fas fa-podcast"></i>
-            <span>Post</span>
+          <a href="${pageContext.request.contextPath}/manager/department-management" class="nav-link">
+            <i class="fas fa-building"></i>
+            <span>Departments</span>
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link">
+          <a href="${pageContext.request.contextPath}/manager/schedule-management" class="nav-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Schedules</span>
+          </a>
+        </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/manager/reports" class="nav-link">
+            <i class="fas fa-chart-bar"></i>
+            <span>Reports</span>
+          </a>
+        </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/manager/resources" class="nav-link">
+            <i class="fas fa-boxes"></i>
+            <span>Resources</span>
+          </a>
+        </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/manager/settings" class="nav-link">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
           </a>
@@ -204,15 +222,7 @@
       <!-- User Table -->
       <div class="user-table-container">
         <div class="table-header">
-          <h3>User List (<span id="userCount">${totalUsers}</span>)</h3>
-          <div>
-            <button class="btn-hospital btn-sm" onclick="clearSelection()">
-              <i class="fas fa-times mr-1"></i>Clear Selection
-            </button>
-            <button type="submit" class="btn-hospital btn-sm btn-success">
-              <i class="fas fa-save mr-1"></i>Save Changes
-            </button>
-          </div>
+          <h3>User List (<span id="userCount">${totalUsersByFilter}</span>)</h3>
         </div>
         <!-- UPDATE FORM - USE POST -->
         <form id="roleUpdateForm" action="update-user-role" method="post">
@@ -251,15 +261,27 @@
                   <span class="role-badge role-${fn:toLowerCase(u.roleName)}">${u.roleName}</span>
                 </td>
 
+                <input type="hidden" name="source_${u.userID}"
+                       value="${fn:toLowerCase(u.roleName) == 'patient' ? 'patient' : 'employee'}" />
+
                 <td>
-                  <select class="form-control" name="newRole_${u.userID}">
-                    <c:forEach var="r" items="${allRoles}">
-                      <option value="${fn:toLowerCase(r.roleName)}" <c:if test="${r.roleName == u.roleName}">selected</c:if>>
-                          ${r.roleName}
-                      </option>
-                    </c:forEach>
-                  </select>
+                  <c:choose>
+                    <c:when test="${empty u.roleName || fn:toLowerCase(u.roleName) == 'patient'}">
+                      <span class="text-muted">Không áp dụng</span>
+                    </c:when>
+                    <c:otherwise>
+                      <select class="form-control" name="newRole_${u.userID}">
+                        <c:forEach var="r" items="${allRoles}">
+                          <option value="${fn:toLowerCase(r.roleName)}"
+                                  <c:if test="${r.roleName == u.roleName}">selected</c:if>>
+                              ${r.roleName}
+                          </option>
+                        </c:forEach>
+                      </select>
+                    </c:otherwise>
+                  </c:choose>
                 </td>
+
 
                 <td>
             <span class="status-badge status-${u.accStatus == 1 ? 'active' : 'inactive'}">

@@ -83,39 +83,43 @@ public class UserDAO extends DBContext<User> {
         }
     }
 
-    public User getUserById(int id) {
-        String sqlEmp = "SELECT employee_id AS user_id, full_name, email, phone, role_name, 'employee' AS source, created_at, acc_status " +
-                "FROM Employees e JOIN Roles r ON e.role_id = r.role_id WHERE employee_id = ?";
-        String sqlPat = "SELECT patient_id AS user_id, full_name, email, phone, 'Patient' AS role_name, 'patient' AS source, created_at, acc_status " +
-                "FROM Patients WHERE patient_id = ?";
+    public User getUserByIdAndSource(int id, String source) {
+        String sql;
 
-        try (Connection conn = getConn()) {
-            // Check Employees
-            try (PreparedStatement ps = conn.prepareStatement(sqlEmp)) {
-                ps.setInt(1, id);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    return new User(id, rs.getString("full_name"), rs.getString("email"),
-                            rs.getString("phone"), rs.getString("role_name"), "employee",
-                            rs.getInt("acc_status"), rs.getDate("created_at"));
-                }
-            }
+        if ("employee".equalsIgnoreCase(source)) {
+            sql = "SELECT employee_id AS user_id, full_name, email, phone, role_name, 'employee' AS source, created_at, acc_status " +
+                    "FROM Employees e JOIN Roles r ON e.role_id = r.role_id WHERE employee_id = ?";
+        } else if ("patient".equalsIgnoreCase(source)) {
+            sql = "SELECT patient_id AS user_id, full_name, email, phone, 'Patient' AS role_name, 'patient' AS source, created_at, acc_status " +
+                    "FROM Patients WHERE patient_id = ?";
+        } else {
+            return null; // không xác định được nguồn
+        }
 
-            // Check Patients
-            try (PreparedStatement ps = conn.prepareStatement(sqlPat)) {
-                ps.setInt(1, id);
-                ResultSet rs = ps.executeQuery();
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new User(id, rs.getString("full_name"), rs.getString("email"),
-                            rs.getString("phone"), "Patient", "patient",
-                            rs.getInt("acc_status"), rs.getDate("created_at"));
+                    return new User(
+                            id,
+                            rs.getString("full_name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("role_name"),
+                            rs.getString("source"),
+                            rs.getInt("acc_status"),
+                            rs.getDate("created_at")
+                    );
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
+
 
     public void updateAccStatus(int id, int status, String source) {
         String sql;

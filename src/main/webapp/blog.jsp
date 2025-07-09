@@ -8,6 +8,8 @@
   <meta charset="UTF-8">
   <title>Blog List</title>
   <jsp:include page="common-css.jsp"/>
+<%--  <link rel="stylesheet" href="assets/css/dental-specific.css">--%>
+<%--  <link rel="stylesheet" href="assets/css/image-utilities.css">--%>
 
   <!-- CSS cho phân trang -->
   <style>

@@ -27,8 +27,8 @@
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Enhanced CSS Files -->
-    <link rel="stylesheet" href="assets/css/dental-specific.css">
-    <link rel="stylesheet" href="assets/css/image-utilities.css">
+<%--    <link rel="stylesheet" href="assets/css/dental-specific.css">--%>
+<%--    <link rel="stylesheet" href="assets/css/image-utilities.css">--%>
 
     <style>
         /* CSS Variables */
