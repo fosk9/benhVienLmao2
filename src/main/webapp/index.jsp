@@ -89,6 +89,7 @@
                             </a>
                         </div>
                     </div>
+                    <!-- Navigation -->
                     <div class="col-xl-10 col-lg-10 col-md-10">
                         <div class="menu-main d-flex align-items-center justify-content-end">
                             <!-- Main-menu -->
@@ -97,11 +98,9 @@
                                     <ul id="navigation">
                                         <!-- Loop through navigation items -->
                                         <c:forEach var="item" items="${systemItems}">
-                                            <c:if test="${item.itemName == 'Blog' || item.itemName == 'Book Appointment' || item.itemName == 'Services'}">
-                                                <li>
-                                                    <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>
-                                                </li>
-                                            </c:if>
+                                            <li>
+                                                <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>
+                                            </li>
                                         </c:forEach>
                                     </ul>
                                 </nav>

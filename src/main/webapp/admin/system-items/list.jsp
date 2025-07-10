@@ -63,6 +63,7 @@
             <th>URL</th>
             <th>Display Order</th>
             <th>Type</th>
+            <th>Roles</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -75,6 +76,14 @@
             <td>${item.displayOrder}</td>
             <td>${item.itemType}</td>
             <td>
+              <c:forEach var="role" items="${itemRolesMap[item.itemId]}">
+                <span class="badge bg-info text-dark">${role.roleName}</span>
+              </c:forEach>
+              <c:if test="${empty itemRolesMap[item.itemId]}">
+                <span class="text-muted">None</span>
+              </c:if>
+            </td>
+            <td>
               <a href="${pageContext.request.contextPath}/admin/system-items?action=edit&id=${item.itemId}" class="btn btn-primary btn-sm">Edit</a>
               <a href="${pageContext.request.contextPath}/admin/system-items?action=delete&id=${item.itemId}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
             </td>
@@ -82,7 +91,7 @@
         </c:forEach>
         <c:if test="${empty items}">
           <tr>
-            <td colspan="6" class="text-center">No items found.</td>
+            <td colspan="7" class="text-center">No items found.</td>
           </tr>
         </c:if>
         </tbody>

@@ -72,11 +72,9 @@
                                                         <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>
                                                         <ul class="submenu">
                                                             <c:forEach var="subItem" items="${systemItems}">
-                                                                <c:if test="${subItem.itemName == 'Logout' || subItem.itemName == 'My Profile' || subItem.itemName == 'Change Password'}">
                                                                     <li>
                                                                         <a href="<c:url value='/${subItem.itemUrl}'/>">${subItem.itemName}</a>
                                                                     </li>
-                                                                </c:if>
                                                             </c:forEach>
                                                         </ul>
                                                     </li>
