@@ -151,6 +151,7 @@
             </div>
         </div>
     </section>
+
     <!-- Services Area Start -->
     <div class="service-area">
         <div class="container">
@@ -204,6 +205,62 @@
         </div>
     </div>
     <!-- Services Area End -->
+    <!--? Latest News Area Start -->
+    <section class="latest-news-area section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9 col-sm-10">
+                    <div class="section-tittle text-center mb-70">
+                        <c:set var="newsTitleFound" value="false" />
+                        <c:set var="newsSubtitleFound" value="false" />
+                        <c:forEach var="content" items="${pageContents}">
+                            <c:if test="${content.contentKey == 'daily_dental_updates_title' && content.active && content.contentValue != null}">
+                                <c:set var="newsTitleFound" value="true" />
+                                <h2>${content.contentValue}</h2>
+                            </c:if>
+                            <c:if test="${content.contentKey == 'daily_dental_updates_subtitle' && content.active && content.contentValue != null}">
+                                <c:set var="newsSubtitleFound" value="true" />
+                                <p>${content.contentValue}</p>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!newsTitleFound}">
+                            <h2>Daily Dental Updates</h2>
+                        </c:if>
+                        <c:if test="${!newsSubtitleFound}">
+                            <p>Stay informed with the latest tips and news for a healthy smile</p>
+                        </c:if>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <c:forEach var="b" items="${recentBlogs}" varStatus="loop">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <article class="blog_item">
+                            <div class="blog_item_img">
+                                <img class="card-img rounded-0" src="${pageContext.request.contextPath}/assets/img/${b.blogImg}" alt="${b.blogName}">
+                                <a href="#" class="blog_item_date">
+                                    <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
+                                    <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
+                                </a>
+                            </div>
+                            <div class="blog_details">
+                                <a class="d-inline-block" href="${pageContext.request.contextPath}/blog-detail?id=${b.blogId}">
+                                    <h2 class="blog-head" style="color: #2d2d2d;">${b.blogName}</h2>
+                                </a>
+                                <p>${b.blogSubContent}</p>
+                                <ul class="blog-info-link">
+                                    <li><a href="${pageContext.request.contextPath}/blog?categoryId=${b.categoryId}"><i
+                                            class="fa fa-user"></i> ${b.categoryName}</a></li>
+                                    <li><a href="#"><i class="fa fa-comments"></i> ${b.commentCount} Comments</a></li>
+                                </ul>
+                            </div>
+                        </article>
+                    </div>
+                </c:forEach>
+            </div>
+        </div>
+    </section>
+    <!-- Latest News Area End -->
     <!-- Video Start -->
     <div class="container pt-40">
         <div class="video-area section-bg2 d-flex align-items-center"

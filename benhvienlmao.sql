@@ -267,7 +267,8 @@ VALUES ('Doctor'),
        ('Receptionist'),
        ('Admin'),
        ('Manager'),
-       ('Patient');
+       ('Patient'),
+	   ('Guest');
 GO
 
 -- Insert sample SystemItems
@@ -282,7 +283,7 @@ VALUES
     ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
     ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
     ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
-    ('Home', 'index.jsp', 1, 'Navigation'),
+    ('Home', 'index', 1, 'Navigation'),
     ('About', 'about.html', 2, 'Navigation'),
     ('Dental Services', 'services.html', 3, 'Navigation'),
     ('Blog', 'blog', 4, 'Navigation'),
@@ -295,7 +296,7 @@ VALUES
     -- Patient-specific navigation items
     ('Appointments', 'appointments', 1, 'Navigation'),
     ('Treatment History', 'treatment/history', 2, 'Navigation'),
-    ('Services', 'services', 3, 'Navigation'),
+    ('Services', 'appointment/list', 3, 'Navigation'),
     ('Account', 'pactDetails', 4, 'Navigation'),
     ('Logout', 'logout', 5, 'Navigation'),
     ('My Profile', 'MyProfile', 6, 'Navigation'),
@@ -329,7 +330,11 @@ VALUES
     (5, 24), -- Patient: Logout
     (5, 25), -- Patient: My Profile
     (5, 26), -- Patient: Change Password
-    (5, 27); -- Patient: Book Appointment
+    (5, 27), -- Patient: Book Appointment
+	--Guest mapping (role_id = 0 for not login)
+	(6, 13),
+	(6, 22),
+	(6, 27);
 GO
 
 -- Insert sample Patients

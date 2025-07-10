@@ -50,7 +50,7 @@ public class MainPageServlet extends HttpServlet {
         // Fetch navigation items
         List<SystemItem> navItems = new ArrayList<>();
         try {
-            navItems = systemItemDAO.getActiveItemsByRoleAndType(0, "Navigation"); // Guest role
+            navItems = systemItemDAO.getActiveItemsByRoleAndType(6, "Navigation"); // Guest role
             LOGGER.info("Fetched " + navItems.size() + " navigation items for guest role");
         } catch (Exception e) {
             LOGGER.severe("Error fetching navigation items: " + e.getMessage());
@@ -61,7 +61,7 @@ public class MainPageServlet extends HttpServlet {
         // Fetch feature items
         List<SystemItem> featureItems = new ArrayList<>();
         try {
-            featureItems = systemItemDAO.getActiveItemsByRoleAndType(0, "Feature"); // Guest role
+            featureItems = systemItemDAO.getActiveItemsByRoleAndType(6, "Feature"); // Guest role
             LOGGER.info("Fetched " + featureItems.size() + " feature items for guest role");
             for (SystemItem item : featureItems) {
                 LOGGER.fine("Feature Item: ID=" + item.getItemId() + ", Name=" + item.getItemName() + ", URL=" + item.getItemUrl());
@@ -100,10 +100,11 @@ public class MainPageServlet extends HttpServlet {
             request.setAttribute("error", "Failed to load page content: " + e.getMessage());
         }
 
+
         // Set all attributes for JSP
         request.setAttribute("recentBlogs", recentBlogs);
         request.setAttribute("services", services);
-        request.setAttribute("navItems", navItems);
+        request.setAttribute("systemItems", navItems); // Sửa dòng này: dùng systemItems thay vì navItems
         request.setAttribute("featureItems", featureItems);
         request.setAttribute("pageContents", pageContents);
 
