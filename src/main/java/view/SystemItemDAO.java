@@ -270,7 +270,8 @@ public class SystemItemDAO extends DBContext<SystemItem> {
     }
 
     /**
-     * Lấy id vừa insert gần nhất (cho SQL Server)
+     * Retrieves the last inserted ID after an insert operation.
+     * This is specific to SQL Server using SCOPE_IDENTITY().
      */
     public int getLastInsertId() {
         String sql = "SELECT SCOPE_IDENTITY() AS last_id";
@@ -292,101 +293,5 @@ public class SystemItemDAO extends DBContext<SystemItem> {
         return id;
     }
 
-    /**
-     * Deletes a SystemItem and its associated RoleSystemItems entries atomically.
-     * @param id The ID of the SystemItem to delete.
-     * @return true if deletion is successful, false otherwise.
-     */
-    public boolean deleteWithRoles(int id) {
-        Connection conn = null;
-        boolean success = false;
-        try {
-            conn = getConn();
-            conn.setAutoCommit(false); // Start transaction
-
-            // Delete associated RoleSystemItems entries
-            String deleteRolesSql = "DELETE FROM RoleSystemItems WHERE item_id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(deleteRolesSql)) {
-                stmt.setInt(1, id);
-                stmt.executeUpdate();
-            }
-
-            // Delete SystemItem
-            String deleteItemSql = "DELETE FROM SystemItems WHERE item_id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(deleteItemSql)) {
-                stmt.setInt(1, id);
-                int affectedRows = stmt.executeUpdate();
-                if (affectedRows > 0) {
-                    success = true;
-                    LOGGER.info("Deleted SystemItem ID: " + id);
-                }
-            }
-
-            conn.commit(); // Commit transaction
-        } catch (SQLException e) {
-            LOGGER.severe("Error deleting SystemItem ID " + id + ": " + e.getMessage());
-            try {
-                if (conn != null) conn.rollback(); // Rollback on error
-            } catch (SQLException rollbackEx) {
-                LOGGER.severe("Rollback failed: " + rollbackEx.getMessage());
-            }
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    closeConnection(conn);
-                } catch (SQLException e) {
-                    LOGGER.severe("Error resetting auto-commit: " + e.getMessage());
-                }
-            }
-        }
-        return success;
-    }
-    //delete item and roles by item_id
-    public boolean deleteItemAndRoles(int itemId) {
-        Connection conn = null;
-        boolean success = false;
-        try {
-            conn = getConn();
-            conn.setAutoCommit(false); // Start transaction
-
-            // Delete associated RoleSystemItems entries
-            String deleteRolesSql = "DELETE FROM RoleSystemItems WHERE item_id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(deleteRolesSql)) {
-                stmt.setInt(1, itemId);
-                stmt.executeUpdate();
-            }
-
-            // Delete SystemItem
-            String deleteItemSql = "DELETE FROM SystemItems WHERE item_id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(deleteItemSql)) {
-                stmt.setInt(1, itemId);
-                int affectedRows = stmt.executeUpdate();
-                if (affectedRows > 0) {
-                    success = true;
-                    LOGGER.info("Deleted SystemItem ID: " + itemId);
-                }
-            }
-
-            conn.commit(); // Commit transaction
-        } catch (SQLException e) {
-            LOGGER.severe("Error deleting SystemItem ID " + itemId + ": " + e.getMessage());
-            try {
-                if (conn != null) conn.rollback(); // Rollback on error
-            } catch (SQLException rollbackEx) {
-                LOGGER.severe("Rollback failed: " + rollbackEx.getMessage());
-            }
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    closeConnection(conn);
-                } catch (SQLException e) {
-                    LOGGER.severe("Error resetting auto-commit: " + e.getMessage());
-                }
-            }
-        }
-        return success;
-    }
 
 }
