@@ -39,7 +39,7 @@ CREATE TABLE RoleSystemItems
     role_id INT,
     item_id INT,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id),
-    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id)
+    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id) ON DELETE CASCADE
 );
 GO
 
