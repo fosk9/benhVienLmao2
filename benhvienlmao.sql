@@ -297,11 +297,12 @@ VALUES
     ('Appointments', 'appointments', 1, 'Navigation'),
     ('Treatment History', 'treatment/history', 2, 'Navigation'),
     ('Services', 'appointment/list', 3, 'Navigation'),
-    ('Account', 'pactDetails', 4, 'Navigation'),
+    ('Account', '', 4, 'Navigation'),
     ('Logout', 'logout', 5, 'Navigation'),
-    ('My Profile', 'MyProfile', 6, 'Navigation'),
+    ('My Profile', 'MyProfile', 99, 'Navigation'),
     ('Change Password', 'change-password', 7, 'Navigation'),
-    ('Book Appointment', 'book-appointment', 8, 'Navigation');
+    ('Book Appointment', 'book-appointment', 8, 'Navigation'),
+	('Search for service','appointment/list', 4, 'Navigation');
 GO
 
 -- Insert sample RoleSystemItems
@@ -326,15 +327,17 @@ VALUES
     (5, 20), -- Patient: Appointments
     (5, 21), -- Patient: Treatment History
     (5, 22), -- Patient: Services
-    (5, 23), -- Patient: Account
     (5, 24), -- Patient: Logout
     (5, 25), -- Patient: My Profile
     (5, 26), -- Patient: Change Password
     (5, 27), -- Patient: Book Appointment
+	(5, 28),
+    (5, 23), -- Patient: Account
 	--Guest mapping (role_id = 0 for not login)
 	(6, 13),
 	(6, 22),
-	(6, 27);
+	(6, 27),
+	(6,28);
 GO
 
 -- Insert sample Patients

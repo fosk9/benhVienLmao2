@@ -13,6 +13,7 @@ import view.BlogDAO;
 import view.AppointmentTypeDAO;
 import view.SystemItemDAO;
 import view.PageContentDAO;
+import util.NavigationUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -48,15 +49,7 @@ public class MainPageServlet extends HttpServlet {
         }
 
         // Fetch navigation items
-        List<SystemItem> navItems = new ArrayList<>();
-        try {
-            navItems = systemItemDAO.getActiveItemsByRoleAndType(6, "Navigation"); // Guest role
-            LOGGER.info("Fetched " + navItems.size() + " navigation items for guest role");
-        } catch (Exception e) {
-            LOGGER.severe("Error fetching navigation items: " + e.getMessage());
-            navItems = new ArrayList<>(); // Ensure not null
-            request.setAttribute("error", "Failed to load navigation items: " + e.getMessage());
-        }
+        List<SystemItem> navItems = NavigationUtil.getNavigationItemsForRole(6, request); // Guest role
 
         // Fetch feature items
         List<SystemItem> featureItems = new ArrayList<>();
