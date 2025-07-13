@@ -32,19 +32,639 @@
     <link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico">
     <!-- CSS here -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/slicknav.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/flaticon.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/gijgo.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/animate.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/animated-headline.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/themify-icons.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/slick.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/nice-select.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/gijgo.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/animated-headline.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Enhanced CSS Files -->
+<%--    <link rel="stylesheet" href="assets/css/dental-specific.css">--%>
+<%--    <link rel="stylesheet" href="assets/css/image-utilities.css">--%>
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-color: #5AAC4E;
+            --secondary-color: #234821;
+            --accent-color: #6dc568;
+            --text-dark: #0D210B;
+            --text-light: #234821;
+            --white: #ffffff;
+            --light-bg: #f8fffe;
+            --border-radius: 8px;
+            --border-radius-large: 15px;
+            --transition: all 0.3s ease;
+            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Fix slider background attachment issue */
+        .slider-area {
+            position: relative;
+            background: linear-gradient(135deg, rgba(13, 33, 11, 0.8), rgba(90, 172, 78, 0.6)), url("assets/img/hero/h1_hero.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: scroll; /* Changed from fixed to scroll */
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        /* Enhanced section styling */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #5aac4e 0%, #4a9142 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Enhanced image utilities */
+        .enhanced-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .enhanced-image img {
+            width: 100%;
+            height: auto;
+            transition: var(--transition);
+        }
+
+        .enhanced-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(90, 172, 78, 0.8), rgba(35, 72, 33, 0.8));
+            opacity: 0;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .enhanced-image:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .overlay-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .overlay-content p {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Image optimization classes */
+        .img-optimized {
+            image-rendering: auto;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        .img-rounded-lg {
+            border-radius: var(--border-radius-large);
+        }
+
+        .img-shadow {
+            box-shadow: var(--shadow-medium);
+        }
+
+        .img-circle {
+            border-radius: 50%;
+        }
+
+        .img-border {
+            border: 3px solid var(--white);
+        }
+
+        /* Animation classes */
+        .image-floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Feature item styling */
+        .feature-item {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: #5a6c57;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Responsive fixes */
+        @media (max-width: 768px) {
+            .slider-area {
+                min-height: 70vh;
+                background-attachment: scroll; /* Ensure scroll on mobile */
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+        }
+
+        @media (max-width: 576px) {
+            .slider-area {
+                min-height: 60vh;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+        }
+
+        /* Fix for background section */
+        .section-bg,
+        .section-bg2,
+        .section-bg3 {
+            background-attachment: scroll !important; /* Override fixed attachment */
+        }
+
+        /* Performance optimizations */
+        .slider-area,
+        .enhanced-image,
+        .image-overlay {
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Accessibility improvements */
+        .btn:focus,
+        .accordion-button:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            .slider-area {
+                background: none !important;
+                min-height: auto !important;
+            }
+
+            .image-overlay {
+                display: none !important;
+            }
+        }
+
+        /* Modern Video Section */
+        .video-section-wrapper {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .video-area-modern {
+            position: relative;
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(90, 172, 78, 0.8), rgba(35, 72, 33, 0.8));
+        }
+
+        .video-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        .video-text h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .video-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .video-play-button .video-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .video-play-button .video-btn::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: pulse-ring 2s infinite;
+        }
+
+        .video-play-button .video-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        /* Modern Services Grid */
+        .modern-services-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f8fffe 0%, #e8f5f3 100%);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(90, 172, 78, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 20px;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .service-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .service-price {
+            margin-bottom: 25px;
+        }
+
+        .price-label {
+            display: block;
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .price-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .service-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-btn span {
+            margin-right: 8px;
+        }
+
+        .service-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .service-btn:hover {
+            transform: translateX(4px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .service-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        /* Popular Services Section */
+        .popular-services-section {
+            margin-top: 80px;
+        }
+
+        .popular-service-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            min-height: 280px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .popular-service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .featured-left .popular-service-content {
+            padding: 40px;
+            flex: 1;
+        }
+
+        .featured-left .popular-service-image {
+            flex: 1;
+            height: 280px;
+        }
+
+        .featured-right {
+            flex-direction: row-reverse;
+        }
+
+        .featured-right .popular-service-content {
+            padding: 40px;
+            flex: 1;
+        }
+
+        .featured-right .popular-service-image {
+            flex: 1;
+            height: 280px;
+        }
+
+        .popular-service-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .popular-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .popular-badge.premium {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+        }
+
+        .popular-service-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .popular-service-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .popular-features {
+            margin-bottom: 25px;
+        }
+
+        .feature-item {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .popular-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(90, 172, 78, 0.3);
+        }
+
+        .popular-btn.premium {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .popular-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(90, 172, 78, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .popular-btn.premium:hover {
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .service-card {
+                padding: 25px;
+            }
+
+            .popular-service-card {
+                flex-direction: column !important;
+                min-height: auto;
+            }
+
+            .featured-right {
+                flex-direction: column !important;
+            }
+
+            .popular-service-content {
+                padding: 30px !important;
+            }
+
+            .popular-service-image {
+                height: 200px !important;
+            }
+
+            .video-area-modern {
+                height: 300px;
+            }
+
+            .video-text h3 {
+                font-size: 2rem;
+            }
+
+            .video-play-button .video-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .modern-services-section {
+                padding: 60px 0;
+            }
+
+            .services-grid {
+                margin: 0 15px;
+            }
+
+            .service-card {
+                padding: 20px;
+            }
+
+            .popular-service-card h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
 <!-- ? Preloader Start -->
@@ -70,6 +690,7 @@
                         <img src="${pageContext.request.contextPath}/assets/img/logo/loder.png" alt="">
                     </c:otherwise>
                 </c:choose>
+                <img src="assets/img/logo/loder.png" alt="" class="img-optimized">
             </div>
         </div>
     </div>
@@ -272,8 +893,8 @@
                     <div class="col-lg-4 col-md-6 col-sm-12">
                         <article class="blog_item">
                             <div class="blog_item_img">
-                                <img class="card-img rounded-0"
-                                     src="${pageContext.request.contextPath}/assets/img/${b.blogImg}"
+                                <img class="img-fluid img-optimized"
+                                     src="${pageContext.request.contextPath}/${b.blogImg}"
                                      alt="${b.blogName}">
                                 <a href="#" class="blog_item_date">
                                     <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
@@ -765,5 +1386,6 @@
 <script src="${pageContext.request.contextPath}/assets/js/plugins.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

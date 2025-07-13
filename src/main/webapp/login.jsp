@@ -135,7 +135,7 @@
 <body>
 
 <div class="login-container">
-    <h2>Login</h2>
+    <h2></h2>
     <% String error = (String) request.getAttribute("error"); %>
     <% String success = (String) request.getAttribute("success"); %>
     <% if (error != null) { %>

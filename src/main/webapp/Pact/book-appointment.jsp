@@ -19,6 +19,9 @@
   <link rel="stylesheet" href="<c:url value='/assets/css/select2.min.css'/>">
   <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
   <style>
+    /* Giữ nguyên CSS cũ của bạn và thêm những cải thiện nhẹ nhàng này */
+
+    /* ===== EXISTING STYLES (giữ nguyên) ===== */
     .big-form { max-width: 600px; margin: 0 auto; font-size: 1.3rem; }
     .big-form label, .big-form input, .big-form select, .big-form button { font-size: 1.2rem; }
     .big-form .form-control { height: 50px; font-size: 1.2rem; }
@@ -34,6 +37,174 @@
     .total-price-section { margin-top: 20px; margin-bottom: 20px; padding: 15px; background-color: #f1f8f1; border-radius: 8px; border: 1px solid #28a745; }
     .total-price-section .price-display { font-size: 1.3rem; color: #28a745; }
     .price-warning { color: #dc3545; font-size: 1rem; margin-top: 5px; display: none; }
+
+    /* ===== SUBTLE IMPROVEMENTS (chỉ thêm vào) ===== */
+    body {
+      background: linear-gradient(135deg, #f0f9f2 0%, #ffffff 50%, #f0f9f2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* Header cải thiện nhẹ */
+    .header-area {
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    /* Form container đẹp hơn một chút */
+    .big-form {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border: 1px solid #e9ecef;
+    }
+
+    /* Form controls cải thiện nhẹ */
+    .big-form .form-control {
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .big-form .form-control:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+      outline: none;
+    }
+
+    /* Labels đẹp hơn */
+    .big-form label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+    }
+
+    /* Button cải thiện nhẹ */
+    .big-form .btn {
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .big-form .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    /* Select2 cải thiện */
+    .select2-container--default .select2-selection--single {
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      transition: border-color 0.3s ease;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--single {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+    }
+
+    /* Price section cải thiện nhẹ */
+    .total-price-section {
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
+    }
+
+    /* Description display đẹp hơn */
+    .description-display {
+      background-color: #e8f5e8;
+      border: 1px solid #c3e6cb;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    /* Error messages cải thiện */
+    .error-message {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 8px;
+    }
+
+    .price-warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 8px;
+    }
+
+    /* Form groups spacing */
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    /* Title cải thiện nhẹ */
+    h2 {
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(40, 167, 69, 0.1);
+    }
+
+    /* Responsive cải thiện */
+    @media (max-width: 768px) {
+      .big-form {
+        margin: 20px;
+        padding: 30px 25px;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .big-form {
+        margin: 15px;
+        padding: 25px 20px;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      .big-form .form-control {
+        height: 45px;
+        font-size: 1.1rem;
+      }
+
+      .big-form .btn {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Smooth transitions cho tất cả */
+    * {
+      transition: all 0.3s ease;
+    }
+
+    /* Focus accessibility */
+    .big-form .form-control:focus,
+    .big-form .btn:focus {
+      outline: none;
+    }
+
+    /* Loading state cho button */
+    .big-form .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .description-display {
+      transition: all 0.3s ease;
+      display: none; /* Ẩn mặc định */
+    }
+
+    .description-display:not(:empty) {
+      display: block; /* Hiện khi có nội dung */
+    }
   </style>
 </head>
 <body>
@@ -44,7 +215,9 @@
         <div class="row align-items-center">
           <div class="col-xl-2 col-lg-2 col-md-1">
             <div class="logo">
-              <a href="<c:url value='/pactHome'/>">HealthCare</a>
+              <a href="<c:url value='/pactHome'/>">
+                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="Dental Care Logo" class="img-fluid img-optimized">
+              </a>
             </div>
           </div>
           <div class="col-xl-10 col-lg-10 col-md-10">
@@ -190,10 +363,12 @@
     finalPriceInput.value = price;
 
     // Hiển thị mô tả
-    if (typeObj && typeObj.description) {
+    if (typeObj && typeObj.description && selectedId) {
       typeDescription.innerText = "Description: " + typeObj.description;
+      typeDescription.style.display = 'block';
     } else {
       typeDescription.innerText = "";
+      typeDescription.style.display = 'none';
     }
     // Gán typeName vào input ẩn
     typeNameInput.value = typeObj && typeObj.typeName ? typeObj.typeName : "";

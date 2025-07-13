@@ -4,540 +4,717 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>${sessionScope.username != null ? sessionScope.username : 'User'}'s Appointments</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="<c:url value='/assets/css/bootstrap.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/owl.carousel.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/slicknav.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/flaticon.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/gijgo.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/animate.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/animated-headline.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/magnific-popup.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/fontawesome-all.min.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/themify-icons.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
-    <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
-    <style>
-        /* Consistent font with index.jsp, scaled up */
-        body, .table th, .table td, .btn, .form-control, label {
-            font-family: "Segoe UI", sans-serif;
-            font-size: 1.8rem; /* Increased from 1.4rem */
-        }
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>My Appointments</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="<c:url value='/assets/css/bootstrap.min.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/owl.carousel.min.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/slicknav.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/flaticon.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/gijgo.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/animate.min.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/animated-headline.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/magnific-popup.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/fontawesome-all.min.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/themify-icons.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
+  <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+  <style>
+    /* ===== GLOBAL ENHANCEMENTS ===== */
+    body {
+      background: linear-gradient(135deg, #f0f9f2 0%, #ffffff 50%, #f0f9f2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
 
-        /* Title styling */
-        h2 {
-            text-align: center;
-            margin: 40px 0; /* Increased from 30px */
-            font-size: 2.6rem; /* Increased from 2rem */
-            color: #28a745;
-        }
+    /* ===== HEADER ENHANCEMENTS ===== */
+    .header-area {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 20px rgba(40, 167, 69, 0.1);
+      border-bottom: 1px solid rgba(40, 167, 69, 0.1);
+    }
 
-        /* Table styling */
-        .card {
-            border-radius: 15px; /* Increased from 12px */
-            overflow: hidden;
-            border: 2px solid #28a745; /* Increased from 1px */
-            margin-top: 30px; /* Increased from 20px */
-        }
+    .logo a {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #28a745 !important;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
 
-        .table {
-            border-radius: 15px; /* Increased from 12px */
-            overflow: hidden;
-        }
+    .logo a:before {
+      margin-right: 8px;
+      font-size: 1.5rem;
+    }
 
-        .table thead th {
-            background-color: #f1f8f1;
-            color: #28a745;
-            font-weight: bold;
-            padding: 15px; /* Increased from 8px */
-        }
+    #navigation li a {
+      color: #6c757d;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
 
-        .table-bordered {
-            border: 2px solid #28a745; /* Increased from 1px */
-        }
+    #navigation li a:hover {
+      color: #28a745;
+    }
 
-        .table-bordered th, .table-bordered td {
-            border: 2px solid #28a745; /* Increased from 1px */
-            padding: 15px; /* Increased from 8px */
-        }
+    /* ===== MAIN CONTENT STYLING ===== */
+    main {
+      padding: 60px 0;
+      min-height: calc(100vh - 200px);
+    }
 
-        /* Button styling */
-        .btn {
-            font-size: 1.6rem; /* Increased from 1.2rem */
-            padding: 16px 32px; /* Increased from 12px 24px */
-            border-radius: 8px; /* Increased from 6px */
-            transition: all 0.3s ease;
-        }
+    .container {
+      max-width: 1400px;
+    }
 
-        .btn-primary {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
+    /* ===== TITLE STYLING ===== */
+    h2 {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 50px;
+      color: #28a745;
+      font-weight: 700;
+      position: relative;
+      text-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+    }
 
-        .btn-primary:hover {
-            background-color: #218838;
-            border-color: #218838;
-        }
+    h2:after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #28a745, #20c997);
+      border-radius: 2px;
+    }
 
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
+    /* ===== CARD ENHANCEMENTS ===== */
+    .card {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(40, 167, 69, 0.15);
+      background: white;
+      overflow: hidden;
+      position: relative;
+    }
 
-        .btn-danger:hover {
-            background-color: #c82333;
-            border-color: #c82333;
-        }
+    .card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+    }
 
-        .btn-info {
-            background-color: #17a2b8;
-            border-color: #17a2b8;
-        }
+    .card-body {
+      padding: 0;
+    }
 
-        .btn-info:hover {
-            background-color: #138496;
-            border-color: #138496;
-        }
+    /* ===== TABLE STYLING ===== */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 0 0 20px 20px;
+    }
 
-        .btn + .btn {
-            margin-left: 15px; /* Increased from 10px */
-        }
+    .table {
+      margin-bottom: 0;
+      font-size: 1.1rem;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
 
-        /* Search form table styling */
-        .search-table {
-            width: 100%;
-            max-width: 600px; /* Increased from 500px */
-            margin: 30px auto; /* Increased from 20px */
-            background-color: #f1f8f1;
-            padding: 25px; /* Increased from 15px */
-            border-radius: 25px; /* Increased from 20px */
-            border: 2px solid #28a745; /* Increased from 1px */
-        }
+    .table thead th {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 20px 15px;
+      border: none;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        .search-table td {
-            padding: 12px; /* Increased from 8px */
-            vertical-align: middle;
-        }
+    .table thead th:first-child {
+      border-radius: 0;
+    }
 
-        .search-table td:first-child {
-            font-weight: bold;
-            color: #28a745;
-            font-size: 1.8rem; /* Increased from 1.2rem */
-            width: 40%;
-            text-align: right;
-        }
+    .table thead th:last-child {
+      border-radius: 0;
+    }
 
-        .search-table td:last-child {
-            width: 60%;
-        }
+    .table tbody td {
+      padding: 20px 15px;
+      border: none;
+      border-bottom: 1px solid #f1f3f4;
+      vertical-align: middle;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
 
-        .search-table .form-control {
-            font-size: 1.6rem; /* Increased from 1.2rem */
-            height: 50px; /* Increased for larger inputs */
-            width: 100%;
-        }
+    .table tbody tr {
+      transition: all 0.3s ease;
+    }
 
-        .search-table .btn {
-            font-size: 1.6rem; /* Increased from 1.2rem */
-            padding: 14px 28px; /* Increased from 10px 20px */
-            border-radius: 8px; /* Increased from 6px */
-        }
+    .table tbody tr:hover {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
 
-        .search-table .btn-primary {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
 
-        .search-table .btn-primary:hover {
-            background-color: #218838;
-            border-color: #218838;
-        }
+    /* ===== STATUS BADGES ===== */
+    .status-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .search-table .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
+    .status-confirmed {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
 
-        .search-table .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #5a6268;
-        }
+    .status-confirmed:before {
+      content: "✓";
+    }
 
-        /* Pagination styling */
-        .pagination {
-            justify-content: center;
-            margin-top: 30px; /* Increased from 20px */
-        }
+    .status-pending {
+      background: linear-gradient(135deg, #ffc107, #ffb300);
+      color: #856404;
+    }
 
-        .page-link {
-            font-size: 1.6rem; /* Increased from 1.2rem */
-            color: #28a745;
-            border-color: #28a745;
-            padding: 12px 18px; /* Increased from default */
-        }
+    .status-pending:before {
+      content: "⏳";
+    }
 
-        .page-link:hover {
-            background-color: #f1f8f1;
-            color: #218838;
-        }
+    .status-cancelled {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+    }
 
-        .page-item.active .page-link {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: #fff;
-        }
+    .status-cancelled:before {
+      content: "✗";
+    }
 
-        .page-item.disabled .page-link {
-            color: #6c757d;
-        }
+    .status-completed {
+      background: linear-gradient(135deg, #17a2b8, #138496);
+      color: white;
+    }
 
-        /* Error message styling */
-        .error-message {
-            color: #dc3545;
-            font-size: 1.6rem; /* Increased from 1.2rem */
-            text-align: center;
-            margin-bottom: 30px; /* Increased from 20px */
-        }
+    .status-completed:before {
+      content: "✓";
+    }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .table th, .table td {
-                font-size: 1.6rem; /* Increased from 1.2rem */
-            }
+    /* ===== SPECIALIST BADGES ===== */
+    .specialist-badge {
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-            .btn {
-                font-size: 1.4rem; /* Increased from 1rem */
-                padding: 12px 24px; /* Increased from 8px 16px */
-            }
+    .specialist-yes {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: #1976d2;
+      border: 1px solid #2196f3;
+    }
 
-            h2 {
-                font-size: 2.2rem; /* Increased from 1.8rem */
-            }
+    .specialist-yes:before {
+      content: "👨‍⚕️";
+    }
 
-            .search-table {
-                padding: 15px; /* Increased from 10px */
-                max-width: 100%;
-            }
+    .specialist-no {
+      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+      color: #7b1fa2;
+      border: 1px solid #9c27b0;
+    }
 
-            .search-table td:first-child, .search-table td:last-child {
-                font-size: 1.6rem; /* Increased from 1.1rem */
-                padding: 8px; /* Increased from 5px */
-            }
+    .specialist-no:before {
+      content: "👩‍⚕️";
+    }
 
-            .search-table .form-control {
-                font-size: 1.4rem; /* Increased from 1.1rem */
-                height: 45px; /* Adjusted for mobile */
-            }
+    /* ===== BUTTON ENHANCEMENTS ===== */
+    .btn {
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 2px;
+      position: relative;
+      overflow: hidden;
+    }
 
-            .search-table .btn {
-                font-size: 1.4rem; /* Increased from 1.1rem */
-                padding: 10px 20px; /* Increased from 8px 16px */
-            }
-        }
+    .btn:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
 
-        /* Flexbox for appointment order (if needed) */
-        #flex {
-            display: flex;
-            flex-direction: column;
-        }
+    .btn:hover:before {
+      left: 100%;
+    }
 
-        #a { order: 1; }
-        #b { order: 2; }
-        #c { order: 3; }
-    </style>
+    .btn-primary {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0056b3, #004085);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #c82333, #a71e2a);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+      color: white;
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, #17a2b8, #138496);
+      color: white;
+      box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+    }
+
+    .btn-info:hover {
+      background: linear-gradient(135deg, #138496, #0f6674);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+      color: white;
+    }
+
+    /* ===== ACTION BUTTONS CONTAINER ===== */
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===== DATE AND TIME STYLING ===== */
+    .date-display {
+      font-weight: 600;
+      color: #28a745;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .date-display:before {
+      content: "📅";
+    }
+
+    .time-display {
+      font-weight: 600;
+      color: #17a2b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .time-display:before {
+      content: "🕐";
+    }
+
+    /* ===== TYPE DISPLAY ===== */
+    .type-display {
+      font-weight: 600;
+      color: #6f42c1;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid #dee2e6;
+    }
+
+    .type-unknown {
+      color: #dc3545;
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      border: 1px solid #f5c6cb;
+    }
+
+    /* ===== ID STYLING ===== */
+    .id-display {
+      font-weight: 700;
+      color: #495057;
+      background: linear-gradient(135deg, #e9ecef, #dee2e6);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
+
+    .empty-state h3 {
+      color: #28a745;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    .empty-state p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+
+    .empty-state .btn {
+      font-size: 1.1rem;
+      padding: 12px 30px;
+    }
+
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 1200px) {
+      .container {
+        max-width: 100%;
+        padding: 0 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+      }
+
+      .table {
+        font-size: 0.9rem;
+      }
+
+      .table thead th,
+      .table tbody td {
+        padding: 12px 8px;
+      }
+
+      .btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .status-badge,
+      .specialist-badge {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      main {
+        padding: 30px 0;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      .card {
+        margin: 0 10px;
+        border-radius: 15px;
+      }
+
+      .table {
+        font-size: 0.8rem;
+      }
+
+      .table thead th,
+      .table tbody td {
+        padding: 10px 6px;
+      }
+    }
+
+    /* ===== LOADING ANIMATION ===== */
+    .table-loading {
+      position: relative;
+    }
+
+    .table-loading:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+    }
+
+    /* ===== SMOOTH TRANSITIONS ===== */
+    * {
+      transition: all 0.3s ease;
+    }
+
+    /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
 <header>
-    <div class="header-area">
-        <div class="main-header header-sticky">
-            <div class="container-fluid">
-                <div class="row align-items-center">
-                    <div class="col-xl-2 col-lg-2 col-md-1">
-                        <div class="logo">
-                            <a href="<c:url value='/pactHome'/>">HealthCare</a>
-                        </div>
-                    </div>
-                    <div class="col-xl-10 col-lg-10 col-md-10">
-                        <div class="menu-main d-flex align-items-center justify-content-end">
-                            <div class="main-menu f-right d-none d-lg-block">
-                                <nav>
-                                    <ul id="navigation">
-                                        <li><a href="<c:url value='/pactHome'/>">Home</a></li>
-                                        <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>
-                                        <li><a href="<c:url value='/logout'/>">Logout</a></li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="mobile_menu d-block d-lg-none"></div>
-                    </div>
-                </div>
+  <div class="header-area">
+    <div class="main-header header-sticky">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-xl-2 col-lg-2 col-md-1">
+            <div class="logo">
+              <a href="<c:url value='/pactHome'/>">
+                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="Dental Care Logo" class="img-fluid img-optimized">
+              </a>
             </div>
-        </div>
-    </div>
-</header>
-<main>
-    <div class="container mt-5">
-        <!-- Display user's appointments title -->
-        <h2>${sessionScope.username != null ? sessionScope.username : 'User'}'s Appointments</h2>
-        <!-- Display error message if set -->
-        <c:if test="${not empty error}">
-            <div class="error-message">${error}</div>
-        </c:if>
-        <!-- Search Form Start -->
-        <table class="search-table">
-            <form action="<c:url value='/appointments'/>" method="get" id="searchForm">
-                <tr>
-                    <td style="text-align:left; width:50%;">Appointment Date</td>
-                    <td style="width:50%;"><input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${param.appointmentDate}"></td>
-                </tr>
-                <tr>
-                    <td style="text-align:left; width:50%;">Type</td>
-                    <td style="width:50%;">
-                        <select id="appointmentTypeId" name="appointmentTypeId" class="form-control">
-                            <option value="">All</option>
-                            <c:forEach var="type" items="${appointmentTypes}">
-                                <option value="${type.appointmentTypeId}"
-                                        <c:if test="${param.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
-                                        ${type.typeName}
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:left; width:50%;">Status</td>
-                    <td style="width:50%;">
-                        <select id="status" name="status" class="form-control">
-                            <option value="">All</option>
-                            <option value="Unpay" <c:if test="${param.status == 'Unpay'}">selected</c:if>>Unpaid</option>
-                            <option value="Confirmed" <c:if test="${param.status == 'Confirmed'}">selected</c:if>>Confirmed</option>
-                            <option value="Cancelled" <c:if test="${param.status == 'Cancelled'}">selected</c:if>>Cancelled</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:left; width:50%;">Time Slot</td>
-                    <td style="width:50%;">
-                        <select id="timeSlot" name="timeSlot" class="form-control">
-                            <option value="">All</option>
-                            <option value="Morning" <c:if test="${param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
-                            <option value="Afternoon" <c:if test="${param.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
-                            <option value="Evening" <c:if test="${param.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:left; width:50%;">Request Specialist</td>
-                    <td style="width:50%;">
-                        <select id="requiresSpecialist" name="requiresSpecialist" class="form-control">
-                            <option value="">All</option>
-                            <option value="Yes" <c:if test="${param.requiresSpecialist == 'Yes'}">selected</c:if>>Yes</option>
-                            <option value="No" <c:if test="${param.requiresSpecialist == 'No'}">selected</c:if>>No</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:left; width:50%;">Sort By</td>
-                    <td style="width:50%;">
-                        <select id="sortBy" name="sortBy" class="form-control" onchange="updateSortDir()">
-                            <option value="">Default (Newest)</option>
-                            <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'ASC'}">selected</c:if>>Date (Oldest to Newest)</option>
-                            <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'DESC'}">selected</c:if>>Date (Newest to Oldest)</option>
-                            <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'ASC'}">selected</c:if>>Type (A-Z)</option>
-                            <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'DESC'}">selected</c:if>>Type (Z-A)</option>
-                        </select>
-                        <input type="hidden" id="sortDir" name="sortDir" value="${sortDir}">
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:center; width:50%;"><button type="submit" class="btn btn-primary">Search</button></td>
-                    <td style="text-align:center; width:50%;"><button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button></td>
-                </tr>
-            </form>
-        </table>
-        <!-- Search Form End -->
-
-        <!-- Display appointments in a table -->
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Appointment Date</th>
-                        <th>Time Slot</th>
-                        <th>Type</th>
-                        <th>Requires Specialist</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach var="appointment" items="${appointments}">
-                        <tr>
-                            <td>${appointment.appointmentId}</td>
-                            <td><fmt:formatDate value="${appointment.appointmentDate}" pattern="yyyy-MM-dd"/></td>
-                            <td>${appointment.timeSlot}</td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.typeName}">
-                                        ${appointment.appointmentType.typeName}
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span style="color:red;font-weight:bold;">Unknown Type</span>
-                                        <script>
-                                            console.warn("Appointment ID ${appointment.appointmentId} missing valid appointmentType: ", ${appointment.appointmentType});
-                                        </script>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${appointment.requiresSpecialist}">Yes</c:when>
-                                    <c:otherwise>No</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>${appointment.status}</td>
-                            <td>
-                                <c:set var="now" value="<%= new java.sql.Timestamp(System.currentTimeMillis()) %>"/>
-                                <c:choose>
-                                    <c:when test="${appointment.appointmentDate.time > now.time}">
-                                        <c:choose>
-                                            <c:when test="${appointment.status == 'Unpay'}">
-                                                <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
-                                                   class="btn btn-primary">Edit</a>
-                                                <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
-                                                   class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
-                                                <a href="<c:url value='/payment?appointmentId=${appointment.appointmentId}'/>"
-                                                   class="btn btn-success">Pay</a>
-                                            </c:when>
-                                        </c:choose>
-                                    </c:when>
-                                </c:choose>
-                                <a href="<c:url value='/appointments/details?id=${appointment.appointmentId}'/>"
-                                   class="btn btn-info">Details</a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    <c:if test="${empty appointments}">
-                        <tr>
-                            <td colspan="7" class="text-center">No appointments found.</td>
-                        </tr>
-                    </c:if>
-                    </tbody>
-                </table>
-                <!-- Pagination controls -->
+          </div>
+          <div class="col-xl-10 col-lg-10 col-md-10">
+            <div class="menu-main d-flex align-items-center justify-content-end">
+              <div class="main-menu f-right d-none d-lg-block">
                 <nav>
-                    <ul class="pagination">
-                        <!-- Previous page link -->
-                        <li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
-                            <a class="page-link" href="<c:url value='/appointments'>
-                                <c:param name='page' value='${currentPage - 1}'/>
-                                <c:param name='appointmentDate' value='${param.appointmentDate}'/>
-                                <c:param name='timeSlot' value='${param.timeSlot}'/>
-                                <c:param name='appointmentTypeId' value='${param.appointmentTypeId}'/>
-                                <c:param name='requiresSpecialist' value='${param.requiresSpecialist}'/>
-                                <c:param name='status' value='${param.status}'/>
-                                <c:param name='sortBy' value='${sortBy}'/>
-                                <c:param name='sortDir' value='${sortDir}'/>
-                            </c:url>">Previous</a>
-                        </li>
-                        <!-- Page numbers -->
-                        <c:forEach begin="1" end="${totalPages}" var="i">
-                            <li class="page-item <c:if test='${currentPage == i}'>active</c:if>">
-                                <a class="page-link" href="<c:url value='/appointments'>
-                                    <c:param name='page' value='${i}'/>
-                                    <c:param name='appointmentDate' value='${param.appointmentDate}'/>
-                                    <c:param name='timeSlot' value='${param.timeSlot}'/>
-                                    <c:param name='appointmentTypeId' value='${param.appointmentTypeId}'/>
-                                    <c:param name='requiresSpecialist' value='${param.requiresSpecialist}'/>
-                                    <c:param name='status' value='${param.status}'/>
-                                    <c:param name='sortBy' value='${sortBy}'/>
-                                    <c:param name='sortDir' value='${sortDir}'/>
-                                </c:url>">${i}</a>
-                            </li>
-                        </c:forEach>
-                        <!-- Next page link -->
-                        <li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
-                            <a class="page-link" href="<c:url value='/appointments'>
-                                <c:param name='page' value='${currentPage + 1}'/>
-                                <c:param name='appointmentDate' value='${param.appointmentDate}'/>
-                                <c:param name='timeSlot' value='${param.timeSlot}'/>
-                                <c:param name='appointmentTypeId' value='${param.appointmentTypeId}'/>
-                                <c:param name='requiresSpecialist' value='${param.requiresSpecialist}'/>
-                                <c:param name='status' value='${param.status}'/>
-                                <c:param name='sortBy' value='${sortBy}'/>
-                                <c:param name='sortDir' value='${sortDir}'/>
-                            </c:url>">Next</a>
-                        </li>
-                    </ul>
+                  <ul id="navigation">
+                    <li><a href="<c:url value='/pactHome'/>">Home</a></li>
+                    <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>
+                    <li><a href="<c:url value='/logout'/>">Logout</a></li>
+                  </ul>
                 </nav>
+              </div>
             </div>
+          </div>
+          <div class="col-12">
+            <div class="mobile_menu d-block d-lg-none"></div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+</header>
+
+<main>
+  <div class="container mt-5">
+    <h2>My Appointments</h2>
+
+    <div class="card">
+      <div class="card-body">
+        <c:choose>
+          <c:when test="${empty appointments}">
+            <div class="empty-state">
+              <h3>📅 No Appointments Found</h3>
+              <p>You don't have any appointments scheduled yet.</p>
+              <a href="<c:url value='/book-appointment'/>" class="btn btn-primary">
+                Book Your First Appointment
+              </a>
+            </div>
+          </c:when>
+          <c:otherwise>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Appointment Date</th>
+                  <th>Time Slot</th>
+                  <th>Type</th>
+                  <th>Requires Specialist</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="appointment" items="${appointments}">
+                  <tr>
+                    <td>
+                      <span class="id-display">#${appointment.appointmentId}</span>
+                    </td>
+                    <td>
+                      <span class="date-display">
+                        <fmt:formatDate value="${appointment.appointmentDate}" pattern="yyyy-MM-dd"/>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="time-display">${appointment.timeSlot}</span>
+                    </td>
+                    <td>
+                      <c:choose>
+                        <c:when test="${not empty appointment.appointmentType and not empty appointment.appointmentType.typeName}">
+                          <span class="type-display">${appointment.appointmentType.typeName}</span>
+                        </c:when>
+                        <c:otherwise>
+                          <span class="type-display type-unknown">Unknown Type</span>
+                          <script>
+                            console.warn("Appointment ID ${appointment.appointmentId} missing valid appointmentType: ", ${appointment.appointmentType});
+                          </script>
+                        </c:otherwise>
+                      </c:choose>
+                    </td>
+                    <td>
+                      <c:choose>
+                        <c:when test="${appointment.requiresSpecialist}">
+                          <span class="specialist-badge specialist-yes">Yes</span>
+                        </c:when>
+                        <c:otherwise>
+                          <span class="specialist-badge specialist-no">No</span>
+                        </c:otherwise>
+                      </c:choose>
+                    </td>
+                    <td>
+                      <c:choose>
+                        <c:when test="${appointment.status == 'Confirmed'}">
+                          <span class="status-badge status-confirmed">${appointment.status}</span>
+                        </c:when>
+                        <c:when test="${appointment.status == 'Pending'}">
+                          <span class="status-badge status-pending">${appointment.status}</span>
+                        </c:when>
+                        <c:when test="${appointment.status == 'Cancelled'}">
+                          <span class="status-badge status-cancelled">${appointment.status}</span>
+                        </c:when>
+                        <c:when test="${appointment.status == 'Completed'}">
+                          <span class="status-badge status-completed">${appointment.status}</span>
+                        </c:when>
+                        <c:otherwise>
+                          <span class="status-badge status-pending">${appointment.status}</span>
+                        </c:otherwise>
+                      </c:choose>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <c:set var="now" value="<%= new java.sql.Timestamp(System.currentTimeMillis()) %>" />
+                        <c:choose>
+                          <c:when test="${appointment.appointmentDate.time > now.time}">
+                            <a href="<c:url value='/appointments/edit?id=${appointment.appointmentId}'/>"
+                               class="btn btn-sm btn-primary" title="Edit Appointment">Edit</a>
+                            <a href="<c:url value='/appointments/delete?id=${appointment.appointmentId}'/>"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this appointment?')"
+                               title="Delete Appointment">Delete</a>
+                          </c:when>
+                        </c:choose>
+                        <a href="<c:url value='/appointments/details?id=${appointment.appointmentId}'/>"
+                           class="btn btn-sm btn-info" title="View Details">Details</a>
+                      </div>
+                    </td>
+                  </tr>
+                </c:forEach>
+                </tbody>
+              </table>
+            </div>
+          </c:otherwise>
+        </c:choose>
+      </div>
+    </div>
+  </div>
 </main>
+
 <footer>
-    <div class="footer-wrappr section-bg3">
-        <div class="footer-area footer-padding">
-            <div class="container">
-                <div class="row justify-content-between">
-                    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-logo mb-25">
-                                <a href="<c:url value='/pactHome'/>">HealthCare</a>
-                            </div>
-                            <div class="header-area">
-                                <div class="main-header main-header2">
-                                    <div class="menu-main d-flex align-items-center justify-content-start">
-                                        <div class="main-menu main-menu2">
-                                            <nav>
-                                                <ul>
-                                                    <li><a href="<c:url value='/pactHome'/>">Home</a></li>
-                                                    <li><a href="<c:url value='/about'/>">About</a></li>
-                                                    <li><a href="<c:url value='/services'/>">Services</a></li>
-                                                    <li><a href="<c:url value='/blog'/>">Blog</a></li>
-                                                    <li><a href="<c:url value='/contact'/>">Contact</a></li>
-                                                </ul>
-                                            </nav>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="footer-social mt-50">
-                                <a href="#"><i class="fab fa-twitter"></i></a>
-                                <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#"><i class="fab fa-pinterest-p"></i></a>
-                            </div>
-                        </div>
+  <div class="footer-wrappr section-bg3">
+    <div class="footer-area footer-padding">
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12">
+            <div class="single-footer-caption mb-50">
+              <div class="footer-logo mb-25">
+                <a href="<c:url value='/pactHome'/>">HealthCare</a>
+              </div>
+              <div class="header-area">
+                <div class="main-header main-header2">
+                  <div class="menu-main d-flex align-items-center justify-content-start">
+                    <div class="main-menu main-menu2">
+                      <nav>
+                        <ul>
+                          <li><a href="<c:url value='/pactHome'/>">Home</a></li>
+                          <li><a href="<c:url value='/about'/>">About</a></li>
+                          <li><a href="<c:url value='/services'/>">Services</a></li>
+                          <li><a href="<c:url value='/blog'/>">Blog</a></li>
+                          <li><a href="<c:url value='/contact'/>">Contact</a></li>
+                        </ul>
+                      </nav>
                     </div>
+                  </div>
                 </div>
+              </div>
+              <div class="footer-social mt-50">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-pinterest-p"></i></a>
+              </div>
             </div>
+          </div>
         </div>
-        <div class="footer-bottom-area">
-            <div class="container">
-                <div class="footer-border">
-                    <div class="row">
-                        <div class="col-xl-10">
-                            <div class="footer-copy-right">
-                                <p>Group 3 - SE1903 - SWP391 Summer2025</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+    <div class="footer-bottom-area">
+      <div class="container">
+        <div class="footer-border">
+          <div class="row">
+            <div class="col-xl-10">
+              <div class="footer-copy-right">
+                <p>Group 3 - SE1903 - SWP391 Summer2025</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </footer>
+
 <div id="back-top">
-    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+  <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
 </div>
 
 <script src="<c:url value='/assets/js/vendor/modernizr-3.5.0.min.js'/>"></script>
@@ -564,27 +741,5 @@
 <script src="<c:url value='/assets/js/jquery.ajaxchimp.min.js'/>"></script>
 <script src="<c:url value='/assets/js/plugins.js'/>"></script>
 <script src="<c:url value='/assets/js/main.js'/>"></script>
-<script>
-    // Update sort direction based on sortBy selection
-    function updateSortDir() {
-        const sortBySelect = document.getElementById('sortBy');
-        const sortDirInput = document.getElementById('sortDir');
-        const selectedOption = sortBySelect.selectedOptions[0].text;
-        if (selectedOption.includes('(Z-A)') || selectedOption.includes('Newest') || selectedOption.includes('Latest')) {
-            sortDirInput.value = 'DESC';
-        } else {
-            sortDirInput.value = 'ASC';
-        }
-        document.getElementById('searchForm').submit();
-    }
-
-    // Reset search form to default values
-    function resetForm() {
-        const form = document.getElementById('searchForm');
-        form.reset();
-        document.getElementById('sortDir').value = 'DESC';
-        form.submit();
-    }
-</script>
 </body>
 </html>

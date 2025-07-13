@@ -60,20 +60,31 @@ public class BlogControllerServlet extends HttpServlet {
         }
         // Kiểm tra nếu có tìm kiếm theo danh mục
         else if (categoryIdParam != null) {
-            int categoryId = Integer.parseInt(categoryIdParam);
+            try {
+                // Loại bỏ khoảng trắng thừa ở đầu và cuối chuỗi
+                categoryIdParam = categoryIdParam.trim();
+                if (categoryIdParam.isEmpty() || !categoryIdParam.matches("\\d+")) {
+                    throw new NumberFormatException("Invalid or empty category ID");
+                }
+                int categoryId = Integer.parseInt(categoryIdParam);
 
-            // Lấy bài viết theo danh mục với phân trang
-            List<Blog> blogListByCategory = blogDAO.getBlogsByCategory(categoryId, offset, pageSize);
+                // Lấy bài viết theo danh mục với phân trang
+                List<Blog> blogListByCategory = blogDAO.getBlogsByCategory(categoryId, offset, pageSize);
 
-            // Lấy tổng số bài viết của danh mục
-            int totalBlogsByCategory = blogDAO.getTotalBlogsCountByCategory(categoryId);
-            int totalPages = (int) Math.ceil((double) totalBlogsByCategory / pageSize);
+                // Lấy tổng số bài viết của danh mục
+                int totalBlogsByCategory = blogDAO.getTotalBlogsCountByCategory(categoryId);
+                int totalPages = (int) Math.ceil((double) totalBlogsByCategory / pageSize);
 
-            // Đưa kết quả theo danh mục vào request
-            request.setAttribute("blogListByCategory", blogListByCategory);
-            request.setAttribute("categoryId", categoryId);  // Đưa danh mục vào để hiển thị trang hiện tại
-            request.setAttribute("currentPage", currentPage);  // Trang hiện tại
-            request.setAttribute("totalPages", totalPages);    // Tổng số trang
+                // Đưa kết quả theo danh mục vào request
+                request.setAttribute("blogListByCategory", blogListByCategory);
+                request.setAttribute("categoryId", categoryId);  // Đưa danh mục vào để hiển thị trang hiện tại
+                request.setAttribute("currentPage", currentPage);  // Trang hiện tại
+                request.setAttribute("totalPages", totalPages);    // Tổng số trang
+            } catch (Exception e) {
+                // Nếu lỗi, chuyển hướng về trang blog chính (hoặc forward với thông báo lỗi)
+                response.sendRedirect(request.getContextPath() + "/blog");
+                return;
+            }
         } else {
             // Nếu không có từ khóa tìm kiếm, hiển thị tất cả các bài viết
             List<Blog> blogList = blogDAO.getPaginatedBlogs(offset, pageSize);  // Lấy tất cả các blog với phân trang

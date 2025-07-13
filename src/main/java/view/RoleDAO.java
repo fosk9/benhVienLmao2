@@ -1,3 +1,4 @@
+// ===== RoleDAO.java (chuẩn hoá theo DBContext mẫu của bạn) =====
 package view;
 
 import model.Role;
@@ -86,5 +87,20 @@ public class RoleDAO extends DBContext<Role> {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public int getRoleIdByName(String roleName) {
+        String sql = "SELECT role_id FROM Roles WHERE role_name = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, roleName);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("role_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
