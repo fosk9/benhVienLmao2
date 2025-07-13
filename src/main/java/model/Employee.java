@@ -22,5 +22,4 @@ public class Employee {
     private String phone;
     private int roleId;
     private String employeeAvaUrl; // Nullable, can be empty string
-    private Integer accStatus; // 1: active, 0: inactive
 }

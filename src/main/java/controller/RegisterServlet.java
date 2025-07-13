@@ -19,26 +19,9 @@ public class RegisterServlet extends HttpServlet {
         patientDAO = new PatientDAO();
     }
 
-    // Thêm phương thức tiện ích
-    private void setRegisterAttributes(HttpServletRequest request,
-                                       String username,
-                                       String fullName,
-                                       Date dob,
-                                       String gender,
-                                       String email,
-                                       String phone,
-                                       String address,
-                                       String insuranceNumber,
-                                       String emergencyContact) {
-        request.setAttribute("username", username);
-        request.setAttribute("fullName", fullName);
-        request.setAttribute("dob", dob);
-        request.setAttribute("gender", gender);
-        request.setAttribute("email", email);
-        request.setAttribute("phone", phone);
-        request.setAttribute("address", address);
-        request.setAttribute("insurance_number", insuranceNumber);
-        request.setAttribute("emergency_contact", emergencyContact);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Chuyển hướng đến trang đăng ký
+        request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
     @Override
@@ -59,7 +42,7 @@ public class RegisterServlet extends HttpServlet {
         if (fullName != null) {
             fullName = fullName.trim().replaceAll("\\s+", " "); // loại bỏ khoảng trắng thừa
 
-            // Viết hoa chữ cái đầu mỗi từ (nếu muốn)
+            // Viết hoa chữ cái đầu mỗi từ
             String[] parts = fullName.split(" ");
             for (int i = 0; i < parts.length; i++) {
                 parts[i] = parts[i].substring(0, 1).toUpperCase() + parts[i].substring(1).toLowerCase();
@@ -73,7 +56,15 @@ public class RegisterServlet extends HttpServlet {
                 dob = Date.valueOf(dobStr);
             } catch (IllegalArgumentException e) {
                 request.setAttribute("error", "Ngày sinh không hợp lệ! Vui lòng nhập lại.");
-                setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+                // Gửi lại dữ liệu đã nhập về JSP để hiển thị lại
+                request.setAttribute("username", username);
+                request.setAttribute("fullName", fullName);
+                request.setAttribute("dob", dob);
+                request.setAttribute("gender", gender);
+                request.setAttribute("phone", phone);
+                request.setAttribute("address", address);
+                request.setAttribute("insurance_number", insuranceNumber);
+                request.setAttribute("emergency_contact", emergencyContact);
                 request.getRequestDispatcher("register.jsp").forward(request, response);
                 return;
             }
@@ -81,48 +72,96 @@ public class RegisterServlet extends HttpServlet {
 
         if (password == null || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
             request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("username", username);
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dob);
+            request.setAttribute("gender", gender);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("insurance_number", insuranceNumber);
+            request.setAttribute("emergency_contact", emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         if (fullName == null || !fullName.trim().matches("^[a-zA-ZÀ-ỹ\\s]+$")) {
             request.setAttribute("error", "Họ và tên chỉ được chứa chữ cái và khoảng trắng.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("username", username);
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dob);
+            request.setAttribute("gender", gender);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("insurance_number", insuranceNumber);
+            request.setAttribute("emergency_contact", emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
             request.setAttribute("error", "Email không hợp lệ.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("username", username);
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dob);
+            request.setAttribute("gender", gender);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("insurance_number", insuranceNumber);
+            request.setAttribute("emergency_contact", emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         if (phone == null || !phone.matches("^(0[0-9]{9,10})$")) {
             request.setAttribute("error", "Số điện thoại không hợp lệ (bắt đầu bằng 0, 10-11 số).");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("username", username);
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dob);
+            request.setAttribute("gender", gender);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("insurance_number", insuranceNumber);
+            request.setAttribute("emergency_contact", emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         if (emergencyContact == null || emergencyContact.matches(phone) || !emergencyContact.matches("^(0[0-9]{9,10})$")) {
             request.setAttribute("error", "Số điện thoại người liên hệ khẩn cấp không hợp lệ.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("username", username);
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dob);
+            request.setAttribute("gender", gender);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("insurance_number", insuranceNumber);
+            request.setAttribute("emergency_contact", emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // 2. Check trùng username, email, phone
+        // Check trùng username, email, phone
         if (patientDAO.getPatientByUsername(username) != null) {
             request.setAttribute("error", "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("username", username);
+            request.setAttribute("fullName", fullName);
+            request.setAttribute("dob", dob);
+            request.setAttribute("gender", gender);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phone);
+            request.setAttribute("address", address);
+            request.setAttribute("insurance_number", insuranceNumber);
+            request.setAttribute("emergency_contact", emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        Patient tempPatient  = Patient.builder()
+        Patient tempPatient = Patient.builder()
                 .username(username)
                 .passwordHash(password)  // Tạm thời chưa hash
                 .fullName(fullName)
@@ -163,6 +202,4 @@ public class RegisterServlet extends HttpServlet {
         }
         return otp.toString();
     }
-    
-    
 }

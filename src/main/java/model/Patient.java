@@ -24,7 +24,6 @@ public class Patient {
     private String insuranceNumber;
     private String emergencyContact;
     private String patientAvaUrl;
-    private Integer accStatus; // 1: active, 0: inactive
 
     public String getFirstName() {
         if (fullName == null || fullName.trim().isEmpty()) {
