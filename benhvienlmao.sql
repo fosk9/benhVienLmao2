@@ -216,16 +216,21 @@ CREATE TABLE Feedbacks
 GO
 
 -- Payments
+-- Payments
 CREATE TABLE Payments
 (
-    payment_id     INT PRIMARY KEY IDENTITY (1,1),
-    appointment_id INT,
-    amount         DECIMAL(10, 2),
-    method         VARCHAR(50),
-    status         VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded', 'Cancel')),
-    pay_content    VARCHAR(255),
-    created_at     DATETIME DEFAULT GETDATE(),
-    paid_at        DATETIME,
+    payment_id          INT PRIMARY KEY IDENTITY (1,1),
+    appointment_id      INT,
+    amount              DECIMAL(10, 2),
+    method              VARCHAR(50),
+    status              VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded', 'Cancel')),
+    pay_content         VARCHAR(255),
+    payos_transaction_id VARCHAR(255) UNIQUE NULL, -- New: ID giao dịch duy nhất từ PayOS
+    payos_order_code    VARCHAR(255) UNIQUE NULL, -- New: Mã đơn hàng PayOS (nếu có, có thể trùng với pay_content nếu bạn dùng nó làm orderCode)
+    payos_signature     VARCHAR(512) NULL,        -- New: Chữ ký xác thực từ PayOS
+    raw_response_json   NVARCHAR(MAX) NULL,       -- New: Lưu trữ toàn bộ JSON response từ PayOS (để debug)
+    created_at          DATETIME DEFAULT GETDATE(),
+    paid_at             DATETIME,
     FOREIGN KEY (appointment_id) REFERENCES Appointments (appointment_id)
 );
 GO
