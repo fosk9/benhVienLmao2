@@ -69,7 +69,7 @@
       </c:if>
       <!-- Logout at the bottom -->
       <li class="nav-item mt-auto">
-        <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger w-60">Logout</a>
+        <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger w-100">Logout</a>
       </li>
     </nav>
   </div>

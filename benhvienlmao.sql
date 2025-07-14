@@ -216,24 +216,29 @@ CREATE TABLE Feedbacks
 GO
 
 -- Payments
--- Payments
 CREATE TABLE Payments
 (
-    payment_id          INT PRIMARY KEY IDENTITY (1,1),
-    appointment_id      INT,
-    amount              DECIMAL(10, 2),
-    method              VARCHAR(50),
-    status              VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded', 'Cancel')),
-    pay_content         VARCHAR(255),
-    payos_transaction_id VARCHAR(255) UNIQUE NULL, -- New: ID giao dịch duy nhất từ PayOS
-    payos_order_code    VARCHAR(255) UNIQUE NULL, -- New: Mã đơn hàng PayOS (nếu có, có thể trùng với pay_content nếu bạn dùng nó làm orderCode)
-    payos_signature     VARCHAR(512) NULL,        -- New: Chữ ký xác thực từ PayOS
-    raw_response_json   NVARCHAR(MAX) NULL,       -- New: Lưu trữ toàn bộ JSON response từ PayOS (để debug)
-    created_at          DATETIME DEFAULT GETDATE(),
-    paid_at             DATETIME,
+    payment_id           INT PRIMARY KEY IDENTITY (1,1),
+    appointment_id       INT,                               -- Có thể NULL nếu payment chưa liên kết với appointment
+    amount               DECIMAL(18, 2) NOT NULL,           -- Sử dụng DECIMAL cho tiền tệ
+    method               NVARCHAR(50),                      -- Phương thức thanh toán (e.g., "QR_CODE")
+    status               NVARCHAR(50) NOT NULL,             -- Trạng thái thanh toán (e.g., "PENDING", "PAID")
+    pay_content          NVARCHAR(MAX),                     -- Nội dung thanh toán/mô tả
+    payos_transaction_id VARCHAR(255) UNIQUE,               -- ID giao dịch từ PayOS (để update)
+    payos_order_code     VARCHAR(255) UNIQUE,               -- Order code từ PayOS (có thể là mã đặt lịch)
+    payos_signature      NVARCHAR(MAX),                     -- Chữ ký từ PayOS
+    raw_response_json    NVARCHAR(MAX),                     -- Lưu trữ toàn bộ JSON response gốc
+    created_at           DATETIME2 DEFAULT GETDATE(),       -- Thời gian tạo giao dịch
+    paid_at              DATETIME2,                         -- Thời gian thanh toán thành công
+
+    -- Khóa ngoại tới Appointments (nếu appointment_id có thể NULL, cần kiểm tra lại logic nghiệp vụ)
     FOREIGN KEY (appointment_id) REFERENCES Appointments (appointment_id)
 );
 GO
+-- Có thể cần thêm index cho các cột tìm kiếm để cải thiện hiệu suất
+CREATE INDEX IX_Payments_AppointmentId ON Payments (appointment_id);
+CREATE INDEX IX_Payments_Status ON Payments (status);
+CREATE INDEX IX_Payments_CreatedAt ON Payments (created_at);
 
 -- Doctor Shifts
 CREATE TABLE DoctorShifts
@@ -307,7 +312,8 @@ VALUES
     ('My Profile', 'MyProfile', 99, 'Navigation'),
     ('Change Password', 'change-password', 7, 'Navigation'),
     ('Book Appointment', 'book-appointment', 8, 'Navigation'),
-	('Search for service','appointment/list', 4, 'Navigation');
+	('Search for service','appointment/list', 4, 'Navigation'),
+	('Manage Payment', 'https://my.payos.vn/', 6, 'Feature');
 GO
 
 -- Insert sample RoleSystemItems
@@ -327,6 +333,8 @@ VALUES
     (3, 18), -- Admin: Admin Home
     (3, 19), -- Admin: Add New Content
     (4, 6),  -- Manager: Approve Doctor Shifts
+	(3, 29), -- Admin: Manage payment history
+	(4, 29), -- Manager: Manage payment history
     -- Patient-specific mappings (role_id = 5 for Patient)
     (5, 13), -- Patient: Blog
     (5, 20), -- Patient: Appointments
@@ -342,7 +350,7 @@ VALUES
 	(6, 13),
 	(6, 22),
 	(6, 27),
-	(6,28);
+	(6, 28);
 GO
 
 -- Insert sample Patients
