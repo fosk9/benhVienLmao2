@@ -84,7 +84,7 @@
         </div>
       </c:if>
       <div class="text-center">
-        <a href="<c:url value='/pactHome'/>" class="btn-back">Back to Home</a>
+        <a href="<c:url value='/appointments'/>" class="btn-back">Back to Home</a>
       </div>
     </div>
   </div>
