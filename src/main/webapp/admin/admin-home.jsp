@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %> <!-- Add this for string functions like contains -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,10 +57,21 @@
       <h4 class="px-3 mb-3 text-success">Admin Features</h4>
       <c:forEach var="feature" items="${adminFeatures}">
         <li class="nav-item">
-          <a class="nav-link ${feature.itemUrl eq currentPage ? 'active' : ''}"
-             href="${pageContext.request.contextPath}/admin/home?page=${feature.itemUrl}">
-              ${feature.itemName}
-          </a>
+          <c:choose>
+            <c:when test="${fn:contains(feature.itemUrl, 'http') or fn:contains(feature.itemUrl, 'https')}">
+              <!-- External links (e.g., PayOS): Open in new tab, no iframe loading, no active class dependency on currentPage -->
+              <a class="nav-link" href="${feature.itemUrl}" target="_blank">
+                  ${feature.itemName}
+              </a>
+            </c:when>
+            <c:otherwise>
+              <!-- Internal links: Load via servlet param and iframe as before -->
+              <a class="nav-link ${feature.itemUrl eq currentPage ? 'active' : ''}"
+                 href="${pageContext.request.contextPath}/admin/home?page=${feature.itemUrl}">
+                  ${feature.itemName}
+              </a>
+            </c:otherwise>
+          </c:choose>
         </li>
       </c:forEach>
       <c:if test="${empty adminFeatures}">
@@ -73,9 +85,9 @@
       </li>
     </nav>
   </div>
-  <!-- Part B: Dynamic Content -->
+  <!-- Part B: Dynamic Content (only for internal pages) -->
   <div class="content-area">
-    <c:if test="${not empty currentPage}">
+    <c:if test="${not empty currentPage and not fn:contains(currentPage, 'http') and not fn:contains(currentPage, 'https')}">
       <iframe src="${pageContext.request.contextPath}/${currentPage}"
               width="100%" height="100%" frameborder="0" style="border: none;"></iframe>
     </c:if>
