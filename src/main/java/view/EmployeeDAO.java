@@ -342,6 +342,7 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .phone(rs.getString("phone"))
                 .roleId(rs.getInt("role_id"))
                 .employeeAvaUrl(rs.getString("employee_ava_url"))
+                .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null) // Sửa: lấy acc_status từ DB
                 .build();
     }
 
@@ -359,54 +360,15 @@ public class EmployeeDAO extends DBContext<Employee> {
         ps.setString(7, e.getPhone());
         ps.setInt(8, e.getRoleId());
         ps.setString(9, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
+        ps.setInt(10,  e.getAccStatus() != null ? e.getAccStatus() : 1);
     }
 
     // Test main method for EmployeeDAO
     public static void main(String[] args) {
         EmployeeDAO dao = new EmployeeDAO();
 
-        System.out.println("=== Test countTotalEmployees ===");
-        System.out.println("Total employees: " + dao.countTotalEmployees());
-
-        System.out.println("=== Test countActiveDoctorsToday ===");
-        System.out.println("Active doctors today: " + dao.countActiveDoctorsToday());
-
-        System.out.println("=== Test countAppointmentsToday ===");
-        System.out.println("Appointments today: " + dao.countAppointmentsToday());
-
-        System.out.println("=== Test select() all ===");
-        for (Employee e : dao.select()) {
-            System.out.println(e);
-        }
-
-        System.out.println("=== Test select(id) ===");
-        Employee emp = dao.select(1);
-        System.out.println(emp);
-
-        System.out.println("=== Test searchByNameAndRole ===");
-        for (Employee e : dao.searchByNameAndRole("Nguyễn", 1, 1, 5)) {
-            System.out.println(e);
-        }
-
-        System.out.println("=== Test countSearchByNameAndRole ===");
-        System.out.println("Count: " + dao.countSearchByNameAndRole("Nguyễn", 1));
-
-        System.out.println("=== Test searchFilterSortDoctors ===");
-        for (Employee e : dao.searchFilterSortDoctors("An", "M", "full_name", "asc", 1, 5)) {
-            System.out.println(e);
-        }
-
-        System.out.println("=== Test countFilteredDoctors ===");
-        System.out.println("Count: " + dao.countFilteredDoctors("An", "M"));
-
-        System.out.println("=== Test getEmployeeByEmail ===");
-        System.out.println(dao.getEmployeeByEmail("dr.an@hospital.com"));
-
-        System.out.println("=== Test getEmployeeByUsername ===");
-        System.out.println(dao.getEmployeeByUsername("an.nguyen"));
-
         System.out.println("=== Test login ===");
-        System.out.println(dao.login("an.nguyen", "password123"));
+        System.out.println(dao.login("dr_smith", "123456"));
 
         // Uncomment below to test insert/update/delete (be careful with real DB)
         /*
