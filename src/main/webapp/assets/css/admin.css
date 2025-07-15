@@ -1,0 +1,176 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.container, .container-fluid {
+    max-width: 1400px;
+}
+
+.table img {
+    max-width: 50px;
+    height: auto;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control, .form-select {
+    border-radius: 0.25rem;
+}
+
+/* Admin header and card styles */
+.admin-header {
+    background-color: #28a745; /* Green theme inspired by Thu Cuc hospital */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card img {
+    max-width: 50px;
+    height: auto;
+}
+
+/* Search table styles (from contents/list.jsp) */
+.search-table {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: #f1f8f1;
+    padding: 25px;
+    border-radius: 25px;
+    border: 2px solid #28a745;
+}
+.search-table td {
+    padding: 12px;
+    vertical-align: middle;
+}
+.search-table td:first-child {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.2rem;
+    width: 40%;
+    text-align: right;
+}
+.search-table td:last-child {
+    width: 60%;
+}
+.search-table .form-control, .search-table .form-select {
+    font-size: 1.1rem;
+    height: 40px;
+    width: 100%;
+}
+.search-table .btn {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+/* Pagination styles */
+.pagination {
+    justify-content: center;
+    margin-top: 30px;
+}
+.page-link {
+    font-size: 1.1rem;
+    color: #28a745;
+    border-color: #28a745;
+    padding: 8px 14px;
+}
+.page-link:hover {
+    background-color: #f1f8f1;
+    color: #218838;
+}
+.page-item.active .page-link {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+}
+.page-item.disabled .page-link {
+    color: #6c757d;
+}
+
+/* Admin-home specific */
+.admin-header {
+    background-color: #28a745;
+    color: white;
+}
+.admin-header .btn-light.btn-sm {
+    margin-left: 10px;
+}
+.admin-header .me-3 {
+    margin-right: 1rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 1.6rem;
+    }
+    .btn {
+        font-size: 1.4rem;
+        padding: 12px 24px;
+    }
+    h2 {
+        font-size: 2.2rem;
+    }
+    .search-table {
+        padding: 15px;
+        max-width: 100%;
+    }
+    .search-table td:first-child, .search-table td:last-child {
+        font-size: 1.1rem;
+        padding: 8px;
+    }
+    .search-table .form-control {
+        font-size: 1.1rem;
+        height: 35px;
+    }
+    .search-table .btn {
+        font-size: 1.1rem;
+        padding: 8px 16px;
+    }
+
+    .card {
+        border-radius: 15px; /* Increased from 12px */
+        overflow: hidden;
+        border: 2px solid #28a745; /* Increased from 1px */
+        margin-top: 30px; /* Increased from 20px */
+    }
+
+    .table {
+        border-radius: 15px; /* Increased from 12px */
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background-color: #f1f8f1;
+        color: #28a745;
+        font-weight: bold;
+        padding: 15px; /* Increased from 8px */
+    }
+
+    .table-bordered {
+        border: 2px solid #28a745; /* Increased from 1px */
+    }
+
+    .table-bordered th, .table-bordered td {
+        border: 2px solid #28a745; /* Increased from 1px */
+        padding: 15px; /* Increased from 8px */
+    }
+}

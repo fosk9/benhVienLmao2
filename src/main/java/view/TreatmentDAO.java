@@ -152,4 +152,74 @@ public class TreatmentDAO extends DBContext<Treatment> {
             closeConnection(conn);
         }
     }
+
+    // Get all treatments by appointmentId
+    public List<Treatment> getTreatmentsByAppointmentId(int appointmentId) {
+        List<Treatment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Treatment WHERE appointment_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, appointmentId);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    list.add(mapResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching treatments by appointment_id=" + appointmentId + ": " + e.getMessage());
+            throw new RuntimeException("Failed to fetch treatments", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return list;
+    }
+
+    // Get all treatments by patientId
+    public List<Treatment> getTreatmentsByPatientId(int patientId) {
+        List<Treatment> list = new ArrayList<>();
+        String sql = "SELECT t.* FROM Treatment t JOIN Appointments a ON t.appointment_id = a.appointment_id WHERE a.patient_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, patientId);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    list.add(mapResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching treatments by patient_id=" + patientId + ": " + e.getMessage());
+            throw new RuntimeException("Failed to fetch treatments", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return list;
+    }
+
+    // Get all treatments
+    public List<Treatment> getAllTreatments() {
+        List<Treatment> list = new ArrayList<>();
+        String sql = "SELECT * FROM Treatment";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error selecting all treatments: " + e.getMessage());
+            throw new RuntimeException("Failed to select all treatments", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return list;
+    }
+
+
 }
