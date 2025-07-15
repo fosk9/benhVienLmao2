@@ -8,6 +8,105 @@ import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
 
+    public int countTotalEmployees() {
+        String sql = "SELECT COUNT(*) FROM Employees";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countActiveDoctorsToday() {
+        String sql = "SELECT COUNT(DISTINCT doctor_id) FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countAppointmentsToday() {
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public List<Employee> searchByNameAndRole(String name, int roleId, int page, int recordsPerPage) {
+        List<Employee> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Employees WHERE 1=1 ");
+
+        if (name != null && !name.trim().isEmpty()) {
+            sql.append("AND full_name LIKE ? ");
+        }
+        if (roleId > 0) {
+            sql.append("AND role_id = ? ");
+        }
+        sql.append("ORDER BY employee_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (name != null && !name.trim().isEmpty()) {
+                ps.setString(idx++, "%" + name.trim() + "%");
+            }
+            if (roleId > 0) {
+                ps.setInt(idx++, roleId);
+            }
+            ps.setInt(idx++, (page - 1) * recordsPerPage);
+            ps.setInt(idx, recordsPerPage);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToEmployee(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countSearchByNameAndRole(String name, int roleId) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Employees WHERE 1=1 ");
+        if (name != null && !name.trim().isEmpty()) {
+            sql.append("AND full_name LIKE ? ");
+        }
+        if (roleId > 0) {
+            sql.append("AND role_id = ? ");
+        }
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (name != null && !name.trim().isEmpty()) {
+                ps.setString(idx++, "%" + name.trim() + "%");
+            }
+            if (roleId > 0) {
+                ps.setInt(idx++, roleId);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public List<Employee> searchFilterSortDoctors(String search, String gender,
                                                   String sortBy, String sortDir,
                                                   int page, int recordsPerPage) {
@@ -343,6 +442,78 @@ public class EmployeeDAO extends DBContext<Employee> {
         ps.setString(7, e.getPhone());
         ps.setInt(8, e.getRoleId());
         ps.setString(9, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
+    }
+
+    // Test main method for EmployeeDAO
+    public static void main(String[] args) {
+        EmployeeDAO dao = new EmployeeDAO();
+
+        System.out.println("=== Test countTotalEmployees ===");
+        System.out.println("Total employees: " + dao.countTotalEmployees());
+
+        System.out.println("=== Test countActiveDoctorsToday ===");
+        System.out.println("Active doctors today: " + dao.countActiveDoctorsToday());
+
+        System.out.println("=== Test countAppointmentsToday ===");
+        System.out.println("Appointments today: " + dao.countAppointmentsToday());
+
+        System.out.println("=== Test select() all ===");
+        for (Employee e : dao.select()) {
+            System.out.println(e);
+        }
+
+        System.out.println("=== Test select(id) ===");
+        Employee emp = dao.select(1);
+        System.out.println(emp);
+
+        System.out.println("=== Test searchByNameAndRole ===");
+        for (Employee e : dao.searchByNameAndRole("Nguyễn", 1, 1, 5)) {
+            System.out.println(e);
+        }
+
+        System.out.println("=== Test countSearchByNameAndRole ===");
+        System.out.println("Count: " + dao.countSearchByNameAndRole("Nguyễn", 1));
+
+        System.out.println("=== Test searchFilterSortDoctors ===");
+        for (Employee e : dao.searchFilterSortDoctors("An", "M", "full_name", "asc", 1, 5)) {
+            System.out.println(e);
+        }
+
+        System.out.println("=== Test countFilteredDoctors ===");
+        System.out.println("Count: " + dao.countFilteredDoctors("An", "M"));
+
+        System.out.println("=== Test getEmployeeByEmail ===");
+        System.out.println(dao.getEmployeeByEmail("dr.an@hospital.com"));
+
+        System.out.println("=== Test getEmployeeByUsername ===");
+        System.out.println(dao.getEmployeeByUsername("an.nguyen"));
+
+        System.out.println("=== Test login ===");
+        System.out.println(dao.login("an.nguyen", "password123"));
+
+        // Uncomment below to test insert/update/delete (be careful with real DB)
+        /*
+        Employee newEmp = Employee.builder()
+                .username("testuser")
+                .passwordHash("testpass")
+                .fullName("Test User")
+                .dob(java.sql.Date.valueOf("1990-01-01"))
+                .gender("M")
+                .email("test@hospital.com")
+                .phone("0999999999")
+                .roleId(2)
+                .employeeAvaUrl("")
+                .build();
+        int inserted = dao.insert(newEmp);
+        System.out.println("Inserted: " + inserted);
+
+        newEmp.setFullName("Test User Updated");
+        int updated = dao.update(newEmp);
+        System.out.println("Updated: " + updated);
+
+        int deleted = dao.delete(newEmp.getEmployeeId());
+        System.out.println("Deleted: " + deleted);
+        */
     }
 
 }
