@@ -277,7 +277,6 @@ public class PatientDAO extends DBContext<Patient> {
     }
 
 
-
     @Override
     public List<Patient> select() {
         List<Patient> patients = new ArrayList<>();
@@ -367,10 +366,10 @@ public class PatientDAO extends DBContext<Patient> {
                 .address(rs.getString("address"))
                 .insuranceNumber(rs.getString("insurance_number"))
                 .emergencyContact(rs.getString("emergency_contact"))
-                .patientAvaUrl( rs.getString("patient_ava_url") != null ? rs.getString("patient_ava_url") : "")
+                .patientAvaUrl(rs.getString("patient_ava_url") != null ? rs.getString("patient_ava_url") : "")
+                .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null) // Sửa: lấy acc_status từ DB
                 .build();
     }
-
 
     private void setPreparedStatementFromPatient(PreparedStatement ps, Patient p) throws SQLException {
         ps.setString(1, p.getUsername());
@@ -388,6 +387,7 @@ public class PatientDAO extends DBContext<Patient> {
         ps.setString(9, p.getPatientAvaUrl() != null ? p.getPatientAvaUrl() : "");
         ps.setString(10, p.getInsuranceNumber());
         ps.setString(11, p.getEmergencyContact());
+        ps.setInt(12, p.getAccStatus() != null ? p.getAccStatus() : 1); // Mặc định là 1 (active)
     }
 
 

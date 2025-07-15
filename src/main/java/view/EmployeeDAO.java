@@ -326,6 +326,7 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .phone(rs.getString("phone"))
                 .roleId(rs.getInt("role_id"))
                 .employeeAvaUrl(rs.getString("employee_ava_url"))
+                .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null)
                 .build();
     }
 
@@ -343,6 +344,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         ps.setString(7, e.getPhone());
         ps.setInt(8, e.getRoleId());
         ps.setString(9, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
+        ps.setInt(10,  e.getAccStatus() != null ? e.getAccStatus() : 1);
     }
 
 }
