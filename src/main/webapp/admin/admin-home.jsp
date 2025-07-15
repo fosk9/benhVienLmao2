@@ -39,9 +39,10 @@
     .content-area {
       flex-grow: 1; /* Take up remaining space */
       height: 100%; /* Full height */
+      overflow-y: auto;
     }
     /* Ensure container fills entire viewport */
-    .container-fluid {
+    .container-fluid-1 {
       display: flex;
       flex-direction: row;
       height: 100vh;
@@ -50,7 +51,7 @@
   </style>
 </head>
 <body>
-<div class="container-fluid p-0">
+<div class="container-fluid-1 p-0">
   <!-- Flex container for sidebar and content -->
   <div class="sidebar">
     <nav class="nav flex-column nav-pills h-100 py-3">

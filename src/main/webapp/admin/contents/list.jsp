@@ -266,20 +266,25 @@
   <!-- Pagination controls -->
   <c:if test="${totalPages > 1}">
     <nav>
-      <ul class="pagination">
-        <li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
-          <a class="page-link" href="?action=list&page=${currentPage - 1}"><i class="fas fa-chevron-left"></i></a>
-        </li>
+      <ul class="pagination justify-content-center">
+        <c:if test="${currentPage > 1}">
+          <li class="page-item">
+            <a class="page-link" href="?page=${currentPage - 1}">Previous</a>
+          </li>
+        </c:if>
         <c:forEach begin="1" end="${totalPages}" var="i">
-          <li class="page-item <c:if test='${currentPage == i}'>active</c:if>">
-            <a class="page-link" href="?action=list&page=${i}">${i}</a>
+          <li class="page-item ${i == currentPage ? 'active' : ''}">
+            <a class="page-link" href="?page=${i}">${i}</a>
           </li>
         </c:forEach>
-        <li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
-          <a class="page-link" href="?action=list&page=${currentPage + 1}"><i class="fas fa-chevron-right"></i></a>
-        </li>
+        <c:if test="${currentPage < totalPages}">
+          <li class="page-item">
+            <a class="page-link" href="?page=${currentPage + 1}">Next</a>
+          </li>
+        </c:if>
       </ul>
     </nav>
+
   </c:if>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
