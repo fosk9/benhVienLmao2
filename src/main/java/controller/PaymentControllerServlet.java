@@ -123,7 +123,7 @@ public class PaymentControllerServlet extends HttpServlet {
             PaymentData paymentData = PaymentData.builder()
                     .orderCode(orderCode)
                     .amount(price)
-                    .description("id #" +appointmentId+"booked by #" + patientName + " booked service # " + appointmentName + "-")
+                    .description("id #" +appointmentId )
                     .returnUrl(domain + "payment?appointmentId=" + appointmentId + "&status=Paid")
                     .cancelUrl(domain + "payment?appointmentId=" + appointmentId + "&status=Cancelled")
                     .item(itemData)

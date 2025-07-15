@@ -12,11 +12,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<c:url value='/assets/css/fontawesome-all.min.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Simplified and bold styling */
         body {
-            font-family: "Playfair Display", serif;
             background: #f8f9fa; /* Clean light background */
             color: #333;
             margin: 0;
