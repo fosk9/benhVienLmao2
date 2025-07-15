@@ -507,26 +507,56 @@ GO
 -- Insert sample DoctorShifts
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status)
 VALUES
-    -- Doctor 1
-    (1, '2025-07-03', 'Morning', 'Working'),
-    (1, '2025-07-03', 'Afternoon', 'Working'),
-    (1, '2025-07-04', 'Morning', 'PendingLeave'),
-    (1, '2025-07-04', 'Afternoon', 'Working'),
-    (1, '2025-07-05', 'Morning', 'Leave'),
-    (1, '2025-07-05', 'Evening', 'Working'),
-    (1, '2025-07-06', 'Night', 'Rejected'),
-    (1, '2025-07-07', 'Morning', 'Working'),
-    (1, '2025-07-08', 'Morning', 'Working'),
-    (1, '2025-07-09', 'Evening', 'Working'),
-    -- Doctor 2
-    (2, '2025-07-03', 'Afternoon', 'Working'),
-    (2, '2025-07-04', 'Morning', 'Working'),
-    (2, '2025-07-05', 'Morning', 'Working'),
-    (2, '2025-07-06', 'Afternoon', 'PendingLeave'),
-    (2, '2025-07-06', 'Evening', 'Leave'),
-    (2, '2025-07-07', 'Night', 'Rejected'),
-    (2, '2025-07-08', 'Morning', 'Working'),
-    (2, '2025-07-09', 'Morning', 'Working');
+-- Doctor 1
+(1, '2025-07-15', 'Morning', 'Working'),
+(1, '2025-07-16', 'Afternoon', 'Working'),
+(1, '2025-07-17', 'Morning', 'PendingLeave'),
+(1, '2025-07-18', 'Afternoon', 'Working'),
+(1, '2025-07-19', 'Morning', 'Leave'),
+(1, '2025-07-20', 'Evening', 'Working'),
+(1, '2025-07-21', 'Night', 'Rejected'),
+(1, '2025-07-22', 'Morning', 'Working'),
+(1, '2025-07-23', 'Afternoon', 'Working'),
+(1, '2025-07-24', 'Morning', 'PendingLeave'),
+(1, '2025-07-25', 'Evening', 'Working'),
+(1, '2025-07-26', 'Morning', 'Leave'),
+(1, '2025-07-27', 'Night', 'Working'),
+(1, '2025-07-28', 'Morning', 'Working'),
+(1, '2025-07-29', 'Afternoon', 'Working'),
+
+-- Doctor 2
+(2, '2025-07-15', 'Afternoon', 'Working'),
+(2, '2025-07-16', 'Morning', 'Working'),
+(2, '2025-07-17', 'Night', 'PendingLeave'),
+(2, '2025-07-18', 'Evening', 'Leave'),
+(2, '2025-07-19', 'Morning', 'Rejected'),
+(2, '2025-07-20', 'Morning', 'Working'),
+(2, '2025-07-21', 'Afternoon', 'Working'),
+(2, '2025-07-22', 'Night', 'Working'),
+(2, '2025-07-23', 'Morning', 'Leave'),
+(2, '2025-07-24', 'Afternoon', 'PendingLeave'),
+(2, '2025-07-25', 'Night', 'Working'),
+(2, '2025-07-26', 'Morning', 'Working'),
+(2, '2025-07-27', 'Evening', 'Working'),
+(2, '2025-07-28', 'Morning', 'Working'),
+(2, '2025-07-29', 'Afternoon', 'Working'),
+
+-- Doctor 3
+(3, '2025-07-15', 'Morning', 'Working'),
+(3, '2025-07-16', 'Morning', 'PendingLeave'),
+(3, '2025-07-17', 'Afternoon', 'Working'),
+(3, '2025-07-18', 'Night', 'Rejected'),
+(3, '2025-07-19', 'Evening', 'Leave'),
+(3, '2025-07-20', 'Morning', 'Working'),
+(3, '2025-07-21', 'Morning', 'Working'),
+(3, '2025-07-22', 'Afternoon', 'Working'),
+(3, '2025-07-23', 'Morning', 'Working'),
+(3, '2025-07-24', 'Night', 'Working'),
+(3, '2025-07-25', 'Evening', 'PendingLeave'),
+(3, '2025-07-26', 'Morning', 'Leave'),
+(3, '2025-07-27', 'Morning', 'Working'),
+(3, '2025-07-28', 'Night', 'Working'),
+(3, '2025-07-29', 'Morning', 'Working');
 GO
 
 -- Insert sample PageContent for pactHome (services.jsp)
