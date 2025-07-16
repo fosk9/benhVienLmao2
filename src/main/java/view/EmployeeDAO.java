@@ -326,7 +326,7 @@ public class EmployeeDAO extends DBContext<Employee> {
                 .phone(rs.getString("phone"))
                 .roleId(rs.getInt("role_id"))
                 .employeeAvaUrl(rs.getString("employee_ava_url"))
-                .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null)
+                .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null) // Sửa: lấy acc_status từ DB
                 .build();
     }
 
@@ -345,6 +345,38 @@ public class EmployeeDAO extends DBContext<Employee> {
         ps.setInt(8, e.getRoleId());
         ps.setString(9, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
         ps.setInt(10,  e.getAccStatus() != null ? e.getAccStatus() : 1);
+    }
+
+    // Test main method for EmployeeDAO
+    public static void main(String[] args) {
+        EmployeeDAO dao = new EmployeeDAO();
+
+        System.out.println("=== Test login ===");
+        System.out.println(dao.login("dr_smith", "123456"));
+
+        // Uncomment below to test insert/update/delete (be careful with real DB)
+        /*
+        Employee newEmp = Employee.builder()
+                .username("testuser")
+                .passwordHash("testpass")
+                .fullName("Test User")
+                .dob(java.sql.Date.valueOf("1990-01-01"))
+                .gender("M")
+                .email("test@hospital.com")
+                .phone("0999999999")
+                .roleId(2)
+                .employeeAvaUrl("")
+                .build();
+        int inserted = dao.insert(newEmp);
+        System.out.println("Inserted: " + inserted);
+
+        newEmp.setFullName("Test User Updated");
+        int updated = dao.update(newEmp);
+        System.out.println("Updated: " + updated);
+
+        int deleted = dao.delete(newEmp.getEmployeeId());
+        System.out.println("Deleted: " + deleted);
+        */
     }
 
 }
