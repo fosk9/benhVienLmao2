@@ -46,16 +46,18 @@ GO
 -- Employees
 CREATE TABLE Employees
 (
-    employee_id      INT PRIMARY KEY IDENTITY (1,1),
-    username         VARCHAR(100) UNIQUE NOT NULL,
-    password_hash    VARCHAR(255)        NOT NULL,
-    full_name        NVARCHAR(255),
-    dob              DATE,
-    gender           CHAR(1),
-    email            VARCHAR(100),
-    phone            VARCHAR(20),
-    role_id          INT                 NOT NULL,
-    employee_ava_url NVARCHAR(255),
+    employee_id       INT PRIMARY KEY IDENTITY (1,1),
+    username          VARCHAR(100) UNIQUE NOT NULL,
+    password_hash     VARCHAR(255)        NOT NULL,
+    full_name         NVARCHAR(255),
+    dob               DATE,
+    gender            CHAR(1),
+    email             VARCHAR(100),
+    phone             VARCHAR(20),
+    role_id           INT                 NOT NULL,
+    employee_ava_url  NVARCHAR(255),
+    created_at        DATETIME DEFAULT GETDATE(),
+    acc_status        BIT DEFAULT 1,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id)
 );
 GO
@@ -97,7 +99,9 @@ CREATE TABLE Patients
     address           NVARCHAR(255),
     patient_ava_url   NVARCHAR(255),
     insurance_number  VARCHAR(100),
-    emergency_contact NVARCHAR(255)
+    emergency_contact NVARCHAR(255),
+    created_at        DATETIME DEFAULT GETDATE(),
+    acc_status        BIT DEFAULT 1
 );
 GO
 
