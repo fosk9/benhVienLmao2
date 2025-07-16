@@ -151,7 +151,7 @@ public class UpdateUserRoleController extends HttpServlet {
         System.out.println("[UpdateUserRoleController][POST] action=" + action);
         // ✅ Check quyền: chỉ cho phép Employee (Manager) thực hiện
         Employee manager = (Employee) request.getSession().getAttribute("account");
-        if (manager == null) {
+        if (manager == null || manager.getRoleId() != 4) {
             request.setAttribute("error", "You must be logged in as a manager to perform this action.");
             response.sendRedirect("login.jsp");
             return;

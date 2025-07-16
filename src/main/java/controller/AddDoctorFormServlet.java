@@ -43,7 +43,7 @@ public class AddDoctorFormServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         Employee manager = (Employee) request.getSession().getAttribute("account");
-        if (manager == null) {
+        if (manager == null || manager.getRoleId() != 4) { // Kiểm tra quyền quản lý
             request.setAttribute("error", "You must be logged in as a manager to perform this action.");
             response.sendRedirect("login.jsp");
             return;
@@ -165,7 +165,7 @@ public class AddDoctorFormServlet extends HttpServlet {
                         manager.getFullName(),
                         employeeId,
                         fullName,
-                        "Employees",
+                        "Employee",
                         "Create Account" + username
                 );
                 LOGGER.info("ChangeHistory log added for created account ID=" + employeeId);
