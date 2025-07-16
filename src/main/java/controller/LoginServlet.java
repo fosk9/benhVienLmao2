@@ -28,6 +28,7 @@ public class LoginServlet extends HttpServlet {
                 // Kiểm tra trạng thái tài khoản
                 if (patient.getAccStatus() != null && patient.getAccStatus() == 1) {
                     session.setAttribute("username", username);
+
                     session.setAttribute("patientId", patient.getPatientId());
                     session.setAttribute("role", "Patient");
                     session.setAttribute("account", patient);

@@ -195,7 +195,7 @@ public class PatientDAO extends DBContext<Patient> {
     }
 
     public Patient login(String username, String password) {
-        String sql = "SELECT * FROM Patients WHERE username = ? AND password_hash = ?";
+        String sql = "SELECT * FROM Patients WHERE username = ? AND password_hash = ? ";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
@@ -409,5 +409,20 @@ public class PatientDAO extends DBContext<Patient> {
         return list;
     }
 
-}
+    public static void main(String[] args) {
+        PatientDAO dao = new PatientDAO();
+        String testUsername = "john_doe"; // Thay bằng username thực tế trong DB
+        String testPassword = "123456"; // Thay bằng password thực tế trong DB
 
+        Patient patient = dao.login(testUsername, testPassword);
+        if (patient != null) {
+            System.out.println("Đăng nhập thành công:");
+            System.out.println("ID: " + patient.getPatientId());
+            System.out.println("Tên: " + patient.getFullName());
+            System.out.println("Trạng thái: " + patient.getAccStatus());
+        } else {
+            System.out.println("Đăng nhập thất bại hoặc tài khoản không tồn tại.");
+        }
+    }
+
+}
