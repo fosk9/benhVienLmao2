@@ -18,6 +18,26 @@ public class AppointmentDAO extends DBContext<Appointment> {
         super();
     }
 
+    public boolean hasAppointment(int doctorId, Date date, String timeSlot) {
+        String sql = """
+        SELECT 1 FROM Appointments 
+        WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
+    """;
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setDate(2, date);
+            ps.setString(3, timeSlot);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu có ít nhất 1 lịch
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
     // Create a new appointment
     public void createAppointment(Appointment appointment) {
         String query = "INSERT INTO Appointments (patient_id, appointment_date, appointmenttype_id, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

@@ -1,12 +1,328 @@
 package view;
 
+import model.DoctorScheduleSummary;
 import model.DoctorShift;
+import model.DoctorShiftView;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
+
+    public boolean hasAppointmentsForDoctorInShift(int doctorId, Date shiftDate, String timeSlot) {
+        String sql = """
+            SELECT 1 FROM Appointments
+            WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
+        """;
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setDate(2, shiftDate);
+            ps.setString(3, timeSlot);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public int countDoctorSummarySchedule(String keyword, Date from, Date to) {
+        String sql = """
+        SELECT COUNT(DISTINCT e.employee_id)
+        FROM Employees e
+        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+        WHERE e.role_id = 2
+          AND (? IS NULL OR e.full_name LIKE ?)
+          AND (? IS NULL OR s.shift_date >= ?)
+          AND (? IS NULL OR s.shift_date <= ?)
+    """;
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2, Types.VARCHAR);
+            } else {
+                ps.setString(1, keyword);
+                ps.setString(2, "%" + keyword + "%");
+            }
+
+            if (from == null) {
+                ps.setNull(3, Types.DATE);
+                ps.setNull(4, Types.DATE);
+            } else {
+                ps.setDate(3, from);
+                ps.setDate(4, from);
+            }
+
+            if (to == null) {
+                ps.setNull(5, Types.DATE);
+                ps.setNull(6, Types.DATE);
+            } else {
+                ps.setDate(5, to);
+                ps.setDate(6, to);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+    public List<DoctorShiftView> getDoctorSummarySchedule(String keyword, Date from, Date to, int offset, int limit) {
+        List<DoctorShiftView> list = new ArrayList<>();
+        String sql = """
+        SELECT 
+            e.employee_id,
+            e.full_name,
+            e.email,
+            COUNT(CASE 
+                      WHEN MONTH(s.shift_date) = MONTH(GETDATE()) 
+                       AND YEAR(s.shift_date) = YEAR(GETDATE()) THEN 1 
+                      ELSE NULL 
+                 END) AS working_days_this_month,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) AS status_today
+        FROM Employees e
+        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+        WHERE e.role_id = 1 -- chỉ lấy nhân viên là bác sĩ
+          AND (? IS NULL OR e.full_name LIKE ?)
+          AND (? IS NULL OR s.shift_date >= ?)
+          AND (? IS NULL OR s.shift_date <= ?)
+        GROUP BY e.employee_id, e.full_name, e.email
+        ORDER BY e.full_name
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2, Types.VARCHAR);
+            } else {
+                ps.setString(1, keyword);
+                ps.setString(2, "%" + keyword + "%");
+            }
+
+            if (from == null) {
+                ps.setNull(3, Types.DATE);
+                ps.setNull(4, Types.DATE);
+            } else {
+                ps.setDate(3, from);
+                ps.setDate(4, from);
+            }
+
+            if (to == null) {
+                ps.setNull(5, Types.DATE);
+                ps.setNull(6, Types.DATE);
+            } else {
+                ps.setDate(5, to);
+                ps.setDate(6, to);
+            }
+
+            ps.setInt(7, offset);
+            ps.setInt(8, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(DoctorShiftView.builder()
+                            .doctorId(rs.getInt("employee_id"))
+                            .doctorName(rs.getString("full_name"))
+                            .doctorEmail(rs.getString("email"))
+                            .workingDaysThisMonth(rs.getInt("working_days_this_month"))
+                            .statusToday(rs.getString("status_today"))
+                            .build());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+
+    public List<DoctorScheduleSummary> getDoctorShiftSummaryForMonth(LocalDate today) {
+        List<DoctorScheduleSummary> list = new ArrayList<>();
+        String sql = """
+        SELECT 
+            e.employee_id,
+            e.full_name,
+            e.email,
+            SUM(CASE WHEN MONTH(s.shift_date) = ? AND YEAR(s.shift_date) = ? THEN 1 ELSE 0 END) AS working_days_this_month,
+            MAX(CASE WHEN s.shift_date = ? THEN s.status ELSE NULL END) AS status_today
+        FROM Employees e
+        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+        WHERE e.role_id = 2  -- chỉ lấy bác sĩ
+        GROUP BY e.employee_id, e.full_name, e.email
+    """;
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, today.getMonthValue());
+            ps.setInt(2, today.getYear());
+            ps.setDate(3, Date.valueOf(today));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(DoctorScheduleSummary.builder()
+                            .doctorId(rs.getInt("employee_id"))
+                            .doctorName(rs.getString("full_name"))
+                            .doctorEmail(rs.getString("email"))
+                            .workingDaysThisMonth(rs.getInt("working_days_this_month"))
+                            .statusToday(rs.getString("status_today")) // null nếu không có lịch
+                            .build());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+    public int getTotalFilteredDoctorShifts(String keyword, Date from, Date to) {
+        String sql = """
+        SELECT COUNT(*)
+        FROM DoctorShifts s
+        JOIN Employees e ON s.doctor_id = e.employee_id
+        WHERE (? IS NULL OR e.full_name LIKE ?)
+          AND (? IS NULL OR s.shift_date >= ?)
+          AND (? IS NULL OR s.shift_date <= ?)
+    """;
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2, Types.VARCHAR);
+            } else {
+                ps.setString(1, keyword);
+                ps.setString(2, "%" + keyword + "%");
+            }
+            if (from == null) {
+                ps.setNull(3, Types.DATE);
+                ps.setNull(4, Types.DATE);
+            } else {
+                ps.setDate(3, from);
+                ps.setDate(4, from);
+            }
+            if (to == null) {
+                ps.setNull(5, Types.DATE);
+                ps.setNull(6, Types.DATE);
+            } else {
+                ps.setDate(5, to);
+                ps.setDate(6, to);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+    public List<DoctorShiftView> filterShiftWithDoctor(String keyword, Date from, Date to, int offset, int limit) {
+        List<DoctorShiftView> list = new ArrayList<>();
+        String sql = """
+        SELECT s.shift_id, s.doctor_id, e.full_name AS doctor_name, e.email AS doctor_email,
+               s.shift_date, s.time_slot, s.status, s.manager_id, s.requested_at, s.approved_at
+        FROM DoctorShifts s
+        JOIN Employees e ON s.doctor_id = e.employee_id
+        WHERE (? IS NULL OR e.full_name LIKE ?)
+          AND (? IS NULL OR s.shift_date >= ?)
+          AND (? IS NULL OR s.shift_date <= ?)
+        ORDER BY s.shift_date DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2, Types.VARCHAR);
+            } else {
+                ps.setString(1, keyword);
+                ps.setString(2, "%" + keyword + "%");
+            }
+            if (from == null) {
+                ps.setNull(3, Types.DATE);
+                ps.setNull(4, Types.DATE);
+            } else {
+                ps.setDate(3, from);
+                ps.setDate(4, from);
+            }
+            if (to == null) {
+                ps.setNull(5, Types.DATE);
+                ps.setNull(6, Types.DATE);
+            } else {
+                ps.setDate(5, to);
+                ps.setDate(6, to);
+            }
+
+            ps.setInt(7, offset);
+            ps.setInt(8, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(DoctorShiftView.builder()
+                            .shiftId(rs.getInt("shift_id"))
+                            .doctorId(rs.getInt("doctor_id"))
+                            .doctorName(rs.getString("doctor_name"))
+                            .doctorEmail(rs.getString("doctor_email"))
+                            .shiftDate(rs.getDate("shift_date"))
+                            .timeSlot(rs.getString("time_slot"))
+                            .status(rs.getString("status"))
+                            .managerId(rs.getObject("manager_id") != null ? rs.getInt("manager_id") : null)
+                            .requestedAt(rs.getTimestamp("requested_at"))
+                            .approvedAt(rs.getTimestamp("approved_at"))
+                            .build());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+
+    public int getTotalAppointmentsToday() {
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE appointment_date = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public int getTotalStaff() {
+        String sql = "SELECT COUNT(*) FROM Employees";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public int getActiveDoctorsToday() {
+        String sql = "SELECT COUNT(DISTINCT doctor_id) FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 
     public List<DoctorShift> getDoctorsForSlot(Date date, String timeSlot) {
         List<DoctorShift> list = new ArrayList<>();
@@ -62,20 +378,51 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         }
         return null;
     }
+    public boolean existsShift(int doctorId, Date shiftDate, String timeSlot) {
+        String sql = "SELECT 1 FROM DoctorShifts WHERE doctor_id=? AND shift_date=? AND time_slot=?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setDate(2, shiftDate);
+            ps.setString(3, timeSlot);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Có tồn tại lịch trùng
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     @Override
     public int insert(DoctorShift s) {
+        if (existsShift(s.getDoctorId(), s.getShiftDate(), s.getTimeSlot())) {
+            System.out.println("Duplicate shift detected. Insert aborted.");
+            return -1; // Lịch đã tồn tại
+        }
+
         String sql = "INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status, manager_id, requested_at, approved_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             setPreparedStatementFromDoctorShift(ps, s);
-            return ps.executeUpdate();
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        s.setShiftId(rs.getInt(1));
+                    }
+                }
+            }
+            return rows;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
+
+
 
     @Override
     public int update(DoctorShift s) {
