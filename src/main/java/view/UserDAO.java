@@ -139,25 +139,39 @@ public class UserDAO extends DBContext<User> {
         }
     }
 
-    public void deleteEmployee(int id) {
+    public boolean deleteEmployee(int id) {
+        String sql = "DELETE FROM Employees WHERE employee_id = ?";
         try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement("DELETE FROM Employees WHERE employee_id = ?")) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.err.println("Can't delete this account because violation system. " + e.getMessage());
+            return false;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void deletePatient(int id) {
+
+    public boolean deletePatient(int id) {
+        String sql = "DELETE FROM Patients WHERE patient_id = ?";
         try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement("DELETE FROM Patients WHERE patient_id = ?")) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.err.println("Can't delete this account because violation system: " + e.getMessage());
+            return false;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
+
 
     public List<User> selectPagedUsers(int offset, int limit) {
         List<User> list = new ArrayList<>();

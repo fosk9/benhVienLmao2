@@ -89,18 +89,44 @@ public class RoleDAO extends DBContext<Role> {
         return 0;
     }
 
+    public List<Role> getAllRoles() {
+        List<Role> roles = new ArrayList<>();
+        String sql = "SELECT role_id, role_name FROM Roles";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Role role = Role.builder()
+                        .roleId(rs.getInt("role_id"))
+                        .roleName(rs.getString("role_name"))
+                        .build();
+                roles.add(role);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error loading roles: " + e.getMessage());
+        }
+
+        return roles;
+    }
+
     public int getRoleIdByName(String roleName) {
-        String sql = "SELECT role_id FROM Roles WHERE role_name = ?";
+        String sql = "SELECT role_id FROM Roles WHERE LOWER(role_name) = ?";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, roleName);
+
+            ps.setString(1, roleName.toLowerCase());
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
                 return rs.getInt("role_id");
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error getting role_id: " + e.getMessage());
         }
-        return -1;
+        return -1; // không tìm thấy
     }
 }

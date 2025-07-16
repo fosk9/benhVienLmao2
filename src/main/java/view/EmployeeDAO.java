@@ -288,6 +288,76 @@ public class EmployeeDAO extends DBContext<Employee> {
         return null;
     }
 
+    public boolean isUsernameTaken(String username) {
+        String sql = "SELECT 1 FROM Employees WHERE username = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEmailTaken(String email) {
+        String sql = "SELECT 1 FROM Employees WHERE email = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int insertReturnId(Employee employee) {
+        String sql = "INSERT INTO Employees " +
+                "(username, [password_hash], full_name, dob, gender, email, phone, role_id, employee_ava_url, created_at, acc_status) " +
+                "OUTPUT INSERTED.employee_id " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, employee.getUsername());
+            ps.setString(2, employee.getPasswordHash());
+            ps.setString(3, employee.getFullName());
+
+            if (employee.getDob() != null)
+                ps.setDate(4, employee.getDob());
+            else
+                ps.setNull(4, Types.DATE);
+
+            ps.setString(5, employee.getGender());
+            ps.setString(6, employee.getEmail());
+            ps.setString(7, employee.getPhone());
+            ps.setInt(8, employee.getRoleId());
+            ps.setString(9, employee.getEmployeeAvaUrl());
+
+            // created_at dùng timestamp hiện tại
+            ps.setTimestamp(10, new java.sql.Timestamp(System.currentTimeMillis()));
+
+            if (employee.getAccStatus() != null)
+                ps.setInt(11, employee.getAccStatus());
+            else
+                ps.setNull(11, Types.INTEGER);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
+
     @Override
     public int insert(Employee e) {
         String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, employee_ava_url) " +

@@ -5,12 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Employee;
 import model.Role;
 import model.User;
+import util.HistoryLogger;
 import view.UserDAO;
 import view.RoleDAO;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @WebServlet("/update-user-role")
@@ -146,30 +149,58 @@ public class UpdateUserRoleController extends HttpServlet {
 
         // Logger
         System.out.println("[UpdateUserRoleController][POST] action=" + action);
+        // ✅ Check quyền: chỉ cho phép Employee (Manager) thực hiện
+        Employee manager = (Employee) request.getSession().getAttribute("account");
+        if (manager == null) {
+            request.setAttribute("error", "You must be logged in as a manager to perform this action.");
+            response.sendRedirect("login.jsp");
+            return;
+        }
 
         if (action != null && action.startsWith("delete_")) {
-            try {
-                int id = Integer.parseInt(action.substring("delete_".length()));
-                String source = request.getParameter("source_" + id); // Lấy từ JSP
-                System.out.println("[UpdateUserRoleController][POST] delete ID=" + id + ", source=" + source);
-                User user = userDAO.getUserByIdAndSource(id, source);
+            int id = Integer.parseInt(action.substring("delete_".length()));
+            String source = request.getParameter("source_" + id); // Lấy từ JSP
+            System.out.println("[UpdateUserRoleController][POST] delete ID=" + id + ", source=" + source);
 
-                if ("employee".equalsIgnoreCase(source)) {
-                    userDAO.deleteEmployee(id);
-                } else if ("patient".equalsIgnoreCase(source)) {
-                    userDAO.deletePatient(id);
+            try {
+                User user = userDAO.getUserByIdAndSource(id, source);
+                if (user == null) {
+                    request.getSession().setAttribute("errorMessage", "Tài khoản không tồn tại.");
+                    response.sendRedirect("update-user-role");
+                    return;
                 }
 
-                request.getSession().setAttribute("successMessage", "Đã xóa tài khoản " + user.getFullName());
+                boolean deleted = false;
+                if ("employee".equalsIgnoreCase(source)) {
+                    deleted = userDAO.deleteEmployee(id);
+                } else if ("patient".equalsIgnoreCase(source)) {
+                    deleted = userDAO.deletePatient(id);
+                }
+
+                if (deleted) {
+                    // ✅ Ghi log nếu xóa thành công
+                    HistoryLogger.log(
+                            manager.getEmployeeId(),
+                            manager.getFullName(),
+                            id,
+                            user.getFullName(),
+                            source,
+                            "Delete Account"
+                    );
+                    request.getSession().setAttribute("successMessage", "Đã xóa tài khoản: " + user.getFullName());
+                } else {
+                    request.getSession().setAttribute("errorMessage", "Không thể xóa tài khoản này do đang được sử dụng.");
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
-                request.getSession().setAttribute("errorMessage", "Lỗi khi xóa tài khoản.");
+                request.getSession().setAttribute("errorMessage", "Đã xảy ra lỗi khi xóa tài khoản.");
             }
 
             response.sendRedirect("update-user-role");
             return;
         }
-
+        // ✅ Xử lý cập nhật role và status
         if (action != null && action.startsWith("update_")) {
             try {
                 int id = Integer.parseInt(action.substring("update_".length()));
@@ -181,23 +212,49 @@ public class UpdateUserRoleController extends HttpServlet {
                 String roleName = request.getParameter(roleParam);
                 String statusStr = request.getParameter(statusParam);
                 User user = userDAO.getUserByIdAndSource(id, sourceParam);
-
                 System.out.println("[UpdateUserRoleController][POST] update ID=" + id + ", source=" + sourceParam + ", role=" + roleName + ", status=" + statusStr);
 
                 if ("employee".equalsIgnoreCase(sourceParam) && roleName != null) {
-                    int roleId = roleDAO.getRoleIdByName(roleName);
-                    userDAO.updateEmployeeRole(id, roleId);
+                    String currentRole = user.getRoleName(); // Role hiện tại
+                    System.out.println("[Debug] currentRole = '" + currentRole + "', roleName = '" + roleName + "'");
+                    if (!roleName.equalsIgnoreCase(currentRole)) {
+                        int roleId = roleDAO.getRoleIdByName(roleName);
+                        userDAO.updateEmployeeRole(id, roleId);
+                        // Ghi log nếu role thay đổi
+                            HistoryLogger.log(
+                                    manager.getEmployeeId(),
+                                    manager.getFullName(),
+                                    id,
+                                    user.getFullName(),
+                                    sourceParam,
+                                    "Update Role" + " to " + roleName
+                            );
+                    }
                 }
+
 
                 if (statusStr != null) {
                     int accStatus = Integer.parseInt(statusStr);
-                    userDAO.updateAccStatus(id, accStatus, sourceParam); // sử dụng sourceParam từ form
+                    int currentStatus = user.getAccStatus(); // Trạng thái hiện tại
+
+                    if (currentStatus != accStatus) {
+                        userDAO.updateAccStatus(id, accStatus, sourceParam);
+                        // Ghi log nếu trạng thái thay đổi
+                        HistoryLogger.log(
+                                manager.getEmployeeId(),
+                                manager.getFullName(),
+                                id,
+                                user.getFullName(),
+                                sourceParam,
+                                accStatus == 1 ? "Activate Account" : "Deactivate Account"
+                        );
+                    }
                 }
 
-                request.getSession().setAttribute("successMessage", "Cập nhật thành công cho " + user.getFullName());
+                request.getSession().setAttribute("successMessage", "Update Successed for " + user.getFullName());
             } catch (Exception e) {
                 e.printStackTrace();
-                request.getSession().setAttribute("errorMessage", "Lỗi khi cập nhật tài khoản.");
+                request.getSession().setAttribute("errorMessage", "Error updating user role or status.");
             }
 
             response.sendRedirect("update-user-role");

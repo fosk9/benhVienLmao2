@@ -62,13 +62,13 @@ public class LoginServlet extends HttpServlet {
                             response.sendRedirect(request.getContextPath() + "/doctor-home");
                             break;
                         case 2:
-                            response.sendRedirect(request.getContextPath() + "/admin-dashboard");
+                            response.sendRedirect(request.getContextPath() + "/receptionist-dashboard");
                             break;
                         case 3:
-                            response.sendRedirect(request.getContextPath() + "/manager-dashboard");
+                            response.sendRedirect(request.getContextPath() + "/admin-dashboard");
                             break;
                         case 4:
-                            response.sendRedirect(request.getContextPath() + "/receptionist-dashboard");
+                            response.sendRedirect(request.getContextPath() + "/update-user-role");
                             break;
                         default:
                             response.sendRedirect(request.getContextPath() + "/index.html");
@@ -78,7 +78,7 @@ public class LoginServlet extends HttpServlet {
                 } else {
                     request.setAttribute("username", username);
                     request.setAttribute("password", password);
-                    request.setAttribute("error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+                    request.setAttribute("error", "Your account is inactive.");
                 }
             } else {
                 request.setAttribute("username", username);

@@ -263,6 +263,19 @@ CREATE TABLE PageContent (
 );
 GO
 
+-- ChangeHistory
+CREATE TABLE ChangeHistory (
+    change_id INT IDENTITY(1,1) PRIMARY KEY,
+    manager_id INT NOT NULL,                  -- ID người thực hiện (từ Employees)
+    manager_name VARCHAR(100) NOT NULL,       -- Tên người thực hiện
+    target_user_id INT NOT NULL,              -- ID người bị ảnh hưởng (employee/patient ID)
+    target_user_name VARCHAR(100) NOT NULL,   -- Tên người bị ảnh hưởng
+    target_source VARCHAR(50) NOT NULL,       -- Employee / Patient / Schedule / ...
+    action VARCHAR(100) NOT NULL,             -- CREATE / UPDATE / DELETE / ROLE_CHANGE...
+    change_time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+Go
+
 -- Insert sample Roles
 INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
@@ -654,3 +667,21 @@ VALUES
     ('pactHome', 'footer_copyright', 'Group 3 - SE1903 - SWP391 Summer2025', 1, NULL, NULL, NULL, NULL),
     ('pactHome', 'scroll_up_title', 'Go to Top', 1, NULL, NULL, '#', NULL);
 GO
+
+
+INSERT INTO ChangeHistory (manager_id, manager_name, target_user_id, target_user_name, target_source, action, change_time)
+VALUES
+-- Hành động cập nhật quyền
+(101, 'Nguyen Van A', 201, 'Le Thi B', 'employee', 'Update Role', GETDATE()),
+
+-- Hành động xoá tài khoản
+(102, 'Tran Thi C', 202, 'Pham Van D', 'patient', 'Delete User', DATEADD(DAY, -1, GETDATE())),
+
+-- Hành động khôi phục tài khoản
+(103, 'Hoang Van E', 203, 'Nguyen Van F', 'employee', 'Reactivate User', DATEADD(DAY, -2, GETDATE())),
+
+-- Hành động tạm khoá tài khoản
+(104, 'Le Thi G', 204, 'Tran Thi H', 'patient', 'Deactivate User', DATEADD(HOUR, -5, GETDATE())),
+
+-- Hành động phân quyền admin
+(105, 'Pham Van I', 205, 'Hoang Van K', 'employee', 'Promote to Admin', DATEADD(DAY, -10, GETDATE()));

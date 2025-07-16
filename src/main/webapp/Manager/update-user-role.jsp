@@ -223,6 +223,9 @@
       <div class="user-table-container">
         <div class="table-header">
           <h3>User List (<span id="userCount">${totalUsersByFilter}</span>)</h3>
+          <a href="add-doctor-form" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Add Staff
+          </a>
         </div>
         <!-- UPDATE FORM - USE POST -->
         <form id="roleUpdateForm" action="update-user-role" method="post">
