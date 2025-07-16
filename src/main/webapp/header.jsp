@@ -70,6 +70,20 @@
                                                     </li>
                                                 </c:if>
                                             </c:forEach>
+                                            <c:when test="${item.itemName == 'Account'}">
+                                                <li>
+                                                    <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>
+                                                    <ul class="submenu">
+                                                        <c:forEach var="subItem" items="${systemItems}">
+                                                            <c:if test="${subItem.itemName == 'My Profile' || subItem.itemName == 'Change Password'}">
+                                                                <li>
+                                                                    <a href="<c:url value='/${subItem.itemUrl}'/>">${subItem.itemName}</a>
+                                                                </li>
+                                                            </c:if>
+                                                        </c:forEach>
+                                                    </ul>
+                                                </li>
+                                            </c:when>
                                         </c:if>
                                         <c:if test="${sessionScope.user == null}">
                                             <c:set var="roleId" value="6"/> <!-- Guest role_id -->
