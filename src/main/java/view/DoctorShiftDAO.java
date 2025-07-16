@@ -30,53 +30,68 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
     }
 
 
-    public int countDoctorSummarySchedule(String keyword, Date from, Date to) {
+    public int countDoctorSummarySchedule(String keyword, Date from, Date to, String statusFilter) {
         String sql = """
-        SELECT COUNT(DISTINCT e.employee_id)
-        FROM Employees e
-        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 2
-          AND (? IS NULL OR e.full_name LIKE ?)
-          AND (? IS NULL OR s.shift_date >= ?)
-          AND (? IS NULL OR s.shift_date <= ?)
+        SELECT COUNT(*) AS total
+        FROM (
+            SELECT e.employee_id
+            FROM Employees e
+            LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+            WHERE e.role_id = 1
+              AND (? IS NULL OR e.full_name LIKE ?)
+              AND (? IS NULL OR s.shift_date >= ?)
+              AND (? IS NULL OR s.shift_date <= ?)
+            GROUP BY e.employee_id, e.full_name, e.email
+            HAVING (? IS NULL OR MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) = ?)
+        ) AS filtered
     """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+
             if (keyword == null || keyword.trim().isEmpty()) {
-                ps.setNull(1, Types.VARCHAR);
-                ps.setNull(2, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
             } else {
-                ps.setString(1, keyword);
-                ps.setString(2, "%" + keyword + "%");
+                ps.setString(i++, keyword);
+                ps.setString(i++, "%" + keyword + "%");
             }
 
             if (from == null) {
-                ps.setNull(3, Types.DATE);
-                ps.setNull(4, Types.DATE);
+                ps.setNull(i++, Types.DATE);
+                ps.setNull(i++, Types.DATE);
             } else {
-                ps.setDate(3, from);
-                ps.setDate(4, from);
+                ps.setDate(i++, from);
+                ps.setDate(i++, from);
             }
 
             if (to == null) {
-                ps.setNull(5, Types.DATE);
-                ps.setNull(6, Types.DATE);
+                ps.setNull(i++, Types.DATE);
+                ps.setNull(i++, Types.DATE);
             } else {
-                ps.setDate(5, to);
-                ps.setDate(6, to);
+                ps.setDate(i++, to);
+                ps.setDate(i++, to);
+            }
+
+            if (statusFilter == null || statusFilter.equalsIgnoreCase("All") || statusFilter.isEmpty()) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, statusFilter);
+                ps.setString(i++, statusFilter);
             }
 
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() ? rs.getInt(1) : 0;
+                if (rs.next()) return rs.getInt("total");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0;
         }
+        return 0;
     }
 
 
-    public List<DoctorShiftView> getDoctorSummarySchedule(String keyword, Date from, Date to, int offset, int limit) {
+    public List<DoctorShiftView> getDoctorSummarySchedule(String keyword, Date from, Date to, String statusFilter, int offset, int limit) {
         List<DoctorShiftView> list = new ArrayList<>();
         String sql = """
         SELECT 
@@ -91,42 +106,58 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
             MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) AS status_today
         FROM Employees e
         LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 1 -- chỉ lấy nhân viên là bác sĩ
+        WHERE e.role_id = 1
           AND (? IS NULL OR e.full_name LIKE ?)
           AND (? IS NULL OR s.shift_date >= ?)
           AND (? IS NULL OR s.shift_date <= ?)
         GROUP BY e.employee_id, e.full_name, e.email
+        HAVING (? IS NULL OR MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) = ?)
         ORDER BY e.full_name
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+
+            // keyword
             if (keyword == null || keyword.trim().isEmpty()) {
-                ps.setNull(1, Types.VARCHAR);
-                ps.setNull(2, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
             } else {
-                ps.setString(1, keyword);
-                ps.setString(2, "%" + keyword + "%");
+                ps.setString(i++, keyword);
+                ps.setString(i++, "%" + keyword + "%");
             }
 
+            // from
             if (from == null) {
-                ps.setNull(3, Types.DATE);
-                ps.setNull(4, Types.DATE);
+                ps.setNull(i++, Types.DATE);
+                ps.setNull(i++, Types.DATE);
             } else {
-                ps.setDate(3, from);
-                ps.setDate(4, from);
+                ps.setDate(i++, from);
+                ps.setDate(i++, from);
             }
 
+            // to
             if (to == null) {
-                ps.setNull(5, Types.DATE);
-                ps.setNull(6, Types.DATE);
+                ps.setNull(i++, Types.DATE);
+                ps.setNull(i++, Types.DATE);
             } else {
-                ps.setDate(5, to);
-                ps.setDate(6, to);
+                ps.setDate(i++, to);
+                ps.setDate(i++, to);
             }
 
-            ps.setInt(7, offset);
-            ps.setInt(8, limit);
+            // statusToday filter
+            if (statusFilter == null || statusFilter.equalsIgnoreCase("All") || statusFilter.isEmpty()) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, statusFilter);
+                ps.setString(i++, statusFilter);
+            }
+
+            // offset + limit
+            ps.setInt(i++, offset);
+            ps.setInt(i, limit);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -145,6 +176,7 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
 
         return list;
     }
+
 
 
     public List<DoctorScheduleSummary> getDoctorShiftSummaryForMonth(LocalDate today) {

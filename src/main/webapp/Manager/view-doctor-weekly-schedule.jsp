@@ -75,15 +75,6 @@
     </select>
   </form>
 
-  <div class="action-buttons">
-    <button type="button" class="btn btn-success btn-sm" onclick="addShift()">
-      <i class="fas fa-plus"></i> Add Shift
-    </button>
-    <button type="button" class="btn btn-danger btn-sm" onclick="clearWeek()">
-      <i class="fas fa-trash"></i> Clear Week
-    </button>
-  </div>
-
   <div class="row mb-4">
     <div class="col-md-4 text-left">
       <a href="view-doctor-schedule?doctorId=${doctorId}&startDate=${selectedWeekStart}&year=${selectedYear}&weekOffset=-1" class="btn btn-outline-primary btn-sm">&laquo; Previous Week</a>

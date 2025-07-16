@@ -65,9 +65,9 @@
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/manager/schedule-management" class="nav-link">
+          <a href="${pageContext.request.contextPath}/assign-doctor-schedule" class="nav-link">
             <i class="fas fa-calendar-alt"></i>
-            <span>Schedules</span>
+            <span>Doctor Schedules</span>
           </a>
         </li>
         <li>

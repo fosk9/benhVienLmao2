@@ -188,17 +188,18 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <!-- Status Today -->
+                        <div class="col-md-3">
                             <div class="form-group">
-                                <label>Date Range</label>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input type="date" class="form-control" name="dateFrom" value="${param.dateFrom}" placeholder="From date">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="date" class="form-control" name="dateTo" value="${param.dateTo}" placeholder="To date">
-                                    </div>
-                                </div>
+                                <label>Status Today</label>
+                                <select class="form-control" name="status">
+                                    <option value="">All</option>
+                                    <option value="Working" ${param.status == 'Working' ? 'selected' : ''}>Working</option>
+                                    <option value="Pending" ${param.status == 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Leave" ${param.status == 'Leave' ? 'selected' : ''}>Leave</option>
+                                    <option value="Rejected" ${param.status == 'Rejected' ? 'selected' : ''}>Rejected</option>
+                                    <option value="NoSchedule" ${param.status == 'NoSchedule' ? 'selected' : ''}>No Schedule</option>
+                                </select>
                             </div>
                         </div>
 
@@ -211,7 +212,11 @@
                             </div>
                         </div>
 
-                        <a href="assign-doctor-schedule" class="btn btn-secondary form-control mt-1">Reset</a>
+                        <div class="col-md-2">
+                            <div class="form-group" style="margin-top: 23px;">
+                                <a href="assign-doctor-schedule" class="btn btn-secondary form-control mt-1" style="gap:22px;">Reset</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -314,216 +319,6 @@
                     </div>
                 </c:if>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Schedule Modal -->
-<div class="modal fade" id="addScheduleModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-calendar-plus mr-2"></i>Add New Doctor Schedule
-                </h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form action="assign-doctor-schedule" method="post">
-                <input type="hidden" name="action" value="create">
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="doctorId">Doctor <span class="required">*</span></label>
-                            <select class="form-control" id="doctorId" name="doctorId" required>
-                                <option value="">Select Doctor</option>
-                                <c:forEach var="doctor" items="${doctorList}">
-                                    <option value="${doctor.userId}">Dr. ${doctor.fullName} - ${doctor.departmentName}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="scheduleDate">Date <span class="required">*</span></label>
-                            <input type="date" class="form-control" id="scheduleDate" name="scheduleDate" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="shiftType">Shift Type <span class="required">*</span></label>
-                            <select class="form-control" id="shiftType" name="shiftType" required onchange="updateShiftTimes()">
-                                <option value="">Select Shift</option>
-                                <option value="MORNING">Morning Shift</option>
-                                <option value="AFTERNOON">Afternoon Shift</option>
-                                <option value="EVENING">Evening Shift</option>
-                                <option value="NIGHT">Night Shift</option>
-                                <option value="CUSTOM">Custom Time</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group col-md-4">
-                            <label for="startTime">Start Time <span class="required">*</span></label>
-                            <input type="time" class="form-control" id="startTime" name="startTime" required>
-                        </div>
-
-                        <div class="form-group col-md-4">
-                            <label for="endTime">End Time <span class="required">*</span></label>
-                            <input type="time" class="form-control" id="endTime" name="endTime" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"
-                                  placeholder="Additional notes or special instructions..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="recurring" name="recurring">
-                            <label class="form-check-label" for="recurring">
-                                Create recurring schedule (weekly)
-                            </label>
-                        </div>
-                    </div>
-
-                    <div id="recurringOptions" style="display: none;">
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="recurringWeeks">Number of weeks</label>
-                                <input type="number" class="form-control" id="recurringWeeks" name="recurringWeeks"
-                                       min="1" max="52" value="4">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="recurringDays">Repeat on days</label>
-                                <div class="form-check-group">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="1" id="mon">
-                                        <label class="form-check-label" for="mon">Mon</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="2" id="tue">
-                                        <label class="form-check-label" for="tue">Tue</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="3" id="wed">
-                                        <label class="form-check-label" for="wed">Wed</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="4" id="thu">
-                                        <label class="form-check-label" for="thu">Thu</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="5" id="fri">
-                                        <label class="form-check-label" for="fri">Fri</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="6" id="sat">
-                                        <label class="form-check-label" for="sat">Sat</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="recurringDays" value="0" id="sun">
-                                        <label class="form-check-label" for="sun">Sun</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-hospital" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-hospital btn-primary">
-                        <i class="fas fa-save mr-2"></i>Create Schedule
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Schedule Modal -->
-<div class="modal fade" id="editScheduleModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-calendar-edit mr-2"></i>Edit Doctor Schedule
-                </h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form action="assign-doctor-schedule" method="post">
-                <input type="hidden" name="action" value="update">
-                <input type="hidden" name="scheduleId" id="editScheduleId">
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="editDoctorId">Doctor <span class="required">*</span></label>
-                            <select class="form-control" id="editDoctorId" name="doctorId" required>
-                                <option value="">Select Doctor</option>
-                                <c:forEach var="doctor" items="${doctorList}">
-                                    <option value="${doctor.userId}">Dr. ${doctor.fullName} - ${doctor.departmentName}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="editScheduleDate">Date <span class="required">*</span></label>
-                            <input type="date" class="form-control" id="editScheduleDate" name="scheduleDate" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="editShiftType">Shift Type <span class="required">*</span></label>
-                            <select class="form-control" id="editShiftType" name="shiftType" required onchange="updateEditShiftTimes()">
-                                <option value="">Select Shift</option>
-                                <option value="MORNING">Morning Shift</option>
-                                <option value="AFTERNOON">Afternoon Shift</option>
-                                <option value="EVENING">Evening Shift</option>
-                                <option value="NIGHT">Night Shift</option>
-                                <option value="CUSTOM">Custom Time</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group col-md-4">
-                            <label for="editStartTime">Start Time <span class="required">*</span></label>
-                            <input type="time" class="form-control" id="editStartTime" name="startTime" required>
-                        </div>
-
-                        <div class="form-group col-md-4">
-                            <label for="editEndTime">End Time <span class="required">*</span></label>
-                            <input type="time" class="form-control" id="editEndTime" name="endTime" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="editStatus">Status <span class="required">*</span></label>
-                            <select class="form-control" id="editStatus" name="status" required>
-                                <option value="ACTIVE">Active</option>
-                                <option value="CANCELLED">Cancelled</option>
-                                <option value="COMPLETED">Completed</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="editNotes">Notes</label>
-                        <textarea class="form-control" id="editNotes" name="notes" rows="3"
-                                  placeholder="Additional notes or special instructions..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-hospital" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-hospital btn-primary">
-                        <i class="fas fa-save mr-2"></i>Update Schedule
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

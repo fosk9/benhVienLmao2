@@ -30,19 +30,18 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
         try {
             logger.info("Loading statistics and doctor schedules...");
 
-            // Thống kê
             int appointmentsToday = dao.getTotalAppointmentsToday();
             int totalStaff = dao.getTotalStaff();
             int activeDoctors = dao.getActiveDoctorsToday();
 
-            // Lọc theo tên và ngày
             String keyword = request.getParameter("keyword");
             String from = request.getParameter("dateFrom");
             String to = request.getParameter("dateTo");
+            String status = request.getParameter("status"); // ✅ NEW: lọc theo trạng thái hôm nay
+
             Date fromDate = (from != null && !from.isEmpty()) ? Date.valueOf(from) : null;
             Date toDate = (to != null && !to.isEmpty()) ? Date.valueOf(to) : null;
 
-            // Phân trang
             int page = 1, limit = 5;
             try {
                 String pageParam = request.getParameter("page");
@@ -52,12 +51,12 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
             } catch (NumberFormatException ignored) {}
             int offset = (page - 1) * limit;
 
-            // Danh sách bác sĩ và tổng lịch/thống kê
-            List<DoctorShiftView> scheduleList = dao.getDoctorSummarySchedule(keyword, fromDate, toDate, offset, limit);
-            int totalRecords = dao.countDoctorSummarySchedule(keyword, fromDate, toDate);
+            // ✅ Truyền thêm status
+            List<DoctorShiftView> scheduleList = dao.getDoctorSummarySchedule(keyword, fromDate, toDate, status, offset, limit);
+            int totalRecords = dao.countDoctorSummarySchedule(keyword, fromDate, toDate, status);
             int totalPages = (int) Math.ceil((double) totalRecords / limit);
 
-            // Truyền sang JSP
+            // Gửi sang JSP
             request.setAttribute("appointmentsToday", appointmentsToday);
             request.setAttribute("totalStaff", totalStaff);
             request.setAttribute("activeDoctors", activeDoctors);
@@ -66,6 +65,7 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
             request.setAttribute("keyword", keyword);
             request.setAttribute("dateFrom", from);
             request.setAttribute("dateTo", to);
+            request.setAttribute("status", status); // ✅ giữ giá trị chọn lại
 
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
@@ -77,6 +77,7 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
 
         request.getRequestDispatcher("/Manager/assign-doctor-schedule.jsp").forward(request, response);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
