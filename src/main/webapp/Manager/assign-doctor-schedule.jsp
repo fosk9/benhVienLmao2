@@ -102,9 +102,6 @@
                         <h1>Doctor Schedule Management</h1>
                         <p class="page-subtitle">Assign and manage work schedules for doctors</p>
                     </div>
-                    <button type="button" class="page-title-action" data-toggle="modal" data-target="#addScheduleModal">
-                        <i class="fas fa-plus mr-2"></i>Add New Schedule
-                    </button>
                 </div>
             </div>
         </div>
@@ -255,21 +252,31 @@
                             </td>
                             <td><strong>${schedule.workingDaysThisMonth}</strong></td>
                             <td>
-                                <c:choose>
-                                    <c:when test="${schedule.statusToday == 'Working'}">
-                                        <span class="badge badge-published">Working</span>
-                                    </c:when>
-                                    <c:when test="${schedule.statusToday == 'PendingLeave'}">
-                                        <span class="badge badge-category">Pending</span>
-                                    </c:when>
-                                    <c:when test="${schedule.statusToday == 'Leave'}">
-                                        <span class="badge badge-draft">Leave</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="badge badge-secondary">No Schedule</span>
-                                    </c:otherwise>
-                                </c:choose>
+                                <c:forEach var="entry" items="${schedule.statusPerSlotToday}">
+                                    <c:set var="slot" value="${entry.key}" />
+                                    <c:set var="status" value="${entry.value}" />
+                                    <c:choose>
+                                        <c:when test="${status == 'Working'}">
+                                            <span class="badge badge-published">${slot}: Working</span>
+                                        </c:when>
+                                        <c:when test="${status == 'PendingLeave'}">
+                                            <span class="badge badge-category">${slot}: Pending</span>
+                                        </c:when>
+                                        <c:when test="${status == 'Leave'}">
+                                            <span class="badge badge-draft">${slot}: Leave</span>
+                                        </c:when>
+                                        <c:when test="${status == 'Rejected'}">
+                                            <span class="badge badge-danger">${slot}: Rejected</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge badge-secondary">${slot}: No Schedule</span>
+                                        </c:otherwise>
+                                    </c:choose><br/>
+                                </c:forEach>
                             </td>
+
+
+
                             <td>
                                 <a href="view-doctor-schedule?doctorId=${schedule.doctorId}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-eye mr-1"></i> View
@@ -285,7 +292,6 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <h3>No schedules found</h3>
-                        <p>Try adjusting your search criteria or <a href="#" data-toggle="modal" data-target="#addScheduleModal">create a new schedule</a></p>
                     </div>
                 </c:if>
 
@@ -384,60 +390,11 @@
         recurringOptions.style.display = this.checked ? 'block' : 'none';
     });
 
-    // Edit schedule function
-    function editSchedule(scheduleId) {
-        // This would typically fetch schedule data via AJAX
-        // For now, we'll just set the schedule ID
-        document.getElementById('editScheduleId').value = scheduleId;
-
-        // In a real implementation, you would fetch the schedule data and populate the form
-        // Example AJAX call:
-        /*
-        $.ajax({
-            url: 'get-schedule-details',
-            method: 'GET',
-            data: { scheduleId: scheduleId },
-            success: function(data) {
-                document.getElementById('editDoctorId').value = data.doctorId;
-                document.getElementById('editScheduleDate').value = data.scheduleDate;
-                document.getElementById('editShiftType').value = data.shiftType;
-                document.getElementById('editStartTime').value = data.startTime;
-                document.getElementById('editEndTime').value = data.endTime;
-                document.getElementById('editStatus').value = data.status;
-                document.getElementById('editNotes').value = data.notes;
-            }
-        });
-        */
-    }
-
     // Set minimum date to today
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('scheduleDate').setAttribute('min', today);
         document.getElementById('editScheduleDate').setAttribute('min', today);
-    });
-
-    // Form validation
-    document.querySelector('#addScheduleModal form').addEventListener('submit', function(e) {
-        const startTime = document.getElementById('startTime').value;
-        const endTime = document.getElementById('endTime').value;
-
-        if (startTime && endTime && startTime >= endTime) {
-            e.preventDefault();
-            alert('End time must be after start time');
-            return false;
-        }
-    });
-
-    document.querySelector('#editScheduleModal form').addEventListener('submit', function(e) {
-        const startTime = document.getElementById('editStartTime').value;
-        const endTime = document.getElementById('editEndTime').value;
-
-        if (startTime && endTime && startTime >= endTime) {
-            e.preventDefault();
-            alert('End time must be after start time');
-            return false;
-        }
     });
 </script>
 

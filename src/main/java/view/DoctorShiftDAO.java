@@ -5,9 +5,9 @@ import model.DoctorShift;
 import model.DoctorShiftView;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
 
@@ -30,88 +30,78 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
     }
 
 
-    public int countDoctorSummarySchedule(String keyword, Date from, Date to, String statusFilter) {
+    public int countDoctorSummarySchedule(String keyword, String statusFilter) {
+        int count = 0;
+
         String sql = """
-        SELECT COUNT(*) AS total
-        FROM (
-            SELECT e.employee_id
-            FROM Employees e
-            LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-            WHERE e.role_id = 1
-              AND (? IS NULL OR e.full_name LIKE ?)
-              AND (? IS NULL OR s.shift_date >= ?)
-              AND (? IS NULL OR s.shift_date <= ?)
-            GROUP BY e.employee_id, e.full_name, e.email
-            HAVING (? IS NULL OR MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) = ?)
-        ) AS filtered
+        SELECT 
+            e.employee_id,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'MORNING' THEN s.status END) AS morning_status,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'AFTERNOON' THEN s.status END) AS afternoon_status,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'EVENING' THEN s.status END) AS evening_status,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'NIGHT' THEN s.status END) AS night_status
+        FROM Employees e
+        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+        WHERE e.role_id = 1
+          AND (? IS NULL OR e.full_name LIKE ?)
+        GROUP BY e.employee_id
     """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            int i = 1;
-
             if (keyword == null || keyword.trim().isEmpty()) {
-                ps.setNull(i++, Types.VARCHAR);
-                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2, Types.VARCHAR);
             } else {
-                ps.setString(i++, keyword);
-                ps.setString(i++, "%" + keyword + "%");
-            }
-
-            if (from == null) {
-                ps.setNull(i++, Types.DATE);
-                ps.setNull(i++, Types.DATE);
-            } else {
-                ps.setDate(i++, from);
-                ps.setDate(i++, from);
-            }
-
-            if (to == null) {
-                ps.setNull(i++, Types.DATE);
-                ps.setNull(i++, Types.DATE);
-            } else {
-                ps.setDate(i++, to);
-                ps.setDate(i++, to);
-            }
-
-            if (statusFilter == null || statusFilter.equalsIgnoreCase("All") || statusFilter.isEmpty()) {
-                ps.setNull(i++, Types.VARCHAR);
-                ps.setNull(i++, Types.VARCHAR);
-            } else {
-                ps.setString(i++, statusFilter);
-                ps.setString(i++, statusFilter);
+                ps.setString(1, keyword);
+                ps.setString(2, "%" + keyword + "%");
             }
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt("total");
+                while (rs.next()) {
+                    Map<String, String> statusMap = new HashMap<>();
+                    statusMap.put("MORNING", rs.getString("morning_status"));
+                    statusMap.put("AFTERNOON", rs.getString("afternoon_status"));
+                    statusMap.put("EVENING", rs.getString("evening_status"));
+                    statusMap.put("NIGHT", rs.getString("night_status"));
+
+                    if (statusFilter == null || statusFilter.isEmpty() || statusFilter.equalsIgnoreCase("All")) {
+                        count++;
+                    } else {
+                        boolean matched = statusMap.values().stream()
+                                .filter(Objects::nonNull)
+                                .anyMatch(status -> status.equalsIgnoreCase(statusFilter));
+                        if (matched) count++;
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+
+        return count;
     }
 
-
-    public List<DoctorShiftView> getDoctorSummarySchedule(String keyword, Date from, Date to, String statusFilter, int offset, int limit) {
+    public List<DoctorShiftView> getDoctorSummarySchedule(String keyword, String statusFilter, int offset, int limit) {
         List<DoctorShiftView> list = new ArrayList<>();
+
         String sql = """
         SELECT 
             e.employee_id,
             e.full_name,
             e.email,
             COUNT(CASE 
-                      WHEN MONTH(s.shift_date) = MONTH(GETDATE()) 
-                       AND YEAR(s.shift_date) = YEAR(GETDATE()) THEN 1 
-                      ELSE NULL 
-                 END) AS working_days_this_month,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) AS status_today
+                     WHEN MONTH(s.shift_date) = MONTH(GETDATE()) 
+                      AND YEAR(s.shift_date) = YEAR(GETDATE()) 
+                  THEN 1 ELSE NULL END) AS working_days_this_month,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'MORNING' THEN s.status END) AS morning_status,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'AFTERNOON' THEN s.status END) AS afternoon_status,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'EVENING' THEN s.status END) AS evening_status,
+            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'NIGHT' THEN s.status END) AS night_status
         FROM Employees e
         LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
         WHERE e.role_id = 1
           AND (? IS NULL OR e.full_name LIKE ?)
-          AND (? IS NULL OR s.shift_date >= ?)
-          AND (? IS NULL OR s.shift_date <= ?)
         GROUP BY e.employee_id, e.full_name, e.email
-        HAVING (? IS NULL OR MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) THEN s.status ELSE NULL END) = ?)
         ORDER BY e.full_name
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     """;
@@ -119,7 +109,7 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
 
-            // keyword
+            // Keyword
             if (keyword == null || keyword.trim().isEmpty()) {
                 ps.setNull(i++, Types.VARCHAR);
                 ps.setNull(i++, Types.VARCHAR);
@@ -128,46 +118,36 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
                 ps.setString(i++, "%" + keyword + "%");
             }
 
-            // from
-            if (from == null) {
-                ps.setNull(i++, Types.DATE);
-                ps.setNull(i++, Types.DATE);
-            } else {
-                ps.setDate(i++, from);
-                ps.setDate(i++, from);
-            }
-
-            // to
-            if (to == null) {
-                ps.setNull(i++, Types.DATE);
-                ps.setNull(i++, Types.DATE);
-            } else {
-                ps.setDate(i++, to);
-                ps.setDate(i++, to);
-            }
-
-            // statusToday filter
-            if (statusFilter == null || statusFilter.equalsIgnoreCase("All") || statusFilter.isEmpty()) {
-                ps.setNull(i++, Types.VARCHAR);
-                ps.setNull(i++, Types.VARCHAR);
-            } else {
-                ps.setString(i++, statusFilter);
-                ps.setString(i++, statusFilter);
-            }
-
-            // offset + limit
+            // Offset & limit
             ps.setInt(i++, offset);
             ps.setInt(i, limit);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(DoctorShiftView.builder()
+                    Map<String, String> statusPerSlot = new LinkedHashMap<>();
+                    statusPerSlot.put("MORNING", rs.getString("morning_status"));
+                    statusPerSlot.put("AFTERNOON", rs.getString("afternoon_status"));
+                    statusPerSlot.put("EVENING", rs.getString("evening_status"));
+                    statusPerSlot.put("NIGHT", rs.getString("night_status"));
+
+                    DoctorShiftView view = DoctorShiftView.builder()
                             .doctorId(rs.getInt("employee_id"))
                             .doctorName(rs.getString("full_name"))
                             .doctorEmail(rs.getString("email"))
                             .workingDaysThisMonth(rs.getInt("working_days_this_month"))
-                            .statusToday(rs.getString("status_today"))
-                            .build());
+                            .statusPerSlotToday(statusPerSlot)
+                            .build();
+
+                    if (statusFilter == null || statusFilter.isEmpty() || statusFilter.equalsIgnoreCase("All")) {
+                        list.add(view);
+                    } else {
+                        // Lọc theo trạng thái nếu 1 trong 4 ca khớp
+                        if (statusPerSlot.values().stream()
+                                .filter(Objects::nonNull)
+                                .anyMatch(status -> status.equalsIgnoreCase(statusFilter))) {
+                            list.add(view);
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {

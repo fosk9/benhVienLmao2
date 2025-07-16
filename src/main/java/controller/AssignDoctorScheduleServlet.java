@@ -10,7 +10,6 @@ import view.DoctorShiftDAO;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -28,32 +27,32 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            logger.info("Loading statistics and doctor schedules...");
+            logger.info("Loading doctor schedule management view...");
 
+            // Lấy các thống kê để hiển thị ở dashboard
             int appointmentsToday = dao.getTotalAppointmentsToday();
             int totalStaff = dao.getTotalStaff();
             int activeDoctors = dao.getActiveDoctorsToday();
 
+            // Lấy tham số tìm kiếm & lọc
             String keyword = request.getParameter("keyword");
-            String from = request.getParameter("dateFrom");
-            String to = request.getParameter("dateTo");
-            String status = request.getParameter("status"); // ✅ NEW: lọc theo trạng thái hôm nay
+            String status = request.getParameter("status"); // Lọc theo status của ca trực hôm nay
 
-            Date fromDate = (from != null && !from.isEmpty()) ? Date.valueOf(from) : null;
-            Date toDate = (to != null && !to.isEmpty()) ? Date.valueOf(to) : null;
-
-            int page = 1, limit = 5;
+            // Phân trang
+            int page = 1;
+            int limit = 5;
             try {
                 String pageParam = request.getParameter("page");
                 if (pageParam != null) {
                     page = Integer.parseInt(pageParam);
                 }
             } catch (NumberFormatException ignored) {}
+
             int offset = (page - 1) * limit;
 
-            // ✅ Truyền thêm status
-            List<DoctorShiftView> scheduleList = dao.getDoctorSummarySchedule(keyword, fromDate, toDate, status, offset, limit);
-            int totalRecords = dao.countDoctorSummarySchedule(keyword, fromDate, toDate, status);
+            // Lấy danh sách bác sĩ có lịch hôm nay
+            List<DoctorShiftView> scheduleList = dao.getDoctorSummarySchedule(keyword, status, offset, limit);
+            int totalRecords = dao.countDoctorSummarySchedule(keyword, status);
             int totalPages = (int) Math.ceil((double) totalRecords / limit);
 
             // Gửi sang JSP
@@ -63,21 +62,18 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
 
             request.setAttribute("scheduleList", scheduleList);
             request.setAttribute("keyword", keyword);
-            request.setAttribute("dateFrom", from);
-            request.setAttribute("dateTo", to);
-            request.setAttribute("status", status); // ✅ giữ giá trị chọn lại
+            request.setAttribute("status", status);
 
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
 
         } catch (Exception e) {
-            logger.severe("Error in doGet: " + e.getMessage());
+            logger.severe("Error loading doctor schedule view: " + e.getMessage());
             request.setAttribute("error", "Lỗi tải dữ liệu: " + e.getMessage());
         }
 
         request.getRequestDispatcher("/Manager/assign-doctor-schedule.jsp").forward(request, response);
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -108,11 +104,11 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
                 if ("create".equals(action)) {
                     if (dao.existsShift(doctorId, shiftDate, timeSlot)) {
                         session.setAttribute("error", "Lịch trực đã tồn tại cho bác sĩ này.");
-                        logger.warning("Duplicate shift detected: doctorId=" + doctorId);
+                        logger.warning("Duplicate shift for doctorId=" + doctorId);
                     } else {
                         dao.insert(shift);
                         session.setAttribute("success", "Tạo lịch trực thành công.");
-                        logger.info("Created shift: doctorId=" + doctorId);
+                        logger.info("Created shift for doctorId=" + doctorId);
                     }
                 } else {
                     int shiftId = Integer.parseInt(request.getParameter("shiftId"));
@@ -125,12 +121,12 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
             } else if ("delete".equals(action)) {
                 int shiftId = Integer.parseInt(request.getParameter("shiftId"));
                 dao.delete(shiftId);
-                session.setAttribute("success", "Xóa lịch trực thành công.");
+                request.getSession().setAttribute("success", "Xóa lịch trực thành công.");
                 logger.info("Deleted shiftId=" + shiftId);
             }
 
         } catch (Exception e) {
-            logger.severe("Error in doPost: " + e.getMessage());
+            logger.severe("Error processing doctor shift: " + e.getMessage());
             request.getSession().setAttribute("error", "Lỗi xử lý ca trực: " + e.getMessage());
         }
 
