@@ -24,12 +24,5 @@ public class Patient {
     private String insuranceNumber;
     private String emergencyContact;
     private String patientAvaUrl;
-
-    public String getFirstName() {
-        if (fullName == null || fullName.trim().isEmpty()) {
-            return "";
-        }
-        String[] parts = fullName.trim().split("\\s+");
-        return parts[parts.length - 1]; // Last part is the first name in Vietnamese naming convention
-    }
+    private Integer accStatus; // 1: active, 0: inactive
 }
