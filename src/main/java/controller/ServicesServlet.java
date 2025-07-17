@@ -2,10 +2,8 @@ package controller;
 
 import view.PatientDAO;
 import view.SystemItemDAO;
-import view.BlogDAO; // Thêm import này
 import model.Patient;
 import model.SystemItem;
-import model.Blog; // Thêm import này
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -39,18 +37,13 @@ public class ServicesServlet extends HttpServlet {
         SystemItemDAO systemItemDAO = new SystemItemDAO();
         List<SystemItem> systemItems = systemItemDAO.getActiveItemsByRoleAndType(5, "Navigation");
 
-        // Lấy danh sách blog mới nhất (3 blog)
-        BlogDAO blogDAO = new BlogDAO();
-        List<Blog> recentBlogs = blogDAO.getRecentBlogsLimited(3);
-        request.setAttribute("recentBlogs", recentBlogs);
-
         if (patient != null) {
             session.setAttribute("patientId", patient.getPatientId());
             request.setAttribute("patient", patient);
             request.setAttribute("systemItems", systemItems);
             request.getRequestDispatcher("/Pact/services.jsp").forward(request, response);
         } else {
-            response.sendRedirect(request.getContextPath() + "/index");
+            response.sendRedirect(request.getContextPath() + "/login");
         }
     }
 }
