@@ -159,7 +159,6 @@ public class AddDoctorFormServlet extends HttpServlet {
             LOGGER.info("Created DoctorDetail for ID: " + employeeId);
 
             // ✅ Ghi log tạo mới
-            if (manager != null) {
                 HistoryLogger.log(
                         manager.getEmployeeId(),
                         manager.getFullName(),
@@ -169,7 +168,6 @@ public class AddDoctorFormServlet extends HttpServlet {
                         "Create Account" + username
                 );
                 LOGGER.info("ChangeHistory log added for created account ID=" + employeeId);
-            }
 
             request.getSession().setAttribute("successMessage", "Account created successfully!");
             response.sendRedirect("add-doctor-form");

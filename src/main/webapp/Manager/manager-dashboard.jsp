@@ -102,11 +102,6 @@
             <h1>Manager Dashboard</h1>
             <p class="page-subtitle">Hospital Management Overview</p>
           </div>
-          <div>
-            <a href="${pageContext.request.contextPath}/manager/quick-actions" class="btn-hospital btn-primary">
-              <i class="fas fa-plus mr-2"></i>Quick Actions
-            </a>
-          </div>
         </div>
       </div>
     </div>
