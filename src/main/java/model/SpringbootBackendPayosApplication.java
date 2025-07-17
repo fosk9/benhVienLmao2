@@ -1,28 +1,29 @@
 package model;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties; // NEW
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import vn.payos.PayOS;
-import util.PayOSProperties; // Import lớp mới tạo
 
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @Configuration
-@EnableScheduling
-@EnableConfigurationProperties(PayOSProperties.class) // NEW: Kích hoạt xử lý PayOSProperties
 public class SpringbootBackendPayosApplication implements WebMvcConfigurer {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringbootBackendPayosApplication.class, args);
-    }
+    @Value("8ada356e-2e8f-4ac2-893c-b9dd34f259b5")
+    private String clientId;
+
+    @Value("99428222-900b-4792-b511-ef72cc2d0853")
+    private String apiKey;
+
+    @Value("de4193745f19d74a5b0f6dc354555d881e8a8ef14874a863eb5c7c5a4af95c0a")
+    private String checksumKey;
 
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
@@ -31,11 +32,16 @@ public class SpringbootBackendPayosApplication implements WebMvcConfigurer {
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .exposedHeaders("*")
-                .allowCredentials(false).maxAge(3600);
+                .allowCredentials(false)
+                .maxAge(3600); // Max age of the CORS pre-flight request
     }
 
     @Bean
-    public PayOS payOS(PayOSProperties payOSProperties) { // Inject PayOSProperties
-        return new PayOS(payOSProperties.getClientId(), payOSProperties.getApiKey(), payOSProperties.getChecksumKey());
+    public PayOS payOS() {
+        return new PayOS(clientId, apiKey, checksumKey);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringbootBackendPayosApplication.class, args);
     }
 }

@@ -8,14 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.SystemItem;
 import view.SystemItemDAO;
-import view.RoleDAO; // thêm import này
-import model.Role;   // thêm import này
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -26,7 +21,6 @@ import java.util.stream.Collectors;
 public class AdminSystemItemsServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminSystemItemsServlet.class.getName());
     private final SystemItemDAO systemItemDAO = new SystemItemDAO();
-    private final RoleDAO roleDAO = new RoleDAO(); // thêm dòng này
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -58,25 +52,12 @@ public class AdminSystemItemsServlet extends HttpServlet {
 
         switch (action) {
             case "add":
-                // Lấy danh sách role cho form add
-                List<Role> allRoles = roleDAO.select();
-                request.setAttribute("allRoles", allRoles);
                 request.getRequestDispatcher("/admin/system-items/add.jsp").forward(request, response);
                 break;
             case "edit":
                 int id = Integer.parseInt(request.getParameter("id"));
                 SystemItem item = systemItemDAO.select(id);
-                if (item == null) {
-                    request.setAttribute("errorMessage", "System item not found.");
-                    request.getRequestDispatcher("/admin/system-items?action=list").forward(request, response);
-                    return;
-                }
-                allRoles = roleDAO.select();
-                List<Integer> assignedRoleIds = systemItemDAO.getRoleIdsByItemId(id);
-                if (assignedRoleIds == null) assignedRoleIds = new ArrayList<>();
                 request.setAttribute("item", item);
-                request.setAttribute("allRoles", allRoles);
-                request.setAttribute("assignedRoleIds", assignedRoleIds);
                 request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
                 break;
             case "delete":
@@ -116,21 +97,7 @@ public class AdminSystemItemsServlet extends HttpServlet {
                         .collect(Collectors.toList());
                 }
 
-                // Lấy map itemId -> List<Role>
-                Map<Integer, List<model.Role>> itemRolesMap = new HashMap<>();
-                for (SystemItem si : filteredItems) {
-                    List<Integer> roleIds = systemItemDAO.getRoleIdsByItemId(si.getItemId());
-                    List<model.Role> roles = new java.util.ArrayList<>();
-                    if (roleIds != null && !roleIds.isEmpty()) {
-                        for (Integer rid : roleIds) {
-                            model.Role r = roleDAO.select(rid);
-                            if (r != null) roles.add(r);
-                        }
-                    }
-                    itemRolesMap.put(si.getItemId(), roles);
-                }
                 request.setAttribute("items", filteredItems);
-                request.setAttribute("itemRolesMap", itemRolesMap);
                 request.getRequestDispatcher("/admin/system-items/list.jsp").forward(request, response);
                 break;
         }
@@ -167,16 +134,9 @@ public class AdminSystemItemsServlet extends HttpServlet {
         item.setDisplayOrder(displayOrder == null || displayOrder.isEmpty() ? null : Integer.parseInt(displayOrder));
         item.setItemType(request.getParameter("itemType"));
 
-        String[] roleIds = request.getParameterValues("roleIds");
         if ("add".equals(action)) {
             int inserted = systemItemDAO.insert(item);
-            int newItemId = systemItemDAO.getLastInsertId();
-            if (inserted > 0 && newItemId > 0) {
-                if (roleIds != null) {
-                    for (String rid : roleIds) {
-                        systemItemDAO.addRoleToItem(Integer.parseInt(rid), newItemId);
-                    }
-                }
+            if (inserted > 0) {
                 LOGGER.info("Successfully inserted SystemItem: " + item.getItemName());
             } else {
                 LOGGER.warning("Failed to insert SystemItem: " + item.getItemName());
@@ -185,35 +145,9 @@ public class AdminSystemItemsServlet extends HttpServlet {
             item.setItemId(Integer.parseInt(request.getParameter("id")));
             int updated = systemItemDAO.update(item);
             if (updated > 0) {
-                systemItemDAO.deleteRolesOfItem(item.getItemId());
-                if (roleIds != null) {
-                    for (String rid : roleIds) {
-                        systemItemDAO.addRoleToItem(Integer.parseInt(rid), item.getItemId());
-                    }
-                }
                 LOGGER.info("Successfully updated SystemItem ID: " + item.getItemId());
-            } else if ("delete".equals(action)) {
-                int deleted = systemItemDAO.delete(item.getItemId());
-                if (deleted > 0) {
-                    LOGGER.info("Successfully deleted SystemItem ID: " + item.getItemId());
-                } else {
-                    LOGGER.warning("Failed to delete SystemItem ID: " + item.getItemId());
-                    request.setAttribute("errorMessage", "Failed to delete system item.");
-                    request.setAttribute("item", item);
-                    request.setAttribute("allRoles", roleDAO.select());
-                    request.setAttribute("assignedRoleIds", systemItemDAO.getRoleIdsByItemId(item.getItemId()));
-                    request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
-                    return;
-                }
-            }
-            else {
+            } else {
                 LOGGER.warning("Failed to update SystemItem ID: " + item.getItemId());
-                request.setAttribute("errorMessage", "Failed to update system item.");
-                request.setAttribute("item", item);
-                request.setAttribute("allRoles", roleDAO.select());
-                request.setAttribute("assignedRoleIds", systemItemDAO.getRoleIdsByItemId(item.getItemId()));
-                request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
-                return;
             }
         }
 

@@ -9,8 +9,6 @@ import view.AppointmentDAO;
 import model.Appointment;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Date;
-
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
@@ -106,12 +104,7 @@ public class PaymentControllerServlet extends HttpServlet {
 
             // Patient ID for the description
             Integer patientId = appointment.getPatient() != null ? appointment.getPatient().getPatientId() : null;
-            String patientName = appointment.getPatient() != null && appointment.getPatient().getFullName() != null
-                    ? appointment.getPatient().getFullName()
-                    : "Unknown Patient";
-            String appointmentName = appointment.getAppointmentType() != null && appointment.getAppointmentType().getTypeName() != null
-                    ? appointment.getAppointmentType().getTypeName()
-                    : "Unknown Service";
+
             // Create the payment link data
             ItemData itemData = ItemData.builder()
                     .name(serviceName)
@@ -123,7 +116,7 @@ public class PaymentControllerServlet extends HttpServlet {
             PaymentData paymentData = PaymentData.builder()
                     .orderCode(orderCode)
                     .amount(price)
-                    .description("id #" +appointmentId )
+                    .description("#" + patientId + "_# " + appointmentId + "_")
                     .returnUrl(domain + "payment?appointmentId=" + appointmentId + "&status=Paid")
                     .cancelUrl(domain + "payment?appointmentId=" + appointmentId + "&status=Cancelled")
                     .item(itemData)

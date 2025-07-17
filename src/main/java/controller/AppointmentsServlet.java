@@ -1,8 +1,13 @@
 package controller;
 
-import model.*;
-import view.*;
-import util.NavigationUtil;
+import view.AppointmentDAO;
+import view.EmployeeDAO;
+import view.AppointmentTypeDAO;
+import view.PatientDAO;
+import model.Appointment;
+import model.Employee;
+import model.AppointmentType;
+import model.Patient;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,18 +25,12 @@ import java.util.logging.Logger;
 public class AppointmentsServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AppointmentsServlet.class.getName());
     private static final int PAGE_SIZE = 5; // Display 5 appointments per page
-    private final SystemItemDAO systemItemDAO = new SystemItemDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         String path = request.getServletPath();
         AppointmentDAO appointmentDAO = new AppointmentDAO();
-
-        // Phân chia navigation theo role đăng nhập
-        int navRoleId = (session != null && session.getAttribute("patientId") != null) ? 5 : 6;
-        List<SystemItem> navItems = NavigationUtil.getNavigationItemsForRole(navRoleId, request);
-        request.setAttribute("systemItems", navItems);
 
         if ("/appointments/details".equals(path)) {
             int appointmentId;
