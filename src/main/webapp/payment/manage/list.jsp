@@ -1,12 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %> <%-- NEW: Thêm taglib cho định dạng ngày/giờ --%>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Manage Patients - benhVienLmao</title>
+  <title>Payment History - benhVienLmao</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css"> <%-- Đảm bảo đường dẫn CSS của bạn đúng --%>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     /* Enhanced container styling */
@@ -19,18 +20,6 @@
       color: #28a745;
       font-weight: 700;
       margin-bottom: 20px;
-    }
-    /* Add New Patient button */
-    .btn-add-new {
-      background-color: #28a745;
-      border-color: #28a745;
-      padding: 10px 20px;
-      font-weight: 600;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .btn-add-new:hover {
-      background-color: #218838;
-      transform: translateY(-2px);
     }
     /* Search form styling */
     .search-table {
@@ -91,12 +80,13 @@
       padding: 12px;
       text-align: center;
     }
-    .table img {
-      max-width: 50px;
-      border-radius: 50%;
-      object-fit: cover;
+    .table .content-value { /* Re-purposed for pay content */
+      max-width: 300px;
+      white-space: pre-line;
+      word-break: break-word;
+      text-align: left;
     }
-    /* Action buttons */
+    /* Action buttons - simplified for view only */
     .btn-action {
       padding: 6px 12px;
       font-size: 0.9rem;
@@ -129,9 +119,6 @@
         font-size: 0.9rem;
         padding: 8px;
       }
-      .table img {
-        max-width: 40px;
-      }
       .btn-action {
         font-size: 0.8rem;
         padding: 5px 10px;
@@ -141,101 +128,111 @@
 </head>
 <body>
 <div class="container">
-  <h2>Manage Patients</h2>
-  <a href="${pageContext.request.contextPath}/admin/managePatients?action=add" class="btn btn-add-new mb-4">
-    <i class="fas fa-user-plus me-2"></i>Add New Patient
-  </a>
+  <h2>Payment History</h2>
+  <%-- Nút "Add New Content" được loại bỏ vì thường không thêm lịch sử thanh toán trực tiếp --%>
 
-  <!-- Search Form -->
-  <form class="mb-4" method="get" action="${pageContext.request.contextPath}/admin/managePatients">
+  <form class="mb-4" method="get" action="${pageContext.request.contextPath}/admin/payments"> <%-- NEW: Điều chỉnh action URL --%>
     <input type="hidden" name="action" value="list">
     <table class="search-table">
       <tr>
-        <td>Name</td>
-        <td><input type="text" class="form-control" name="searchName" value="${param.searchName}"></td>
+        <td>Payment ID</td>
+        <td><input type="text" class="form-control" name="searchPaymentId" value="${param.searchPaymentId}"></td>
       </tr>
       <tr>
-        <td>Email</td>
-        <td><input type="text" class="form-control" name="searchEmail" value="${param.searchEmail}"></td>
+        <td>Appointment ID</td>
+        <td><input type="text" class="form-control" name="searchAppointmentId" value="${param.searchAppointmentId}"></td>
       </tr>
       <tr>
-        <td>Username</td>
-        <td><input type="text" class="form-control" name="searchUsername" value="${param.searchUsername}"></td>
+        <td>Method</td>
+        <td><input type="text" class="form-control" name="searchMethod" value="${param.searchMethod}"></td>
       </tr>
       <tr>
-        <td>Gender</td>
+        <td>Status</td>
         <td>
-          <select class="form-select" name="searchGender">
+          <select class="form-select" name="searchStatus">
             <option value="">All</option>
-            <option value="M" ${param.searchGender == 'M' ? 'selected' : ''}>Male</option>
-            <option value="F" ${param.searchGender == 'F' ? 'selected' : ''}>Female</option>
+            <option value="Paid" ${param.searchStatus == 'Paid' ? 'selected' : ''}>Paid</option>
+            <option value="Pending" ${param.searchStatus == 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="Cancelled" ${param.searchStatus == 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            <option value="Failed" ${param.searchStatus == 'Failed' ? 'selected' : ''}>Failed</option>
           </select>
         </td>
       </tr>
       <tr>
+        <td>Created At (from)</td>
+        <td><input type="date" class="form-control" name="searchCreatedAtFrom" value="${param.searchCreatedAtFrom}"></td>
+      </tr>
+      <tr>
+        <td>Created At (to)</td>
+        <td><input type="date" class="form-control" name="searchCreatedAtTo" value="${param.searchCreatedAtTo}"></td>
+      </tr>
+      <tr>
         <td colspan="2" class="text-center">
           <button type="submit" class="btn btn-primary me-2"><i class="fas fa-search me-2"></i>Search</button>
-          <a href="${pageContext.request.contextPath}/admin/managePatients?action=list" class="btn btn-secondary">
+          <a href="${pageContext.request.contextPath}/admin/payments?action=list" class="btn btn-secondary"> <%-- NEW: Điều chỉnh reset URL --%>
             <i class="fas fa-undo me-2"></i>Reset
           </a>
         </td>
       </tr>
     </table>
   </form>
-  <!-- End Search Form -->
-
   <div class="table-container">
     <table class="table table-bordered mb-0">
       <thead>
       <tr>
         <th>ID</th>
-        <th>Avatar</th>
-        <th>Full Name</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Gender</th>
-        <th>Actions</th>
+        <th>Appointment ID</th>
+        <th>Amount</th>
+        <th>Method</th>
+        <th>Status</th>
+        <th>Pay Content</th>
+        <th>Created At</th>
+        <th>Paid At</th>
+        <th>Actions</th> <%-- Giữ lại cột Actions cho mục đích xem chi tiết nếu cần --%>
       </tr>
       </thead>
       <tbody>
-      <c:forEach var="user" items="${users}">
+      <c:forEach var="payment" items="${payments}"> <%-- NEW: Đổi var và items --%>
         <tr>
-          <td>${user.patientId}</td>
+          <td>${payment.paymentId}</td>
+          <td>${payment.appointmentId}</td>
+          <td><fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="VND" maxFractionDigits="0"/></td> <%-- NEW: Định dạng tiền tệ --%>
+          <td>${payment.method}</td>
           <td>
-            <c:if test="${not empty user.patientAvaUrl}">
-              <img src="${pageContext.request.contextPath}/${user.patientAvaUrl}" alt="Patient Avatar"/>
-            </c:if>
-          </td>
-          <td>${user.fullName}</td>
-          <td>${user.username}</td>
-          <td>${user.email}</td>
-          <td>${user.phone}</td>
-          <td>
-            <c:choose>
-              <c:when test="${user.gender == 'M'}"><span class="badge bg-primary">Male</span></c:when>
-              <c:when test="${user.gender == 'F'}"><span class="badge bg-pink">Female</span></c:when>
-              <c:otherwise><span class="badge bg-secondary">N/A</span></c:otherwise>
+            <c:choose> <%-- NEW: Hiển thị badge theo trạng thái thanh toán --%>
+              <c:when test="${payment.status == 'Paid'}"><span class="badge bg-success">Paid</span></c:when>
+              <c:when test="${payment.status == 'Pending'}"><span class="badge bg-warning text-dark">Pending</span></c:when>
+              <c:when test="${payment.status == 'Cancelled'}"><span class="badge bg-danger">Cancelled</span></c:when>
+              <c:when test="${payment.status == 'Failed'}"><span class="badge bg-danger">Failed</span></c:when>
+              <c:otherwise><span class="badge bg-info">Unknown</span></c:otherwise>
             </c:choose>
           </td>
+          <td class="content-value">${payment.payContent}</td>
+          <td><fmt:formatDate value="${payment.createdAt}" pattern="dd-MM-yyyy HH:mm:ss"/></td> <%-- NEW: Định dạng ngày/giờ --%>
           <td>
-            <a href="${pageContext.request.contextPath}/admin/managePatients?action=edit&id=${user.patientId}"
-               class="btn btn-primary btn-action"><i class="fas fa-edit me-1"></i>Edit</a>
-            <a href="${pageContext.request.contextPath}/admin/managePatients?action=delete&id=${user.patientId}"
-               class="btn btn-danger btn-action" onclick="return confirm('Are you sure?')"><i class="fas fa-trash me-1"></i>Delete</a>
+            <c:if test="${not empty payment.paidAt}">
+              <fmt:formatDate value="${payment.paidAt}" pattern="dd-MM-yyyy HH:mm:ss"/>
+            </c:if>
+            <c:if test="${empty payment.paidAt}">
+              N/A
+            </c:if>
+          </td>
+          <td>
+              <%-- NEW: Thêm nút xem chi tiết nếu cần. Các nút edit/delete thường không áp dụng cho lịch sử thanh toán --%>
+            <a href="${pageContext.request.contextPath}/admin/payments?action=view&id=${payment.paymentId}"
+               class="btn btn-info btn-action"><i class="fas fa-info-circle me-1"></i>View</a>
           </td>
         </tr>
       </c:forEach>
-      <c:if test="${empty users}">
+      <c:if test="${empty payments}"> <%-- NEW: Đổi items --%>
         <tr>
-          <td colspan="8" class="text-center">No patients found.</td>
+          <td colspan="9" class="text-center">No payment history found.</td>
         </tr>
       </c:if>
       </tbody>
     </table>
   </div>
 
-  <!-- Pagination controls -->
   <c:if test="${totalPages > 1}">
     <nav>
       <ul class="pagination">

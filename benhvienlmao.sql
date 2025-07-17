@@ -35,11 +35,11 @@ GO
 -- RoleSystemItems (maps roles to system items for access control)
 CREATE TABLE RoleSystemItems
 (
-    id         INT PRIMARY KEY IDENTITY (1,1),
-    role_id    INT,
-    item_id    INT,
+    id      INT PRIMARY KEY IDENTITY (1,1),
+    role_id INT,
+    item_id INT,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id),
-    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id)
+    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id) ON DELETE CASCADE
 );
 GO
 
@@ -57,7 +57,7 @@ CREATE TABLE Employees
     role_id           INT                 NOT NULL,
     employee_ava_url  NVARCHAR(255),
     created_at        DATETIME DEFAULT GETDATE(),
-    acc_status            BIT DEFAULT 1,
+    acc_status        BIT DEFAULT 1,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id)
 );
 GO
@@ -100,71 +100,74 @@ CREATE TABLE Patients
     patient_ava_url   NVARCHAR(255),
     insurance_number  VARCHAR(100),
     emergency_contact NVARCHAR(255),
-	created_at        DATETIME DEFAULT GETDATE(),
+    created_at        DATETIME DEFAULT GETDATE(),
     acc_status        BIT DEFAULT 1
 );
 GO
 
 -- Category
-CREATE TABLE Category (
-    category_id TINYINT PRIMARY KEY IDENTITY(1,1),
+CREATE TABLE Category
+(
+    category_id   TINYINT PRIMARY KEY IDENTITY (1,1),
     category_name NVARCHAR(100) NOT NULL
 );
 GO
 
 -- Blog
-CREATE TABLE Blog (
-    blog_id         INT PRIMARY KEY IDENTITY(1,1),
-    blog_name       NVARCHAR(255) NOT NULL,
+CREATE TABLE Blog
+(
+    blog_id          INT PRIMARY KEY IDENTITY (1,1),
+    blog_name        NVARCHAR(255) NOT NULL,
     blog_sub_content NVARCHAR(500),
-    content         NVARCHAR(MAX) NOT NULL,
-    blog_img        NVARCHAR(500),
-    author          NVARCHAR(255),
-    date            DATETIME DEFAULT GETDATE(),
-    category_id     TINYINT,
-    selected_banner BIT DEFAULT 0,
-    FOREIGN KEY (category_id) REFERENCES Category(category_id)
+    content          NVARCHAR(MAX) NOT NULL,
+    blog_img         NVARCHAR(500),
+    author           NVARCHAR(255),
+    date             DATETIME DEFAULT GETDATE(),
+    category_id      TINYINT,
+    selected_banner  BIT      DEFAULT 0,
+    FOREIGN KEY (category_id) REFERENCES Category (category_id)
 );
 GO
 
 -- Comment
-CREATE TABLE Comment (
-    comment_id INT PRIMARY KEY IDENTITY(1,1),
-    blog_id    INT NOT NULL,
-    patient_id INT NOT NULL,
+CREATE TABLE Comment
+(
+    comment_id INT PRIMARY KEY IDENTITY (1,1),
+    blog_id    INT           NOT NULL,
+    patient_id INT           NOT NULL,
     content    NVARCHAR(MAX) NOT NULL,
     date       DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (blog_id) REFERENCES Blog(blog_id),
-    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
+    FOREIGN KEY (blog_id) REFERENCES Blog (blog_id),
+    FOREIGN KEY (patient_id) REFERENCES Patients (patient_id)
 );
 GO
 
 -- AppointmentType
 CREATE TABLE AppointmentType
 (
-    appointmenttype_id INT PRIMARY KEY IDENTITY(1,1),
-    type_name NVARCHAR(100) NOT NULL,
-    description NVARCHAR(255),
-    price DECIMAL(12, 2) NOT NULL
+    appointmenttype_id INT PRIMARY KEY IDENTITY (1,1),
+    type_name          NVARCHAR(100)  NOT NULL,
+    description        NVARCHAR(255),
+    price              DECIMAL(12, 2) NOT NULL
 );
 GO
 
 -- Appointments
 CREATE TABLE Appointments
 (
-    appointment_id INT PRIMARY KEY IDENTITY(1,1),
-    patient_id INT,
-    doctor_id INT,
-    appointmenttype_id INT NOT NULL,
-    appointment_date DATE,
-    time_slot VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening')),
-    requires_specialist BIT DEFAULT 0,
-    status VARCHAR(50) CHECK (status IN ('Unpay', 'Pending', 'Confirmed', 'Completed', 'Cancelled')),
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME,
-    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
-    FOREIGN KEY (doctor_id) REFERENCES Employees(employee_id),
-    FOREIGN KEY (appointmenttype_id) REFERENCES AppointmentType(appointmenttype_id)
+    appointment_id      INT PRIMARY KEY IDENTITY (1,1),
+    patient_id          INT,
+    doctor_id           INT,
+    appointmenttype_id  INT NOT NULL,
+    appointment_date    DATE,
+    time_slot           VARCHAR(20) CHECK (time_slot IN ('Morning', 'Afternoon', 'Evening')),
+    requires_specialist BIT      DEFAULT 0,
+    status              VARCHAR(50) CHECK (status IN ('Unpay', 'Pending', 'Confirmed', 'Completed', 'Cancelled')),
+    created_at          DATETIME DEFAULT GETDATE(),
+    updated_at          DATETIME,
+    FOREIGN KEY (patient_id) REFERENCES Patients (patient_id),
+    FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
+    FOREIGN KEY (appointmenttype_id) REFERENCES AppointmentType (appointmenttype_id)
 );
 GO
 
@@ -219,17 +222,27 @@ GO
 -- Payments
 CREATE TABLE Payments
 (
-    payment_id     INT PRIMARY KEY IDENTITY (1,1),
-    appointment_id INT,
-    amount         DECIMAL(10, 2),
-    method         VARCHAR(50),
-    status         VARCHAR(50) CHECK (status IN ('Pending', 'Paid', 'Refunded', 'Cancel')),
-    pay_content    VARCHAR(255),
-    created_at     DATETIME DEFAULT GETDATE(),
-    paid_at        DATETIME,
+    payment_id           INT PRIMARY KEY IDENTITY (1,1),
+    appointment_id       INT,                               -- Có thể NULL nếu payment chưa liên kết với appointment
+    amount               DECIMAL(18, 2) NOT NULL,           -- Sử dụng DECIMAL cho tiền tệ
+    method               NVARCHAR(50),                      -- Phương thức thanh toán (e.g., "QR_CODE")
+    status               NVARCHAR(50) NOT NULL,             -- Trạng thái thanh toán (e.g., "PENDING", "PAID")
+    pay_content          NVARCHAR(MAX),                     -- Nội dung thanh toán/mô tả
+    payos_transaction_id VARCHAR(255) UNIQUE,               -- ID giao dịch từ PayOS (để update)
+    payos_order_code     VARCHAR(255) UNIQUE,               -- Order code từ PayOS (có thể là mã đặt lịch)
+    payos_signature      NVARCHAR(MAX),                     -- Chữ ký từ PayOS
+    raw_response_json    NVARCHAR(MAX),                     -- Lưu trữ toàn bộ JSON response gốc
+    created_at           DATETIME2 DEFAULT GETDATE(),       -- Thời gian tạo giao dịch
+    paid_at              DATETIME2,                         -- Thời gian thanh toán thành công
+
+    -- Khóa ngoại tới Appointments (nếu appointment_id có thể NULL, cần kiểm tra lại logic nghiệp vụ)
     FOREIGN KEY (appointment_id) REFERENCES Appointments (appointment_id)
 );
 GO
+-- Có thể cần thêm index cho các cột tìm kiếm để cải thiện hiệu suất
+CREATE INDEX IX_Payments_AppointmentId ON Payments (appointment_id);
+CREATE INDEX IX_Payments_Status ON Payments (status);
+CREATE INDEX IX_Payments_CreatedAt ON Payments (created_at);
 
 -- Doctor Shifts
 CREATE TABLE DoctorShifts
@@ -245,7 +258,6 @@ CREATE TABLE DoctorShifts
     FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
     FOREIGN KEY (manager_id) REFERENCES Employees (employee_id)
 );
-
 GO
 
 -- PageContent
@@ -282,7 +294,8 @@ VALUES ('Doctor'),
        ('Receptionist'),
        ('Admin'),
        ('Manager'),
-       ('Patient');
+       ('Patient'),
+	   ('Guest');
 GO
 
 -- Insert sample SystemItems
@@ -297,7 +310,7 @@ VALUES
     ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
     ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
     ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
-    ('Home', 'index.jsp', 1, 'Navigation'),
+    ('Home', 'index', 1, 'Navigation'),
     ('About', 'about.html', 2, 'Navigation'),
     ('Dental Services', 'services.html', 3, 'Navigation'),
     ('Blog', 'blog', 4, 'Navigation'),
@@ -310,12 +323,14 @@ VALUES
     -- Patient-specific navigation items
     ('Appointments', 'appointments', 1, 'Navigation'),
     ('Treatment History', 'treatment/history', 2, 'Navigation'),
-    ('Services', 'services', 3, 'Navigation'),
-    ('Account', 'pactDetails', 4, 'Navigation'),
+    ('Services', 'appointment/list', 3, 'Navigation'),
+    ('Account', '', 4, 'Navigation'),
     ('Logout', 'logout', 5, 'Navigation'),
-    ('My Profile', 'MyProfile', 6, 'Navigation'),
+    ('My Profile', 'MyProfile', 99, 'Navigation'),
     ('Change Password', 'change-password', 7, 'Navigation'),
-    ('Book Appointment', 'book-appointment', 8, 'Navigation');
+    ('Book Appointment', 'book-appointment', 8, 'Navigation'),
+	('Search for service','appointment/list', 4, 'Navigation'),
+	('Manage Payment', 'https://my.payos.vn/', 6, 'Feature');
 GO
 
 -- Insert sample RoleSystemItems
@@ -335,16 +350,24 @@ VALUES
     (3, 18), -- Admin: Admin Home
     (3, 19), -- Admin: Add New Content
     (4, 6),  -- Manager: Approve Doctor Shifts
+	(3, 29), -- Admin: Manage payment history
+	(4, 29), -- Manager: Manage payment history
     -- Patient-specific mappings (role_id = 5 for Patient)
     (5, 13), -- Patient: Blog
     (5, 20), -- Patient: Appointments
     (5, 21), -- Patient: Treatment History
     (5, 22), -- Patient: Services
-    (5, 23), -- Patient: Account
     (5, 24), -- Patient: Logout
     (5, 25), -- Patient: My Profile
     (5, 26), -- Patient: Change Password
-    (5, 27); -- Patient: Book Appointment
+    (5, 27), -- Patient: Book Appointment
+	(5, 28),
+    (5, 23), -- Patient: Account
+	--Guest mapping (role_id = 0 for not login)
+	(6, 13),
+	(6, 22),
+	(6, 27),
+	(6, 28);
 GO
 
 -- Insert sample Patients
@@ -386,22 +409,21 @@ GO
 
 -- Insert dental AppointmentType with 2025 Vietnam market prices
 INSERT INTO AppointmentType (type_name, description, price)
-VALUES 
-    ('Dental Checkup', 'Routine dental examination and consultation', 200000.00),
-    ('Teeth Cleaning', 'Professional scaling and polishing', 800000.00),
-    ('Teeth Whitening', 'Laser or home kit teeth whitening', 3000000.00),
-    ('Composite Filling', 'Filling for small cavities using composite resin', 400000.00),
-    ('Inlay/Onlay Filling', 'Aesthetic filling for larger cavities', 2000000.00),
-    ('Tooth Extraction', 'Simple tooth removal', 900000.00),
-    ('Wisdom Tooth Extraction', 'Surgical removal of wisdom teeth', 3500000.00),
-    ('Root Canal Treatment', 'Treatment for infected tooth roots', 5000000.00),
-    ('Porcelain Veneer', 'Cosmetic veneer for chipped or stained teeth', 8400000.00),
-    ('Zirconia Crown', 'Durable crown for damaged teeth', 7000000.00),
-    ('Single Dental Implant', 'Titanium implant with crown for one tooth', 27500000.00),
-    ('All-on-4 Implants', 'Full-arch restoration with 4 implants per arch', 117600000.00),
-    ('Orthodontic Consultation', 'Consultation for braces or aligners', 1800000.00),
-    ('Traditional Braces', 'Metal braces for teeth alignment', 36000000.00),
-    ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
+VALUES ('Dental Checkup', 'Routine dental examination and consultation', 200000.00),
+       ('Teeth Cleaning', 'Professional scaling and polishing', 800000.00),
+       ('Teeth Whitening', 'Laser or home kit teeth whitening', 3000000.00),
+       ('Composite Filling', 'Filling for small cavities using composite resin', 400000.00),
+       ('Inlay/Onlay Filling', 'Aesthetic filling for larger cavities', 2000000.00),
+       ('Tooth Extraction', 'Simple tooth removal', 900000.00),
+       ('Wisdom Tooth Extraction', 'Surgical removal of wisdom teeth', 3500000.00),
+       ('Root Canal Treatment', 'Treatment for infected tooth roots', 5000000.00),
+       ('Porcelain Veneer', 'Cosmetic veneer for chipped or stained teeth', 8400000.00),
+       ('Zirconia Crown', 'Durable crown for damaged teeth', 7000000.00),
+       ('Single Dental Implant', 'Titanium implant with crown for one tooth', 27500000.00),
+       ('All-on-4 Implants', 'Full-arch restoration with 4 implants per arch', 117600000.00),
+       ('Orthodontic Consultation', 'Consultation for braces or aligners', 1800000.00),
+       ('Traditional Braces', 'Metal braces for teeth alignment', 36000000.00),
+       ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
 -- Insert sample Appointments
@@ -461,51 +483,49 @@ GO
 
 -- Insert sample Category
 INSERT INTO Category (category_name)
-VALUES 
-    ('Khám bệnh'),
-    ('Bệnh lý'),
-    ('Chăm sóc sức khỏe'),
-    ('Phòng ngừa bệnh');
+VALUES ('Khám bệnh'),
+       ('Bệnh lý'),
+       ('Chăm sóc sức khỏe'),
+       ('Phòng ngừa bệnh');
 GO
 
 -- Insert sample Blog
 INSERT INTO Blog (blog_name, blog_sub_content, content, blog_img, author, date, category_id)
-VALUES 
-    (N'Khám bệnh định kỳ', 
-     N'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
-     N'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
-     N'kham-suc-khoe-dinh-ky-la-gi.jpg', 
-     N'TS.BS Lê Văn C', 
-     '2025-06-21 00:00:00.000', 
-     1),
-    (N'Phòng ngừa bệnh tim mạch', 
-     N'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
-     N'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
-     N'phong-ngua-tim-mach.jpg', 
-     N'Nguyễn Thị A', 
-     '2025-06-22 00:00:00.000', 
-     4),
-    (N'Chế độ ăn uống cho bệnh nhân tiểu đường', 
-     N'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
-     N'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
-     N'che-do-dinh-duong-phu-hop.jpg', 
-     N'TS.BS Trần Thị B', 
-     '2025-06-23 00:00:00.000', 
-     2),
-    (N'Điều trị ung thư', 
-     N'Tổng quan về phương pháp điều trị ung thư hiện đại.',
-     N'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
-     N'20201013_tri-ung-thu-1.jpg', 
-     N'Lê Thị C', 
-     '2025-06-24 00:00:00.000', 
-     2),
-    (N'Chăm sóc sức khỏe người cao tuổi', 
-     N'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
-     N'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
-     N'cham-soc-nguoi-gia.jpg', 
-     N'Nguyễn Minh D', 
-     '2025-06-25 00:00:00.000', 
-     3);
+VALUES (N'Khám bệnh định kỳ',
+        N'Khám bệnh định kỳ giúp phát hiện sớm các bệnh lý nguy hiểm.',
+        N'Khám bệnh định kỳ là một phần quan trọng trong việc duy trì sức khỏe. Việc kiểm tra sức khỏe hàng năm giúp phát hiện sớm các bệnh lý như tiểu đường, cao huyết áp, bệnh tim mạch, và ung thư...',
+        N'kham-suc-khoe-dinh-ky-la-gi.jpg',
+        N'TS.BS Lê Văn C',
+        '2025-06-21 00:00:00.000',
+        1),
+       (N'Phòng ngừa bệnh tim mạch',
+        N'Các phương pháp phòng ngừa bệnh tim mạch đơn giản và hiệu quả.',
+        N'Bệnh tim mạch hiện nay đang ngày càng gia tăng. Để phòng ngừa bệnh này, chúng ta cần thực hiện chế độ ăn uống lành mạnh, tập thể dục thường xuyên và kiểm soát huyết áp...',
+        N'phong-ngua-tim-mach.jpg',
+        N'Nguyễn Thị A',
+        '2025-06-22 00:00:00.000',
+        4),
+       (N'Chế độ ăn uống cho bệnh nhân tiểu đường',
+        N'Chế độ ăn uống phù hợp giúp kiểm soát bệnh tiểu đường hiệu quả.',
+        N'Đối với bệnh nhân tiểu đường, chế độ ăn uống rất quan trọng. Việc lựa chọn thực phẩm có chỉ số đường huyết thấp và kiêng các món ăn có nhiều đường là rất cần thiết...',
+        N'che-do-dinh-duong-phu-hop.jpg',
+        N'TS.BS Trần Thị B',
+        '2025-06-23 00:00:00.000',
+        2),
+       (N'Điều trị ung thư',
+        N'Tổng quan về phương pháp điều trị ung thư hiện đại.',
+        N'Ung thư là một trong những bệnh lý nguy hiểm và có thể gây tử vong. Tuy nhiên, các phương pháp điều trị ung thư hiện nay ngày càng phát triển và mang lại nhiều hy vọng cho bệnh nhân...',
+        N'20201013_tri-ung-thu-1.jpg',
+        N'Lê Thị C',
+        '2025-06-24 00:00:00.000',
+        2),
+       (N'Chăm sóc sức khỏe người cao tuổi',
+        N'Những lời khuyên về chăm sóc sức khỏe cho người cao tuổi.',
+        N'Chăm sóc sức khỏe cho người cao tuổi là một công việc cần thiết. Chế độ dinh dưỡng hợp lý, tập thể dục nhẹ nhàng và việc kiểm tra sức khỏe thường xuyên sẽ giúp người cao tuổi sống khỏe mạnh...',
+        N'cham-soc-nguoi-gia.jpg',
+        N'Nguyễn Minh D',
+        '2025-06-25 00:00:00.000',
+        3);
 GO
 
 -- Insert sample Comment

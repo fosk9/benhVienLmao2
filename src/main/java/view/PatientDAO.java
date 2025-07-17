@@ -277,7 +277,6 @@ public class PatientDAO extends DBContext<Patient> {
     }
 
 
-
     @Override
     public List<Patient> select() {
         List<Patient> patients = new ArrayList<>();
@@ -371,7 +370,6 @@ public class PatientDAO extends DBContext<Patient> {
                 .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null) // Sửa: lấy acc_status từ DB
                 .build();
     }
-
 
     private void setPreparedStatementFromPatient(PreparedStatement ps, Patient p) throws SQLException {
         ps.setString(1, p.getUsername());

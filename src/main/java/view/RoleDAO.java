@@ -1,4 +1,3 @@
-// ===== RoleDAO.java (chuẩn hoá theo DBContext mẫu của bạn) =====
 package view;
 
 import model.Role;
