@@ -34,8 +34,6 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
 </head>
 <body>
-<!-- include header in /webapp/header.jsp -->
-<jsp:include page="../header.jsp"/>
 
 <!-- Preloader Start -->
 <div id="preloader-active">
