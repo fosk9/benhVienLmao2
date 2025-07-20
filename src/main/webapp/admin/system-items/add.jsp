@@ -32,17 +32,6 @@
         <option value="Navigation">Navigation</option>
       </select>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Assign Roles</label>
-      <div>
-        <c:forEach var="role" items="${allRoles}">
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="roleIds" id="role${role.roleId}" value="${role.roleId}">
-            <label class="form-check-label" for="role${role.roleId}">${role.roleName}</label>
-          </div>
-        </c:forEach>
-      </div>
-    </div>
     <button type="submit" class="btn btn-success">Add Item</button>
     <a href="${pageContext.request.contextPath}/admin/system-items?action=list" class="btn btn-secondary">Cancel</a>
   </form>

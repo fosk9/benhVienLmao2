@@ -4,11 +4,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorShift;
+import model.Employee;
+import util.HistoryLogger;
 import view.DoctorShiftDAO;
 import view.AppointmentDAO;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +19,6 @@ import java.util.logging.Logger;
 public class DoctorShiftFormModalServlet extends HttpServlet {
     private final DoctorShiftDAO shiftDAO = new DoctorShiftDAO();
     private final AppointmentDAO appointmentDAO = new AppointmentDAO();
-
     private static final Logger LOGGER = Logger.getLogger(DoctorShiftFormModalServlet.class.getName());
 
     @Override
@@ -72,6 +74,13 @@ public class DoctorShiftFormModalServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String uri = req.getRequestURI();
         try {
+            HttpSession session = req.getSession();
+            Employee manager = (Employee) session.getAttribute("account");
+            if (manager == null || manager.getRoleId() != 4) {
+                resp.sendRedirect("login.jsp");
+                return;
+            }
+
             if (uri.endsWith("/delete-doctor-shift")) {
                 int shiftId = Integer.parseInt(req.getParameter("shiftId"));
                 DoctorShift shift = shiftDAO.select(shiftId);
@@ -97,6 +106,16 @@ public class DoctorShiftFormModalServlet extends HttpServlet {
                     shiftDAO.delete(shiftId);
                     LOGGER.info("[DELETE] Deleted shiftId=" + shiftId + " for doctorId=" + shift.getDoctorId());
                     redirectUrl += "&success=Ca trực đã được xoá thành công.";
+
+                    // ✅ Ghi log lịch sử xóa
+                    HistoryLogger.log(
+                            manager.getEmployeeId(),
+                            manager.getFullName(),
+                            shift.getDoctorId(),
+                            "Doctor#" + shift.getDoctorId(),
+                            "DoctorShifts",
+                            "Delete Shift [" + shift.getTimeSlot() + " " + shift.getShiftDate() + "]"
+                    );
                 }
 
                 resp.sendRedirect(redirectUrl);
@@ -105,7 +124,7 @@ public class DoctorShiftFormModalServlet extends HttpServlet {
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "[ERROR] While processing POST " + uri, e);
-            resp.sendError(400, "Lỗi khi xoá ca trực");
+            resp.sendError(400, "Lỗi xử lý dữ liệu ca trực");
         }
     }
 }

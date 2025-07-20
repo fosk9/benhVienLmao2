@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorShift;
 import model.DoctorShiftView;
+import model.Employee;
+import util.HistoryLogger;
 import view.DoctorShiftDAO;
 
 import java.io.IOException;
@@ -75,61 +77,4 @@ public class AssignDoctorScheduleServlet extends HttpServlet {
         request.getRequestDispatcher("/Manager/assign-doctor-schedule.jsp").forward(request, response);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String action = request.getParameter("action");
-
-        try {
-            HttpSession session = request.getSession();
-            Integer managerId = (Integer) session.getAttribute("managerId");
-            if (managerId == null) managerId = 1;
-
-            if ("create".equals(action) || "update".equals(action)) {
-                int doctorId = Integer.parseInt(request.getParameter("doctorId"));
-                Date shiftDate = Date.valueOf(request.getParameter("shiftDate"));
-                String timeSlot = request.getParameter("timeSlot");
-                String status = request.getParameter("status");
-
-                DoctorShift shift = DoctorShift.builder()
-                        .doctorId(doctorId)
-                        .shiftDate(shiftDate)
-                        .timeSlot(timeSlot)
-                        .status(status)
-                        .managerId(managerId)
-                        .requestedAt(new Timestamp(System.currentTimeMillis()))
-                        .approvedAt(new Timestamp(System.currentTimeMillis()))
-                        .build();
-
-                if ("create".equals(action)) {
-                    if (dao.existsShift(doctorId, shiftDate, timeSlot)) {
-                        session.setAttribute("error", "Lịch trực đã tồn tại cho bác sĩ này.");
-                        logger.warning("Duplicate shift for doctorId=" + doctorId);
-                    } else {
-                        dao.insert(shift);
-                        session.setAttribute("success", "Tạo lịch trực thành công.");
-                        logger.info("Created shift for doctorId=" + doctorId);
-                    }
-                } else {
-                    int shiftId = Integer.parseInt(request.getParameter("shiftId"));
-                    shift.setShiftId(shiftId);
-                    dao.update(shift);
-                    session.setAttribute("success", "Cập nhật lịch trực thành công.");
-                    logger.info("Updated shiftId=" + shiftId);
-                }
-
-            } else if ("delete".equals(action)) {
-                int shiftId = Integer.parseInt(request.getParameter("shiftId"));
-                dao.delete(shiftId);
-                request.getSession().setAttribute("success", "Xóa lịch trực thành công.");
-                logger.info("Deleted shiftId=" + shiftId);
-            }
-
-        } catch (Exception e) {
-            logger.severe("Error processing doctor shift: " + e.getMessage());
-            request.getSession().setAttribute("error", "Lỗi xử lý ca trực: " + e.getMessage());
-        }
-
-        response.sendRedirect("assign-doctor-schedule");
-    }
 }

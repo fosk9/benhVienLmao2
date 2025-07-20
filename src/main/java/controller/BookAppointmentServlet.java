@@ -12,8 +12,6 @@ import view.AppointmentDAO;
 import view.AppointmentTypeDAO;
 import view.PatientDAO;
 import model.AppointmentType;
-import model.SystemItem;
-import util.NavigationUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -85,13 +83,10 @@ public class BookAppointmentServlet extends HttpServlet {
             request.setAttribute("formData", session.getAttribute("appointmentFormData"));
         }
 
-        // Fetch navigation items for guest role
-        List<SystemItem> navItems = NavigationUtil.getNavigationItemsForRole(6, request); // Guest role
-        request.setAttribute("systemItems", navItems);
-
         request.getRequestDispatcher("/Pact/book-appointment.jsp").forward(request, response);
     }
 
+    // doPost remains unchanged
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
@@ -232,4 +227,3 @@ public class BookAppointmentServlet extends HttpServlet {
         }
     }
 }
-

@@ -11,6 +11,33 @@ import java.util.*;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
 
+    public DoctorShift getById(int shiftId) {
+        String sql = "SELECT * FROM DoctorShifts WHERE shift_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, shiftId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return DoctorShift.builder()
+                            .shiftId(rs.getInt("shift_id"))
+                            .doctorId(rs.getInt("doctor_id"))
+                            .shiftDate(rs.getDate("shift_date"))
+                            .timeSlot(rs.getString("time_slot"))
+                            .status(rs.getString("status"))
+                            .managerId(rs.getInt("manager_id"))
+                            .requestedAt(rs.getTimestamp("requested_at"))
+                            .approvedAt(rs.getTimestamp("approved_at"))
+                            .build();
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean hasAppointmentsForDoctorInShift(int doctorId, Date shiftDate, String timeSlot) {
         String sql = """
             SELECT 1 FROM Appointments

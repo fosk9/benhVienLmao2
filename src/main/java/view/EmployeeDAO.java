@@ -8,6 +8,105 @@ import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
 
+    public int countTotalEmployees() {
+        String sql = "SELECT COUNT(*) FROM Employees";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countActiveDoctorsToday() {
+        String sql = "SELECT COUNT(DISTINCT doctor_id) FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countAppointmentsToday() {
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE CAST(date AS DATE) = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public List<Employee> searchByNameAndRole(String name, int roleId, int page, int recordsPerPage) {
+        List<Employee> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Employees WHERE 1=1 ");
+
+        if (name != null && !name.trim().isEmpty()) {
+            sql.append("AND full_name LIKE ? ");
+        }
+        if (roleId > 0) {
+            sql.append("AND role_id = ? ");
+        }
+        sql.append("ORDER BY employee_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (name != null && !name.trim().isEmpty()) {
+                ps.setString(idx++, "%" + name.trim() + "%");
+            }
+            if (roleId > 0) {
+                ps.setInt(idx++, roleId);
+            }
+            ps.setInt(idx++, (page - 1) * recordsPerPage);
+            ps.setInt(idx, recordsPerPage);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToEmployee(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countSearchByNameAndRole(String name, int roleId) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Employees WHERE 1=1 ");
+        if (name != null && !name.trim().isEmpty()) {
+            sql.append("AND full_name LIKE ? ");
+        }
+        if (roleId > 0) {
+            sql.append("AND role_id = ? ");
+        }
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (name != null && !name.trim().isEmpty()) {
+                ps.setString(idx++, "%" + name.trim() + "%");
+            }
+            if (roleId > 0) {
+                ps.setInt(idx++, roleId);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public List<Employee> searchFilterSortDoctors(String search, String gender,
                                                   String sortBy, String sortDir,
                                                   int page, int recordsPerPage) {
@@ -188,6 +287,76 @@ public class EmployeeDAO extends DBContext<Employee> {
         }
         return null;
     }
+
+    public boolean isUsernameTaken(String username) {
+        String sql = "SELECT 1 FROM Employees WHERE username = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEmailTaken(String email) {
+        String sql = "SELECT 1 FROM Employees WHERE email = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int insertReturnId(Employee employee) {
+        String sql = "INSERT INTO Employees " +
+                "(username, [password_hash], full_name, dob, gender, email, phone, role_id, employee_ava_url, created_at, acc_status) " +
+                "OUTPUT INSERTED.employee_id " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, employee.getUsername());
+            ps.setString(2, employee.getPasswordHash());
+            ps.setString(3, employee.getFullName());
+
+            if (employee.getDob() != null)
+                ps.setDate(4, employee.getDob());
+            else
+                ps.setNull(4, Types.DATE);
+
+            ps.setString(5, employee.getGender());
+            ps.setString(6, employee.getEmail());
+            ps.setString(7, employee.getPhone());
+            ps.setInt(8, employee.getRoleId());
+            ps.setString(9, employee.getEmployeeAvaUrl());
+
+            // created_at dùng timestamp hiện tại
+            ps.setTimestamp(10, new java.sql.Timestamp(System.currentTimeMillis()));
+
+            if (employee.getAccStatus() != null)
+                ps.setInt(11, employee.getAccStatus());
+            else
+                ps.setNull(11, Types.INTEGER);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
 
     @Override
     public int insert(Employee e) {

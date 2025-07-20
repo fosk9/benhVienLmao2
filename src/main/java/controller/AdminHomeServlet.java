@@ -56,16 +56,9 @@ public class AdminHomeServlet extends HttpServlet {
             LOGGER.severe("Error fetching admin features: " + e.getMessage());
         }
 
-        // Determine the current page
-        String currentPage = request.getParameter("page");
-        if (currentPage == null && !adminFeatures.isEmpty()) {
-            currentPage = adminFeatures.get(0).getItemUrl();
-        }
-
         // Set attributes
         request.setAttribute("adminFeatures", adminFeatures);
         request.setAttribute("fullName", fullName);
-        request.setAttribute("currentPage", currentPage);
 
         // Forward to admin-home.jsp
         LOGGER.info("Forwarding to admin-home.jsp");
