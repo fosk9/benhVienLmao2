@@ -208,45 +208,46 @@
   </style>
 </head>
 <body>
-<header>
-  <div class="header-area">
-    <div class="main-header header-sticky">
-      <div class="container-fluid">
-        <div class="row align-items-center">
-          <div class="col-xl-2 col-lg-2 col-md-1">
-            <div class="logo">
-              <a href="<c:url value='/pactHome'/>">
-                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="Dental Care Logo" class="img-fluid img-optimized">
-              </a>
-            </div>
-          </div>
-          <div class="col-xl-10 col-lg-10 col-md-10">
-            <div class="menu-main d-flex align-items-center justify-content-end">
-              <div class="main-menu f-right d-none d-lg-block">
-                <nav>
-                  <ul id="navigation">
-                    <li><a href="<c:url value='/pactHome'/>">Home</a></li>
-                    <c:if test="${sessionScope.patientId != null}">
-                      <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>
-                      <li><a href="<c:url value='/logout'/>">Logout</a></li>
-                    </c:if>
-                    <c:if test="${sessionScope.patientId == null}">
-                      <li><a href="<c:url value='/login'/>">Login</a></li>
-                      <li><a href="<c:url value='/register'/>">Register</a></li>
-                    </c:if>
-                  </ul>
-                </nav>
-              </div>
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="mobile_menu d-block d-lg-none"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
+<jsp:include page="/Pact/header.jsp"/>
+<%--<header>--%>
+<%--  <div class="header-area">--%>
+<%--    <div class="main-header header-sticky">--%>
+<%--      <div class="container-fluid">--%>
+<%--        <div class="row align-items-center">--%>
+<%--          <div class="col-xl-2 col-lg-2 col-md-1">--%>
+<%--            <div class="logo">--%>
+<%--              <a href="<c:url value='/pactHome'/>">--%>
+<%--                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="Dental Care Logo" class="img-fluid img-optimized">--%>
+<%--              </a>--%>
+<%--            </div>--%>
+<%--          </div>--%>
+<%--          <div class="col-xl-10 col-lg-10 col-md-10">--%>
+<%--            <div class="menu-main d-flex align-items-center justify-content-end">--%>
+<%--              <div class="main-menu f-right d-none d-lg-block">--%>
+<%--                <nav>--%>
+<%--                  <ul id="navigation">--%>
+<%--                    <li><a href="<c:url value='/pactHome'/>">Home</a></li>--%>
+<%--                    <c:if test="${sessionScope.patientId != null}">--%>
+<%--                      <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>--%>
+<%--                      <li><a href="<c:url value='/logout'/>">Logout</a></li>--%>
+<%--                    </c:if>--%>
+<%--                    <c:if test="${sessionScope.patientId == null}">--%>
+<%--                      <li><a href="<c:url value='/login'/>">Login</a></li>--%>
+<%--                      <li><a href="<c:url value='/register'/>">Register</a></li>--%>
+<%--                    </c:if>--%>
+<%--                  </ul>--%>
+<%--                </nav>--%>
+<%--              </div>--%>
+<%--            </div>--%>
+<%--          </div>--%>
+<%--          <div class="col-12">--%>
+<%--            <div class="mobile_menu d-block d-lg-none"></div>--%>
+<%--          </div>--%>
+<%--        </div>--%>
+<%--      </div>--%>
+<%--    </div>--%>
+<%--  </div>--%>
+<%--</header>--%>
 <main>
   <div class="container mt-5">
     <h2>Book Appointment</h2>

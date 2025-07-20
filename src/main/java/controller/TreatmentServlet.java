@@ -1,6 +1,7 @@
 package controller;
 
 import model.Treatment;
+import util.HeaderController;
 import view.TreatmentDAO;
 
 import jakarta.servlet.ServletException;
@@ -19,6 +20,9 @@ public class TreatmentServlet extends HttpServlet {
         String appointmentIdStr = request.getParameter("appointmentId");
         String treatmentDate = request.getParameter("treatmentDate");
         String treatmentType = request.getParameter("treatmentType");
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
         TreatmentDAO dao = new TreatmentDAO();
         List<Treatment> treatments = null;
         try {

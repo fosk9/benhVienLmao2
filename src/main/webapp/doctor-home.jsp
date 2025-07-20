@@ -48,7 +48,7 @@
 </head>
 <body>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="doctor-header.jsp"/>
 
 <c:set var="page" value="${param.page != null ? param.page : 1}" />
 <c:set var="pageSize" value="5" />

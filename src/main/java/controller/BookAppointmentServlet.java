@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Appointment;
 import model.Patient;
+import util.HeaderController;
 import view.AppointmentDAO;
 import view.AppointmentTypeDAO;
 import view.PatientDAO;
@@ -50,6 +51,9 @@ public class BookAppointmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
         List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
         if (appointmentTypes.isEmpty()) {
             LOGGER.severe("No appointment types available");
             request.setAttribute("errorMsg", "No appointment types available. Please contact support.");

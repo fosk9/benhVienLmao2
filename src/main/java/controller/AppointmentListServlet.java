@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.HeaderController;
 import view.AppointmentTypeDAO;
 import model.AppointmentType;
 
@@ -34,6 +35,10 @@ public class AppointmentListServlet extends HttpServlet {
 
             // Set appointment types as request attribute
             request.setAttribute("appointmentTypes", appointmentTypes);
+
+            // Set navigation items for the header
+            HeaderController headerController = new HeaderController();
+            request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
 
             // Forward to appointment-list.jsp
             request.getRequestDispatcher("/Pact/appointment-list.jsp").forward(request, response);
