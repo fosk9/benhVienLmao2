@@ -2,6 +2,7 @@ package controller;
 
 import model.Appointment;
 import model.Employee;
+import util.HeaderController;
 import view.AppointmentDAO;
 
 import jakarta.servlet.ServletException;
@@ -14,7 +15,9 @@ public class DoctorViewDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+// Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
         HttpSession session = request.getSession(false);
         Object acc = (session != null) ? session.getAttribute("account") : null;
 

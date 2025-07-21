@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorShift;
+import util.HeaderController;
 import view.DoctorShiftDAO;
 import util.ScheduleUtils;
 
@@ -18,6 +19,10 @@ public class DoctorScheduleViewServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        req.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
+
         // Nhận tham số
         String doctorIdParam = req.getParameter("doctorId");
         String startParam = req.getParameter("startDate");

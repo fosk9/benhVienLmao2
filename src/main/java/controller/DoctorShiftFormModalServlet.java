@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorShift;
 import model.Employee;
+import util.HeaderController;
 import util.HistoryLogger;
 import view.DoctorShiftDAO;
 import view.AppointmentDAO;
@@ -24,6 +25,9 @@ public class DoctorShiftFormModalServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        req.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
         try {
             if (uri.endsWith("/add-doctor-shift-modal")) {
                 int doctorId = Integer.parseInt(req.getParameter("doctorId"));

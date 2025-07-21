@@ -2,6 +2,7 @@ package controller;
 
 import model.Appointment;
 import model.Employee;
+import util.HeaderController;
 import view.AppointmentDAO;
 
 import jakarta.servlet.ServletException;
@@ -20,6 +21,10 @@ public class DoctorHomeServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         Object acc = (session != null) ? session.getAttribute("account") : null;
+
+        // Set up the header navigation items
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
 

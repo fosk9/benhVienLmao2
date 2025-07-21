@@ -47,7 +47,6 @@
     </style>
 </head>
 <body>
-
 <jsp:include page="doctor-header.jsp"/>
 
 <c:set var="page" value="${param.page != null ? param.page : 1}" />

@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Employee;
+import util.HeaderController;
 import view.AppointmentDAO;
 
 import java.io.IOException;
@@ -14,6 +15,10 @@ public class DoctorChangeStatusServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
 
         HttpSession session = request.getSession(false); // không tạo mới nếu chưa có
         Object acc = (session != null) ? session.getAttribute("account") : null;
