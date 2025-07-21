@@ -5,9 +5,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Blog;
 import model.Category;
+import model.Comment;
 import model.Employee;
 import util.HistoryLogger;
 import view.BlogDAO;
+import view.CommentDAO;
 
 import java.io.IOException;
 import java.util.List;
@@ -140,7 +142,7 @@ public class BlogDashboardServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi tải dữ liệu.");
-            request.getRequestDispatcher("/Manager/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
     }
 

@@ -114,31 +114,6 @@
             </div>
           </div>
         </div>
-
-        <div class="stat-card">
-          <div class="stat-card-content">
-            <div class="stat-info">
-              <h3 class="stat-green"></h3>
-              <p>Published</p>
-            </div>
-            <div class="stat-icon stat-green">
-              <i class="fas fa-eye"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card-content">
-            <div class="stat-info">
-              <h3 class="stat-yellow"></h3>
-              <p>Draft</p>
-            </div>
-            <div class="stat-icon stat-yellow">
-              <i class="fas fa-edit"></i>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <!-- Filter Section -->
@@ -165,13 +140,10 @@
                 </c:forEach>
               </select>
             </div>
-            <div class="form-group">
-              <label>Status</label>
-              <select class="form-control" id="statusFilter" disabled>
-                <option value="">All Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-              </select>
+            <div class="filter-button-row">
+              <button type="submit" class="btn-hospital btn-primary btn-filter" style="margin-bottom: 27px">
+                <i class="fas fa-filter mr-2"></i>Filter
+              </button>
             </div>
           </div>
         </form>
@@ -251,6 +223,9 @@
     </div>
   </div>
 </div>
+
+
+
 
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

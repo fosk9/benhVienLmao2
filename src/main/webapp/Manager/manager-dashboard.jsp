@@ -66,7 +66,8 @@
               </a>
             </li>
             <li>
-              <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link">
+              <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-linkStaff Overview (0)
+">
                 <i class="fas fa-podcast"></i>
                 <span>Blog Dashboard</span>
               </a>
@@ -180,7 +181,7 @@
           <!-- Staff Management Table -->
           <div class="hospital-table">
             <div class="table-header">
-              <h3>Staff Overview (<span id="staffCount">${totalStaff}</span>)</h3>
+              <h3>Staff Overview (${totalStaff})</h3>
               <a href="${pageContext.request.contextPath}/manager/add-staff" class="btn-hospital btn-success btn-sm">
                 <i class="fas fa-user-plus mr-1"></i>Add Staff
               </a>
@@ -264,12 +265,9 @@
                           <a href="edit-doctor?id=${e.employee.employeeId}" class="btn-hospital btn-sm" title="Edit">
                             <i class="fas fa-edit"></i>
                           </a>
-                          <a href="view-doctor-schedule?id=${e.employee.employeeId}" class="btn-hospital btn-sm" title="Schedule">
+                          <a href="view-doctor-schedule?doctorId=${e.employee.employeeId}" class="btn-hospital btn-sm" title="Schedule">
                             <i class="fas fa-calendar"></i>
                           </a>
-                          <button type="button" class="btn-hospital btn-sm text-danger" title="Deactivate">
-                            <i class="fas fa-user-slash"></i>
-                          </button>
                         </div>
                       </td>
                     </tr>

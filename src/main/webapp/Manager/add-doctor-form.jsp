@@ -65,6 +65,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link">
+                        <i class="fas fa-podcast"></i>
+                        <span>Blog Dashboard</span>
+                    </a>
+                </li>
+                <li>
                     <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link">
                         <i class="fas fa-history"></i>
                         <span>Change History</span>
