@@ -10,6 +10,34 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
+    // 2. Đếm số bác sĩ đang có ca trực hôm nay
+    public int countActiveDoctorsToday() {
+        String sql = "SELECT COUNT(DISTINCT doctor_id) FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // 5. Lấy danh sách bác sĩ có ca trực hôm nay (cho phần Staff Overview)
+    public List<Integer> getDoctorIdsWithShiftToday() {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT doctor_id FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(rs.getInt("doctor_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     public DoctorShift getById(int shiftId) {
         String sql = "SELECT * FROM DoctorShifts WHERE shift_id = ?";

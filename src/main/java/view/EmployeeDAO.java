@@ -1,12 +1,286 @@
 package view;
 
 import model.Employee;
+import model.EmployeeWithStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
+
+    public List<EmployeeWithStatus> getEmployeesWithStatus(String keyword, String statusFilter, int offset, int limit) {
+        List<EmployeeWithStatus> list = new ArrayList<>();
+
+        String sql = """
+        SELECT e.*,
+               CASE 
+                   WHEN e.acc_status != 1 THEN 'Inactive'
+                   WHEN ds.doctor_id IS NOT NULL THEN 'Working'
+                   ELSE 'OnLeave'
+               END AS status_today
+        FROM Employees e
+        LEFT JOIN (
+            SELECT DISTINCT doctor_id
+            FROM DoctorShifts
+            WHERE shift_date = CAST(GETDATE() AS DATE)
+        ) ds ON e.employee_id = ds.doctor_id    
+        WHERE e.role_id IN (1, 2) AND (? IS NULL OR e.full_name LIKE ?)
+    """;
+
+        if (statusFilter != null && !statusFilter.equalsIgnoreCase("All") && !statusFilter.isBlank()) {
+            sql += " AND CASE WHEN e.acc_status != 1 THEN 'Inactive' WHEN ds.doctor_id IS NOT NULL THEN 'Working' ELSE 'OnLeave' END = ? ";
+        }
+
+        sql += " ORDER BY e.full_name OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+
+            // Keyword
+            if (keyword == null || keyword.trim().isEmpty()) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, keyword);
+                ps.setString(i++, "%" + keyword + "%");
+            }
+
+            // Status filter
+            if (statusFilter != null && !statusFilter.equalsIgnoreCase("All") && !statusFilter.isBlank()) {
+                ps.setString(i++, statusFilter);
+            }
+
+            // Paging
+            ps.setInt(i++, offset);
+            ps.setInt(i, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Employee emp = mapResultSetToEmployee(rs);
+                    String status = rs.getString("status_today");
+                    list.add(new EmployeeWithStatus(emp, status));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countEmployeesWithStatus(String keyword, String statusFilter) {
+        String sql = """
+        SELECT COUNT(*) FROM (
+            SELECT e.employee_id,
+                   CASE 
+                       WHEN e.acc_status != 1 THEN 'Inactive'
+                       WHEN ds.doctor_id IS NOT NULL THEN 'Working'
+                       ELSE 'OnLeave'
+                   END AS status_today
+            FROM Employees e
+            LEFT JOIN (
+                SELECT DISTINCT doctor_id
+                FROM DoctorShifts
+                WHERE shift_date = CAST(GETDATE() AS DATE)
+            ) ds ON e.employee_id = ds.doctor_id
+            WHERE (? IS NULL OR e.full_name LIKE ?)
+        ) AS filtered
+    """;
+
+        if (statusFilter != null && !statusFilter.equalsIgnoreCase("All") && !statusFilter.isBlank()) {
+            sql += " WHERE status_today = ?";
+        }
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+            if (keyword == null || keyword.trim().isEmpty()) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, keyword);
+                ps.setString(i++, "%" + keyword + "%");
+            }
+
+            if (statusFilter != null && !statusFilter.equalsIgnoreCase("All") && !statusFilter.isBlank()) {
+                ps.setString(i, statusFilter);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+
+    public List<Employee> getActiveDoctorsToday(String keyword, String statusFilter, int offset, int limit) {
+        List<Employee> list = new ArrayList<>();
+
+        String sql = """
+        SELECT DISTINCT e.*
+        FROM Employees e
+        JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+        WHERE e.role_id = 1
+          AND e.acc_status = 1
+          AND s.shift_date = CAST(GETDATE() AS DATE)
+          AND (? IS NULL OR e.full_name LIKE ?)
+          AND (
+            ? IS NULL OR ? = 'All' OR
+            EXISTS (
+              SELECT 1 FROM DoctorShifts s2
+              WHERE s2.doctor_id = e.employee_id
+                AND s2.shift_date = CAST(GETDATE() AS DATE)
+                AND s2.status = ?
+            )
+          )
+        ORDER BY e.full_name
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+            // Keyword
+            if (keyword == null || keyword.isEmpty()) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, keyword);
+                ps.setString(i++, "%" + keyword + "%");
+            }
+
+            // Status filter
+            if (statusFilter == null || statusFilter.equalsIgnoreCase("All")) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, statusFilter);
+                ps.setString(i++, statusFilter);
+                ps.setString(i++, statusFilter);
+            }
+
+            ps.setInt(i++, offset);
+            ps.setInt(i, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Employee e = new Employee();
+                    e.setEmployeeId(rs.getInt("employee_id"));
+                    e.setFullName(rs.getString("full_name"));
+                    e.setEmail(rs.getString("email"));
+                    e.setPhone(rs.getString("phone"));
+                    e.setRoleId(rs.getInt("role_id"));
+                    e.setAccStatus(rs.getInt("acc_status"));
+                    e.setEmployeeAvaUrl(rs.getString("employee_ava_url"));
+                    list.add(e);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public int countActiveDoctorsToday(String keyword, String statusFilter) {
+        String sql = """
+        SELECT COUNT(DISTINCT e.employee_id)
+        FROM Employees e
+        JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+        WHERE e.role_id = 1
+          AND e.acc_status = 1
+          AND s.shift_date = CAST(GETDATE() AS DATE)
+          AND (? IS NULL OR e.full_name LIKE ?)
+          AND (
+            ? IS NULL OR ? = 'All' OR
+            EXISTS (
+              SELECT 1 FROM DoctorShifts s2
+              WHERE s2.doctor_id = e.employee_id
+                AND s2.shift_date = CAST(GETDATE() AS DATE)
+                AND s2.status = ?
+            )
+          )
+    """;
+
+        try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+            if (keyword == null || keyword.isEmpty()) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, keyword);
+                ps.setString(i++, "%" + keyword + "%");
+            }
+
+            if (statusFilter == null || statusFilter.equalsIgnoreCase("All")) {
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+                ps.setNull(i++, Types.VARCHAR);
+            } else {
+                ps.setString(i++, statusFilter);
+                ps.setString(i++, statusFilter);
+                ps.setString(i++, statusFilter);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+
+    public Employee getEmployeeById(int id) {
+        String sql = "SELECT * FROM Employees WHERE employee_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return Employee.builder()
+                        .employeeId(rs.getInt("employee_id"))
+                        .username(rs.getString("username"))
+                        .passwordHash(rs.getString("password_hash"))
+                        .fullName(rs.getString("full_name"))
+                        .dob(rs.getDate("dob"))
+                        .gender(rs.getString("gender"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getString("phone"))
+                        .roleId(rs.getInt("role_id"))
+                        .employeeAvaUrl(rs.getString("employee_ava_url"))
+                        .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null)
+                        .build();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 1. Đếm số staff: role_id khác Admin (3) và Manager (4)
+    public int countTotalStaff() {
+        String sql = "SELECT COUNT(*) FROM Employees WHERE role_id NOT IN (3, 4)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     public int countTotalEmployees() {
         String sql = "SELECT COUNT(*) FROM Employees";

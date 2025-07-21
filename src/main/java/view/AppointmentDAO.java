@@ -17,7 +17,33 @@ public class AppointmentDAO extends DBContext<Appointment> {
     public AppointmentDAO() {
         super();
     }
+    // 3. Đếm số lịch hẹn hôm nay
+    public int countAppointmentsToday() {
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE CAST(appointment_date AS DATE) = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
+    // 4. Đếm số lịch hẹn hôm nay đang Pending
+    public int countPendingAppointmentsToday() {
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE status = 'Pending' AND CAST(appointment_date AS DATE) = CAST(GETDATE() AS DATE)";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // 5. Kiểm tra bác sĩ có lịch trong khung giờ hôm nay
     public boolean hasAppointment(int doctorId, Date date, String timeSlot) {
         String sql = """
         SELECT 1 FROM Appointments 

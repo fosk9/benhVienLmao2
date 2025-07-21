@@ -24,12 +24,12 @@
         <div class="hospital-header">
             <div class="hospital-logo">
                 <div class="hospital-icon">
-                    <a href="${pageContext.request.contextPath}/manager/dashboard">
+                    <a href="${pageContext.request.contextPath}/manager-dashboard">
                         <i class="fas fa-user-tie"></i>
                     </a>
                 </div>
                 <div>
-                    <a href="${pageContext.request.contextPath}/manager/dashboard" style="text-decoration: none;">
+                    <a href="${pageContext.request.contextPath}/manager-dashboard" style="text-decoration: none;">
                         <h2 class="hospital-title">Manager Portal</h2>
                         <p class="hospital-subtitle">Hospital Management</p>
                     </a>
@@ -41,7 +41,7 @@
         <nav class="nav-menu">
             <ul>
                 <li>
-                    <a href="${pageContext.request.contextPath}/manager/dashboard">
+                    <a href="${pageContext.request.contextPath}/manager-dashboard" class="nav-link">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
@@ -53,9 +53,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/manager/staff-management" class="nav-link active">
+                    <a href="${pageContext.request.contextPath}/add-doctor-form" class="nav-link active">
                         <i class="fas fa-users"></i>
-                        <span>Staff Management</span>
+                        <span>Add Staff</span>
                     </a>
                 </li>
                 <li>
@@ -65,21 +65,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/manager/reports" class="nav-link">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Reports</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/manager/resources" class="nav-link">
-                        <i class="fas fa-boxes"></i>
-                        <span>Resources</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/manager/settings" class="nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        <span>Change History</span>
                     </a>
                 </li>
             </ul>
@@ -107,17 +95,19 @@
 
         <!-- Content Body -->
         <div class="content-body">
-            <!-- Success/Error Messages -->
             <c:if test="${not empty successMessage}">
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle mr-2"></i>${successMessage}
+                    <c:remove var="successMessage" scope="session"/>
                 </div>
             </c:if>
             <c:if test="${not empty errorMessage}">
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
+                    <c:remove var="errorMessage" scope="session"/>
                 </div>
             </c:if>
+
 
             <!-- Add Doctor Form -->
             <div class="card">
@@ -173,6 +163,15 @@
                                 <input type="hidden" name="role" value="doctor" />
 
                                 <div class="form-group">
+                                    <label for="roleId">Role</label>
+                                    <select class="form-control" id="roleId" name="roleId">
+                                        <option value="1" <c:if test="${param.roleId == '1'}">selected</c:if>>Doctor</option>
+                                        <option value="2" <c:if test="${param.roleId == '2'}">selected</c:if>>Receptionist</option>
+                                        <option value="3" <c:if test="${param.roleId == '3'}">selected</c:if>>Manager</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" id="specialistGroup">
                                     <label>Specialist?</label><br>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="specialist" id="specialistYes" value="true"
@@ -253,64 +252,34 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Show/hide fields based on role selection
-        $('#role').change(function() {
-            var selectedRole = $(this).val();
-
-            if (selectedRole === 'doctor') {
-                $('#specializationGroup').show();
+    $(document).ready(function () {
+        function toggleDoctorFields() {
+            var selectedRole = $('#roleId').val();
+            if (selectedRole === '1') {
                 $('#licenseGroup').show();
-                $('#specialization').attr('required', true);
-                $('#licenseNumber').attr('required', true);
+                $('input[name="specialist"]').closest('.form-group').show();
             } else {
-                $('#specializationGroup').hide();
                 $('#licenseGroup').hide();
-                $('#specialization').removeAttr('required');
-                $('#licenseNumber').removeAttr('required');
+                $('input[name="specialist"]').closest('.form-group').hide();
             }
+        }
+
+        // Gọi hàm ngay khi trang load
+        toggleDoctorFields();
+
+        // Gọi lại khi thay đổi
+        $('#roleId').change(function () {
+            toggleDoctorFields();
         });
-
-        // Password confirmation validation
-        $('#confirmPassword').on('keyup', function() {
-            var password = $('#password').val();
-            var confirmPassword = $(this).val();
-
-            if (password !== confirmPassword) {
-                $(this).addClass('is-invalid');
-                if (!$(this).next('.invalid-feedback').length) {
-                    $(this).after('<div class="invalid-feedback">Passwords do not match</div>');
-                }
-            } else {
-                $(this).removeClass('is-invalid');
-                $(this).next('.invalid-feedback').remove();
-            }
-        });
-
-        // Form validation
-        $('#addDoctorForm').on('submit', function(e) {
-            var password = $('#password').val();
-            var confirmPassword = $('#confirmPassword').val();
-
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Passwords do not match!');
-                return false;
-            }
-
-            if (password.length < 8) {
-                e.preventDefault();
-                alert('Password must be at least 8 characters long!');
-                return false;
-            }
-        });
-
-        // Initialize role-specific fields
-        $('#role').trigger('change');
     });
 </script>
 
 <style>
+    #licenseGroup,
+    #specialistGroup {
+        display: none;
+    }
+
     .section-title {
         color: #2c3e50;
         border-bottom: 2px solid #3498db;

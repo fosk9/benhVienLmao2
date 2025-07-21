@@ -24,12 +24,12 @@
     <div class="hospital-header">
       <div class="hospital-logo">
         <div class="hospital-icon">
-          <a href="Admin/home-admin-dashboard.jsp">
+          <a href="${pageContext.request.contextPath}/manager-dashboard">
             <i class="fas fa-stethoscope"></i>
           </a>
         </div>
         <div>
-          <a href="Admin/home-admin-dashboard.jsp" style="text-decoration: none;">
+          <a href="${pageContext.request.contextPath}/manager-dashboard">
             <h2 class="hospital-title">Hospital Admin</h2>
             <p class="hospital-subtitle">Hospital Management</p>
           </a>
@@ -41,29 +41,43 @@
     <nav class="nav-menu">
       <ul>
         <li>
-          <a href="Admin/home-admin-dashboard.jsp" class="nav-link">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+          <a href="${pageContext.request.contextPath}/manager-dashboard" class="nav-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/update-user-role" class="nav-link">
+            <i class="fas fa-users-cog"></i>
+            <span>User Management</span>
+          </a>
+        </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/add-doctor-form" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Add Staff
+                </span>
+          </a>
+        </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/assign-doctor-schedule" class="nav-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Doctor Schedules</span>
           </a>
         </li>
         <li>
           <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link active">
-            <i class="fas fa-blog"></i>
-            <span>Blog</span>
-          </a>
-        </li>
-        <li>
-          <a href="#" class="nav-link">
             <i class="fas fa-podcast"></i>
-            <span>Post</span>
+            <span>Blog Dashboard</span>
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
+          <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link">
+            <i class="fas fa-history"></i>
+            <span>Change History</span>
           </a>
         </li>
+
       </ul>
     </nav>
   </div>

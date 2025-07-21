@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Blog;
 import model.Category;
+import model.Employee;
+import util.HistoryLogger;
 import view.BlogDAO;
 
 import java.io.IOException;
@@ -81,7 +83,7 @@ public class BlogDashboardServlet extends HttpServlet {
                 request.setAttribute("errorMessage", errorMessage);
                 request.setAttribute("totalPages", totalPages);
                 request.setAttribute("currentPage", page);
-                request.getRequestDispatcher("/Admin/blog-dashboard.jsp").forward(request, response);
+                request.getRequestDispatcher("/Manager/blog-dashboard.jsp").forward(request, response);
             } else if ("/blog-dashboard/edit".equals(path)) {
                 String blogIdStr = request.getParameter("blogId");
                 System.out.println("[GET] blogIdStr: " + blogIdStr);
@@ -96,7 +98,7 @@ public class BlogDashboardServlet extends HttpServlet {
                         System.out.println("[GET] blogId truyền sang JSP: " + blog.getBlogId());
                         request.setAttribute("blog", blog);
                         request.setAttribute("categories", categories);
-                        request.getRequestDispatcher("/Admin/edit-blog.jsp").forward(request, response);
+                        request.getRequestDispatcher("/Manager/edit-blog.jsp").forward(request, response);
                         return;
                     } else {
                         request.setAttribute("errorMessage", "Không tìm thấy blog với ID: " + blogId);
@@ -108,12 +110,28 @@ public class BlogDashboardServlet extends HttpServlet {
             } else if ("/blog-dashboard/delete".equals(path)) {
                 String blogIdStr = request.getParameter("blogId");
                 System.out.println("blogIdStr: " + blogIdStr);
+                Employee manager = (Employee) request.getSession().getAttribute("account");
+                if (manager == null || manager.getRoleId() != 4) {
+                    request.setAttribute("error", "You must be logged in as a manager to perform this action.");
+                    response.sendRedirect("login.jsp");
+                    return;
+                }
                 try {
                     if (blogIdStr == null || blogIdStr.trim().isEmpty()) {
                         throw new NumberFormatException("blogId null hoặc rỗng");
                     }
                     int blogId = Integer.parseInt(blogIdStr.trim());
                     blogDAO.delete(blogId);
+                    if (manager != null) {
+                        HistoryLogger.log(
+                                manager.getEmployeeId(),
+                                manager.getFullName(),
+                                blogId,
+                                "Blog ID " + blogId,
+                                "Blog",
+                                "Delete Blog ID: " + blogId
+                        );
+                    }
                 } catch (NumberFormatException ex) {
                     System.out.println("[BlogDashboardServlet] Invalid blogId: " + ex.getMessage());
                 }
@@ -122,7 +140,7 @@ public class BlogDashboardServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi tải dữ liệu.");
-            request.getRequestDispatcher("/Admin/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/Manager/error.jsp").forward(request, response);
         }
     }
 
