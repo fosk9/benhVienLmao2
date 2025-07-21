@@ -200,4 +200,96 @@ public class SystemItemDAO extends DBContext<SystemItem> {
         }
         return items;
     }
+
+    /**
+     * Retrieves a list of role IDs associated with a specific SystemItem.
+     */
+    public List<Integer> getRoleIdsByItemId(int itemId) {
+        List<Integer> roleIds = new ArrayList<>();
+        String sql = "SELECT role_id FROM RoleSystemItems WHERE item_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, itemId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        roleIds.add(rs.getInt("role_id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching roles for SystemItem: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return roleIds;
+    }
+
+    /**
+     * Retrieves the last inserted ID after an insert operation.
+     * This is specific to SQL Server using SCOPE_IDENTITY().
+     */
+    public int getLastInsertId() {
+        String sql = "SELECT SCOPE_IDENTITY() AS last_id";
+        Connection conn = null;
+        int id = -1;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    id = rs.getInt("last_id");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error getting last insert id: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return id;
+    }
+
+    /**
+     * Adds a role to a SystemItem.
+     */
+    public int addRoleToItem(int roleId, int itemId) {
+        String sql = "INSERT INTO RoleSystemItems (role_id, item_id) VALUES (?, ?)";
+        Connection conn = null;
+        int affectedRows = 0;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roleId);
+                stmt.setInt(2, itemId);
+                affectedRows = stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error adding role to SystemItem: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return affectedRows;
+    }
+
+    /**
+     * Deletes all roles associated with a specific SystemItem.
+     */
+    public int deleteRolesOfItem(int itemId) {
+        String sql = "DELETE FROM RoleSystemItems WHERE item_id = ?";
+        Connection conn = null;
+        int affectedRows = 0;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, itemId);
+                affectedRows = stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error deleting roles of SystemItem: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return affectedRows;
+    }
 }
