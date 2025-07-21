@@ -288,14 +288,14 @@ GO
 -- Creating SystemLogs table to store system activities
 CREATE TABLE SystemLogs (
     log_id INT PRIMARY KEY IDENTITY(1,1),
-    employee_id INT NULL,          -- ID of employee performing the action (NULL for system/patient)
-    patient_id INT NULL,           -- ID of patient performing the action (NULL for system/employee)
-    action NVARCHAR(255) NOT NULL, -- Description of the action
-    log_level VARCHAR(50) NOT NULL,-- Log level (INFO, ERROR, WARN)
+    employee_id INT NULL,
+    patient_id INT NULL,
+    action NVARCHAR(255) NOT NULL,
+    log_level VARCHAR(50) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
     FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
-    CONSTRAINT chk_one_user CHECK (employee_id IS NULL OR patient_id IS NULL) -- Ensure only one user ID
+    CONSTRAINT chk_one_user CHECK (employee_id IS NULL OR patient_id IS NULL)
 );
 GO
 
@@ -344,7 +344,6 @@ VALUES
     (3, 3),  -- Admin: Manage Employees
     (3, 4),  -- Admin: Manage Patients
     (3, 5),  -- Admin: View Log
-    (3, 6),  -- Admin: Approve Doctor Shifts
     (3, 16), -- Admin: Manage System Items
     (3, 17), -- Admin: Manage System Contents
     (3, 18), -- Admin: Admin Home
