@@ -285,6 +285,20 @@ VALUES ('Doctor'),
        ('Patient');
 GO
 
+-- Creating SystemLogs table to store system activities
+CREATE TABLE SystemLogs (
+    log_id INT PRIMARY KEY IDENTITY(1,1),
+    employee_id INT NULL,          -- ID of employee performing the action (NULL for system/patient)
+    patient_id INT NULL,           -- ID of patient performing the action (NULL for system/employee)
+    action NVARCHAR(255) NOT NULL, -- Description of the action
+    log_level VARCHAR(50) NOT NULL,-- Log level (INFO, ERROR, WARN)
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT chk_one_user CHECK (employee_id IS NULL OR patient_id IS NULL) -- Ensure only one user ID
+);
+GO
+
 -- Insert sample SystemItems
 INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
 VALUES
@@ -292,7 +306,7 @@ VALUES
     ('View Prescription', 'view-prescription', NULL, 'Feature'),
     ('Manage Employees', 'admin/manageEmployees', NULL, 'Feature'),
     ('Manage Patients', 'admin/managePatients', NULL, 'Feature'),
-    ('View Statistics', 'admin/statistics', NULL, 'Feature'),
+    ('View Logs', 'admin/logs', NULL, 'Feature'),
     ('Approve Doctor Shifts', 'admin/shift-approval', NULL, 'Feature'),
     ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
     ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
@@ -329,7 +343,7 @@ VALUES
 	--Admin Navication
     (3, 3),  -- Admin: Manage Employees
     (3, 4),  -- Admin: Manage Patients
-    (3, 5),  -- Admin: View Statistics
+    (3, 5),  -- Admin: View Log
     (3, 6),  -- Admin: Approve Doctor Shifts
     (3, 16), -- Admin: Manage System Items
     (3, 17), -- Admin: Manage System Contents
@@ -686,3 +700,12 @@ VALUES
 
 -- Hành động phân quyền admin
 (105, 'Pham Van I', 205, 'Hoang Van K', 'employee', 'Promote to Admin', DATEADD(DAY, -10, GETDATE()));
+GO 
+
+INSERT INTO SystemLogs (employee_id, patient_id, action, log_level, created_at)
+VALUES
+    (5, NULL, 'Admin logged in', 'INFO', '2025-07-22 09:00:00'),
+    (NULL, 1, 'Patient booked appointment', 'INFO', '2025-07-22 10:15:00'),
+    (NULL, NULL, 'System error: Database timeout', 'ERROR', '2025-07-22 11:30:00'),
+    (9, NULL, 'Manager approved shift', 'INFO', '2025-07-22 12:45:00');
+GO
