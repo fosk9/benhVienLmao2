@@ -22,7 +22,7 @@ public class EditStaffServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(EditStaffServlet.class.getName());
 
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
-    private final DoctorDetailDAO doctorDetailsDAO = new DoctorDetailDAO();
+    private final DoctorDetailDAO doctorDetailDAO = new DoctorDetailDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,7 +30,7 @@ public class EditStaffServlet extends HttpServlet {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             Employee emp = employeeDAO.getEmployeeById(id);
-            DoctorDetail doctor = (emp.getRoleId() == 1) ? doctorDetailsDAO.getByEmployeeId(id) : null;
+            DoctorDetail doctor = (emp.getRoleId() == 1) ? doctorDetailDAO.getByEmployeeId(id) : null;
 
             request.setAttribute("employee", emp);
             request.setAttribute("doctorDetails", doctor);
@@ -108,7 +108,7 @@ public class EditStaffServlet extends HttpServlet {
                 doc.setLicenseNumber(license);
                 doc.setSpecialist(isSpecialist);
 
-                boolean updatedDoc = doctorDetailsDAO.updateDoctorDetails(doc);
+                boolean updatedDoc = doctorDetailDAO.updateDoctorDetails(doc);
                 if (updatedDoc) {
                     LOGGER.info("✅ Doctor details updated for ID " + id);
                     HistoryLogger.log(

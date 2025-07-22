@@ -1,51 +1,60 @@
 package controller;
 
-import model.Appointment;
-import model.Employee;
-import util.HeaderController;
 import view.AppointmentDAO;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
+import view.DoctorDetailDAO;
+import view.DoctorShiftDAO;
+import dto.AppointmentDTO;
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
+import model.DoctorDetail;
+import model.DoctorShift;
+import model.Employee;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 
 @WebServlet("/doctor-home")
 public class DoctorHomeServlet extends HttpServlet {
-
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy thông tin bác sĩ từ session
         HttpSession session = request.getSession(false);
-        Object acc = (session != null) ? session.getAttribute("account") : null;
+        Employee doctor = (Employee) session.getAttribute("account");
 
-        // Set up the header navigation items
-        HeaderController headerController = new HeaderController();
-        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
-
-        if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
-
+        if (doctor == null || doctor.getRoleId() != 1) { // 1 = Doctor
             response.sendRedirect("login.jsp");
-            response.sendRedirect("Login.jsp");
             return;
         }
 
-        Employee doctor = (Employee) acc;
+        int doctorId = doctor.getEmployeeId();
 
-        try {
-            AppointmentDAO dao = new AppointmentDAO();
-            List<Appointment> list = dao.getAppointmentsByDoctorId(doctor.getEmployeeId());
+        // DAO
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
+        DoctorDetailDAO doctorDetailDAO = new DoctorDetailDAO();
+        DoctorShiftDAO doctorShiftDAO = new DoctorShiftDAO();
 
-            request.setAttribute("doctor", doctor);
-            request.setAttribute("appointments", list);
-            request.getRequestDispatcher("doctor-home.jsp").forward(request, response);
+        // 1. Lấy danh sách appointment hôm nay
+        Date today = new Date(System.currentTimeMillis());
+        List<AppointmentDTO> todayAppointments = appointmentDAO.getAppointmentsByDoctorAndDate(
+                doctorId,
+                today,
+                List.of("Pending", "Confirmed", "Completed")
+        );
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendRedirect("error.jsp");
-        }
+        // 2. Lấy thông tin tổng quan bác sĩ
+        DoctorDetail doctorDetails = doctorDetailDAO.getByEmployeeId(doctorId);
+
+        // 3. Lấy thông tin ca làm việc hôm nay
+        DoctorShift shiftToday = doctorShiftDAO.getShiftByDoctorAndDate(doctorId, today);
+
+        // Đặt attribute để forward sang JSP
+        request.setAttribute("todayAppointments", todayAppointments);
+        request.setAttribute("doctorDetails", doctorDetails);
+        request.setAttribute("shiftToday", shiftToday);
+
+        // Forward đến JSP
+        request.getRequestDispatcher("/doctor-home.jsp").forward(request, response);
     }
 }

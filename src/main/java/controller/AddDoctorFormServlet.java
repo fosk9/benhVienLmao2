@@ -29,7 +29,7 @@ public class AddDoctorFormServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AddDoctorFormServlet.class.getName());
 
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
-    private final DoctorDetailDAO doctorDetailsDAO = new DoctorDetailDAO();
+    private final DoctorDetailDAO doctorDetailDAO = new DoctorDetailDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -156,7 +156,7 @@ public class AddDoctorFormServlet extends HttpServlet {
                         .licenseNumber(licenseNumber)
                         .specialist(isSpecialist)
                         .build();
-                doctorDetailsDAO.insert(doctorDetail);
+                doctorDetailDAO.insert(doctorDetail);
                 LOGGER.info("Created DoctorDetail for ID: " + employeeId);
             }
 

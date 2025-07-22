@@ -1,5 +1,6 @@
 package view;
 
+import dto.AppointmentDTO;
 import dto.ConsultationHistoryDTO;
 import dto.ExaminationHistoryDTO;
 import model.Appointment;
@@ -17,6 +18,55 @@ public class AppointmentDAO extends DBContext<Appointment> {
     public AppointmentDAO() {
         super();
     }
+
+    public List<AppointmentDTO> getAppointmentsByDoctorAndDate(int doctorId, Date date, List<String> statusList) {
+        List<AppointmentDTO> list = new ArrayList<>();
+
+        // Tạo chuỗi dấu hỏi (?) theo số lượng status
+        String placeholders = String.join(",", statusList.stream().map(s -> "?").toArray(String[]::new));
+
+        String sql = """
+                SELECT 
+                    a.appointment_id,
+                    a.appointment_date,
+                    a.time_slot,
+                    a.status,
+                    p.full_name AS patient_name,
+                    t.type_name AS appointment_type
+                FROM Appointments a
+                JOIN Patients p ON a.patient_id = p.patient_id
+                JOIN AppointmentType t ON a.appointmenttype_id = t.appointmenttype_id
+                WHERE a.doctor_id = ? AND a.appointment_date = ? AND a.status IN (""" + placeholders + ")";
+
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, doctorId);
+            ps.setDate(2, date);
+            for (int i = 0; i < statusList.size(); i++) {
+                ps.setString(i + 3, statusList.get(i));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    AppointmentDTO dto = new AppointmentDTO();
+                    dto.setAppointmentId(rs.getInt("appointment_id"));
+                    dto.setAppointmentDate(rs.getDate("appointment_date"));
+                    dto.setTimeSlot(rs.getString("time_slot"));
+                    dto.setStatus(rs.getString("status"));
+                    dto.setPatientName(rs.getString("patient_name"));
+                    dto.setAppointmentType(rs.getString("appointment_type"));
+                    list.add(dto);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     // 3. Đếm số lịch hẹn hôm nay
     public int countAppointmentsToday() {
         String sql = "SELECT COUNT(*) FROM Appointments WHERE CAST(appointment_date AS DATE) = CAST(GETDATE() AS DATE)";
@@ -29,6 +79,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
         return 0;
     }
+
 
     // 4. Đếm số lịch hẹn hôm nay đang Pending
     public int countPendingAppointmentsToday() {
@@ -46,9 +97,9 @@ public class AppointmentDAO extends DBContext<Appointment> {
     // 5. Kiểm tra bác sĩ có lịch trong khung giờ hôm nay
     public boolean hasAppointment(int doctorId, Date date, String timeSlot) {
         String sql = """
-        SELECT 1 FROM Appointments 
-        WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
-    """;
+                    SELECT 1 FROM Appointments 
+                    WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
+                """;
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
@@ -61,37 +112,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
             e.printStackTrace();
         }
         return false;
-    }
-
-
-    // Create a new appointment
-    public void createAppointment(Appointment appointment) {
-        String query = "INSERT INTO Appointments (patient_id, appointment_date, appointmenttype_id, time_slot, requires_specialist, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection conn = null;
-        try {
-            conn = getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, appointment.getPatientId());
-                stmt.setDate(2, appointment.getAppointmentDate());
-                stmt.setInt(3, appointment.getAppointmentTypeId());
-                stmt.setString(4, appointment.getTimeSlot());
-                stmt.setBoolean(5, appointment.isRequiresSpecialist());
-                stmt.setString(6, appointment.getStatus());
-                stmt.setTimestamp(7, appointment.getCreatedAt());
-                stmt.setTimestamp(8, appointment.getUpdatedAt());
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected == 0) {
-                    LOGGER.severe("Failed to insert appointment: No rows affected for patient_id=" + appointment.getPatientId());
-                    throw new RuntimeException("Failed to create appointment: No rows affected");
-                }
-                LOGGER.info("Created appointment for patient_id=" + appointment.getPatientId());
-            }
-        } catch (SQLException e) {
-            LOGGER.severe("Error creating appointment for patient_id=" + appointment.getPatientId() + ": " + e.getMessage());
-            throw new RuntimeException("Failed to create appointment", e);
-        } finally {
-            closeConnection(conn);
-        }
     }
 
     // Get appointments by patient ID
@@ -206,27 +226,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
         } finally {
             closeConnection(conn);
         }
-    }
-
-    // Fetch the last appointment ID
-    public int takeID() {
-        String query = "SELECT TOP 1 appointment_id FROM Appointments ORDER BY appointment_id DESC";
-        Connection conn = null;
-        try {
-            conn = getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query);
-                 ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("appointment_id");
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.severe("Error fetching last appointment ID: " + e.getMessage());
-            throw new RuntimeException("Failed to fetch last appointment ID", e);
-        } finally {
-            closeConnection(conn);
-        }
-        return -1; // Return -1 if no appointments found
     }
 
     // Search and sort appointments with pagination, including AppointmentType data
@@ -504,35 +503,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
         }
     }
 
-    // Get today's appointment stats by doctor ID
-    public int[] getTodayStatsByDoctorId(int doctorId) {
-        int[] stats = new int[4];
-        String sql = "SELECT status, COUNT(*) as count FROM Appointments WHERE doctor_id = ? AND CAST(appointment_date AS DATE) = ? GROUP BY status";
-        Connection conn = null;
-        try {
-            conn = getConn();
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, doctorId);
-                ps.setDate(2, new Date(System.currentTimeMillis()));
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    switch (rs.getString("status")) {
-                        case "Pending" -> stats[0] = rs.getInt("count");
-                        case "Confirmed" -> stats[1] = rs.getInt("count");
-                        case "Completed" -> stats[2] = rs.getInt("count");
-                        case "Cancelled" -> stats[3] = rs.getInt("count");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.severe("Error fetching stats for doctor_id=" + doctorId + ": " + e.getMessage());
-            throw new RuntimeException("Failed to fetch doctor stats", e);
-        } finally {
-            closeConnection(conn);
-        }
-        return stats;
-    }
-
     // Get appointment by ID with type details
     public Appointment getAppointmentById(int appointmentId) {
         String sql = "SELECT a.*, at.type_name, at.description, at.price " +
@@ -564,29 +534,6 @@ public class AppointmentDAO extends DBContext<Appointment> {
             closeConnection(conn);
         }
         return null;
-    }
-
-    // Get appointments by doctor ID
-    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
-        List<Appointment> appointments = new ArrayList<>();
-        String query = "SELECT a.*, p.insurance_number, p.full_name FROM Appointments a JOIN Patients p ON a.patient_id = p.patient_id WHERE a.doctor_id = ? ORDER BY a.appointment_date ASC";
-        Connection conn = null;
-        try {
-            conn = getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, doctorId);
-                ResultSet rs = stmt.executeQuery();
-                while (rs.next()) {
-                    appointments.add(mapResultSetToAppointment(rs));
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.severe("Error fetching appointments for doctor_id=" + doctorId + ": " + e.getMessage());
-            throw new RuntimeException("Failed to fetch appointments", e);
-        } finally {
-            closeConnection(conn);
-        }
-        return appointments;
     }
 
     // Map ResultSet to Appointment object
