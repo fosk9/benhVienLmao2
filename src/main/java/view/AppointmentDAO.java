@@ -19,6 +19,25 @@ public class AppointmentDAO extends DBContext<Appointment> {
         super();
     }
 
+    public int transferAppointments(int oldDoctorId, int newDoctorId, Date date, String timeSlot) {
+        String sql = """
+                    UPDATE Appointments
+                    SET doctor_id = ?
+                    WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
+                """;
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newDoctorId);
+            ps.setInt(2, oldDoctorId);
+            ps.setDate(3, date);
+            ps.setString(4, timeSlot);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public List<AppointmentDTO> getAppointmentsByDoctorAndDate(int doctorId, Date date, List<String> statusList) {
         List<AppointmentDTO> list = new ArrayList<>();
 

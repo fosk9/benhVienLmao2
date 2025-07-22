@@ -1,5 +1,6 @@
 package view;
 
+import dto.PendingLeaveDTO;
 import model.DoctorScheduleSummary;
 import model.DoctorShift;
 import model.DoctorShiftView;
@@ -10,6 +11,51 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
+
+    public int updateStatusAndManager(int shiftId, String status, int managerId, Timestamp approvedAt) {
+        String sql = "UPDATE DoctorShifts SET status = ?, manager_id = ?, approved_at = ? WHERE shift_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, managerId);
+            ps.setTimestamp(3, approvedAt);
+            ps.setInt(4, shiftId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<PendingLeaveDTO> selectPendingLeaveRequests() {
+        List<PendingLeaveDTO> list = new ArrayList<>();
+        String sql = """
+                    SELECT ds.shift_id, e.full_name, ds.shift_date, ds.time_slot, ds.requested_at, ds.status
+                    FROM DoctorShifts ds
+                    JOIN Employees e ON ds.doctor_id = e.employee_id
+                    WHERE ds.status = 'PendingLeave'
+                    ORDER BY ds.shift_date, ds.time_slot
+                """;
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                PendingLeaveDTO dto = new PendingLeaveDTO(
+                        rs.getInt("shift_id"),
+                        rs.getString("full_name"),
+                        rs.getDate("shift_date"),
+                        rs.getString("time_slot"),
+                        rs.getTimestamp("requested_at"),
+                        rs.getString("status")
+                );
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 
     public DoctorShift getShiftByDoctorAndDate(int doctorId, Date shiftDate) {
         String sql = "SELECT * FROM DoctorShifts WHERE doctor_id = ? AND shift_date = ?";
@@ -608,4 +654,5 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
             ps.setNull(7, Types.TIMESTAMP);
         }
     }
+
 }

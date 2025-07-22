@@ -9,6 +9,33 @@ import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
 
+    public List<Employee> getAvailableDoctors(Date date, String timeSlot, int excludeDoctorId) {
+        List<Employee> list = new ArrayList<>();
+        String sql = """
+                    SELECT * FROM Employees
+                    WHERE role_id = (SELECT role_id FROM Roles WHERE role_name = 'Doctor')
+                      AND employee_id != ?
+                      AND employee_id NOT IN (
+                          SELECT doctor_id FROM DoctorShifts
+                          WHERE shift_date = ? AND time_slot = ? AND status IN ('Working', 'PendingLeave')
+                      )
+                """;
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, excludeDoctorId);
+            ps.setDate(2, date);
+            ps.setString(3, timeSlot);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToEmployee(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
     public boolean updateEmployee(Employee e) {
         String sql = "UPDATE Employees SET full_name=?, email=?, phone=?, gender=?, dob=?, role_id=?, acc_status=?, employee_ava_url=? WHERE employee_id=?";
         try (Connection conn = getConn();
@@ -35,20 +62,20 @@ public class EmployeeDAO extends DBContext<Employee> {
         List<EmployeeWithStatus> list = new ArrayList<>();
 
         String sql = """
-        SELECT e.*,
-               CASE 
-                   WHEN e.acc_status != 1 THEN 'Inactive'
-                   WHEN ds.doctor_id IS NOT NULL THEN 'Working'
-                   ELSE 'OnLeave'
-               END AS status_today
-        FROM Employees e
-        LEFT JOIN (
-            SELECT DISTINCT doctor_id
-            FROM DoctorShifts
-            WHERE shift_date = CAST(GETDATE() AS DATE)
-        ) ds ON e.employee_id = ds.doctor_id    
-        WHERE e.role_id IN (1, 2) AND (? IS NULL OR e.full_name LIKE ?)
-    """;
+                    SELECT e.*,
+                           CASE 
+                               WHEN e.acc_status != 1 THEN 'Inactive'
+                               WHEN ds.doctor_id IS NOT NULL THEN 'Working'
+                               ELSE 'OnLeave'
+                           END AS status_today
+                    FROM Employees e
+                    LEFT JOIN (
+                        SELECT DISTINCT doctor_id
+                        FROM DoctorShifts
+                        WHERE shift_date = CAST(GETDATE() AS DATE)
+                    ) ds ON e.employee_id = ds.doctor_id    
+                    WHERE e.role_id IN (1, 2) AND (? IS NULL OR e.full_name LIKE ?)
+                """;
 
         if (statusFilter != null && !statusFilter.equalsIgnoreCase("All") && !statusFilter.isBlank()) {
             sql += " AND CASE WHEN e.acc_status != 1 THEN 'Inactive' WHEN ds.doctor_id IS NOT NULL THEN 'Working' ELSE 'OnLeave' END = ? ";
@@ -94,22 +121,22 @@ public class EmployeeDAO extends DBContext<Employee> {
 
     public int countEmployeesWithStatus(String keyword, String statusFilter) {
         String sql = """
-        SELECT COUNT(*) FROM (
-            SELECT e.employee_id,
-                   CASE 
-                       WHEN e.acc_status != 1 THEN 'Inactive'
-                       WHEN ds.doctor_id IS NOT NULL THEN 'Working'
-                       ELSE 'OnLeave'
-                   END AS status_today
-            FROM Employees e
-            LEFT JOIN (
-                SELECT DISTINCT doctor_id
-                FROM DoctorShifts
-                WHERE shift_date = CAST(GETDATE() AS DATE)
-            ) ds ON e.employee_id = ds.doctor_id
-            WHERE (? IS NULL OR e.full_name LIKE ?)
-        ) AS filtered
-    """;
+                    SELECT COUNT(*) FROM (
+                        SELECT e.employee_id,
+                               CASE 
+                                   WHEN e.acc_status != 1 THEN 'Inactive'
+                                   WHEN ds.doctor_id IS NOT NULL THEN 'Working'
+                                   ELSE 'OnLeave'
+                               END AS status_today
+                        FROM Employees e
+                        LEFT JOIN (
+                            SELECT DISTINCT doctor_id
+                            FROM DoctorShifts
+                            WHERE shift_date = CAST(GETDATE() AS DATE)
+                        ) ds ON e.employee_id = ds.doctor_id
+                        WHERE (? IS NULL OR e.full_name LIKE ?)
+                    ) AS filtered
+                """;
 
         if (statusFilter != null && !statusFilter.equalsIgnoreCase("All") && !statusFilter.isBlank()) {
             sql += " WHERE status_today = ?";
@@ -145,25 +172,25 @@ public class EmployeeDAO extends DBContext<Employee> {
         List<Employee> list = new ArrayList<>();
 
         String sql = """
-        SELECT DISTINCT e.*
-        FROM Employees e
-        JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 1
-          AND e.acc_status = 1
-          AND s.shift_date = CAST(GETDATE() AS DATE)
-          AND (? IS NULL OR e.full_name LIKE ?)
-          AND (
-            ? IS NULL OR ? = 'All' OR
-            EXISTS (
-              SELECT 1 FROM DoctorShifts s2
-              WHERE s2.doctor_id = e.employee_id
-                AND s2.shift_date = CAST(GETDATE() AS DATE)
-                AND s2.status = ?
-            )
-          )
-        ORDER BY e.full_name
-        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-    """;
+                    SELECT DISTINCT e.*
+                    FROM Employees e
+                    JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+                    WHERE e.role_id = 1
+                      AND e.acc_status = 1
+                      AND s.shift_date = CAST(GETDATE() AS DATE)
+                      AND (? IS NULL OR e.full_name LIKE ?)
+                      AND (
+                        ? IS NULL OR ? = 'All' OR
+                        EXISTS (
+                          SELECT 1 FROM DoctorShifts s2
+                          WHERE s2.doctor_id = e.employee_id
+                            AND s2.shift_date = CAST(GETDATE() AS DATE)
+                            AND s2.status = ?
+                        )
+                      )
+                    ORDER BY e.full_name
+                    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -212,23 +239,23 @@ public class EmployeeDAO extends DBContext<Employee> {
 
     public int countActiveDoctorsToday(String keyword, String statusFilter) {
         String sql = """
-        SELECT COUNT(DISTINCT e.employee_id)
-        FROM Employees e
-        JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 1
-          AND e.acc_status = 1
-          AND s.shift_date = CAST(GETDATE() AS DATE)
-          AND (? IS NULL OR e.full_name LIKE ?)
-          AND (
-            ? IS NULL OR ? = 'All' OR
-            EXISTS (
-              SELECT 1 FROM DoctorShifts s2
-              WHERE s2.doctor_id = e.employee_id
-                AND s2.shift_date = CAST(GETDATE() AS DATE)
-                AND s2.status = ?
-            )
-          )
-    """;
+                    SELECT COUNT(DISTINCT e.employee_id)
+                    FROM Employees e
+                    JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+                    WHERE e.role_id = 1
+                      AND e.acc_status = 1
+                      AND s.shift_date = CAST(GETDATE() AS DATE)
+                      AND (? IS NULL OR e.full_name LIKE ?)
+                      AND (
+                        ? IS NULL OR ? = 'All' OR
+                        EXISTS (
+                          SELECT 1 FROM DoctorShifts s2
+                          WHERE s2.doctor_id = e.employee_id
+                            AND s2.shift_date = CAST(GETDATE() AS DATE)
+                            AND s2.status = ?
+                        )
+                      )
+                """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -341,6 +368,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         }
         return 0;
     }
+
     public List<Employee> searchByNameAndRole(String name, int roleId, int page, int recordsPerPage) {
         List<Employee> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Employees WHERE 1=1 ");
@@ -655,7 +683,6 @@ public class EmployeeDAO extends DBContext<Employee> {
     }
 
 
-
     @Override
     public int insert(Employee e) {
         String sql = "INSERT INTO Employees (username, password_hash, full_name, dob, gender, email, phone, role_id, employee_ava_url) " +
@@ -811,7 +838,7 @@ public class EmployeeDAO extends DBContext<Employee> {
         ps.setString(7, e.getPhone());
         ps.setInt(8, e.getRoleId());
         ps.setString(9, e.getEmployeeAvaUrl() != null ? e.getEmployeeAvaUrl() : "");
-        ps.setInt(10,  e.getAccStatus() != null ? e.getAccStatus() : 1);
+        ps.setInt(10, e.getAccStatus() != null ? e.getAccStatus() : 1);
     }
 
     // Test main method for EmployeeDAO
