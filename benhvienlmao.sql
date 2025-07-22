@@ -421,61 +421,56 @@ VALUES ('Dental Checkup', 'Routine dental examination and consultation', 200000.
        ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
--- Sample Appointments
 INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
 VALUES
--- Doctor 1 - Upcoming
-(1, 1, 1, '2025-07-22', 'Morning', 'Confirmed'),
-(2, 1, 1, '2025-07-23', 'Afternoon', 'Confirmed'),
-(3, 1, 1, '2025-07-25', 'Afternoon', 'Confirmed'),
-(4, 1, 1, '2025-07-27', 'Evening', 'Confirmed'),
-(5, 1, 1, '2025-07-28', 'Morning', 'Confirmed'),
+-- Doctor 1
+(1, 1, 3, '2025-07-22', 'Morning', 'Confirmed'),
+(2, 1, 5, '2025-07-23', 'Afternoon', 'Confirmed'),
+(3, 1, 7, '2025-07-24', 'Morning', 'Confirmed'),
+(4, 1, 1, '2025-07-25', 'Evening', 'Confirmed'),
+(5, 1, 2, '2025-07-26', 'Afternoon', 'Confirmed'),
+(6, 1, 4, '2025-07-27', 'Evening', 'Confirmed'),
+(7, 1, 6, '2025-07-28', 'Morning', 'Confirmed'),
+(8, 1, 8, '2025-07-29', 'Afternoon', 'Confirmed'),
+(9, 1, 9, '2025-07-30', 'Evening', 'Confirmed'),
+(10, 1, 10, '2025-07-31', 'Morning', 'Confirmed'),
+(11, 1, 11, '2025-08-01', 'Afternoon', 'Confirmed'),
+(12, 1, 12, '2025-08-02', 'Evening', 'Confirmed'),
+(1, 1, 13, '2025-08-03', 'Morning', 'Confirmed'),
+(2, 1, 14, '2025-08-04', 'Afternoon', 'Confirmed'),
+(3, 1, 1, '2025-08-05', 'Evening', 'Confirmed'),
 
--- Doctor 2 - Upcoming
-(6, 2, 1, '2025-07-22', 'Afternoon', 'Confirmed'),
-(7, 2, 1, '2025-07-23', 'Morning', 'Confirmed'),
-(8, 2, 1, '2025-07-27', 'Afternoon', 'Confirmed'),
-(9, 2, 1, '2025-07-28', 'Morning', 'Confirmed'),
-(10, 2, 1, '2025-08-02', 'Morning', 'Confirmed'),
+-- Doctor 2
+(4, 2, 2, '2025-07-22', 'Afternoon', 'Confirmed'),
+(5, 2, 3, '2025-07-23', 'Morning', 'Confirmed'),
+(6, 2, 4, '2025-07-24', 'Evening', 'Confirmed'),
+(7, 2, 5, '2025-07-25', 'Morning', 'Confirmed'),
+(8, 2, 6, '2025-07-26', 'Evening', 'Confirmed'),
+(9, 2, 7, '2025-07-27', 'Morning', 'Confirmed'),
+(10, 2, 8, '2025-07-28', 'Afternoon', 'Confirmed'),
+(11, 2, 9, '2025-07-29', 'Evening', 'Confirmed'),
+(12, 2, 10, '2025-07-30', 'Morning', 'Confirmed'),
+(1, 2, 11, '2025-07-31', 'Afternoon', 'Confirmed'),
+(2, 2, 12, '2025-08-01', 'Evening', 'Confirmed'),
+(3, 2, 13, '2025-08-02', 'Morning', 'Confirmed'),
+(4, 2, 14, '2025-08-03', 'Afternoon', 'Confirmed'),
+(5, 2, 1, '2025-08-04', 'Evening', 'Confirmed'),
+(6, 2, 2, '2025-08-05', 'Morning', 'Confirmed');
 
--- Doctor 3 - Upcoming
-(11, 3, 1, '2025-07-22', 'Morning', 'Confirmed'),
-(12, 3, 1, '2025-07-24', 'Afternoon', 'Confirmed'),
-(13, 3, 1, '2025-07-27', 'Morning', 'Confirmed'),
-(14, 3, 1, '2025-07-28', 'Morning', 'Confirmed'),
-(15, 3, 1, '2025-08-02', 'Morning', 'Confirmed'),
-
--- Doctor 1 - Completed
-(1, 1, 1, '2025-07-10', 'Morning', 'Completed'),
-(2, 1, 2, '2025-07-11', 'Afternoon', 'Completed'),
-(3, 1, 3, '2025-07-12', 'Evening', 'Completed'),
-(1, 1, 2, '2025-07-13', 'Morning', 'Completed'),
-
--- Doctor 2 - Completed
-(1, 2, 1, '2025-07-14', 'Afternoon', 'Completed'),
-(1, 2, 3, '2025-07-15', 'Evening', 'Completed');
-
-
--- Insert sample Diagnoses
-INSERT INTO Diagnoses (appointment_id, notes)
-VALUES (12, N'General check-up. Patient is healthy. No issues detected.'),
-       (13, N'Tartar removal. Slight plaque buildup found.'),
-       (14, N'Teeth whitening with laser. Teeth slightly sensitive after treatment.');
-GO
-
--- Insert sample Prescriptions
-INSERT INTO Prescriptions (appointment_id, medication_details)
-VALUES (12, N'No medication needed.'),
-       (13, N'Antiseptic mouthwash, use twice a day.'),
-       (14, N'Paracetamol 500mg if needed for pain, do not exceed 3 tablets per day.');
-GO
-
--- Insert sample Treatment
-INSERT INTO Treatment (appointment_id, treatment_type, treatment_notes)
-VALUES (12, N'General Check-up', N'No treatment required. Periodic monitoring only.'),
-       (13, N'Teeth Cleaning', N'Tartar removed and teeth polished.'),
-       (14, N'Teeth Whitening', N'Laser technology used at the clinic.');
-GO
+INSERT INTO Diagnoses (appointment_id, notes, created_at)
+VALUES
+    (1, 'Flu', '2025-01-05'),
+    (2, 'Toothache', '2025-02-10'),
+    (3, 'Back Pain', '2025-03-12'),
+    (4, 'Myopia', '2025-04-03'),
+    (5, 'Flu', '2025-05-09'),
+    (6, 'Fracture', '2025-06-01'),
+    (7, 'Headache', '2025-06-15'),
+    (8, 'Flu', '2025-07-02'),
+    (9, 'Toothache', '2025-07-05'),
+    (10, 'Myopia', '2025-07-10'),
+    (11, 'Flu', '2025-07-15'),
+    (12, 'Back Pain', '2025-07-20');
 
 -- Insert sample Category
 INSERT INTO Category (category_name)
@@ -542,58 +537,58 @@ VALUES (1, 1, N'Bài viết rất hữu ích, tôi sẽ đi khám bệnh định
        (5, 4, N'Bài viết rất bổ ích, tôi sẽ áp dụng chế độ dinh dưỡng cho người cao tuổi.', '2025-06-30 14:40:00.000');
 GO
 
--- Sample DoctorShifts
+-- DoctorShifts from 22/07/2025 to 05/08/2025 (no Night slot)
 INSERT INTO DoctorShifts (doctor_id, shift_date, time_slot, status)
 VALUES
 -- Doctor 1
 (1, '2025-07-22', 'Morning', 'Working'),
 (1, '2025-07-23', 'Afternoon', 'Working'),
 (1, '2025-07-24', 'Morning', 'PendingLeave'),
-(1, '2025-07-25', 'Afternoon', 'Working'),
+(1, '2025-07-25', 'Evening', 'Working'),
 (1, '2025-07-26', 'Morning', 'Leave'),
-(1, '2025-07-27', 'Evening', 'Working'),
-(1, '2025-07-28', 'Morning', 'Working'),
-(1, '2025-07-29', 'Afternoon', 'Working'),
-(1, '2025-07-30', 'Morning', 'PendingLeave'),
-(1, '2025-07-31', 'Evening', 'Working'),
-(1, '2025-08-01', 'Morning', 'Leave'),
-(1, '2025-08-02', 'Afternoon', 'Working'),
+(1, '2025-07-27', 'Afternoon', 'Working'),
+(1, '2025-07-28', 'Evening', 'Working'),
+(1, '2025-07-29', 'Morning', 'Rejected'),
+(1, '2025-07-30', 'Afternoon', 'Working'),
+(1, '2025-07-31', 'Morning', 'Working'),
+(1, '2025-08-01', 'Afternoon', 'Working'),
+(1, '2025-08-02', 'Evening', 'Working'),
 (1, '2025-08-03', 'Morning', 'Working'),
 (1, '2025-08-04', 'Afternoon', 'Working'),
-(1, '2025-08-05', 'Morning', 'Working'),
+(1, '2025-08-05', 'Morning', 'PendingLeave'),
 
 -- Doctor 2
 (2, '2025-07-22', 'Afternoon', 'Working'),
 (2, '2025-07-23', 'Morning', 'Working'),
-(2, '2025-07-24', 'Evening', 'PendingLeave'),
-(2, '2025-07-25', 'Evening', 'Leave'),
-(2, '2025-07-26', 'Morning', 'Rejected'),
-(2, '2025-07-27', 'Afternoon', 'Working'),
-(2, '2025-07-28', 'Morning', 'Working'),
+(2, '2025-07-24', 'Evening', 'Leave'),
+(2, '2025-07-25', 'Morning', 'Working'),
+(2, '2025-07-26', 'Afternoon', 'PendingLeave'),
+(2, '2025-07-27', 'Morning', 'Working'),
+(2, '2025-07-28', 'Evening', 'Working'),
 (2, '2025-07-29', 'Afternoon', 'Working'),
-(2, '2025-07-30', 'Morning', 'Leave'),
-(2, '2025-07-31', 'Afternoon', 'PendingLeave'),
-(2, '2025-08-01', 'Evening', 'Working'),
-(2, '2025-08-02', 'Morning', 'Working'),
-(2, '2025-08-03', 'Afternoon', 'Working'),
-(2, '2025-08-04', 'Morning', 'Working'),
+(2, '2025-07-30', 'Morning', 'Working'),
+(2, '2025-07-31', 'Evening', 'Working'),
+(2, '2025-08-01', 'Morning', 'Rejected'),
+(2, '2025-08-02', 'Afternoon', 'Working'),
+(2, '2025-08-03', 'Morning', 'Working'),
+(2, '2025-08-04', 'Evening', 'Working'),
 (2, '2025-08-05', 'Afternoon', 'Working'),
 
 -- Doctor 3
-(3, '2025-07-22', 'Morning', 'Working'),
+(3, '2025-07-22', 'Evening', 'Working'),
 (3, '2025-07-23', 'Morning', 'PendingLeave'),
 (3, '2025-07-24', 'Afternoon', 'Working'),
-(3, '2025-07-25', 'Evening', 'Rejected'),
-(3, '2025-07-26', 'Afternoon', 'Leave'),
-(3, '2025-07-27', 'Morning', 'Working'),
-(3, '2025-07-28', 'Morning', 'Working'),
-(3, '2025-07-29', 'Afternoon', 'Working'),
-(3, '2025-07-30', 'Evening', 'Working'),
-(3, '2025-07-31', 'Morning', 'PendingLeave'),
-(3, '2025-08-01', 'Afternoon', 'Leave'),
+(3, '2025-07-25', 'Morning', 'Working'),
+(3, '2025-07-26', 'Evening', 'Rejected'),
+(3, '2025-07-27', 'Morning', 'Leave'),
+(3, '2025-07-28', 'Afternoon', 'Working'),
+(3, '2025-07-29', 'Evening', 'Working'),
+(3, '2025-07-30', 'Morning', 'Working'),
+(3, '2025-07-31', 'Afternoon', 'Working'),
+(3, '2025-08-01', 'Evening', 'Working'),
 (3, '2025-08-02', 'Morning', 'Working'),
-(3, '2025-08-03', 'Evening', 'Working'),
-(3, '2025-08-04', 'Morning', 'Working'),
+(3, '2025-08-03', 'Afternoon', 'Working'),
+(3, '2025-08-04', 'Morning', 'PendingLeave'),
 (3, '2025-08-05', 'Afternoon', 'Working');
 
 -- Insert sample PageContent for pactHome (services.jsp)
@@ -741,3 +736,21 @@ VALUES
 
 -- Hành động phân quyền admin
 (105, 'Pham Van I', 205, 'Hoang Van K', 'employee', 'Promote to Admin', DATEADD(DAY, -10, GETDATE()));
+
+INSERT INTO Payments (appointment_id, amount, method, status, pay_content, created_at, paid_at)
+VALUES
+    (1, 100000, 'Cash', 'Paid', 'General Checkup', '2025-01-05', '2025-01-05'),
+    (2, 150000, 'Card', 'Paid', 'Dental Cleaning', '2025-02-10', '2025-02-10'),
+    (3, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-03-12', '2025-03-12'),
+    (4, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-04-03', '2025-04-03'),
+    (5, 180000, 'Card', 'Paid', 'General Checkup', '2025-05-09', '2025-05-09'),
+    (6, 500000, 'Cash', 'Paid', 'Emergency Visit', '2025-06-01', '2025-06-01'),
+    (16, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-06-15', '2025-06-15'),
+    (17, 150000, 'Card', 'Paid', 'General Checkup', '2025-07-02', '2025-07-02'),
+    (18, 180000, 'Cash', 'Paid', 'Dental Cleaning', '2025-07-05', '2025-07-05'),
+    (19, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-07-10', '2025-07-10'),
+    (20, 300000, 'Cash', 'Paid', 'Emergency Visit', '2025-07-15', '2025-07-15'),
+    (21, 400000, 'Card', 'Paid', 'Specialist Consultation', '2025-07-20', '2025-07-20');
+
+
+
