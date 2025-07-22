@@ -321,11 +321,12 @@ GO
 -- Insert sample RoleSystemItems
 INSERT INTO RoleSystemItems (role_id, item_id)
 VALUES 
-    (1, 1),  -- Doctor: Book Appointment
-    (1, 2),  -- Doctor: View Prescription
-    (1, 7),  -- Doctor: Teeth Whitening
-    (1, 8),  -- Doctor: Dental Checkup
-    (1, 9),  -- Doctor: Tooth Extraction
+	--Doctor Navication
+    (1, 23), -- Account (item_id = 23, item_type = 'Navigation')
+    (1, 24), -- Logout (item_id = 24, item_type = 'Navigation')
+    (1, 25), -- My Profile (item_id = 25, item_type = 'Navigation')
+    (1, 26), -- Change Password (item_id = 26, item_type = 'Navigation')
+	--Admin Navication
     (3, 3),  -- Admin: Manage Employees
     (3, 4),  -- Admin: Manage Patients
     (3, 5),  -- Admin: View Statistics

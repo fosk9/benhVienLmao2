@@ -1,5 +1,6 @@
 package controller;
 
+import util.HeaderController;
 import view.PatientDAO;
 import view.SystemItemDAO;
 import model.Patient;
@@ -33,14 +34,14 @@ public class ServicesServlet extends HttpServlet {
         PatientDAO patientDAO = new PatientDAO();
         Patient patient = patientDAO.getPatientByUsername(username);
 
-        // Fetch navigation items for patient role (role_id = 5)
-        SystemItemDAO systemItemDAO = new SystemItemDAO();
-        List<SystemItem> systemItems = systemItemDAO.getActiveItemsByRoleAndType(5, "Navigation");
+//      Fetch navigation items for patient role (role_id = 5)
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
+
 
         if (patient != null) {
             session.setAttribute("patientId", patient.getPatientId());
             request.setAttribute("patient", patient);
-            request.setAttribute("systemItems", systemItems);
             request.getRequestDispatcher("/Pact/services.jsp").forward(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/login");

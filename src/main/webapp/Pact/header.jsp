@@ -27,7 +27,7 @@
           <!-- Logo -->
           <div class="col-xl-2 col-lg-2 col-md-1">
             <div class="logo">
-              <a href="<c:url value='/doctor-home'/>"><img src="<c:url value='/assets/img/logo/logo.png'/>"
+              <a href="<c:url value='/pactHome'/>"><img src="<c:url value='/assets/img/logo/logo.png'/>"
                                                         alt=""></a>
             </div>
           </div>

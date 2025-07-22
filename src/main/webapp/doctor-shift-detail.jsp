@@ -15,7 +15,7 @@
     <jsp:include page="common-css.jsp"/>
 </head>
 <body>
-<jsp:include page="header.jsp"/>
+<jsp:include page="doctor-header.jsp"/>
 
 <!-- Main content -->
 <main>

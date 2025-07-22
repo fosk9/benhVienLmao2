@@ -1,5 +1,6 @@
 package controller;
 
+import util.HeaderController;
 import view.AppointmentDAO;
 import view.EmployeeDAO;
 import view.AppointmentTypeDAO;
@@ -32,6 +33,9 @@ public class AppointmentsServlet extends HttpServlet {
         String path = request.getServletPath();
         AppointmentDAO appointmentDAO = new AppointmentDAO();
 
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
         if ("/appointments/details".equals(path)) {
             int appointmentId;
             try {
@@ -74,6 +78,7 @@ public class AppointmentsServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/login");
                     return;
                 }
+
 
                 PatientDAO patientDAO = new PatientDAO();
                 Patient patient = patientDAO.getPatientById(appointment.getPatientId());

@@ -1,5 +1,6 @@
 package controller;
 
+import util.HeaderController;
 import validation.DoctorDetailsValidator;
 import validation.EmployeeValidator;
 import view.DoctorDetailDAO;
@@ -25,6 +26,9 @@ public class DoctorDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
         int id = Integer.parseInt(req.getParameter("id"));
+
+        HeaderController headerController = new HeaderController();
+        req.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
 
         switch (path) {
             case "/doctor-details":

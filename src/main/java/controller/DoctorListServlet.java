@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Employee;
+import util.HeaderController;
 import validation.InputSanitizer;
 import view.EmployeeDAO;
 import view.SpecializationDAO;
@@ -17,7 +18,9 @@ public class DoctorListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+// Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
         String search = request.getParameter("search");
         search = InputSanitizer.cleanSearchQuery(search);
         String gender = request.getParameter("gender");

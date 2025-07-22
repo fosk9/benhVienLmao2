@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<jsp:include page="header.jsp"/>
+<jsp:include page="doctor-header.jsp"/>
 
 <div class="container mt-5">
     <h2 class="mb-4">Doctor Details</h2>

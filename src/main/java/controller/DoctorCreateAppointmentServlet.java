@@ -6,6 +6,7 @@ import jakarta.servlet.http.*;
 import model.Appointment;
 import model.Employee;
 import model.Patient;
+import util.HeaderController;
 import view.AppointmentDAO;
 import view.PatientDAO;
 
@@ -26,6 +27,10 @@ public class DoctorCreateAppointmentServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         Object acc = (session != null) ? session.getAttribute("account") : null;
+
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
 
         if (acc == null || !(acc instanceof Employee) || ((Employee) acc).getRoleId() != 1) {
             response.sendRedirect("login.jsp");

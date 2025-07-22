@@ -6,6 +6,7 @@ import jakarta.servlet.http.*;
 import model.DoctorShift;
 import model.Employee;
 import model.Patient;
+import util.HeaderController;
 import view.AppointmentDAO;
 import view.DoctorShiftDAO;
 import util.ScheduleUtils;
@@ -26,6 +27,9 @@ public class DoctorShiftServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
+        // Set navigation items for the header
+        HeaderController headerController = new HeaderController();
+        req.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
 
         switch (path) {
             case "/doctor-schedule":
