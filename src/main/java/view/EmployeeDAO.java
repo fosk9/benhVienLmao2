@@ -9,6 +9,28 @@ import java.util.List;
 
 public class EmployeeDAO extends DBContext<Employee> {
 
+    public boolean updateEmployee(Employee e) {
+        String sql = "UPDATE Employees SET full_name=?, email=?, phone=?, gender=?, dob=?, role_id=?, acc_status=?, employee_ava_url=? WHERE employee_id=?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, e.getFullName());
+            ps.setString(2, e.getEmail());
+            ps.setString(3, e.getPhone());
+            ps.setString(4, e.getGender());
+            ps.setDate(5, e.getDob());
+            ps.setInt(6, e.getRoleId());
+            ps.setInt(7, e.getAccStatus());
+            ps.setString(8, e.getEmployeeAvaUrl());
+            ps.setInt(9, e.getEmployeeId());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.err.println("❌ Lỗi khi updateEmployee: " + ex.getMessage());
+            return false;
+        }
+    }
+
     public List<EmployeeWithStatus> getEmployeesWithStatus(String keyword, String statusFilter, int offset, int limit) {
         List<EmployeeWithStatus> list = new ArrayList<>();
 
@@ -245,29 +267,31 @@ public class EmployeeDAO extends DBContext<Employee> {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Employee employee = new Employee();
+                    employee.setEmployeeId(rs.getInt("employee_id"));
+                    employee.setUsername(rs.getString("username"));
+                    employee.setPasswordHash(rs.getString("password_hash"));
+                    employee.setFullName(rs.getString("full_name"));
+                    employee.setDob(rs.getDate("dob"));
+                    employee.setGender(rs.getString("gender"));
+                    employee.setEmail(rs.getString("email"));
+                    employee.setPhone(rs.getString("phone"));
+                    employee.setRoleId(rs.getInt("role_id"));
+                    employee.setEmployeeAvaUrl(rs.getString("employee_ava_url"));
+                    employee.setCreatedAt(rs.getDate("created_at")); // ✅ Thêm dòng này
+                    employee.setAccStatus(rs.getInt("acc_status"));
 
-            if (rs.next()) {
-                return Employee.builder()
-                        .employeeId(rs.getInt("employee_id"))
-                        .username(rs.getString("username"))
-                        .passwordHash(rs.getString("password_hash"))
-                        .fullName(rs.getString("full_name"))
-                        .dob(rs.getDate("dob"))
-                        .gender(rs.getString("gender"))
-                        .email(rs.getString("email"))
-                        .phone(rs.getString("phone"))
-                        .roleId(rs.getInt("role_id"))
-                        .employeeAvaUrl(rs.getString("employee_ava_url"))
-                        .accStatus(rs.getObject("acc_status") != null ? rs.getInt("acc_status") : null)
-                        .build();
+                    return employee;
+                }
             }
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     // 1. Đếm số staff: role_id khác Admin (3) và Manager (4)
     public int countTotalStaff() {

@@ -68,7 +68,7 @@ public class LoginServlet extends HttpServlet {
                             response.sendRedirect(request.getContextPath() + "/admin-dashboard");
                             break;
                         case 4:
-                            response.sendRedirect(request.getContextPath() + "/update-user-role");
+                            response.sendRedirect(request.getContextPath() + "/manager-dashboard");
                             break;
                         default:
                             response.sendRedirect(request.getContextPath() + "/index.html");

@@ -94,9 +94,6 @@
                         <button type="button" class="btn-hospital btn-secondary mr-2" onclick="exportHistory()">
                             <i class="fas fa-download mr-2"></i>Export History
                         </button>
-                        <button type="button" class="page-title-action" onclick="clearOldHistory()">
-                            <i class="fas fa-trash-alt mr-2"></i>Clear Old Logs
-                        </button>
                     </div>
                 </div>
             </div>
@@ -369,9 +366,6 @@
                                 </c:if>
                             </select>
                             <button type="button" class="btn-hospital btn-sm" onclick="executeBulkAction()">Apply</button>
-                        </div>
-                        <div class="tablenav-pages">
-                            Showing ${(currentPage - 1) * pageSize + 1} to ${fn:length(changeHistoryList) + (currentPage - 1) * pageSize} of ${totalRecords} entries
                         </div>
                     </div>
                 </c:if>

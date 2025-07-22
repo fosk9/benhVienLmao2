@@ -96,7 +96,18 @@
             </div>
           </div>
         </div>
-
+        <c:if test="${not empty successMessage}">
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle mr-2"></i>${successMessage}
+            <c:remove var="successMessage" scope="session"/>
+          </div>
+        </c:if>
+        <c:if test="${not empty errorMessage}">
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
+            <c:remove var="errorMessage" scope="session"/>
+          </div>
+        </c:if>
         <!-- Content Body -->
         <div class="content-body">
           <!-- Stats Cards -->
@@ -259,10 +270,10 @@
 
                       <td>
                         <div class="btn-group" role="group">
-                          <a href="view-doctor-detail?id=${e.employee.employeeId}" class="btn-hospital btn-primary btn-sm" title="View Details">
+                          <a href="${pageContext.request.contextPath}/staff-detail?id=${e.employee.employeeId}" class="btn-hospital btn-primary btn-sm" title="View Details">
                             <i class="fas fa-eye"></i>
                           </a>
-                          <a href="edit-doctor?id=${e.employee.employeeId}" class="btn-hospital btn-sm" title="Edit">
+                          <a href="${pageContext.request.contextPath}/staff-edit?id=${e.employee.employeeId}" class="btn-hospital btn-sm" title="Edit">
                             <i class="fas fa-edit"></i>
                           </a>
                           <a href="view-doctor-schedule?doctorId=${e.employee.employeeId}" class="btn-hospital btn-sm" title="Schedule">
