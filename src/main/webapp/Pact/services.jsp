@@ -32,6 +32,8 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/slick.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/nice-select.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/chatbot.css"/>
+
 </head>
 <body>
 
@@ -48,70 +50,7 @@
 </div>
 <jsp:include page="/Pact/header.jsp"/>
 <!-- Preloader End -->
-<%--<header>--%>
-<%--    <!-- Header Start -->--%>
-<%--    <div class="header-area">--%>
-<%--        <div class="main-header header-sticky">--%>
-<%--            <div class="container-fluid">--%>
-<%--                <div class="row align-items-center">--%>
-<%--                    <!-- Logo -->--%>
-<%--                    <div class="col-xl-2 col-lg-2 col-md-1">--%>
-<%--                        <div class="logo">--%>
-<%--                            <a href="<c:url value='/pactHome'/>"><img src="<c:url value='/assets/img/logo/logo.png'/>"--%>
-<%--                                                                      alt=""></a>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                    <div class="col-xl-10 col-lg-10 col-md-10">--%>
-<%--                        <div class="menu-main d-flex align-items-center justify-content-end">--%>
-<%--                            <!-- Main-menu -->--%>
-<%--                            <div class="main-menu f-right d-none d-lg-block">--%>
-<%--                                <nav>--%>
-<%--                                    <ul id="navigation">--%>
-<%--                                        <c:forEach var="item" items="${systemItems}">--%>
-<%--                                            <c:choose>--%>
-<%--                                                <c:when test="${item.itemName == 'Account'}">--%>
-<%--                                                    <li>--%>
-<%--                                                        <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>--%>
-<%--                                                        <ul class="submenu">--%>
-<%--                                                            <c:forEach var="subItem" items="${systemItems}">--%>
-<%--                                                                <c:if test="${subItem.itemName == 'Logout' || subItem.itemName == 'My Profile' || subItem.itemName == 'Change Password'}">--%>
-<%--                                                                    <li>--%>
-<%--                                                                        <a href="<c:url value='/${subItem.itemUrl}'/>">${subItem.itemName}</a>--%>
-<%--                                                                    </li>--%>
-<%--                                                                </c:if>--%>
-<%--                                                            </c:forEach>--%>
-<%--                                                        </ul>--%>
-<%--                                                    </li>--%>
-<%--                                                </c:when>--%>
-<%--                                                <c:when test="${item.itemName != 'Logout' && item.itemName != 'My Profile' && item.itemName != 'Change Password' && item.itemName != 'Book Appointment'}">--%>
-<%--                                                    <li>--%>
-<%--                                                        <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>--%>
-<%--                                                    </li>--%>
-<%--                                                </c:when>--%>
-<%--                                            </c:choose>--%>
-<%--                                        </c:forEach>--%>
-<%--                                    </ul>--%>
-<%--                                </nav>--%>
-<%--                            </div>--%>
-<%--                            <div class="header-right-btn f-right d-none d-lg-block ml-15">--%>
-<%--                                <c:forEach var="item" items="${systemItems}">--%>
-<%--                                    <c:if test="${item.itemName == 'Book Appointment'}">--%>
-<%--                                        <a href="<c:url value='/${item.itemUrl}'/>" class="btn header-btn">${item.itemName}</a>--%>
-<%--                                    </c:if>--%>
-<%--                                </c:forEach>--%>
-<%--                            </div>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                    <!-- Mobile Menu -->--%>
-<%--                    <div class="col-12">--%>
-<%--                        <div class="mobile_menu d-block d-lg-none"></div>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-<%--    <!-- Header End -->--%>
-<%--</header>--%>
+
 <main>
     <!-- Slider Area Start -->
     <div class="slider-area slider-area2">
@@ -302,6 +241,19 @@
     </section>
     <!-- About Law End -->
 </main>
+<!-- Chat icon -->
+<button id="chat-icon">💬</button>
+
+<!-- Chat box -->
+<div id="chatbox">
+    <div id="chatbox-header">Chatbot</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type a message..."/>
+        <button id="send-button">Send</button>
+    </div>
+</div>
+
 <footer>
     <div class="footer-wrappr section-bg3" data-background="<c:url value='/assets/img/gallery/footer-bg.png'/>">
         <div class="footer-area footer-padding">
@@ -362,9 +314,9 @@
     </div>
 </footer>
 <!-- Scroll Up -->
-<div id="back-top">
-    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
-</div>
+<%--<div id="back-top">--%>
+<%--    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>--%>
+<%--</div>--%>
 
 <!-- JS here -->
 <script src="<c:url value='/assets/js/vendor/modernizr-3.5.0.min.js'/>"></script>
@@ -400,5 +352,9 @@
 <!-- Jquery Plugins, Main Jquery -->
 <script src="<c:url value='/assets/js/plugins.js'/>"></script>
 <script src="<c:url value='/assets/js/main.js'/>"></script>
+<script>
+    const contextPath = "<%=request.getContextPath()%>";
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/chatbot.js"></script>
 </body>
 </html>
