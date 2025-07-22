@@ -103,9 +103,9 @@ public class PatientExaminationHistoryServlet extends HttpServlet {
             doctor = employeeDAO.select(appointment.getDoctorId());
         }
 
-        List<Diagnosis> diagnoses = diagnosisDAO.getByAppointmentId(appointmentId);
-        List<Prescription> prescriptions = prescriptionDAO.getByAppointmentId(appointmentId);
-        List<Treatment> treatments = treatmentDAO.getByAppointmentId(appointmentId);
+        List<Diagnosis> diagnoses = diagnosisDAO.getListByAppointmentId(appointmentId);
+        List<Prescription> prescriptions = prescriptionDAO.getListByAppointmentId(appointmentId);
+        List<Treatment> treatments = treatmentDAO.getListByAppointmentId(appointmentId);
 
         req.setAttribute("appointment", appointment);
         req.setAttribute("patient", patient);

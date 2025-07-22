@@ -10,7 +10,28 @@ import java.util.logging.Logger;
 public class DiagnosisDAO extends DBContext<Diagnosis> {
     private static final Logger LOGGER = Logger.getLogger(DiagnosisDAO.class.getName());
 
-    public List<Diagnosis> getByAppointmentId(int appointmentId) {
+    public Diagnosis getByAppointmentId(int appointmentId) {
+        String sql = "SELECT TOP 1 * FROM Diagnoses WHERE appointment_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, appointmentId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching diagnosis by appointment_id=" + appointmentId + ": " + e.getMessage());
+            throw new RuntimeException("Failed to fetch diagnosis", e);
+        } finally {
+            closeConnection(conn);
+        }
+        return null;
+    }
+
+    public List<Diagnosis> getListByAppointmentId(int appointmentId) {
         List<Diagnosis> list = new ArrayList<>();
         String sql = "SELECT * FROM Diagnoses WHERE appointment_id = ?";
         Connection conn = null;
