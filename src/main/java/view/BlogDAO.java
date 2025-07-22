@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 public class BlogDAO extends DBContext<Blog> {
     private static final Logger LOGGER = Logger.getLogger(BlogDAO.class.getName());
 
+
     public List<Blog> getRecentBlogsLimited(int limit) {
         List<Blog> recentBlogs = new ArrayList<>();
         if (limit <= 0) {

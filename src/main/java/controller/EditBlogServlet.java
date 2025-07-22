@@ -6,6 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Blog;
 import model.Category;
+import model.Employee;
+import util.HistoryLogger;
 import view.BlogDAO;
 
 import java.io.File;
@@ -23,6 +25,12 @@ public class EditBlogServlet extends HttpServlet {
         try {
             request.setCharacterEncoding("UTF-8");
 
+            Employee manager = (Employee) request.getSession().getAttribute("account");
+            if (manager == null || manager.getRoleId() != 4) {
+                request.setAttribute("error", "You must be logged in as a manager to perform this action.");
+                response.sendRedirect("login.jsp");
+                return;
+            }
             String blogIdStr = request.getParameter("blogId");
             if (blogIdStr == null || blogIdStr.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "Không tìm thấy ID blog để cập nhật.");
@@ -101,6 +109,16 @@ public class EditBlogServlet extends HttpServlet {
 
             int result = blogDAO.update(blog);
             if (result > 0) {
+                if (manager != null) {
+                    HistoryLogger.log(
+                            manager.getEmployeeId(),
+                            manager.getFullName(),
+                            result, // blog_id được trả về
+                            blogName,
+                            "Blog",
+                            "Edit Blog - " + blogName
+                    );
+                }
                 request.setAttribute("successMessage", "Cập nhật blog thành công!");
             } else {
                 request.setAttribute("errorMessage", "Cập nhật blog thất bại!");
@@ -120,7 +138,7 @@ public class EditBlogServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Category> categories = blogDAO.getAllCategories();
         request.setAttribute("categories", categories);
-        request.getRequestDispatcher("/Admin/edit-blog.jsp").forward(request, response);
+        request.getRequestDispatcher("/Manager/edit-blog.jsp").forward(request, response);
     }
 
     private String saveImage(Part imagePart) throws IOException {
