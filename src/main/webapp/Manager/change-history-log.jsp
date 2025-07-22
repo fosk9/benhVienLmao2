@@ -91,7 +91,7 @@
                         <p class="page-subtitle">Track all system changes and user activities</p>
                     </div>
                     <div>
-                        <button type="button" class="btn-hospital btn-secondary mr-2" onclick="exportHistory()">
+                        <button type="button" style="display: none" class="btn-hospital btn-secondary mr-2" onclick="exportHistory()">
                             <i class="fas fa-download mr-2"></i>Export History
                         </button>
                     </div>
@@ -356,7 +356,7 @@
 
                 <!-- Bulk Actions -->
                 <c:if test="${not empty changeHistoryList}">
-                    <div class="tablenav">
+                    <div class="tablenav" style="display: none">
                         <div class="actions">
                             <select id="bulkAction" class="form-control" style="width: auto; display: inline-block;">
                                 <option value="">Bulk Actions</option>
