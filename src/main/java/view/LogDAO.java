@@ -1,5 +1,7 @@
 package view;
 
+import websocket.LogWebSocket;
+
 import model.Log;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,8 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-// DAO class for system log operations, extending DBContext
-public class LogDAO extends DBContext<Log> {
+public class LogDAO extends DBContext<Log>{
 
     public LogDAO() {
         super();
@@ -187,27 +188,8 @@ public class LogDAO extends DBContext<Log> {
 
     @Override
     public int insert(Log log) {
-        String query = "INSERT INTO SystemLogs (employee_id, patient_id, action, log_level, created_at) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = getConn();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            if (log.getEmployeeId() != null) {
-                stmt.setInt(1, log.getEmployeeId());
-                stmt.setNull(2, java.sql.Types.INTEGER);
-            } else if (log.getPatientId() != null) {
-                stmt.setNull(1, java.sql.Types.INTEGER);
-                stmt.setInt(2, log.getPatientId());
-            } else {
-                stmt.setNull(1, java.sql.Types.INTEGER);
-                stmt.setNull(2, java.sql.Types.INTEGER);
-            }
-            stmt.setString(3, log.getAction());
-            stmt.setString(4, log.getLogLevel());
-            stmt.setTimestamp(5, log.getCreatedAt());
-            return stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        // Log insertion is handled by Log4j 2 DatabaseAppender
+        return 0;
     }
 
     @Override

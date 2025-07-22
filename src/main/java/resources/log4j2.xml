@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="TRACE">
+<Configuration status="WARN">
     <Appenders>
         <!-- Console Appender -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg %X{employee_id} %X{patient_id}%n"/>
         </Console>
         <!-- File Appender -->
-        <File name="File" fileName="logs/benhVienLmao.log" append="true" immediateFlush="true">
+        <File name="File" fileName="logs/benhVienLmao.log" append="true">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg %X{employee_id} %X{patient_id}%n"/>
         </File>
         <!-- Database Appender -->
-        <JDBC name="DatabaseAppender" tableName="SystemLogs" immediateFlush="true">
-            <DriverManager url="jdbc:sqlserver://localhost:1433;databaseName=benhvienlmao;encrypt=false" username="sa" password="123"/>
+        <JDBC name="DatabaseAppender" tableName="SystemLogs">
+            <ConnectionFactory class="com.benhvienlmao.utils.DBContext" method="getConn"/>
             <Column name="employee_id" pattern="%X{employee_id}" isUnicode="false"/>
             <Column name="patient_id" pattern="%X{patient_id}" isUnicode="false"/>
             <Column name="action" pattern="%message" isUnicode="true"/>
@@ -20,21 +20,6 @@
         </JDBC>
     </Appenders>
     <Loggers>
-        <Logger name="com.benhvienlmao" level="debug" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
-            <AppenderRef ref="DatabaseAppender"/>
-        </Logger>
-        <Logger name="controller" level="debug" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
-            <AppenderRef ref="DatabaseAppender"/>
-        </Logger>
-        <Logger name="view" level="debug" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
-            <AppenderRef ref="DatabaseAppender"/>
-        </Logger>
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
