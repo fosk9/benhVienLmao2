@@ -51,7 +51,7 @@ public class LogDAO extends DBContext<Log> {
             params.add(logLevel);
         }
 
-        query.append(" ORDER BY l.log_id ").append("newest".equalsIgnoreCase(sortOrder) ? "DESC" : "ASC");
+        query.append(" ORDER BY l.created_at ").append("newest".equalsIgnoreCase(sortOrder) ? "DESC" : "ASC");
         query.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
 
         try (Connection conn = getConn();
