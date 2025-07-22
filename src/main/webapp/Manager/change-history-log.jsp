@@ -71,7 +71,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link active">
+                    <a href="${pageContext.request.contextPath}/change-history-logSystem" class="nav-link active">
                         <i class="fas fa-history"></i>
                         <span>Change History</span>
                     </a>
@@ -186,7 +186,7 @@
             </div>
 
             <!-- Advanced Filter Section -->
-            <form action="change-history-log" method="get" id="filterForm">
+            <form action="change-history-logSystem" method="get" id="filterForm">
                 <div class="filter-section">
                     <div class="row">
                         <div class="col-md-3">
@@ -405,21 +405,21 @@
                                 <c:if test="${currentPage > 1}">
                                     <li class="page-item">
                                         <a class="page-link"
-                                           href="change-history-log?page=${currentPage - 1}&keyword=${fn:escapeXml(param.keyword)}&action=${fn:escapeXml(param.action)}&source=${fn:escapeXml(param.source)}&from=${fn:escapeXml(param.from)}&to=${fn:escapeXml(param.to)}">«</a>
+                                           href="change-history-logSystem?page=${currentPage - 1}&keyword=${fn:escapeXml(param.keyword)}&action=${fn:escapeXml(param.action)}&source=${fn:escapeXml(param.source)}&from=${fn:escapeXml(param.from)}&to=${fn:escapeXml(param.to)}">«</a>
                                     </li>
                                 </c:if>
 
                                 <c:forEach var="i" begin="1" end="${totalPages}">
                                     <li class="page-item ${i == currentPage ? 'active' : ''}">
                                         <a class="page-link"
-                                           href="change-history-log?page=${i}&keyword=${fn:escapeXml(param.keyword)}&action=${fn:escapeXml(param.action)}&source=${fn:escapeXml(param.source)}&from=${fn:escapeXml(param.from)}&to=${fn:escapeXml(param.to)}">${i}</a>
+                                           href="change-history-logSystem?page=${i}&keyword=${fn:escapeXml(param.keyword)}&action=${fn:escapeXml(param.action)}&source=${fn:escapeXml(param.source)}&from=${fn:escapeXml(param.from)}&to=${fn:escapeXml(param.to)}">${i}</a>
                                     </li>
                                 </c:forEach>
 
                                 <c:if test="${currentPage < totalPages}">
                                     <li class="page-item">
                                         <a class="page-link"
-                                           href="change-history-log?page=${currentPage + 1}&keyword=${fn:escapeXml(param.keyword)}&action=${fn:escapeXml(param.action)}&source=${fn:escapeXml(param.source)}&from=${fn:escapeXml(param.from)}&to=${fn:escapeXml(param.to)}">»</a>
+                                           href="change-history-logSystem?page=${currentPage + 1}&keyword=${fn:escapeXml(param.keyword)}&action=${fn:escapeXml(param.action)}&source=${fn:escapeXml(param.source)}&from=${fn:escapeXml(param.from)}&to=${fn:escapeXml(param.to)}">»</a>
                                     </li>
                                 </c:if>
                             </ul>
@@ -476,13 +476,13 @@
     function exportHistory() {
         const params = new URLSearchParams(window.location.search);
         params.set('action', 'export');
-        window.location.href = 'change-history-log?' + params.toString();
+        window.location.href = 'change-history-logSystem?' + params.toString();
     }
 
     function exportSelected(ids) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = 'change-history-log';
+        form.action = 'change-history-logSystem';
 
         const actionInput = document.createElement('input');
         actionInput.type = 'hidden';

@@ -276,6 +276,18 @@ CREATE TABLE ChangeHistory (
 );
 Go
 
+CREATE TABLE Log (
+    log_id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id INT NULL,
+    patient_id INT NULL,
+    user_name NVARCHAR(255),
+    role_name NVARCHAR(50),
+    action NVARCHAR(255),
+    log_level VARCHAR(10),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
 -- Insert sample Roles
 INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
@@ -293,7 +305,7 @@ VALUES
     ('Manage Employees', 'admin/manageEmployees', NULL, 'Feature'),
     ('Manage Patients', 'admin/managePatients', NULL, 'Feature'),
     ('View Statistics', 'admin/statistics', NULL, 'Feature'),
-    ('Approve Doctor Shifts', 'admin/shift-approval', NULL, 'Feature'),
+    ('View Logs', 'admin/logSocket', NULL, 'Feature'),
     ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
     ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
     ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
@@ -327,10 +339,8 @@ VALUES
     (1, 25), -- My Profile (item_id = 25, item_type = 'Navigation')
     (1, 26), -- Change Password (item_id = 26, item_type = 'Navigation')
 	--Admin Navication
-    (3, 3),  -- Admin: Manage Employees
-    (3, 4),  -- Admin: Manage Patients
     (3, 5),  -- Admin: View Statistics
-    (3, 6),  -- Admin: Approve Doctor Shifts
+    (3, 6),  -- Admin: Logs
     (3, 16), -- Admin: Manage System Items
     (3, 17), -- Admin: Manage System Contents
     (3, 18), -- Admin: Admin Home

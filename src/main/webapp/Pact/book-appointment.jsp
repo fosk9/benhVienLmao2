@@ -324,7 +324,7 @@
     }<c:if test="${!loop.last}">,</c:if>
     </c:forEach>
   ];
-  console.log("Loaded appointmentTypes:", appointmentTypes);
+  console.logSystem("Loaded appointmentTypes:", appointmentTypes);
 
   function getTypeById(id) {
     return appointmentTypes.find(t => t.appointmentTypeId == id);
@@ -348,7 +348,7 @@
 
     if (selectedId) {
       typeObj = getTypeById(selectedId);
-      console.log("Selected type object:", typeObj);
+      console.logSystem("Selected type object:", typeObj);
       if (typeObj && typeof typeObj.price === "number") {
         price = typeObj.price;
       } else {
@@ -377,7 +377,7 @@
     // Show/hide warning
     priceWarning.style.display = valid ? 'none' : '';
     // Log for debug
-    console.log("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
+    console.logSystem("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
   }
 
   document.addEventListener('DOMContentLoaded', function() {
