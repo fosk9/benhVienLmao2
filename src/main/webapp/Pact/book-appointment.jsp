@@ -301,7 +301,7 @@
         <label>Requires Specialist:</label>
         <div class="form-check">
           <input type="checkbox" class="form-check-input" id="requiresSpecialist" name="requiresSpecialist" <c:if test="${formData.requiresSpecialist || requiresSpecialist}">checked</c:if>>
-          <label class="form-check-label" for="requiresSpecialist">Yes (+50% price)</label>
+          <label class="form-check-label" for="requiresSpecialist">Yes</label>
         </div>
       </div>
       <div class="total-price-section">
@@ -324,7 +324,7 @@
     }<c:if test="${!loop.last}">,</c:if>
     </c:forEach>
   ];
-  console.logSystem("Loaded appointmentTypes:", appointmentTypes);
+  console.log("Loaded appointmentTypes:", appointmentTypes);
 
   function getTypeById(id) {
     return appointmentTypes.find(t => t.appointmentTypeId == id);
@@ -348,7 +348,7 @@
 
     if (selectedId) {
       typeObj = getTypeById(selectedId);
-      console.logSystem("Selected type object:", typeObj);
+      console.log("Selected type object:", typeObj);
       if (typeObj && typeof typeObj.price === "number") {
         price = typeObj.price;
       } else {
@@ -358,7 +358,7 @@
       valid = false;
     }
 
-    if (specialist && valid) price = price * 1.5;
+    if (specialist && valid) price = price;
 
     priceDisplay.innerText = price.toLocaleString('vi-VN');
     finalPriceInput.value = price;
@@ -377,7 +377,7 @@
     // Show/hide warning
     priceWarning.style.display = valid ? 'none' : '';
     // Log for debug
-    console.logSystem("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
+    console.log("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
   }
 
   document.addEventListener('DOMContentLoaded', function() {
