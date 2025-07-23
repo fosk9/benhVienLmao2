@@ -102,11 +102,21 @@
     <% } else if (success != null) { %>
     <div class="alert alert-success" style="text-align:center; color:green;"><%= success %></div>
     <% } %>
+    <% String passwordHint = (String) request.getAttribute("password_hint"); %>
+    <% if (passwordHint == null) {
+        passwordHint = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
+    } %>
+    <p style="font-size: 13px; color: #666; margin-top: -5px; margin-bottom: 15px;">
+        <%= passwordHint %>
+    </p>
+
 
     <form action="reset-password" method="post">
         <input type="password" name="new_password" placeholder="Enter new password" required />
+        <input type="password" name="confirm_password" placeholder="Confirm new password" required />
         <input type="submit" value="Change Password" />
     </form>
+
 
     <div class="link-group">
         <a href="login.jsp">Back to Login</a>

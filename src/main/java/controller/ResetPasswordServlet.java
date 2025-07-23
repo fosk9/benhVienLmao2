@@ -1,15 +1,17 @@
 package controller;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import util.PasswordUtils;
 import view.EmployeeDAO;
 import view.PatientDAO;
 
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
 import java.io.IOException;
 
 @WebServlet(name = "ResetPasswordServlet", urlPatterns = {"/reset-password"})
 public class ResetPasswordServlet extends HttpServlet {
+
     private PatientDAO patientDAO;
     private EmployeeDAO employeeDAO;
 
@@ -19,41 +21,52 @@ public class ResetPasswordServlet extends HttpServlet {
         employeeDAO = new EmployeeDAO();
     }
 
+    private static final String PASSWORD_REQUIREMENT_MSG =
+            "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String newPassword = request.getParameter("new_password");
+        String confirmPassword = request.getParameter("confirm_password");
         HttpSession session = request.getSession();
 
-
         String username = (String) session.getAttribute("username");
-        String userType = (String) session.getAttribute("user_type"); // Giá trị từ dropdown: "patient" hoặc "employee"
+        String userType = (String) session.getAttribute("user_type");
 
-        if (newPassword == null || !newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
-            request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
-            // Gửi lại dữ liệu đã nhập về JSP để hiển thị lại
-            request.setAttribute("username", username);
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+        if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            request.setAttribute("error", "Passwords do not match.");
+            request.getRequestDispatcher("reset-password.jsp").forward(request, response);
+            return;
+        }
+
+        if (!newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
+            request.setAttribute("error", PASSWORD_REQUIREMENT_MSG);
+            request.setAttribute("password_hint", PASSWORD_REQUIREMENT_MSG); // để hiển thị lại ở JSP
+            request.getRequestDispatcher("reset-password.jsp").forward(request, response);
             return;
         }
 
         if (username == null || userType == null) {
-            request.setAttribute("error", "Session hết hạn hoặc dữ liệu không đầy đủ. Vui lòng thử lại.");
+            request.setAttribute("error", "Session has expired or missing data. Please try again.");
             request.getRequestDispatcher("forgot-password.jsp").forward(request, response);
             return;
         }
 
+        // Hash password và cập nhật
+        String hashedPassword = PasswordUtils.hashPassword(newPassword);
         int updated = 0;
 
         switch (userType.toLowerCase()) {
             case "patient":
-                updated = patientDAO.updatePasswordByUsername(username, newPassword);
+                updated = patientDAO.updatePasswordByUsername(username, hashedPassword);
                 break;
             case "employee":
-                updated = employeeDAO.updatePasswordByUsername(username, newPassword);
+                updated = employeeDAO.updatePasswordByUsername(username, hashedPassword);
                 break;
             default:
-                request.setAttribute("error", "Loại người dùng không hợp lệ.");
+                request.setAttribute("error", "Invalid user type.");
                 request.getRequestDispatcher("reset-password.jsp").forward(request, response);
                 return;
         }
@@ -62,12 +75,13 @@ public class ResetPasswordServlet extends HttpServlet {
             session.removeAttribute("username");
             session.removeAttribute("otp");
             session.removeAttribute("user_type");
-            request.setAttribute("success", "Đổi mật khẩu thành công. Hãy đăng nhập lại.");
+            request.setAttribute("success", "Your password has been successfully reset. Please log in.");
             request.getRequestDispatcher("reset-password.jsp").forward(request, response);
         } else {
-            request.setAttribute("error", "Cập nhật mật khẩu thất bại.");
+            request.setAttribute("error", "Failed to update password. Please try again.");
             request.getRequestDispatcher("reset-password.jsp").forward(request, response);
         }
     }
+
 }
 

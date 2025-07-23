@@ -114,6 +114,14 @@
                 </div>
             </c:if>
 
+            <c:if test="${param.msg == 'created'}">
+                <div class="alert alert-success">✅ Account created and email sent successfully!</div>
+            </c:if>
+            <c:if test="${param.msg == 'created_but_email_failed'}">
+                <div class="alert alert-warning">⚠️ Account created, but failed to send email. Please notify the user manually.</div>
+            </c:if>
+
+
 
             <!-- Add Doctor Form -->
             <div class="card">
@@ -203,33 +211,6 @@
                                     <input type="file" class="form-control-file" id="profileImage" name="profileImage"
                                            accept="image/*">
                                     <small class="form-text text-muted">Upload a profile picture (optional)</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Account Settings Section -->
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <h5 class="section-title">Account Settings</h5>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="username">Username <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="username" name="username"
-                                           value="${param.username}" required>
-                                    <small class="form-text text-muted">Username for system login</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="password">Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" id="password" name="password" required>
-                                    <small class="form-text text-muted">Minimum 8 characters</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="confirmPassword">Confirm Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                                 </div>
                             </div>
                         </div>

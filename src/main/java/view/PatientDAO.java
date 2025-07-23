@@ -8,6 +8,59 @@ import java.util.List;
 
 public class PatientDAO extends DBContext<Patient> {
 
+    public boolean isUsernameTaken(String username) {
+        String sql = "SELECT COUNT(*) FROM Patients WHERE username = ?";
+        try (Connection conn = getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int count = rs.getInt(1);
+                    return count > 0; // true nếu đã tồn tại
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public Patient getPatientByEmailOrPhone(String email, String phone) {
+        String sql = "SELECT * FROM Patients WHERE email = ? OR phone = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ps.setString(2, phone);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Patient.builder()
+                            .patientId(rs.getInt("patient_id"))
+                            .username(rs.getString("username"))
+                            .passwordHash(rs.getString("password_hash"))
+                            .fullName(rs.getString("full_name"))
+                            .dob(rs.getDate("dob"))
+                            .gender(rs.getString("gender"))
+                            .email(rs.getString("email"))
+                            .phone(rs.getString("phone"))
+                            .address(rs.getString("address"))
+                            .insuranceNumber(rs.getString("insurance_number"))
+                            .emergencyContact(rs.getString("emergency_contact"))
+                            .patientAvaUrl(rs.getString("patient_ava_url"))
+                            .accStatus(rs.getInt("acc_status"))
+                            .build();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<Patient> select(int page, int pageSize) {
         List<Patient> patients = new ArrayList<>();
         String sql = "SELECT * FROM Patients ORDER BY patient_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
@@ -314,16 +367,29 @@ public class PatientDAO extends DBContext<Patient> {
 
     @Override
     public int insert(Patient patient) {
-        String sql = "INSERT INTO Patients (username, password_hash, full_name, dob, gender, email, phone, address, patient_ava_url, insurance_number, emergency_contact) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Patients " +
+                "(username, password_hash, full_name, dob, gender, email, phone, address, patient_ava_url, insurance_number, emergency_contact, acc_status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = getConn();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             setPreparedStatementFromPatient(ps, patient);
-            return ps.executeUpdate();
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1); // trả về patient_id mới
+                    }
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+
+        return 0; // lỗi
     }
 
     @Override
@@ -409,22 +475,6 @@ public class PatientDAO extends DBContext<Patient> {
             e.printStackTrace();
         }
         return list;
-    }
-
-    public static void main(String[] args) {
-        PatientDAO dao = new PatientDAO();
-        String testUsername = "john_doe"; // Thay bằng username thực tế trong DB
-        String testPassword = "123456"; // Thay bằng password thực tế trong DB
-
-        Patient patient = dao.login(testUsername, testPassword);
-        if (patient != null) {
-            System.out.println("Đăng nhập thành công:");
-            System.out.println("ID: " + patient.getPatientId());
-            System.out.println("Tên: " + patient.getFullName());
-            System.out.println("Trạng thái: " + patient.getAccStatus());
-        } else {
-            System.out.println("Đăng nhập thất bại hoặc tài khoản không tồn tại.");
-        }
     }
 
 }

@@ -7,6 +7,7 @@ import jakarta.servlet.http.*;
 import model.DoctorDetail;
 import model.Employee;
 import util.HistoryLogger;
+import util.PasswordUtils;
 import view.DoctorDetailDAO;
 import view.EmployeeDAO;
 
@@ -43,58 +44,29 @@ public class AddDoctorFormServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         Employee manager = (Employee) request.getSession().getAttribute("account");
-        if (manager == null || manager.getRoleId() != 4) { // Kiểm tra quyền quản lý
-            request.setAttribute("error", "You must be logged in as a manager to perform this action.");
+        if (manager == null || manager.getRoleId() != 4) {
             response.sendRedirect("login.jsp");
             return;
         }
+
         try {
-            // Get parameters
+            // Lấy dữ liệu từ form
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String dateOfBirth = request.getParameter("dateOfBirth");
             String gender = request.getParameter("gender");
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-            String licenseNumber = request.getParameter("licenseNumber");
-            int role = Integer.parseInt(request.getParameter("roleId")); // role = 2 là doctor
-            boolean isSpecialist = "true".equals(request.getParameter("specialist"));
+            int role = Integer.parseInt(request.getParameter("roleId")); // 1 là doctor
+
 
             Part profileImagePart = request.getPart("profileImage");
-            // Kiểm tra username trùng
-            if (employeeDAO.isUsernameTaken(username)) {
-                request.setAttribute("errorMessage", "Username đã tồn tại. Vui lòng chọn tên khác.");
-                doGet(request, response); // Trả về lại form
-                return;
-            }
 
-            // ==== Validation ====
+            // Validation
             StringBuilder errors = new StringBuilder();
-
-            // Xử lý: xóa khoảng trắng thừa, chuẩn hóa viết hoa chữ cái đầu
-            if (fullName != null) {
-                fullName = fullName.trim().replaceAll("\\s+", " "); // loại bỏ khoảng trắng thừa
-
-                // Viết hoa chữ cái đầu mỗi từ (nếu muốn)
-                String[] parts = fullName.split(" ");
-                for (int i = 0; i < parts.length; i++) {
-                    parts[i] = parts[i].substring(0, 1).toUpperCase() + parts[i].substring(1).toLowerCase();
-                }
-                fullName = String.join(" ", parts);
-            }
-
             if (email == null || !Pattern.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", email))
                 errors.append("Invalid email format.<br>");
-
             if (phone == null || !Pattern.matches("^(0[0-9]{9,10})$", phone))
-                errors.append("Phone number must be 9-15 digits.<br>");
-
-            if (username == null || username.length() < 4)
-                errors.append("Username must be at least 4 characters.<br>");
-
-            if (password == null || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
-                errors.append("Password must be at least 8 characters, including uppercase, lowercase, numbers and special characters.");}
+                errors.append("Invalid phone number.<br>");
 
             Date dob = null;
             if (dateOfBirth != null && !dateOfBirth.isEmpty()) {
@@ -104,36 +76,29 @@ public class AddDoctorFormServlet extends HttpServlet {
                 }
             }
 
-            if (profileImagePart != null && profileImagePart.getSize() > 0) {
-                long maxSize = 5 * 1024 * 1024;
-                if (profileImagePart.getSize() > maxSize) {
-                    errors.append("Image exceeds 5MB size limit.<br>");
-                }
-
-                String fileName = new File(profileImagePart.getSubmittedFileName()).getName().toLowerCase();
-                if (!fileName.matches(".*\\.(jpg|jpeg|png|gif|webp)$")) {
-                    errors.append("Image must be JPG, JPEG, PNG, GIF or WEBP format.<br>");
-                }
-            }
-
-
-            // Nếu có lỗi → trả về form
             if (errors.length() > 0) {
                 request.setAttribute("errorMessage", errors.toString());
                 doGet(request, response);
                 return;
             }
 
-            LOGGER.info("[AddDoctorForm] Creating new doctor: " + fullName);
+            // Sinh username và password
+            String username = email.split("@")[0];
+            while (employeeDAO.isUsernameTaken(username)) {
+                username += (int) (Math.random() * 1000);
+            }
 
+            String rawPassword = generateRandomPassword(10); // lưu để gửi email
+            String hashedPassword = PasswordUtils.hashPassword(rawPassword); // lưu DB
+
+
+            // Upload ảnh
             String imagePath = null;
             if (profileImagePart != null && profileImagePart.getSize() > 0) {
                 imagePath = saveImage(profileImagePart, request);
-                LOGGER.info("Uploaded avatar: " + imagePath);
             }
 
-
-            // role_id = 2 là doctor mặc định
+            // Tạo đối tượng Employee tạm thời (chưa insert DB)
             Employee employee = Employee.builder()
                     .fullName(fullName)
                     .email(email)
@@ -141,45 +106,46 @@ public class AddDoctorFormServlet extends HttpServlet {
                     .dob(dob)
                     .gender(gender)
                     .username(username)
-                    .passwordHash(password)
+                    .passwordHash(hashedPassword)
                     .roleId(role)
                     .accStatus(1)
                     .employeeAvaUrl(imagePath)
                     .build();
 
-            int employeeId = employeeDAO.insertReturnId(employee);
-            LOGGER.info("Created employee with ID: " + employeeId);
+            // Sinh OTP
+            String otp = generateOTP();
 
-            if (role == 1) { // Doctor
-                DoctorDetail doctorDetail = DoctorDetail.builder()
-                        .doctorId(employeeId)
-                        .licenseNumber(licenseNumber)
-                        .specialist(isSpecialist)
-                        .build();
-                doctorDetailsDAO.insert(doctorDetail);
-                LOGGER.info("Created DoctorDetail for ID: " + employeeId);
+            // Lưu session tạm
+            HttpSession session = request.getSession();
+            session.setAttribute("tempEmployee", employee);
+            session.setAttribute("generatedPassword", rawPassword); // để gửi mail sau
+            session.setAttribute("otp", otp);
+            session.setAttribute("account", manager);
+
+            if (role == 1) {
+                String licenseNumber = request.getParameter("licenseNumber");
+                boolean isSpecialist = "true".equals(request.getParameter("specialist"));
+                session.setAttribute("licenseNumber", licenseNumber);
+                session.setAttribute("isSpecialist", isSpecialist);
+                session.setAttribute("isDoctor", true);
+            } else {
+                session.setAttribute("isDoctor", false);
             }
 
-            // ✅ Ghi log tạo mới
-                HistoryLogger.log(
-                        manager.getEmployeeId(),
-                        manager.getFullName(),
-                        employeeId,
-                        fullName,
-                        "Employee",
-                        "Create Account     " + username
-                );
-                LOGGER.info("ChangeHistory log added for created account ID=" + employeeId);
+            // Gửi email OTP
+            SendingEmail sender = new SendingEmail();
+            sender.sendEmail(email, "Mã OTP xác minh tài khoản", "Mã OTP của bạn là: " + otp + "\nVui lòng không chia sẻ với ai.");
 
-            request.getSession().setAttribute("successMessage", "Account created successfully!");
-            response.sendRedirect("add-doctor-form");
+            // Chuyển tới trang nhập OTP
+            response.sendRedirect("otp-verification.jsp");
 
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error creating doctor account", ex);
+            LOGGER.log(Level.SEVERE, "Error during account preparation", ex);
             request.setAttribute("errorMessage", "An unexpected error occurred.");
             doGet(request, response);
         }
     }
+
 
     private String saveImage(Part imagePart, HttpServletRequest request) throws IOException {
         if (imagePart == null || imagePart.getSize() == 0) return null;
@@ -195,4 +161,19 @@ public class AddDoctorFormServlet extends HttpServlet {
 
         return "assets/img/blog/" + newFileName;
     }
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = (int) (Math.random() * chars.length());
+            sb.append(chars.charAt(index));
+        }
+        return sb.toString();
+    }
+
+    public String generateOTP() {
+        int otp = 100000 + (int)(Math.random() * 900000); // từ 100000 đến 999999
+        return String.valueOf(otp);
+    }
+
 }

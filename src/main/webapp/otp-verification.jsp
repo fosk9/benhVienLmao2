@@ -42,7 +42,8 @@
             border: 1px solid #ccc;
         }
 
-        input[type="submit"] {
+        input[type="submit"],
+        button[type="submit"] {
             width: 100%;
             background-color: #5AAC4E;
             color: white;
@@ -53,7 +54,8 @@
             cursor: pointer;
         }
 
-        input[type="submit"]:hover {
+        input[type="submit"]:hover,
+        button[type="submit"]:hover {
             background-color: #4a9a44;
         }
 
@@ -61,6 +63,13 @@
             color: red;
             text-align: center;
             margin-bottom: 15px;
+        }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .link-group {
@@ -80,29 +89,44 @@
             color: #1dc116;
             opacity: 0.5;
         }
+
+        .resend-form {
+            margin-top: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
 <div class="login-container">
     <h2>Enter OTP</h2>
+
     <% String error = (String) request.getAttribute("error"); %>
     <% if (error != null) { %>
     <div class="error-message"><%= error %></div>
     <% } %>
+
     <% String msg = request.getParameter("msg"); %>
     <% if ("otp_sent".equals(msg)) { %>
-    <p style="color: green; font-weight: bold;">Đã gửi OTP vào email.</p>
+    <div class="success-message">OTP has been sent to your email.</div>
+    <% } else if ("resend_success".equals(msg)) { %>
+    <div class="success-message">New OTP has been sent successfully.</div>
     <% } %>
 
-
     <form action="verify-otp" method="post">
-        <input type="text" name="otp" placeholder="Enter 8-character OTP" required />
+        <input type="text" name="otp" placeholder="Enter 6-digit OTP" required />
         <input type="submit" value="Verify OTP" />
     </form>
 
+    <% Boolean allowResend = (Boolean) request.getAttribute("allowResend"); %>
+    <% if (allowResend != null && allowResend) { %>
+    <form class="resend-form" action="resend-otp" method="get">
+        <button type="submit">Resend OTP</button>
+    </form>
+    <% } %>
+
     <div class="link-group">
-        <a href="forgot-password.jsp">Resend or Try Again</a>
+        <a href="login.jsp">Back to Login</a>
     </div>
 </div>
 

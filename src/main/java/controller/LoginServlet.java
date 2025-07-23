@@ -1,100 +1,94 @@
 package controller;
 
 import jakarta.servlet.ServletException;
-import view.EmployeeDAO;
-import view.PatientDAO;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+
 import model.Employee;
 import model.Patient;
+import util.PasswordUtils;
+import view.EmployeeDAO;
+import view.PatientDAO;
 
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
 import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String rawPassword = request.getParameter("password");
         String loginAs = request.getParameter("login-as");
 
         HttpSession session = request.getSession();
 
-        if ("Patient".equals(loginAs)) {
+        // Hash password trước khi kiểm tra DB
+        String hashedPassword = PasswordUtils.hashPassword(rawPassword);
+
+        if ("Patient".equalsIgnoreCase(loginAs)) {
             PatientDAO patientDAO = new PatientDAO();
-            Patient patient = patientDAO.login(username, password);
-            if (patient != null) {
-                // Kiểm tra trạng thái tài khoản
-                if (patient.getAccStatus() != null && patient.getAccStatus() == 1) {
-                    session.setAttribute("username", username);
-
-                    session.setAttribute("patientId", patient.getPatientId());
-                    session.setAttribute("role", "Patient");
-                    session.setAttribute("account", patient);
-                    session.setAttribute("login-as", "patient");
-                    response.sendRedirect(request.getContextPath() + "/pactHome");
-                    return;
-                } else {
-                    request.setAttribute("username", username);
-                    request.setAttribute("password", password);
-                    request.setAttribute("error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
-                }
+            Patient patient = patientDAO.login(username, hashedPassword);
+            if (patient != null && patient.getAccStatus() != null && patient.getAccStatus() == 1) {
+                session.setAttribute("username", username);
+                session.setAttribute("patientId", patient.getPatientId());
+                session.setAttribute("role", "Patient");
+                session.setAttribute("account", patient);
+                session.setAttribute("login-as", "patient");
+                response.sendRedirect(request.getContextPath() + "/pactHome");
+                return;
             } else {
-                request.setAttribute("username", username);
-                request.setAttribute("password", password);
-                request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
+                request.setAttribute("error", patient == null
+                        ? "Incorrect username or password."
+                        : "Your account has been deactivated. Please contact support.");
             }
-        } else if ("Employee".equals(loginAs)) {
+
+        } else if ("Employee".equalsIgnoreCase(loginAs)) {
             EmployeeDAO employeeDAO = new EmployeeDAO();
-            Employee employee = employeeDAO.login(username, password);
-            if (employee != null) {
-                // Kiểm tra trạng thái tài khoản
-                if (employee.getAccStatus() != null && employee.getAccStatus() == 1) {
-                    session.setAttribute("account", employee);
-                    session.setAttribute("username", username);
-                    session.setAttribute("role", employee.getRoleId());
-                    session.setAttribute("login-as", "employee");
+            Employee employee = employeeDAO.login(username, hashedPassword);
+            if (employee != null && employee.getAccStatus() != null && employee.getAccStatus() == 1) {
+                session.setAttribute("username", username);
+                session.setAttribute("account", employee);
+                session.setAttribute("role", employee.getRoleId());
+                session.setAttribute("login-as", "employee");
 
-                    int roleId = employee.getRoleId();
-                    switch (roleId) {
-                        case 1:
-                            response.sendRedirect(request.getContextPath() + "/doctor-home");
-                            break;
-                        case 2:
-                            response.sendRedirect(request.getContextPath() + "/receptionist-dashboard");
-                            break;
-                        case 3:
-                            response.sendRedirect(request.getContextPath() + "/admin-dashboard");
-                            break;
-                        case 4:
-                            response.sendRedirect(request.getContextPath() + "/manager-dashboard");
-                            break;
-                        default:
-                            response.sendRedirect(request.getContextPath() + "/index.html");
-                            break;
-                    }
-                    return;
-                } else {
-                    request.setAttribute("username", username);
-                    request.setAttribute("password", password);
-                    request.setAttribute("error", "Your account is inactive.");
+                switch (employee.getRoleId()) {
+                    case 1:
+                        response.sendRedirect(request.getContextPath() + "/doctor-home");
+                        return;
+                    case 2:
+                        response.sendRedirect(request.getContextPath() + "/receptionist-dashboard");
+                        return;
+                    case 3:
+                        response.sendRedirect(request.getContextPath() + "/admin-dashboard");
+                        return;
+                    case 4:
+                        response.sendRedirect(request.getContextPath() + "/manager-dashboard");
+                        return;
+                    default:
+                        response.sendRedirect(request.getContextPath() + "/index.html");
+                        return;
                 }
+
             } else {
-                request.setAttribute("username", username);
-                request.setAttribute("password", password);
-                request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
+                request.setAttribute("error", employee == null
+                        ? "Incorrect username or password."
+                        : "Your account has been deactivated. Please contact support.");
             }
+
         } else {
-            request.setAttribute("username", username);
-            request.setAttribute("password", password);
-            request.setAttribute("error", "Invalid login role selected!");
+            request.setAttribute("error", "Invalid account type selected.");
         }
+
+        // Trường hợp fail
         request.setAttribute("username", username);
-        request.setAttribute("password", password);
+        request.setAttribute("password", rawPassword);
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("login.jsp").forward(request, response);
