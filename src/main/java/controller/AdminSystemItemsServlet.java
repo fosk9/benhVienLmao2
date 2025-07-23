@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.SystemItem;
 import view.SystemItemDAO;
-import view.RoleDAO; // thêm import này
-import model.Role;   // thêm import này
+import view.RoleDAO;
+import model.Role;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class AdminSystemItemsServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminSystemItemsServlet.class.getName());
     private final SystemItemDAO systemItemDAO = new SystemItemDAO();
-    private final RoleDAO roleDAO = new RoleDAO(); // thêm dòng này
+    private final RoleDAO roleDAO = new RoleDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -104,16 +104,16 @@ public class AdminSystemItemsServlet extends HttpServlet {
 
                 List<SystemItem> filteredItems = allItems;
                 if ((searchName != null && !searchName.isEmpty()) ||
-                    (searchUrl != null && !searchUrl.isEmpty()) ||
-                    (searchType != null && !searchType.isEmpty())) {
+                        (searchUrl != null && !searchUrl.isEmpty()) ||
+                        (searchType != null && !searchType.isEmpty())) {
                     String finalSearchName = searchName;
                     String finalSearchUrl = searchUrl;
                     String finalSearchType = searchType;
                     filteredItems = allItems.stream()
-                        .filter(systemItem -> (finalSearchName == null || finalSearchName.isEmpty() || systemItem.getItemName().toLowerCase().contains(finalSearchName.toLowerCase())))
-                        .filter(systemItem -> (finalSearchUrl == null || finalSearchUrl.isEmpty() || (systemItem.getItemUrl() != null && systemItem.getItemUrl().toLowerCase().contains(finalSearchUrl.toLowerCase()))))
-                        .filter(systemItem -> (finalSearchType == null || finalSearchType.isEmpty() || (systemItem.getItemType() != null && systemItem.getItemType().equalsIgnoreCase(finalSearchType))))
-                        .collect(Collectors.toList());
+                            .filter(systemItem -> (finalSearchName == null || finalSearchName.isEmpty() || systemItem.getItemName().toLowerCase().contains(finalSearchName.toLowerCase())))
+                            .filter(systemItem -> (finalSearchUrl == null || finalSearchUrl.isEmpty() || (systemItem.getItemUrl() != null && systemItem.getItemUrl().toLowerCase().contains(finalSearchUrl.toLowerCase()))))
+                            .filter(systemItem -> (finalSearchType == null || finalSearchType.isEmpty() || (systemItem.getItemType() != null && systemItem.getItemType().equalsIgnoreCase(finalSearchType))))
+                            .collect(Collectors.toList());
                 }
 
                 // Lấy map itemId -> List<Role>
@@ -160,26 +160,33 @@ public class AdminSystemItemsServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        SystemItem item = new SystemItem();
-        item.setItemName(request.getParameter("itemName"));
-        item.setItemUrl(request.getParameter("itemUrl"));
-        String displayOrder = request.getParameter("displayOrder");
-        item.setDisplayOrder(displayOrder == null || displayOrder.isEmpty() ? null : Integer.parseInt(displayOrder));
-        item.setItemType(request.getParameter("itemType"));
+        SystemItem item = SystemItem.builder()
+                .itemName(request.getParameter("itemName"))
+                .itemUrl(request.getParameter("itemUrl"))
+                .displayOrder(request.getParameter("displayOrder") == null || request.getParameter("displayOrder").isEmpty() ? null : Integer.parseInt(request.getParameter("displayOrder")))
+                .itemType(request.getParameter("itemType"))
+                .build();
 
         String[] roleIds = request.getParameterValues("roleIds");
         if ("add".equals(action)) {
-            int inserted = systemItemDAO.insert(item);
-            int newItemId = systemItemDAO.getLastInsertId();
-            if (inserted > 0 && newItemId > 0) {
+            int newItemId = systemItemDAO.insert(item); // Use ID returned from insert
+            if (newItemId > 0) {
                 if (roleIds != null) {
                     for (String rid : roleIds) {
-                        systemItemDAO.addRoleToItem(Integer.parseInt(rid), newItemId);
+                        try {
+                            systemItemDAO.addRoleToItem(Integer.parseInt(rid), newItemId);
+                        } catch (NumberFormatException e) {
+                            LOGGER.warning("Invalid role ID format: " + rid);
+                        }
                     }
                 }
-                LOGGER.info("Successfully inserted SystemItem: " + item.getItemName());
+                LOGGER.info("Successfully inserted SystemItem: " + item.getItemName() + " with ID: " + newItemId);
             } else {
                 LOGGER.warning("Failed to insert SystemItem: " + item.getItemName());
+                request.setAttribute("errorMessage", "Failed to insert system item.");
+                request.setAttribute("allRoles", roleDAO.select());
+                request.getRequestDispatcher("/admin/system-items/add.jsp").forward(request, response);
+                return;
             }
         } else if ("edit".equals(action)) {
             item.setItemId(Integer.parseInt(request.getParameter("id")));
@@ -188,25 +195,15 @@ public class AdminSystemItemsServlet extends HttpServlet {
                 systemItemDAO.deleteRolesOfItem(item.getItemId());
                 if (roleIds != null) {
                     for (String rid : roleIds) {
-                        systemItemDAO.addRoleToItem(Integer.parseInt(rid), item.getItemId());
+                        try {
+                            systemItemDAO.addRoleToItem(Integer.parseInt(rid), item.getItemId());
+                        } catch (NumberFormatException e) {
+                            LOGGER.warning("Invalid role ID format: " + rid);
+                        }
                     }
                 }
                 LOGGER.info("Successfully updated SystemItem ID: " + item.getItemId());
-            } else if ("delete".equals(action)) {
-                int deleted = systemItemDAO.delete(item.getItemId());
-                if (deleted > 0) {
-                    LOGGER.info("Successfully deleted SystemItem ID: " + item.getItemId());
-                } else {
-                    LOGGER.warning("Failed to delete SystemItem ID: " + item.getItemId());
-                    request.setAttribute("errorMessage", "Failed to delete system item.");
-                    request.setAttribute("item", item);
-                    request.setAttribute("allRoles", roleDAO.select());
-                    request.setAttribute("assignedRoleIds", systemItemDAO.getRoleIdsByItemId(item.getItemId()));
-                    request.getRequestDispatcher("/admin/system-items/edit.jsp").forward(request, response);
-                    return;
-                }
-            }
-            else {
+            } else {
                 LOGGER.warning("Failed to update SystemItem ID: " + item.getItemId());
                 request.setAttribute("errorMessage", "Failed to update system item.");
                 request.setAttribute("item", item);
