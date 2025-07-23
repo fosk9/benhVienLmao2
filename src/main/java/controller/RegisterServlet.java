@@ -1,11 +1,12 @@
 package controller;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 import model.Patient;
+import util.PasswordUtils;
 import view.PatientDAO;
 
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.Random;
@@ -19,9 +20,7 @@ public class RegisterServlet extends HttpServlet {
         patientDAO = new PatientDAO();
     }
 
-    // Thêm phương thức tiện ích
     private void setRegisterAttributes(HttpServletRequest request,
-                                       String username,
                                        String fullName,
                                        Date dob,
                                        String gender,
@@ -30,7 +29,6 @@ public class RegisterServlet extends HttpServlet {
                                        String address,
                                        String insuranceNumber,
                                        String emergencyContact) {
-        request.setAttribute("username", username);
         request.setAttribute("fullName", fullName);
         request.setAttribute("dob", dob);
         request.setAttribute("gender", gender);
@@ -44,8 +42,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+
         String fullName = request.getParameter("full_name");
         String dobStr = request.getParameter("dob");
         String gender = request.getParameter("gender");
@@ -55,11 +52,9 @@ public class RegisterServlet extends HttpServlet {
         String insuranceNumber = request.getParameter("insurance_number");
         String emergencyContact = request.getParameter("emergency_contact");
 
-        // Xử lý: xóa khoảng trắng thừa, chuẩn hóa viết hoa chữ cái đầu
+        // Chuẩn hóa tên
         if (fullName != null) {
-            fullName = fullName.trim().replaceAll("\\s+", " "); // loại bỏ khoảng trắng thừa
-
-            // Viết hoa chữ cái đầu mỗi từ (nếu muốn)
+            fullName = fullName.trim().replaceAll("\\s+", " ");
             String[] parts = fullName.split(" ");
             for (int i = 0; i < parts.length; i++) {
                 parts[i] = parts[i].substring(0, 1).toUpperCase() + parts[i].substring(1).toLowerCase();
@@ -72,59 +67,62 @@ public class RegisterServlet extends HttpServlet {
             try {
                 dob = Date.valueOf(dobStr);
             } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "Ngày sinh không hợp lệ! Vui lòng nhập lại.");
-                setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+                request.setAttribute("error", "Invalid date of birth.");
+                setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
                 request.getRequestDispatcher("register.jsp").forward(request, response);
                 return;
             }
         }
 
-        if (password == null || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$")) {
-            request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-            return;
-        }
-
-        if (fullName == null || !fullName.trim().matches("^[a-zA-ZÀ-ỹ\\s]+$")) {
-            request.setAttribute("error", "Họ và tên chỉ được chứa chữ cái và khoảng trắng.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+        // Validate input
+        if (fullName == null || !fullName.matches("^[a-zA-ZÀ-ỹ\\s]+$")) {
+            request.setAttribute("error", "Full name must contain only letters.");
+            setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            request.setAttribute("error", "Email không hợp lệ.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("error", "Invalid email address.");
+            setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
         if (phone == null || !phone.matches("^(0[0-9]{9,10})$")) {
-            request.setAttribute("error", "Số điện thoại không hợp lệ (bắt đầu bằng 0, 10-11 số).");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+            request.setAttribute("error", "Invalid phone number.");
+            setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        if (emergencyContact == null || emergencyContact.matches(phone) || !emergencyContact.matches("^(0[0-9]{9,10})$")) {
-            request.setAttribute("error", "Số điện thoại người liên hệ khẩn cấp không hợp lệ.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+        if (emergencyContact == null || emergencyContact.equals(phone)
+                || !emergencyContact.matches("^(0[0-9]{9,10})$")) {
+            request.setAttribute("error", "Invalid emergency contact number.");
+            setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // 2. Check trùng username, email, phone
-        if (patientDAO.getPatientByUsername(username) != null) {
-            request.setAttribute("error", "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
-            setRegisterAttributes(request, username, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+        // Check trùng email hoặc số điện thoại
+        if (patientDAO.getPatientByEmailOrPhone(email, phone) != null) {
+            request.setAttribute("error", "Email or phone already registered.");
+            setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        Patient tempPatient  = Patient.builder()
+        // Tự sinh username và password
+        String username = email.split("@")[0];
+        while (patientDAO.isUsernameTaken(username)) {
+            username += (int) (Math.random() * 1000);
+        }
+        String rawPassword = generateRandomPassword(10); // sinh random strong password
+        String hashedPassword = PasswordUtils.hashPassword(rawPassword);
+
+        Patient tempPatient = Patient.builder()
                 .username(username)
-                .passwordHash(password)  // Tạm thời chưa hash
+                .passwordHash(hashedPassword)
                 .fullName(fullName)
                 .dob(dob)
                 .gender(gender)
@@ -133,29 +131,33 @@ public class RegisterServlet extends HttpServlet {
                 .address(address)
                 .insuranceNumber(insuranceNumber)
                 .emergencyContact(emergencyContact)
+                .patientAvaUrl(null) // Không upload ảnh đại diện trong đăng ký
+                .accStatus(1)
                 .build();
 
         String otp = generateOTP(6);
         HttpSession session = request.getSession();
         session.setAttribute("tempPatient", tempPatient);
         session.setAttribute("otp", otp);
+        session.setAttribute("otpGeneratedTime", System.currentTimeMillis()); // thời điểm tạo OTP
+        session.setAttribute("generatedPassword", rawPassword); // để gửi email sau
 
-        // Gửi email
+        // Gửi OTP qua email
         SendingEmail emailSender = new SendingEmail();
         try {
-            emailSender.sendEmail(email, "HRMS - Mã xác thực OTP", "Mã OTP của bạn là: " + otp);
+            emailSender.sendEmail(email, "HRMS - OTP Verification", "Your OTP is: " + otp);
         } catch (Exception e) {
-            request.setAttribute("error", "Không thể gửi email. Vui lòng thử lại.");
+            request.setAttribute("error", "Failed to send email. Please try again.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Điều hướng tới trang nhập OTP
+        // Chuyển tới trang xác minh OTP
         response.sendRedirect("otp-verification.jsp?msg=otp_sent");
     }
 
     private String generateOTP(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random rand = new Random();
         StringBuilder otp = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -163,6 +165,40 @@ public class RegisterServlet extends HttpServlet {
         }
         return otp.toString();
     }
-    
-    
+
+
+    private String generateRandomPassword(int length) {
+        if (length < 8) length = 8;
+
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String special = "@#$%!&*?";
+        String all = upper + lower + digits + special;
+
+        Random rand = new Random();
+        StringBuilder pw = new StringBuilder();
+
+        // Bắt buộc có ít nhất 1 mỗi loại
+        pw.append(upper.charAt(rand.nextInt(upper.length())));
+        pw.append(lower.charAt(rand.nextInt(lower.length())));
+        pw.append(digits.charAt(rand.nextInt(digits.length())));
+        pw.append(special.charAt(rand.nextInt(special.length())));
+
+        // Thêm ngẫu nhiên các ký tự còn lại
+        for (int i = 4; i < length; i++) {
+            pw.append(all.charAt(rand.nextInt(all.length())));
+        }
+
+        // Shuffle chuỗi để tránh predictable pattern
+        char[] passwordChars = pw.toString().toCharArray();
+        for (int i = passwordChars.length - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            char tmp = passwordChars[i];
+            passwordChars[i] = passwordChars[j];
+            passwordChars[j] = tmp;
+        }
+
+        return new String(passwordChars);
+    }
 }

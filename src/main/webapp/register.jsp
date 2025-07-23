@@ -93,17 +93,6 @@
         <form action="register" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label>Username:</label>
-                    <input name="username" class="form-control" value="${username != null ? username : ''}" required>
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Password:</label>
-                    <input name="password" type="password" class="form-control" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
                     <label>Full Name:</label>
                     <input name="full_name" class="form-control" value="${fullName != null ? fullName : ''}" required>
                 </div>

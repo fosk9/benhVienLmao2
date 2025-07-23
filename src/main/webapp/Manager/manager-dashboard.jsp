@@ -193,7 +193,7 @@
           <div class="hospital-table">
             <div class="table-header">
               <h3>Staff Overview (${totalStaff})</h3>
-              <a href="${pageContext.request.contextPath}/manager/add-staff" class="btn-hospital btn-success btn-sm">
+              <a href="${pageContext.request.contextPath}/add-doctor-form" class="btn-hospital btn-success btn-sm">
                 <i class="fas fa-user-plus mr-1"></i>Add Staff
               </a>
             </div>
@@ -405,5 +405,6 @@
       });
     </script>
       </div>
+    </div>
     </body>
     </html>
