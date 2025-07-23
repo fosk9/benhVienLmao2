@@ -371,7 +371,12 @@ VALUES
 	--Guest mapping (role_id = 0 for not login)
 	(6, 13), -- Guest: Blog
 	(6, 22), -- Guest: Services
+<<<<<<< Updated upstream
 	(6, 27); -- Guest: Book Appointment
+=======
+	(6, 27), -- Guest: Book Appointment
+	(6, 28); -- Guest: Search for Service
+>>>>>>> Stashed changes
 GO
 
 -- Insert sample Patients
