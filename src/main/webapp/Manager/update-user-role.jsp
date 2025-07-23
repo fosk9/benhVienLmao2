@@ -24,12 +24,12 @@
     <div class="hospital-header">
       <div class="hospital-logo">
         <div class="hospital-icon">
-          <a href="${pageContext.request.contextPath}/manager/dashboard">
+          <a href="${pageContext.request.contextPath}/manager-dashboard">
             <i class="fas fa-user-tie"></i>
           </a>
         </div>
         <div>
-          <a href="${pageContext.request.contextPath}/manager/dashboard" style="text-decoration: none;">
+          <a href="${pageContext.request.contextPath}/manager-dashboard" style="text-decoration: none;">
             <h2 class="hospital-title">Manager Portal</h2>
             <p class="hospital-subtitle">Hospital Management</p>
           </a>
@@ -41,7 +41,7 @@
     <nav class="nav-menu">
       <ul>
         <li>
-          <a href="${pageContext.request.contextPath}/manager/dashboard">
+          <a href="${pageContext.request.contextPath}/manager-dashboard" class="nav-link">
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
           </a>
@@ -53,15 +53,9 @@
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/manager/staff-management" class="nav-link">
+          <a href="${pageContext.request.contextPath}/add-doctor-form" class="nav-link">
             <i class="fas fa-users"></i>
-            <span>Staff Management</span>
-          </a>
-        </li>
-        <li>
-          <a href="${pageContext.request.contextPath}/manager/department-management" class="nav-link">
-            <i class="fas fa-building"></i>
-            <span>Departments</span>
+            <span>Add Staff</span>
           </a>
         </li>
         <li>
@@ -71,21 +65,15 @@
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/manager/reports" class="nav-link">
-            <i class="fas fa-chart-bar"></i>
-            <span>Reports</span>
+          <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link">
+            <i class="fas fa-podcast"></i>
+            <span>Blog Dashboard</span>
           </a>
         </li>
         <li>
-          <a href="${pageContext.request.contextPath}/manager/resources" class="nav-link">
-            <i class="fas fa-boxes"></i>
-            <span>Resources</span>
-          </a>
-        </li>
-        <li>
-          <a href="${pageContext.request.contextPath}/manager/settings" class="nav-link">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
+          <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link">
+            <i class="fas fa-history"></i>
+            <span>Change History</span>
           </a>
         </li>
       </ul>
@@ -112,11 +100,13 @@
       <c:if test="${not empty successMessage}">
         <div class="alert alert-success">
           <i class="fas fa-check-circle mr-2"></i>${successMessage}
+          <c:remove var="successMessage" scope="session"/>
         </div>
       </c:if>
       <c:if test="${not empty errorMessage}">
         <div class="alert alert-danger">
           <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
+          <c:remove var="errorMessage" scope="session"/>
         </div>
       </c:if>
 
@@ -207,7 +197,7 @@
               <select class="form-control" name="status">
                 <option value="">All</option>
                 <option value="1" <c:if test="${param.status == '1'}">selected</c:if>>Active</option>
-                <option value="0" <c:if test="${param.status == '0'}">selected</c:if>>Inactive</option>
+                <option value="0" <c:if test="${param.status == '0'}">selected</c:if>><I></I>nactive</option>
               </select>
             </div>
             <div class="filter-button-row">

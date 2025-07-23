@@ -29,7 +29,7 @@ public class AddDoctorFormServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AddDoctorFormServlet.class.getName());
 
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
-    private final DoctorDetailDAO doctorDetailsDAO = new DoctorDetailDAO();
+    private final DoctorDetailDAO doctorDetailDAO = new DoctorDetailDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -58,6 +58,7 @@ public class AddDoctorFormServlet extends HttpServlet {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             String licenseNumber = request.getParameter("licenseNumber");
+            int role = Integer.parseInt(request.getParameter("roleId")); // role = 2 là doctor
             boolean isSpecialist = "true".equals(request.getParameter("specialist"));
 
             Part profileImagePart = request.getPart("profileImage");
@@ -141,7 +142,7 @@ public class AddDoctorFormServlet extends HttpServlet {
                     .gender(gender)
                     .username(username)
                     .passwordHash(password)
-                    .roleId(2)
+                    .roleId(role)
                     .accStatus(1)
                     .employeeAvaUrl(imagePath)
                     .build();
@@ -149,14 +150,15 @@ public class AddDoctorFormServlet extends HttpServlet {
             int employeeId = employeeDAO.insertReturnId(employee);
             LOGGER.info("Created employee with ID: " + employeeId);
 
-            DoctorDetail doctorDetail = DoctorDetail.builder()
-                    .doctorId(employeeId)
-                    .licenseNumber(licenseNumber)
-                    .specialist(isSpecialist)
-                    .build();
-
-            doctorDetailsDAO.insert(doctorDetail);
-            LOGGER.info("Created DoctorDetail for ID: " + employeeId);
+            if (role == 1) { // Doctor
+                DoctorDetail doctorDetail = DoctorDetail.builder()
+                        .doctorId(employeeId)
+                        .licenseNumber(licenseNumber)
+                        .specialist(isSpecialist)
+                        .build();
+                doctorDetailDAO.insert(doctorDetail);
+                LOGGER.info("Created DoctorDetail for ID: " + employeeId);
+            }
 
             // ✅ Ghi log tạo mới
                 HistoryLogger.log(
@@ -165,7 +167,7 @@ public class AddDoctorFormServlet extends HttpServlet {
                         employeeId,
                         fullName,
                         "Employee",
-                        "Create Account" + username
+                        "Create Account     " + username
                 );
                 LOGGER.info("ChangeHistory log added for created account ID=" + employeeId);
 

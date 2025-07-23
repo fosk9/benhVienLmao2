@@ -6,30 +6,26 @@ import view.EmployeeDAO;
 import java.sql.Date;
 
 public class EmployeeDAOTest {
-
     public static void main(String[] args) {
-        EmployeeDAO employeeDAO = new EmployeeDAO();
+        EmployeeDAO dao = new EmployeeDAO();
 
-        // Tạo đối tượng Employee mẫu
-        Employee employee = Employee.builder()
-                .fullName("Test User")
-                .email("testuser@example.com")
-                .phone("0909123456")
-                .dob(Date.valueOf("1995-01-01"))
-                .gender("M")
-                .username("testuser123")
-                .passwordHash("testpassword") // Lưu ý: chưa mã hóa
-                .roleId(2) // Ví dụ: 2 là Assistant
-                .accStatus(1)
-                .employeeAvaUrl("assets/img/blog/test-avatar.png")
-                .build();
+        Employee emp = new Employee();
+        emp.setEmployeeId(2); // ID phải tồn tại trong DB
+        emp.setFullName("Dr. Nguyễn Văn A");
+        emp.setEmail("doctorA@example.com");
+        emp.setPhone("0912345678");
+        emp.setGender("M");
+        emp.setDob(Date.valueOf("1990-01-01"));
+        emp.setRoleId(1); // Doctor
+        emp.setAccStatus(1);
+        emp.setEmployeeAvaUrl("assets/img/avatars/test-avatar.jpg"); // Đường dẫn giả lập
 
-        int insertedId = employeeDAO.insertReturnId(employee);
+        boolean result = dao.updateEmployee(emp);
 
-        if (insertedId > 0) {
-            System.out.println("✅ INSERT thành công với ID: " + insertedId);
+        if (result) {
+            System.out.println("✅ Update thành công!");
         } else {
-            System.err.println("❌ INSERT thất bại, ID trả về = " + insertedId);
+            System.out.println("❌ Update thất bại!");
         }
     }
 }

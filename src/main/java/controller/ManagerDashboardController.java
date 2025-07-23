@@ -9,7 +9,7 @@ import view.EmployeeDAO;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/manager/dashboard")
+@WebServlet("/testdashboard")
 public class ManagerDashboardController extends HttpServlet {
     private final int PAGE_SIZE = 5;
 

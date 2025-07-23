@@ -6,6 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Blog;
 import model.Category;
+import model.Employee;
+import util.HistoryLogger;
 import view.BlogDAO;
 
 
@@ -34,7 +36,7 @@ public class AddBlogControllerServlet extends HttpServlet {
         request.setAttribute("author", request.getAttribute("author"));
         request.setAttribute("categoryId", request.getAttribute("categoryId"));
 
-        request.getRequestDispatcher("/Admin/add-blog-dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/Manager/add-blog-dashboard.jsp").forward(request, response);
     }
 
     // Phương thức xử lý yêu cầu POST (lưu blog)
@@ -43,7 +45,12 @@ public class AddBlogControllerServlet extends HttpServlet {
             throws ServletException, IOException {
         // Xử lý encoding
         request.setCharacterEncoding("UTF-8");
-
+        Employee manager = (Employee) request.getSession().getAttribute("account");
+        if (manager == null || manager.getRoleId() != 4) {
+            request.setAttribute("error", "You must be logged in as a manager to perform this action.");
+            response.sendRedirect("login.jsp");
+            return;
+        }
         // Lấy dữ liệu từ form
         String blogName = request.getParameter("blogName");
         String blogSubContent = request.getParameter("blogSubContent");
@@ -114,12 +121,24 @@ public class AddBlogControllerServlet extends HttpServlet {
         // 5. Lưu blog vào cơ sở dữ liệu thông qua BlogDAO
         int success = blogDAO.insert(newBlog);
 
-        // 6. Kiểm tra kết quả lưu trữ và thông báo cho người dùng
         if (success > 0) {
+
+            if (manager != null) {
+                HistoryLogger.log(
+                        manager.getEmployeeId(),
+                        manager.getFullName(),
+                        success, // blog_id được trả về
+                        blogName,
+                        "Blog",
+                        "Create Blog - " + blogName
+                );
+            }
+
             request.setAttribute("successMessage", "Bài viết đã được lưu thành công!");
         } else {
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi lưu bài viết!");
         }
+
 
         // 7. Chuyển tiếp lại trang add-blog.jsp để hiển thị thông báo
         doGet(request, response);

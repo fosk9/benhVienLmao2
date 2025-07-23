@@ -8,6 +8,49 @@ import java.util.List;
 
 public class DoctorDetailDAO extends DBContext<DoctorDetail> {
 
+    public DoctorDetail getByEmployeeId(int employeeId) {
+        String sql = "SELECT * FROM DoctorDetails WHERE doctor_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, employeeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return DoctorDetail.builder()
+                            .doctorId(rs.getInt("doctor_id"))
+                            .licenseNumber(rs.getString("license_number"))
+                            .specialist(rs.getBoolean("is_specialist"))
+                            .rating(rs.getBigDecimal("rating"))
+                            .build();
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi getByEmployeeId(" + employeeId + "): " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public boolean updateDoctorDetails(DoctorDetail doc) {
+        String sql = "UPDATE DoctorDetails SET license_number = ?, is_specialist = ?, rating = ? WHERE doctor_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, doc.getLicenseNumber());
+            ps.setBoolean(2, doc.isSpecialist());
+            ps.setBigDecimal(3, doc.getRating());
+            ps.setInt(4, doc.getDoctorId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("❌ Lỗi khi updateDoctorDetails: " + e.getMessage());
+            return false;
+        }
+    }
+
+
     @Override
     public List<DoctorDetail> select() {
         List<DoctorDetail> list = new ArrayList<>();

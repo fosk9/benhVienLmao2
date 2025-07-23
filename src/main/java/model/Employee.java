@@ -22,5 +22,6 @@ public class Employee {
     private String phone;
     private int roleId;
     private String employeeAvaUrl; // Nullable, can be empty string
+    private Date createdAt; // hoặc java.sql.Date nếu bạn dùng Date
     private Integer accStatus; // 1: active, 0: inactive
 }
