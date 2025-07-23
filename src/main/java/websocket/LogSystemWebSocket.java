@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@ServerEndpoint("/logsystemsocket")
+@ServerEndpoint("/admin/logSocket")
 public class LogSystemWebSocket {
 
-    private static Set<Session> sessions = new CopyOnWriteArraySet<>();
+    private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -31,13 +31,16 @@ public class LogSystemWebSocket {
 
     public static void broadcast(String message) {
         for (Session s : sessions) {
-            if (s.isOpen()) {
-                try {
-                    s.getBasicRemote().sendText(message);
-                } catch (IOException e) {
-                    System.out.println("Broadcast error: " + e.getMessage());
+            synchronized (s) { // synchronized block to ensure thread safety
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText(message);
+                    } catch (IOException e) {
+                        System.out.println("Broadcast error: " + e.getMessage());
+                    }
                 }
             }
         }
     }
+
 }

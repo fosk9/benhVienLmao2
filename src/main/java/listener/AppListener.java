@@ -21,44 +21,62 @@ public class AppListener implements ServletContextListener, HttpSessionListener 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("Application started.");
-        LogSystem logSystem = LogSystem.builder()
+
+        LogSystem log = LogSystem.builder()
                 .action("Application started")
-                .logLevel("INFO")
+                .logLevel("INFO") // Application start = INFO
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        logSystemDAO.insert(logSystem);
+
+        insertLog(log);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("Application stop.");
-        LogSystem logSystem = LogSystem.builder()
+        System.out.println("Application stopped.");
+
+        LogSystem log = LogSystem.builder()
                 .action("Application stopped")
-                .logLevel("INFO")
+                .logLevel("WARN") // Application stop = WARN
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        logSystemDAO.insert(logSystem);
+
+        insertLog(log);
     }
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        System.out.println("Session created: " + se.getSession().getId());
-        LogSystem logSystem = LogSystem.builder()
-                .action("Session created: " + se.getSession().getId())
-                .logLevel("INFO")
+        String sessionId = se.getSession().getId();
+        System.out.println("Session created: " + sessionId);
+
+        LogSystem log = LogSystem.builder()
+                .action("Session created: " + sessionId)
+                .logLevel("DEBUG") // Session created = DEBUG
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        logSystemDAO.insert(logSystem);
+
+        insertLog(log);
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        System.out.println("Session destroyed: " + se.getSession().getId());
-        LogSystem logSystem = LogSystem.builder()
-                .action("Session destroyed: " + se.getSession().getId())
-                .logLevel("INFO")
+        String sessionId = se.getSession().getId();
+        System.out.println("Session destroyed: " + sessionId);
+
+        LogSystem log = LogSystem.builder()
+                .action("Session destroyed: " + sessionId)
+                .logLevel("ERROR") // Session destroyed = ERROR
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        logSystemDAO.insert(logSystem);
+
+        insertLog(log);
+    }
+
+    /**
+     * Insert log + print to console for tracking.
+     */
+    private void insertLog(LogSystem log) {
+        logSystemDAO.insert(log);
+        System.out.println("[LOG] [" + log.getLogLevel() + "] " + log.getAction());
     }
 }

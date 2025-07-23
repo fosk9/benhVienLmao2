@@ -20,7 +20,6 @@
     </script>
 </head>
 <body>
-<h2>Real-time Log Viewer</h2>
 <textarea id="logs" rows="20" cols="80" readonly></textarea>
 </body>
 </html>

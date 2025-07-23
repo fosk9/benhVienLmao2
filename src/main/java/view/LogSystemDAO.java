@@ -22,7 +22,7 @@ public class LogSystemDAO extends DBContext<LogSystem> {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logError("SELECT ALL", e);
         }
         return list;
     }
@@ -77,7 +77,7 @@ public class LogSystemDAO extends DBContext<LogSystem> {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logError("FILTER LOGS", e);
         }
 
         return list;
@@ -93,12 +93,15 @@ public class LogSystemDAO extends DBContext<LogSystem> {
             ps.setInt(1, id[0]);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return mapResultSet(rs);
+                    LogSystem log = mapResultSet(rs);
+                    log.setLogLevel("DEBUG");
+                    broadcast(log);
+                    return log;
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logError("SELECT BY ID", e);
         }
         return null;
     }
@@ -109,6 +112,8 @@ public class LogSystemDAO extends DBContext<LogSystem> {
         try (Connection con = getConn();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
+            log.setLogLevel("INFO"); // CRUD: Create = INFO
+
             ps.setObject(1, log.getEmployeeId(), Types.INTEGER);
             ps.setObject(2, log.getPatientId(), Types.INTEGER);
             ps.setString(3, log.getUserName());
@@ -118,21 +123,42 @@ public class LogSystemDAO extends DBContext<LogSystem> {
             ps.setTimestamp(7, log.getCreatedAt());
 
             int row = ps.executeUpdate();
-
-            // Broadcast websocket
-            LogSystemWebSocket.broadcast("[" + log.getLogLevel() + "] " + log.getAction());
+            broadcast(log);
 
             return row;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logError("INSERT LOG", e);
         }
         return 0;
     }
 
     @Override
     public int update(LogSystem log) {
-        throw new UnsupportedOperationException("Update not supported for LogSystem");
+        String sql = "UPDATE LogSystem SET employee_id=?, patient_id=?, user_name=?, role_name=?, action=?, log_level=?, created_at=? WHERE log_id=?";
+        try (Connection con = getConn();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            log.setLogLevel("WARN"); // CRUD: Update = WARN
+
+            ps.setObject(1, log.getEmployeeId(), Types.INTEGER);
+            ps.setObject(2, log.getPatientId(), Types.INTEGER);
+            ps.setString(3, log.getUserName());
+            ps.setString(4, log.getRoleName());
+            ps.setString(5, log.getAction());
+            ps.setString(6, log.getLogLevel());
+            ps.setTimestamp(7, log.getCreatedAt());
+            ps.setInt(8, log.getLogId());
+
+            int row = ps.executeUpdate();
+            broadcast(log);
+
+            return row;
+
+        } catch (Exception e) {
+            logError("UPDATE LOG", e);
+        }
+        return 0;
     }
 
     @Override
@@ -142,11 +168,24 @@ public class LogSystemDAO extends DBContext<LogSystem> {
         try (Connection con = getConn();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, id[0]);
-            return ps.executeUpdate();
+            int logId = id[0];
+            ps.setInt(1, logId);
+            int row = ps.executeUpdate();
+
+            // Tạo log cho Delete
+            LogSystem log = LogSystem.builder()
+                    .logId(logId)
+                    .action("Deleted log_id = " + logId)
+                    .logLevel("ERROR") // CRUD: Delete = ERROR
+                    .createdAt(new Timestamp(System.currentTimeMillis()))
+                    .build();
+
+            broadcast(log);
+
+            return row;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logError("DELETE LOG", e);
         }
         return 0;
     }
@@ -162,5 +201,14 @@ public class LogSystemDAO extends DBContext<LogSystem> {
                 .logLevel(rs.getString("log_level"))
                 .createdAt(rs.getTimestamp("created_at"))
                 .build();
+    }
+
+    private void broadcast(LogSystem log) {
+        LogSystemWebSocket.broadcast("[" + log.getLogLevel() + "] " + log.getAction());
+    }
+
+    private void logError(String action, Exception e) {
+        System.out.println("[" + action + " ERROR] " + e.getMessage());
+        e.printStackTrace();
     }
 }
