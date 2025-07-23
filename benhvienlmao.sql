@@ -309,7 +309,7 @@ VALUES
     ('View Prescription', 'view-prescription', NULL, 'Feature'),
     ('Manage Employees', 'admin/manageEmployees', NULL, 'Feature'),
     ('Manage Patients', 'admin/managePatients', NULL, 'Feature'),
-    ('Manage Mapping', 'admin/maping', NULL, 'Feature'),
+    ('Manage Mapping', 'admin/maping', NULL, 'Navigation'),
     ('View Logs', 'admin/logs', NULL, 'Feature'),
     ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
     ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
@@ -327,7 +327,7 @@ VALUES
     -- Patient-specific navigation items
     ('Appointments', 'appointments', 1, 'Navigation'),
     ('Treatment History', 'treatment/history', 2, 'Navigation'),
-    ('Services', 'services', 3, 'Navigation'),
+    ('Services', 'appointment/list', 3, 'Navigation'),
     ('Account', 'pactDetails', 4, 'Navigation'),
     ('Logout', 'logout', 5, 'Navigation'),
     ('My Profile', 'MyProfile', 6, 'Navigation'),
