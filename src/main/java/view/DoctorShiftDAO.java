@@ -1,5 +1,6 @@
 package view;
 
+import dto.PendingLeaveDTO;
 import model.DoctorScheduleSummary;
 import model.DoctorShift;
 import model.DoctorShiftView;
@@ -10,6 +11,69 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class DoctorShiftDAO extends DBContext<DoctorShift> {
+
+    public int updateStatusAndManager(int shiftId, String status, int managerId, Timestamp approvedAt) {
+        String sql = "UPDATE DoctorShifts SET status = ?, manager_id = ?, approved_at = ? WHERE shift_id = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, managerId);
+            ps.setTimestamp(3, approvedAt);
+            ps.setInt(4, shiftId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<PendingLeaveDTO> selectPendingLeaveRequests() {
+        List<PendingLeaveDTO> list = new ArrayList<>();
+        String sql = """
+                    SELECT ds.shift_id, e.full_name, ds.shift_date, ds.time_slot, ds.requested_at, ds.status
+                    FROM DoctorShifts ds
+                    JOIN Employees e ON ds.doctor_id = e.employee_id
+                    WHERE ds.status = 'PendingLeave'
+                    ORDER BY ds.shift_date, ds.time_slot
+                """;
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                PendingLeaveDTO dto = new PendingLeaveDTO(
+                        rs.getInt("shift_id"),
+                        rs.getString("full_name"),
+                        rs.getDate("shift_date"),
+                        rs.getString("time_slot"),
+                        rs.getTimestamp("requested_at"),
+                        rs.getString("status")
+                );
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+    public DoctorShift getShiftByDoctorAndDate(int doctorId, Date shiftDate) {
+        String sql = "SELECT * FROM DoctorShifts WHERE doctor_id = ? AND shift_date = ?";
+        try (Connection conn = getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setDate(2, shiftDate);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToDoctorShift(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // 2. Đếm số bác sĩ đang có ca trực hôm nay
     public int countActiveDoctorsToday() {
         String sql = "SELECT COUNT(DISTINCT doctor_id) FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
@@ -68,9 +132,9 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
 
     public boolean hasAppointmentsForDoctorInShift(int doctorId, Date shiftDate, String timeSlot) {
         String sql = """
-            SELECT 1 FROM Appointments
-            WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
-        """;
+                    SELECT 1 FROM Appointments
+                    WHERE doctor_id = ? AND appointment_date = ? AND time_slot = ?
+                """;
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
             ps.setDate(2, shiftDate);
@@ -89,18 +153,18 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         int count = 0;
 
         String sql = """
-        SELECT 
-            e.employee_id,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'MORNING' THEN s.status END) AS morning_status,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'AFTERNOON' THEN s.status END) AS afternoon_status,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'EVENING' THEN s.status END) AS evening_status,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'NIGHT' THEN s.status END) AS night_status
-        FROM Employees e
-        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 1
-          AND (? IS NULL OR e.full_name LIKE ?)
-        GROUP BY e.employee_id
-    """;
+                    SELECT 
+                        e.employee_id,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'MORNING' THEN s.status END) AS morning_status,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'AFTERNOON' THEN s.status END) AS afternoon_status,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'EVENING' THEN s.status END) AS evening_status,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'NIGHT' THEN s.status END) AS night_status
+                    FROM Employees e
+                    LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+                    WHERE e.role_id = 1
+                      AND (? IS NULL OR e.full_name LIKE ?)
+                    GROUP BY e.employee_id
+                """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             if (keyword == null || keyword.trim().isEmpty()) {
@@ -140,26 +204,26 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         List<DoctorShiftView> list = new ArrayList<>();
 
         String sql = """
-        SELECT 
-            e.employee_id,
-            e.full_name,
-            e.email,
-            COUNT(CASE 
-                     WHEN MONTH(s.shift_date) = MONTH(GETDATE()) 
-                      AND YEAR(s.shift_date) = YEAR(GETDATE()) 
-                  THEN 1 ELSE NULL END) AS working_days_this_month,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'MORNING' THEN s.status END) AS morning_status,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'AFTERNOON' THEN s.status END) AS afternoon_status,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'EVENING' THEN s.status END) AS evening_status,
-            MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'NIGHT' THEN s.status END) AS night_status
-        FROM Employees e
-        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 1
-          AND (? IS NULL OR e.full_name LIKE ?)
-        GROUP BY e.employee_id, e.full_name, e.email
-        ORDER BY e.full_name
-        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-    """;
+                    SELECT 
+                        e.employee_id,
+                        e.full_name,
+                        e.email,
+                        COUNT(CASE 
+                                 WHEN MONTH(s.shift_date) = MONTH(GETDATE()) 
+                                  AND YEAR(s.shift_date) = YEAR(GETDATE()) 
+                              THEN 1 ELSE NULL END) AS working_days_this_month,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'MORNING' THEN s.status END) AS morning_status,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'AFTERNOON' THEN s.status END) AS afternoon_status,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'EVENING' THEN s.status END) AS evening_status,
+                        MAX(CASE WHEN s.shift_date = CAST(GETDATE() AS DATE) AND s.time_slot = 'NIGHT' THEN s.status END) AS night_status
+                    FROM Employees e
+                    LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+                    WHERE e.role_id = 1
+                      AND (? IS NULL OR e.full_name LIKE ?)
+                    GROUP BY e.employee_id, e.full_name, e.email
+                    ORDER BY e.full_name
+                    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """;
 
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -213,21 +277,20 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
     }
 
 
-
     public List<DoctorScheduleSummary> getDoctorShiftSummaryForMonth(LocalDate today) {
         List<DoctorScheduleSummary> list = new ArrayList<>();
         String sql = """
-        SELECT 
-            e.employee_id,
-            e.full_name,
-            e.email,
-            SUM(CASE WHEN MONTH(s.shift_date) = ? AND YEAR(s.shift_date) = ? THEN 1 ELSE 0 END) AS working_days_this_month,
-            MAX(CASE WHEN s.shift_date = ? THEN s.status ELSE NULL END) AS status_today
-        FROM Employees e
-        LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
-        WHERE e.role_id = 2  -- chỉ lấy bác sĩ
-        GROUP BY e.employee_id, e.full_name, e.email
-    """;
+                    SELECT 
+                        e.employee_id,
+                        e.full_name,
+                        e.email,
+                        SUM(CASE WHEN MONTH(s.shift_date) = ? AND YEAR(s.shift_date) = ? THEN 1 ELSE 0 END) AS working_days_this_month,
+                        MAX(CASE WHEN s.shift_date = ? THEN s.status ELSE NULL END) AS status_today
+                    FROM Employees e
+                    LEFT JOIN DoctorShifts s ON e.employee_id = s.doctor_id
+                    WHERE e.role_id = 2  -- chỉ lấy bác sĩ
+                    GROUP BY e.employee_id, e.full_name, e.email
+                """;
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, today.getMonthValue());
             ps.setInt(2, today.getYear());
@@ -253,13 +316,13 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
 
     public int getTotalFilteredDoctorShifts(String keyword, Date from, Date to) {
         String sql = """
-        SELECT COUNT(*)
-        FROM DoctorShifts s
-        JOIN Employees e ON s.doctor_id = e.employee_id
-        WHERE (? IS NULL OR e.full_name LIKE ?)
-          AND (? IS NULL OR s.shift_date >= ?)
-          AND (? IS NULL OR s.shift_date <= ?)
-    """;
+                    SELECT COUNT(*)
+                    FROM DoctorShifts s
+                    JOIN Employees e ON s.doctor_id = e.employee_id
+                    WHERE (? IS NULL OR e.full_name LIKE ?)
+                      AND (? IS NULL OR s.shift_date >= ?)
+                      AND (? IS NULL OR s.shift_date <= ?)
+                """;
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             if (keyword == null || keyword.trim().isEmpty()) {
                 ps.setNull(1, Types.VARCHAR);
@@ -296,16 +359,16 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
     public List<DoctorShiftView> filterShiftWithDoctor(String keyword, Date from, Date to, int offset, int limit) {
         List<DoctorShiftView> list = new ArrayList<>();
         String sql = """
-        SELECT s.shift_id, s.doctor_id, e.full_name AS doctor_name, e.email AS doctor_email,
-               s.shift_date, s.time_slot, s.status, s.manager_id, s.requested_at, s.approved_at
-        FROM DoctorShifts s
-        JOIN Employees e ON s.doctor_id = e.employee_id
-        WHERE (? IS NULL OR e.full_name LIKE ?)
-          AND (? IS NULL OR s.shift_date >= ?)
-          AND (? IS NULL OR s.shift_date <= ?)
-        ORDER BY s.shift_date DESC
-        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-    """;
+                    SELECT s.shift_id, s.doctor_id, e.full_name AS doctor_name, e.email AS doctor_email,
+                           s.shift_date, s.time_slot, s.status, s.manager_id, s.requested_at, s.approved_at
+                    FROM DoctorShifts s
+                    JOIN Employees e ON s.doctor_id = e.employee_id
+                    WHERE (? IS NULL OR e.full_name LIKE ?)
+                      AND (? IS NULL OR s.shift_date >= ?)
+                      AND (? IS NULL OR s.shift_date <= ?)
+                    ORDER BY s.shift_date DESC
+                    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """;
         try (Connection conn = getConn(); PreparedStatement ps = conn.prepareStatement(sql)) {
             if (keyword == null || keyword.trim().isEmpty()) {
                 ps.setNull(1, Types.VARCHAR);
@@ -355,7 +418,6 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
     }
 
 
-
     public int getTotalAppointmentsToday() {
         String sql = "SELECT COUNT(*) FROM Appointments WHERE appointment_date = CAST(GETDATE() AS DATE)";
         try (Connection conn = getConn();
@@ -367,6 +429,7 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
             return 0;
         }
     }
+
     public int getTotalStaff() {
         String sql = "SELECT COUNT(*) FROM Employees";
         try (Connection conn = getConn();
@@ -378,6 +441,7 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
             return 0;
         }
     }
+
     public int getActiveDoctorsToday() {
         String sql = "SELECT COUNT(DISTINCT doctor_id) FROM DoctorShifts WHERE shift_date = CAST(GETDATE() AS DATE)";
         try (Connection conn = getConn();
@@ -445,6 +509,7 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         }
         return null;
     }
+
     public boolean existsShift(int doctorId, Date shiftDate, String timeSlot) {
         String sql = "SELECT 1 FROM DoctorShifts WHERE doctor_id=? AND shift_date=? AND time_slot=?";
         try (Connection conn = getConn();
@@ -460,7 +525,6 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         }
         return false;
     }
-
 
     @Override
     public int insert(DoctorShift s) {
@@ -488,8 +552,6 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
         }
         return 0;
     }
-
-
 
     @Override
     public int update(DoctorShift s) {
@@ -592,4 +654,5 @@ public class DoctorShiftDAO extends DBContext<DoctorShift> {
             ps.setNull(7, Types.TIMESTAMP);
         }
     }
+
 }

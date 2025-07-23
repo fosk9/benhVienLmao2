@@ -9,7 +9,6 @@ import jakarta.servlet.http.*;
 import model.*;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 @WebServlet({"/consultation-history", "/consultation-history-details"})
@@ -103,9 +102,9 @@ public class ConsultationHistoryServlet extends HttpServlet {
 
         Patient patient = patientDAO.select(appointment.getPatientId());
         AppointmentType appointmentType = appointmentTypeDAO.select(appointment.getAppointmentTypeId());
-        List<Diagnosis> diagnoses = diagnosisDAO.getByAppointmentId(appointmentId);
-        List<Prescription> prescriptions = prescriptionDAO.getByAppointmentId(appointmentId);
-        List<Treatment> treatments = treatmentDAO.getByAppointmentId(appointmentId);
+        List<Diagnosis> diagnoses = diagnosisDAO.getListByAppointmentId(appointmentId);
+        List<Prescription> prescriptions = prescriptionDAO.getListByAppointmentId(appointmentId);
+        List<Treatment> treatments = treatmentDAO.getListByAppointmentId(appointmentId);
 
         // Set attribute
         req.setAttribute("appointment", appointment);
