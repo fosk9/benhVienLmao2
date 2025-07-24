@@ -29,8 +29,6 @@
 </head>
 
 <body>
-<c:out value="User: ${sessionScope.employee}"/><br/>
-<c:out value="Role ID: ${sessionScope.employee.roleId}"/>
 <header>
     <!-- Header Start -->
     <div class="header-area">

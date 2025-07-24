@@ -102,11 +102,9 @@
                             <img src="<c:url value='/assets/img/icon/services1.svg'/>" alt="General Checkup Icon">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/book-appointment?type=General Checkup'/>">Comprehensive General
-                                Checkup</a></h5>
-                            <p>Feeling off or overdue for a health screening? Our thorough checkup assesses your overall
-                                wellness to catch issues early.</p>
-                            <a href="<c:url value='/book-appointment?type=General Checkup'/>" class="plus-btn"><i
+                            <h5><a href="<c:url value='/book-appointment?appointmentTypeId=1'/>">Famous Regular dental checkup</a></h5>
+                            <p>Remember the last time check up time?</p>
+                            <a href="<c:url value='/book-appointment?appointmentTypeId=1'/>" class="plus-btn"><i
                                     class="ti-plus"></i></a>
                         </div>
                     </div>
@@ -117,11 +115,9 @@
                             <img src="<c:url value='/assets/img/icon/services2.svg'/>" alt="Mental Health Icon">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/book-appointment?type=Mental Health Consultation'/>">Mental
-                                Health Support</a></h5>
-                            <p>Struggling with stress, anxiety, or low mood? Book a consultation with our compassionate
-                                mental health specialists.</p>
-                            <a href="<c:url value='/book-appointment?type=Mental Health Consultation'/>"
+                            <h5><a href="<c:url value='/book-appointment?appointmentTypeId=2'/>">Clean your teeth every 6 months</a></h5>
+                            <p>Chances are you are overdue for a checkup...</p>
+                            <a href="<c:url value='/book-appointment?appointmentTypeId=2'/>"
                                class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
@@ -132,11 +128,9 @@
                             <img src="<c:url value='/assets/img/icon/services3.svg'/>" alt="Periodic Checkup Icon">
                         </div>
                         <div class="cat-cap">
-                            <h5><a href="<c:url value='/book-appointment?type=Periodic Health Checkup'/>">Routine Health
-                                Monitoring</a></h5>
-                            <p>Stay proactive about your health. Schedule a periodic checkup to monitor your well-being
-                                and secure peace of mind.</p>
-                            <a href="<c:url value='/book-appointment?type=Periodic Health Checkup'/>"
+                            <h5><a href="<c:url value='/book-appointment?appointmentTypeId=3'/>">Yellow teeth, hello?</a></h5>
+                            <p>Make your teeth look like a mirror now.</p>
+                            <a href="<c:url value='/book-appointment?appointmentTypeId=3'/>"
                                class="plus-btn"><i class="ti-plus"></i></a>
                         </div>
                     </div>
