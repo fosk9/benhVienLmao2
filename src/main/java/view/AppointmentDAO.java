@@ -102,7 +102,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
     // 4. Đếm số lịch hẹn hôm nay đang Pending
     public int countPendingAppointmentsToday() {
-        String sql = "SELECT COUNT(*) FROM Appointments WHERE status = 'Pending' AND CAST(appointment_date AS DATE) = CAST(GETDATE() AS DATE)";
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE status = 'Pending'";
         try (Connection conn = getConn();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
