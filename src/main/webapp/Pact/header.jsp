@@ -82,6 +82,34 @@
   </div>
   <!-- Header End -->
 </header>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Activate current menu item based on URL
+    const currentUrl = window.location.pathname;
+    const navLinks = document.querySelectorAll("#navigation li a");
+    navLinks.forEach(link => {
+      if(link.getAttribute("href") === currentUrl){
+        link.classList.add("active");
+      }
+    });
 
+    // Mobile menu toggle example (if you use Bootstrap or custom)
+    const mobileMenu = document.querySelector(".mobile_menu");
+    const nav = document.querySelector(".main-menu nav");
+    if(mobileMenu && nav){
+      mobileMenu.addEventListener("click", function(){
+        nav.classList.toggle("open");
+      });
+    }
+
+    // Example: Log clicked menu item for debug
+    navLinks.forEach(link => {
+      link.addEventListener("click", function(){
+        console.log("Navigating to: " + this.getAttribute("href"));
+      });
+    });
+  });
+
+</script>
 </body>
 </html>
