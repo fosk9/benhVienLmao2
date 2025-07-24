@@ -45,6 +45,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/slick.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/nice-select.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/chatbot.css"/>
+
 </head>
 <body>
 <!-- ? Preloader Start -->
@@ -558,6 +560,18 @@
     </section>
     <!-- About Law End-->
 </main>
+<!-- Chat icon -->
+<button id="chat-icon">💬</button>
+
+<!-- Chat box -->
+<div id="chatbox">
+    <div id="chatbox-header">Chatbot</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type a message..."/>
+        <button id="send-button">Send</button>
+    </div>
+</div>
 <footer>
     <div class="footer-wrappr section-bg3"
          data-background="${pageContext.request.contextPath}/assets/img/gallery/footer-bg.png">
@@ -727,18 +741,18 @@
     </div>
 </footer>
 <!-- Scroll Up -->
-<div id="back-top">
-    <c:set var="scrollUpFound" value="false"/>
-    <c:forEach var="content" items="${pageContents}">
-        <c:if test="${content.contentKey == 'scroll_up_button' && content.active && content.contentValue != null}">
-            <c:set var="scrollUpFound" value="true"/>
-            <a title="${content.contentValue}" href="#"><i class="fas fa-level-up-alt"></i></a>
-        </c:if>
-    </c:forEach>
-    <c:if test="${!scrollUpFound}">
-        <a title="Go to Top" href="#"><i class="fas fa-level-up-alt"></i></a>
-    </c:if>
-</div>
+<%--<div id="back-top">--%>
+<%--    <c:set var="scrollUpFound" value="false"/>--%>
+<%--    <c:forEach var="content" items="${pageContents}">--%>
+<%--        <c:if test="${content.contentKey == 'scroll_up_button' && content.active && content.contentValue != null}">--%>
+<%--            <c:set var="scrollUpFound" value="true"/>--%>
+<%--            <a title="${content.contentValue}" href="#"><i class="fas fa-level-up-alt"></i></a>--%>
+<%--        </c:if>--%>
+<%--    </c:forEach>--%>
+<%--    <c:if test="${!scrollUpFound}">--%>
+<%--        <a title="Go to Top" href="#"><i class="fas fa-level-up-alt"></i></a>--%>
+<%--    </c:if>--%>
+<%--</div>--%>
 <!-- JS here -->
 <script src="${pageContext.request.contextPath}/assets/js/vendor/modernizr-3.5.0.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/vendor/jquery-1.12.4.min.js"></script>
@@ -765,5 +779,9 @@
 <script src="${pageContext.request.contextPath}/assets/js/plugins.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const contextPath = "<%=request.getContextPath()%>";
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/chatbot.js"></script>
 </body>
 </html>
