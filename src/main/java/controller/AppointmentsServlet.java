@@ -33,7 +33,7 @@ public class AppointmentsServlet extends HttpServlet {
         String path = request.getServletPath();
         AppointmentDAO appointmentDAO = new AppointmentDAO();
 
-        // Set navigation items for the header
+//         Set navigation items for the header
         HeaderController headerController = new HeaderController();
         request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
         if ("/appointments/details".equals(path)) {
