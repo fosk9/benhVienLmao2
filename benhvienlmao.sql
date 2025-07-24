@@ -281,7 +281,7 @@ CREATE TABLE ChangeHistory
 );
 Go
 
-CREATE TABLE Log (
+CREATE TABLE LogSystem (
     log_id INT IDENTITY(1,1) PRIMARY KEY,
     employee_id INT NULL,
     patient_id INT NULL,
