@@ -87,6 +87,14 @@ public class ExaminationNoteServlet extends HttpServlet {
             treatmentDAO.update(t);
         }
 
+        // Update appointment status to Completed
+        Appointment appointment = appointmentDAO.select(appointmentId);
+        if (appointment != null && !"Completed".equalsIgnoreCase(appointment.getStatus())) {
+            appointment.setStatus("Completed");
+            appointment.setUpdatedAt(now);
+            appointmentDAO.update(appointment);
+        }
+
         request.setAttribute("message", "Examination note updated successfully!");
         doGet(request, response); // Reuse doGet to reload updated data
     }

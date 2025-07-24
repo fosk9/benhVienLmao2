@@ -113,7 +113,7 @@
                                         <ul class="list-unstyled mb-0">
                                             <c:forEach var="p" items="${patients}">
                                                 <li>
-                                                    <a href="PatientDetails?id=${p.patientId}" class="text-primary">
+                                                    <a href="patient-details?id=${p.patientId}" class="text-primary">
                                                         <i class="fa fa-user"></i>${p.fullName}
                                                     </a>
                                                 </li>
