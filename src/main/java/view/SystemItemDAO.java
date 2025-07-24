@@ -33,12 +33,13 @@ public class SystemItemDAO extends DBContext<SystemItem> {
             try (PreparedStatement stmt = conn.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    SystemItem item = new SystemItem();
-                    item.setItemId(rs.getInt("item_id"));
-                    item.setItemName(rs.getString("item_name"));
-                    item.setItemUrl(rs.getString("item_url"));
-                    item.setDisplayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null);
-                    item.setItemType(rs.getString("item_type"));
+                    SystemItem item = SystemItem.builder()
+                            .itemId(rs.getInt("item_id"))
+                            .itemName(rs.getString("item_name"))
+                            .itemUrl(rs.getString("item_url"))
+                            .displayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null)
+                            .itemType(rs.getString("item_type"))
+                            .build();
                     items.add(item);
                 }
             }
@@ -65,12 +66,13 @@ public class SystemItemDAO extends DBContext<SystemItem> {
                 stmt.setInt(1, id[0]);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        item = new SystemItem();
-                        item.setItemId(rs.getInt("item_id"));
-                        item.setItemName(rs.getString("item_name"));
-                        item.setItemUrl(rs.getString("item_url"));
-                        item.setDisplayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null);
-                        item.setItemType(rs.getString("item_type"));
+                        item = SystemItem.builder()
+                                .itemId(rs.getInt("item_id"))
+                                .itemName(rs.getString("item_name"))
+                                .itemUrl(rs.getString("item_url"))
+                                .displayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null)
+                                .itemType(rs.getString("item_type"))
+                                .build();
                     }
                 }
             }
@@ -83,16 +85,17 @@ public class SystemItemDAO extends DBContext<SystemItem> {
     }
 
     /**
-     * Inserts a new SystemItem.
+     * Inserts a new SystemItem and returns its generated ID.
+     * @return the ID of the inserted SystemItem, or -1 if insertion fails
      */
     @Override
     public int insert(SystemItem item) {
         String sql = "INSERT INTO SystemItems (item_name, item_url, display_order, item_type) VALUES (?, ?, ?, ?)";
         Connection conn = null;
-        int affectedRows = 0;
+        int generatedId = -1;
         try {
             conn = getConn();
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, item.getItemName());
                 stmt.setString(2, item.getItemUrl());
                 if (item.getDisplayOrder() != null) {
@@ -101,15 +104,22 @@ public class SystemItemDAO extends DBContext<SystemItem> {
                     stmt.setNull(3, java.sql.Types.INTEGER);
                 }
                 stmt.setString(4, item.getItemType());
-                affectedRows = stmt.executeUpdate();
-                LOGGER.info("Inserted SystemItem: " + item.getItemName());
+                int affectedRows = stmt.executeUpdate();
+                if (affectedRows > 0) {
+                    try (ResultSet rs = stmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            generatedId = rs.getInt(1);
+                            LOGGER.info("Inserted SystemItem: " + item.getItemName() + " with ID: " + generatedId);
+                        }
+                    }
+                }
             }
         } catch (SQLException e) {
             LOGGER.severe("Error inserting SystemItem: " + e.getMessage());
         } finally {
             closeConnection(conn);
         }
-        return affectedRows;
+        return generatedId;
     }
 
     /**
@@ -183,12 +193,13 @@ public class SystemItemDAO extends DBContext<SystemItem> {
                 stmt.setString(2, itemType);
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        SystemItem item = new SystemItem();
-                        item.setItemId(rs.getInt("item_id"));
-                        item.setItemName(rs.getString("item_name"));
-                        item.setItemUrl(rs.getString("item_url"));
-                        item.setDisplayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null);
-                        item.setItemType(rs.getString("item_type"));
+                        SystemItem item = SystemItem.builder()
+                                .itemId(rs.getInt("item_id"))
+                                .itemName(rs.getString("item_name"))
+                                .itemUrl(rs.getString("item_url"))
+                                .displayOrder(rs.getObject("display_order") != null ? rs.getInt("display_order") : null)
+                                .itemType(rs.getString("item_type"))
+                                .build();
                         items.add(item);
                     }
                 }
@@ -199,5 +210,99 @@ public class SystemItemDAO extends DBContext<SystemItem> {
             closeConnection(conn);
         }
         return items;
+    }
+
+    /**
+     * Retrieves a list of role IDs associated with a specific SystemItem.
+     */
+    public List<Integer> getRoleIdsByItemId(int itemId) {
+        List<Integer> roleIds = new ArrayList<>();
+        String sql = "SELECT role_id FROM RoleSystemItems WHERE item_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, itemId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        roleIds.add(rs.getInt("role_id"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching roles for SystemItem: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return roleIds;
+    }
+
+    /**
+     * Adds a role to a SystemItem.
+     */
+    public int addRoleToItem(int roleId, int itemId) {
+        String sql = "INSERT INTO RoleSystemItems (role_id, item_id) VALUES (?, ?)";
+        Connection conn = null;
+        int affectedRows = 0;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, roleId);
+                stmt.setInt(2, itemId);
+                affectedRows = stmt.executeUpdate();
+                LOGGER.info("Added role ID " + roleId + " to SystemItem ID " + itemId);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error adding role to SystemItem: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return affectedRows;
+    }
+
+    /**
+     * Deletes all roles associated with a specific SystemItem.
+     */
+    public int deleteRolesOfItem(int itemId) {
+        String sql = "DELETE FROM RoleSystemItems WHERE item_id = ?";
+        Connection conn = null;
+        int affectedRows = 0;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, itemId);
+                affectedRows = stmt.executeUpdate();
+                LOGGER.info("Deleted all roles for SystemItem ID: " + itemId);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error deleting roles of SystemItem: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return affectedRows;
+    }
+
+    /**
+     * Retrieves the last inserted ID after an insert operation.
+     * This is specific to SQL Server using SCOPE_IDENTITY().
+     */
+    public int getLastInsertId() {
+        String sql = "SELECT SCOPE_IDENTITY() AS last_id";
+        Connection conn = null;
+        int id = -1;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    id = rs.getInt("last_id");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error getting last insert id: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
+        }
+        return id;
     }
 }
