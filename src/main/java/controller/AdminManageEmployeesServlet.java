@@ -17,7 +17,7 @@ import java.util.List;
 
 @WebServlet("/admin/manageEmployees")
 @MultipartConfig
-public class AdminManageEmployeesSevlet extends HttpServlet {
+public class AdminManageEmployeesServlet extends HttpServlet {
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
     private final RoleDAO roleDAO = new RoleDAO();
     private final EmployeeHistoryDAO historyDAO = new EmployeeHistoryDAO();
