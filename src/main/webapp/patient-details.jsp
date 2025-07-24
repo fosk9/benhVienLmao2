@@ -41,61 +41,64 @@
             <input type="hidden" name="patientId" value="${patient.patientId}"/>
             <input type="hidden" name="patient_ava_url" value="${patient.patientAvaUrl}"/>
 
-            <div class="mb-3">
-                <label>Username</label>
-                <input type="text" name="username" class="form-control" value="${patient.username}" disabled/>
-                <input type="hidden" name="username" value="${patient.username}"/>
-            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-control" value="${patient.username}" disabled/>
+                    <input type="hidden" name="username" value="${patient.username}"/>
+                </div>
 
-            <div class="mb-3">
-                <label>Password</label>
-                <input type="password" name="password_hash" class="form-control" value="${patient.passwordHash}"
-                       disabled/>
-                <input type="hidden" name="password_hash" value="${patient.passwordHash}"/>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Password</label>
+                    <input type="password" name="password_hash" class="form-control" value="${patient.passwordHash}"
+                           disabled/>
+                    <input type="hidden" name="password_hash" value="${patient.passwordHash}"/>
+                </div>
 
-            <div class="mb-3">
-                <label>Full Name</label>
-                <input type="text" class="form-control" name="fullName" value="${patient.fullName}" required/>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" name="fullName" value="${patient.fullName}" required/>
+                </div>
 
-            <div class="mb-3">
-                <label>Date of Birth</label>
-                <input type="date" class="form-control" name="dob" value="${patient.dob}"/>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Date of Birth</label>
+                    <input type="date" class="form-control" name="dob" value="${patient.dob}"/>
+                </div>
 
-            <div class="mb-3">
-                <label>Gender</label>
-                <select class="form-select" name="gender">
-                    <option value="M" ${patient.gender == 'M' ? 'selected' : ''}>Male</option>
-                    <option value="F" ${patient.gender == 'F' ? 'selected' : ''}>Female</option>
-                    <option value="O" ${patient.gender == 'O' ? 'selected' : ''}>Other</option>
-                </select>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Gender</label>
+                    <select class="form-select" name="gender">
+                        <option value="M" ${patient.gender == 'M' ? 'selected' : ''}>Male</option>
+                        <option value="F" ${patient.gender == 'F' ? 'selected' : ''}>Female</option>
+                        <option value="O" ${patient.gender == 'O' ? 'selected' : ''}>Other</option>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label>Email</label>
-                <input type="email" class="form-control" name="email" value="${patient.email}"/>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Email</label>
+                    <input type="email" class="form-control" name="email" value="${patient.email}"/>
+                </div>
 
-            <div class="mb-3">
-                <label>Phone</label>
-                <input type="text" class="form-control" name="phone" value="${patient.phone}"/>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Phone</label>
+                    <input type="text" class="form-control" name="phone" value="${patient.phone}"/>
+                </div>
 
-            <div class="mb-3">
-                <label>Address</label>
-                <textarea class="form-control" name="address">${patient.address}</textarea>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Address</label>
+                    <textarea class="form-control" name="address">${patient.address}</textarea>
+                </div>
 
-            <div class="mb-3">
-                <label>Insurance Number</label>
-                <input type="text" class="form-control" name="insuranceNumber" value="${patient.insuranceNumber}"/>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Insurance Number</label>
+                    <input type="text" class="form-control" name="insuranceNumber" value="${patient.insuranceNumber}"/>
+                </div>
 
-            <div class="mb-3">
-                <label>Emergency Contact</label>
-                <input type="text" class="form-control" name="emergencyContact" value="${patient.emergencyContact}"/>
+                <div class="col-md-6 mb-3">
+                    <label>Emergency Contact</label>
+                    <input type="text" class="form-control" name="emergencyContact"
+                           value="${patient.emergencyContact}"/>
+                </div>
             </div>
 
             <div class="d-flex gap-3 mt-4">
@@ -104,6 +107,7 @@
                    onclick="return confirm('Are you sure you want to delete this patient?');">Delete This Patient</a>
             </div>
         </form>
+
     </c:if>
 
     <c:if test="${empty patient}">

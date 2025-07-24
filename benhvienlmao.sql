@@ -281,7 +281,7 @@ CREATE TABLE ChangeHistory
 );
 Go
 
-CREATE TABLE Log (
+CREATE TABLE LogSystem (
     log_id INT IDENTITY(1,1) PRIMARY KEY,
     employee_id INT NULL,
     patient_id INT NULL,
@@ -444,56 +444,65 @@ VALUES ('Dental Checkup', 'Routine dental examination and consultation', 200000.
        ('Invisalign', 'Clear aligners for discreet teeth alignment', 72000000.00);
 GO
 
-INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
+-- Appointments Sample with created_at, updated_at
+INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status, created_at,
+                          updated_at)
 VALUES
 -- Doctor 1
-(1, 1, 3, '2025-07-22', 'Morning', 'Confirmed'),
-(2, 1, 5, '2025-07-23', 'Afternoon', 'Confirmed'),
-(3, 1, 7, '2025-07-24', 'Morning', 'Confirmed'),
-(4, 1, 1, '2025-07-25', 'Evening', 'Confirmed'),
-(5, 1, 2, '2025-07-26', 'Afternoon', 'Confirmed'),
-(6, 1, 4, '2025-07-27', 'Evening', 'Confirmed'),
-(7, 1, 6, '2025-07-28', 'Morning', 'Confirmed'),
-(8, 1, 8, '2025-07-29', 'Afternoon', 'Confirmed'),
-(9, 1, 9, '2025-07-30', 'Evening', 'Confirmed'),
-(10, 1, 10, '2025-07-31', 'Morning', 'Confirmed'),
-(11, 1, 11, '2025-08-01', 'Afternoon', 'Confirmed'),
-(12, 1, 12, '2025-08-02', 'Evening', 'Confirmed'),
-(1, 1, 13, '2025-08-03', 'Morning', 'Confirmed'),
-(2, 1, 14, '2025-08-04', 'Afternoon', 'Confirmed'),
-(3, 1, 1, '2025-08-05', 'Evening', 'Confirmed'),
+(1, 1, 3, '2025-07-22', 'Morning', 'Completed', '2025-07-20', '2025-07-21'),
+(2, 1, 5, '2025-07-23', 'Afternoon', 'Confirmed', '2025-07-21', '2025-07-23'),
+(3, 1, 7, '2025-07-24', 'Morning', 'Confirmed', '2025-07-20', '2025-07-24'),
+(4, 1, 1, '2025-07-25', 'Evening', 'Completed', '2025-07-21', '2025-07-25'),
+(5, 1, 2, '2025-07-26', 'Afternoon', 'Confirmed', '2025-07-22', '2025-07-27'),
+(6, 1, 4, '2025-07-27', 'Evening', 'Confirmed', '2025-07-22', '2025-07-28'),
+(7, 1, 6, '2025-07-28', 'Morning', 'Completed', '2025-07-23', '2025-07-28'),
+(8, 1, 8, '2025-07-29', 'Afternoon', 'Confirmed', '2025-07-23', '2025-07-30'),
+(9, 1, 9, '2025-07-30', 'Evening', 'Confirmed', '2025-07-25', '2025-07-30'),
+(10, 1, 10, '2025-07-31', 'Morning', 'Confirmed', '2025-07-26', '2025-08-01'),
+(11, 1, 11, '2025-08-01', 'Afternoon', 'Completed', '2025-07-28', '2025-08-01'),
+(12, 1, 12, '2025-08-02', 'Evening', 'Confirmed', '2025-07-29', '2025-08-02'),
+(1, 1, 13, '2025-08-03', 'Morning', 'Confirmed', '2025-08-01', '2025-08-03'),
+(2, 1, 14, '2025-08-04', 'Afternoon', 'Completed', '2025-08-01', '2025-08-04'),
+(3, 1, 1, '2025-08-05', 'Evening', 'Confirmed', '2025-08-02', '2025-08-05'),
 
 -- Doctor 2
-(4, 2, 2, '2025-07-22', 'Afternoon', 'Confirmed'),
-(5, 2, 3, '2025-07-23', 'Morning', 'Confirmed'),
-(6, 2, 4, '2025-07-24', 'Evening', 'Confirmed'),
-(7, 2, 5, '2025-07-25', 'Morning', 'Confirmed'),
-(8, 2, 6, '2025-07-26', 'Evening', 'Confirmed'),
-(9, 2, 7, '2025-07-27', 'Morning', 'Confirmed'),
-(10, 2, 8, '2025-07-28', 'Afternoon', 'Confirmed'),
-(11, 2, 9, '2025-07-29', 'Evening', 'Confirmed'),
-(12, 2, 10, '2025-07-30', 'Morning', 'Confirmed'),
-(1, 2, 11, '2025-07-31', 'Afternoon', 'Confirmed'),
-(2, 2, 12, '2025-08-01', 'Evening', 'Confirmed'),
-(3, 2, 13, '2025-08-02', 'Morning', 'Confirmed'),
-(4, 2, 14, '2025-08-03', 'Afternoon', 'Confirmed'),
-(5, 2, 1, '2025-08-04', 'Evening', 'Confirmed'),
-(6, 2, 2, '2025-08-05', 'Morning', 'Confirmed');
+(4, 2, 2, '2025-07-22', 'Afternoon', 'Confirmed', '2025-07-20', '2025-07-22'),
+(5, 2, 3, '2025-07-23', 'Morning', 'Confirmed', '2025-07-21', '2025-07-23'),
+(6, 2, 4, '2025-07-24', 'Evening', 'Completed', '2025-07-22', '2025-07-24'),
+(7, 2, 5, '2025-07-25', 'Morning', 'Confirmed', '2025-07-22', '2025-07-25'),
+(8, 2, 6, '2025-07-26', 'Evening', 'Completed', '2025-07-23', '2025-07-26'),
+(9, 2, 7, '2025-07-27', 'Morning', 'Confirmed', '2025-07-24', '2025-07-27'),
+(10, 2, 8, '2025-07-28', 'Afternoon', 'Completed', '2025-07-25', '2025-07-28'),
+(11, 2, 9, '2025-07-29', 'Evening', 'Confirmed', '2025-07-26', '2025-07-29'),
+(12, 2, 10, '2025-07-30', 'Morning', 'Confirmed', '2025-07-27', '2025-07-30'),
+(1, 2, 11, '2025-07-31', 'Afternoon', 'Confirmed', '2025-07-28', '2025-08-01'),
+(2, 2, 12, '2025-08-01', 'Evening', 'Completed', '2025-07-29', '2025-08-01'),
+(3, 2, 13, '2025-08-02', 'Morning', 'Confirmed', '2025-07-30', '2025-08-02'),
+(4, 2, 14, '2025-08-03', 'Afternoon', 'Confirmed', '2025-07-30', '2025-08-03'),
+(5, 2, 1, '2025-08-04', 'Evening', 'Completed', '2025-08-01', '2025-08-04'),
+(6, 2, 2, '2025-08-05', 'Morning', 'Confirmed', '2025-08-02', '2025-08-05'),
+
+-- Doctor 3 (tháng 6)
+(7, 3, 3, '2025-06-10', 'Morning', 'Confirmed', '2025-06-08', '2025-06-10'),
+(8, 3, 4, '2025-06-12', 'Afternoon', 'Completed', '2025-06-09', '2025-06-12'),
+(9, 3, 5, '2025-06-14', 'Evening', 'Confirmed', '2025-06-10', '2025-06-14'),
+(10, 3, 6, '2025-06-16', 'Morning', 'Confirmed', '2025-06-11', '2025-06-16'),
+(11, 3, 7, '2025-06-18', 'Afternoon', 'Completed', '2025-06-12', '2025-06-18'),
+(12, 3, 8, '2025-06-20', 'Evening', 'Confirmed', '2025-06-13', '2025-06-20');
 
 INSERT INTO Diagnoses (appointment_id, notes, created_at)
-VALUES
-    (1, 'Flu', '2025-01-05'),
-    (2, 'Toothache', '2025-02-10'),
-    (3, 'Back Pain', '2025-03-12'),
-    (4, 'Myopia', '2025-04-03'),
-    (5, 'Flu', '2025-05-09'),
-    (6, 'Fracture', '2025-06-01'),
-    (7, 'Headache', '2025-06-15'),
-    (8, 'Flu', '2025-07-02'),
-    (9, 'Toothache', '2025-07-05'),
-    (10, 'Myopia', '2025-07-10'),
-    (11, 'Flu', '2025-07-15'),
-    (12, 'Back Pain', '2025-07-20');
+VALUES (1, 'Flu', '2025-01-05'),
+       (2, 'Toothache', '2025-02-10'),
+       (3, 'Back Pain', '2025-03-12'),
+       (4, 'Myopia', '2025-04-03'),
+       (5, 'Flu', '2025-05-09'),
+       (6, 'Fracture', '2025-06-01'),
+       (7, 'Headache', '2025-06-15'),
+       (8, 'Flu', '2025-07-02'),
+       (9, 'Toothache', '2025-07-05'),
+       (10, 'Myopia', '2025-07-10'),
+       (11, 'Flu', '2025-07-15'),
+       (12, 'Back Pain', '2025-07-20');
 
 -- Insert sample Category
 INSERT INTO Category (category_name)
@@ -762,18 +771,39 @@ VALUES
 
 INSERT INTO Payments (appointment_id, amount, method, status, pay_content, created_at, paid_at)
 VALUES
-    (1, 100000, 'Cash', 'Paid', 'General Checkup', '2025-01-05', '2025-01-05'),
-    (2, 150000, 'Card', 'Paid', 'Dental Cleaning', '2025-02-10', '2025-02-10'),
-    (3, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-03-12', '2025-03-12'),
-    (4, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-04-03', '2025-04-03'),
-    (5, 180000, 'Card', 'Paid', 'General Checkup', '2025-05-09', '2025-05-09'),
-    (6, 500000, 'Cash', 'Paid', 'Emergency Visit', '2025-06-01', '2025-06-01'),
-    (16, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-06-15', '2025-06-15'),
-    (17, 150000, 'Card', 'Paid', 'General Checkup', '2025-07-02', '2025-07-02'),
-    (18, 180000, 'Cash', 'Paid', 'Dental Cleaning', '2025-07-05', '2025-07-05'),
-    (19, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-07-10', '2025-07-10'),
-    (20, 300000, 'Cash', 'Paid', 'Emergency Visit', '2025-07-15', '2025-07-15'),
-    (21, 400000, 'Card', 'Paid', 'Specialist Consultation', '2025-07-20', '2025-07-20');
+-- Doctor 1
+(1, 100000, 'Cash', 'Paid', 'General Checkup', '2025-07-21', '2025-07-22'),
+(2, 150000, 'Card', 'Paid', 'Dental Cleaning', '2025-07-22', '2025-07-23'),
+(3, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-07-23', '2025-07-24'),
+(4, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-07-24', '2025-07-25'),
+(5, 180000, 'Card', 'Paid', 'General Checkup', '2025-07-25', '2025-07-26'),
+(6, 500000, 'Cash', 'Paid', 'Emergency Visit', '2025-07-26', '2025-07-27'),
+(7, 160000, 'Card', 'Paid', 'ENT Checkup', '2025-07-27', '2025-07-28'),
+(8, 190000, 'Momo', 'Paid', 'X-Ray Service', '2025-07-28', '2025-07-29'),
+(9, 220000, 'Cash', 'Paid', 'Cardiology', '2025-07-29', '2025-07-30'),
+(10, 300000, 'Card', 'Paid', 'General Checkup', '2025-07-30', '2025-07-31'),
+(11, 350000, 'Cash', 'Paid', 'Ultrasound', '2025-07-31', '2025-08-01'),
+(12, 280000, 'Card', 'Paid', 'Specialist Consultation', '2025-08-01', '2025-08-02'),
+(13, 260000, 'Momo', 'Paid', 'Eye Exam', '2025-08-02', '2025-08-03'),
+(14, 170000, 'Cash', 'Paid', 'ENT Checkup', '2025-08-03', '2025-08-04'),
+(15, 230000, 'Card', 'Paid', 'General Checkup', '2025-08-04', '2025-08-05'),
+
+-- Doctor 2
+(16, 210000, 'Cash', 'Paid', 'Cardiology', '2025-07-21', '2025-07-22'),
+(17, 150000, 'Card', 'Paid', 'General Checkup', '2025-07-22', '2025-07-23'),
+(18, 180000, 'Cash', 'Paid', 'Dental Cleaning', '2025-07-23', '2025-07-24'),
+(19, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-07-24', '2025-07-25'),
+(20, 300000, 'Cash', 'Paid', 'Emergency Visit', '2025-07-25', '2025-07-26'),
+(21, 400000, 'Card', 'Paid', 'Specialist Consultation', '2025-07-26', '2025-07-27'),
+(22, 220000, 'Cash', 'Paid', 'Ultrasound', '2025-07-27', '2025-07-28'),
+(23, 180000, 'Card', 'Paid', 'ENT Checkup', '2025-07-28', '2025-07-29'),
+(24, 270000, 'Momo', 'Paid', 'X-Ray Service', '2025-07-29', '2025-07-30'),
+(25, 290000, 'Cash', 'Paid', 'Cardiology', '2025-07-30', '2025-07-31'),
+(26, 310000, 'Card', 'Paid', 'General Checkup', '2025-07-31', '2025-08-01'),
+(27, 330000, 'Cash', 'Paid', 'Specialist Consultation', '2025-08-01', '2025-08-02'),
+(28, 200000, 'Card', 'Paid', 'Eye Exam', '2025-08-02', '2025-08-03'),
+(29, 170000, 'Momo', 'Paid', 'ENT Checkup', '2025-08-03', '2025-08-04'),
+(30, 240000, 'Cash', 'Paid', 'General Checkup', '2025-08-04', '2025-08-05');
 
 
 

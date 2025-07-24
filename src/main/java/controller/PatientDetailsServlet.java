@@ -10,7 +10,7 @@ import view.PatientDAO;
 
 import java.io.IOException;
 
-@WebServlet("/PatientDetails")
+@WebServlet("/patient-details")
 public class PatientDetailsServlet extends HttpServlet {
 
     @Override
