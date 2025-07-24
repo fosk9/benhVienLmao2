@@ -878,7 +878,7 @@ Other Changes:
 
 **Important Notes:**
 
-* [#1249](https://github.com/ckeditor/ckeditor4/issues/1249): Enabled the [Upload Image](https://ckeditor.com/cke4/addon/uploadimage) plugin by default in standard and full presets. Also, it will no longer log an error in case of missing [`config.imageUploadUrl`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html#cfg-imageUploadUrl) property.
+* [#1249](https://github.com/ckeditor/ckeditor4/issues/1249): Enabled the [Upload Image](https://ckeditor.com/cke4/addon/uploadimage) plugin by default in standard and full presets. Also, it will no longer logSystem an error in case of missing [`config.imageUploadUrl`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html#cfg-imageUploadUrl) property.
 
 New Features:
 
@@ -1294,7 +1294,7 @@ Fixed Issues:
 * [#13879](https://dev.ckeditor.com/ticket/13879): Fixed: It is not possible to prevent the [`editor.drop`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_editor.html#event-drop) event.
 * [#13361](https://dev.ckeditor.com/ticket/13361): Fixed: Skin images fail when the site path includes parentheses because the `background-image` path needs single quotes around the URL value.
 * [#13771](https://dev.ckeditor.com/ticket/13771): Fixed: The `contents.css` style is not used if the [IFrame Editing Area](https://ckeditor.com/cke4/addon/wysiwygarea) plugin is missing.
-* [#13782](https://dev.ckeditor.com/ticket/13782): Fixed: Unclear log messages.
+* [#13782](https://dev.ckeditor.com/ticket/13782): Fixed: Unclear logSystem messages.
 * [#13919](https://dev.ckeditor.com/ticket/13919): [Edge] Fixed: Browser window crashes when accessing the `isContentEditable` property of an `<input>` DOM element.
 
 Other Changes:
@@ -1395,7 +1395,7 @@ Other Changes:
 
 Fixed Issues:
 
-* [#13486](https://dev.ckeditor.com/ticket/13486): Fixed: The [Upload Image](https://ckeditor.com/cke4/addon/uploadimage) plugin should log an error, not throw an error when upload URL is not set.
+* [#13486](https://dev.ckeditor.com/ticket/13486): Fixed: The [Upload Image](https://ckeditor.com/cke4/addon/uploadimage) plugin should logSystem an error, not throw an error when upload URL is not set.
 
 ## CKEditor 4.5
 

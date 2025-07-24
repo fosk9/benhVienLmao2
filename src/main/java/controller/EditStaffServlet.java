@@ -6,12 +6,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorDetail;
 import model.Employee;
-import util.HistoryLogger;
 import view.DoctorDetailDAO;
 import view.EmployeeDAO;
 
 import java.io.*;
 import java.sql.Date;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,12 +64,10 @@ public class EditStaffServlet extends HttpServlet {
             Date dob = Date.valueOf(request.getParameter("dob"));
             int accStatus = Integer.parseInt(request.getParameter("accStatus"));
             int roleId = Integer.parseInt(request.getParameter("roleId"));
-            String currentAvatar = request.getParameter("currentAvatar"); // Ảnh hiện tại
+            String currentAvatar = request.getParameter("currentAvatar");
 
             Part imagePart = request.getPart("avatarFile");
             String avatarUrl = saveImage(imagePart);
-
-            // ✅ Nếu không upload ảnh mới thì giữ ảnh cũ
             if (avatarUrl == null || avatarUrl.isEmpty()) {
                 avatarUrl = currentAvatar;
             }
@@ -83,55 +81,51 @@ public class EditStaffServlet extends HttpServlet {
             emp.setDob(dob);
             emp.setAccStatus(accStatus);
             emp.setRoleId(roleId);
-            emp.setEmployeeAvaUrl(avatarUrl); // luôn set, không if
+            emp.setEmployeeAvaUrl(avatarUrl);
 
-            boolean updatedEmp = employeeDAO.updateEmployee(emp);
-            if (updatedEmp) {
-                HistoryLogger.log(
-                        manager.getEmployeeId(),
-                        manager.getFullName(),
-                        id,
-                        fullName,
-                        "Employee",
-                        "Update Profile " + fullName
-                );
-            } else {
-                LOGGER.warning("⚠️ Failed to update Employee ID " + id);
-            }
-
+            DoctorDetail doc = null;
             if (roleId == 1) {
-                String license = request.getParameter("licenseNumber");
-                boolean isSpecialist = "true".equals(request.getParameter("isSpecialist"));
-
-                DoctorDetail doc = new DoctorDetail();
+                doc = new DoctorDetail();
                 doc.setDoctorId(id);
-                doc.setLicenseNumber(license);
-                doc.setSpecialist(isSpecialist);
-
-                boolean updatedDoc = doctorDetailDAO.updateDoctorDetails(doc);
-                if (updatedDoc) {
-                    LOGGER.info("✅ Doctor details updated for ID " + id);
-                    HistoryLogger.log(
-                            manager.getEmployeeId(),
-                            manager.getFullName(),
-                            id,
-                            fullName,
-                            "DoctorDetail",
-                            "Update Doctor Info"
-                    );
-                } else {
-                    LOGGER.warning( "⚠️ Failed to update DoctorDetail for ID " + id);
-                }
+                doc.setLicenseNumber(request.getParameter("licenseNumber"));
+                doc.setSpecialist("true".equals(request.getParameter("isSpecialist")));
             }
 
-            LOGGER.info("✅ Staff update completed for ID " + id);
-            response.sendRedirect("staff-detail?id=" + id);
+            HttpSession session = request.getSession();
+            session.setAttribute("pendingUpdateEmployee", emp);
+            session.setAttribute("pendingUpdateDoctor", doc);
+
+            String otp = generateOTP(6);
+            session.setAttribute("otp", otp);
+            session.setAttribute("otpGeneratedTime", System.currentTimeMillis());
+
+            try {
+                String subject = "Account Update Verification - HRMS";
+
+                String content = "Dear " + fullName + ",\n\n"
+                        + "Your account information has been modified.\n"
+                        + "Please enter this OTP to confirm the update:\n\n"
+                        + otp + "\n\n"
+                        + "If you did not request this change, please contact your manager immediately.\n\n"
+                        + "Regards,\n"
+                        + "HRMS System";
+
+                new SendingEmail().sendEmail(email, subject, content); // gửi dạng text thuần
+                LOGGER.info("📧 OTP email sent to: " + email);
+
+                response.sendRedirect("otp-verification.jsp?type=update&id=" + id);
+            } catch (Exception ex) {
+                LOGGER.log(Level.WARNING, "⚠️ Failed to send OTP email", ex);
+                request.setAttribute("errorMessage", "Failed to send verification email. Please try again.");
+                request.setAttribute("employee", emp);
+                request.setAttribute("doctorDetails", doc);
+                request.getRequestDispatcher("/Manager/edit-staff-detail.jsp").forward(request, response);
+            }
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "❌ Error during POST /staff-edit", e);
 
             try {
-                // Restore input data
                 Employee emp = new Employee();
                 emp.setEmployeeId(Integer.parseInt(request.getParameter("employeeId")));
                 emp.setFullName(request.getParameter("fullName"));
@@ -168,7 +162,6 @@ public class EditStaffServlet extends HttpServlet {
                 request.setAttribute("employee", emp);
                 request.setAttribute("doctorDetails", doctor);
                 request.setAttribute("errorMessage", "An error occurred while processing the form. Please check the input and try again.");
-
                 request.getRequestDispatcher("/Manager/edit-staff-detail.jsp").forward(request, response);
 
             } catch (Exception ex) {
@@ -205,5 +198,15 @@ public class EditStaffServlet extends HttpServlet {
 
         LOGGER.info("🖼️ Image saved successfully: " + newFileName);
         return "assets/img/avatars/" + newFileName;
+    }
+
+    private String generateOTP(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random rand = new Random();
+        StringBuilder otp = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            otp.append(chars.charAt(rand.nextInt(chars.length())));
+        }
+        return otp.toString();
     }
 }

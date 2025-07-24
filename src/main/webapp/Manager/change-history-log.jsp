@@ -14,7 +14,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Hospital Admin CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Admin/css/hospital-admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Manager/css/hospital-admin.css">
 </head>
 <body>
 <div class="hospital-admin">
@@ -74,6 +74,12 @@
                     <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link active">
                         <i class="fas fa-history"></i>
                         <span>Change History</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/logout" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
                     </a>
                 </li>
             </ul>

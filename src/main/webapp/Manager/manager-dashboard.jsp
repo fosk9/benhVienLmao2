@@ -14,7 +14,7 @@
       <!-- Font Awesome -->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
       <!-- Hospital Admin CSS -->
-      <link rel="stylesheet" href="${pageContext.request.contextPath}/Admin/css/hospital-admin.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/Manager/css/hospital-admin.css">
     </head>
     <body>
     <div class="hospital-admin">
@@ -78,7 +78,12 @@
                 <span>Change History</span>
               </a>
             </li>
-
+            <li>
+              <a href="${pageContext.request.contextPath}/logout" class="nav-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </a>
+            </li>
           </ul>
         </nav>
       </div>
@@ -193,7 +198,7 @@
           <div class="hospital-table">
             <div class="table-header">
               <h3>Staff Overview (${totalStaff})</h3>
-              <a href="${pageContext.request.contextPath}/manager/add-staff" class="btn-hospital btn-success btn-sm">
+              <a href="${pageContext.request.contextPath}/add-doctor-form" class="btn-hospital btn-success btn-sm">
                 <i class="fas fa-user-plus mr-1"></i>Add Staff
               </a>
             </div>
@@ -405,5 +410,6 @@
       });
     </script>
       </div>
+    </div>
     </body>
     </html>

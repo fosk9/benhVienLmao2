@@ -39,7 +39,7 @@ CREATE TABLE RoleSystemItems
     role_id INT,
     item_id INT,
     FOREIGN KEY (role_id) REFERENCES Roles (role_id),
-    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id)
+    FOREIGN KEY (item_id) REFERENCES SystemItems (item_id) ON DELETE CASCADE
 );
 GO
 
@@ -281,56 +281,71 @@ CREATE TABLE ChangeHistory
 );
 Go
 
+CREATE TABLE LogSystem (
+    log_id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id INT NULL,
+    patient_id INT NULL,
+    user_name NVARCHAR(255),
+    role_name NVARCHAR(50),
+    action NVARCHAR(255),
+    log_level VARCHAR(10),
+    created_at DATETIME DEFAULT GETDATE()
+);
+
+
 -- Insert sample Roles
 INSERT INTO Roles (role_name)
 VALUES ('Doctor'),
        ('Receptionist'),
        ('Admin'),
        ('Manager'),
-       ('Patient');
+       ('Patient'),
+	   ('Guest');
 GO
 
 -- Insert sample SystemItems
 INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
-VALUES ('Book Appointment', 'book-appointment', NULL, 'Feature'),
-       ('View Prescription', 'view-prescription', NULL, 'Feature'),
-       ('Manage Employees', 'admin/manageEmployees', NULL, 'Feature'),
-       ('Manage Patients', 'admin/managePatients', NULL, 'Feature'),
-       ('View Statistics', 'admin/statistics', NULL, 'Feature'),
-       ('Approve Doctor Shifts', 'admin/shift-approval', NULL, 'Feature'),
-       ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
-       ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
-       ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
-       ('Home', 'index.jsp', 1, 'Navigation'),
-       ('About', 'about.html', 2, 'Navigation'),
-       ('Dental Services', 'services.html', 3, 'Navigation'),
-       ('Blog', 'blog', 4, 'Navigation'),
-       ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),
-       ('Contact', 'contact.html', 6, 'Navigation'),
-       ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
-       ('Manage System Contents', 'admin/contents', NULL, 'Feature'),
-       ('Admin Home', 'admin/home', NULL, 'Navigation'),
-       ('Add New Content', 'admin/content/add', NULL, 'Navigation'),
-       -- Patient-specific navigation items
-       ('Appointments', 'appointments', 1, 'Navigation'),
-       ('Treatment History', 'treatment/history', 2, 'Navigation'),
-       ('Services', 'services', 3, 'Navigation'),
-       ('Account', 'pactDetails', 4, 'Navigation'),
-       ('Logout', 'logout', 5, 'Navigation'),
-       ('My Profile', 'MyProfile', 6, 'Navigation'),
-       ('Change Password', 'change-password', 7, 'Navigation'),
-       ('Book Appointment', 'book-appointment', 8, 'Navigation');
+VALUES
+    ('Book Appointment', 'book-appointment', NULL, 'Feature'),
+    ('View Prescription', 'view-prescription', NULL, 'Feature'),
+    ('Manage Employees', 'admin/manageEmployees', NULL, 'Navigation'),
+    ('Manage Patients', 'admin/managePatients', NULL, 'Navigation'),
+    ('View Logs', 'admin/logs', NULL, 'Feature'),	
+    ('Manage Appointment Type', 'admin/appointments', NULL, 'Feature'),
+    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
+    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
+    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
+    ('Home', 'index', 1, 'Navigation'),
+    ('About', 'about.html', 2, 'Navigation'),
+    ('Dental Services', 'services.html', 3, 'Navigation'),
+    ('Blog', 'blog', 4, 'Navigation'),
+    ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),
+    ('Contact', 'contact.html', 6, 'Navigation'),
+    ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
+    ('Manage System Contents', 'admin/contents', NULL, 'Feature'),
+    ('Admin Home', 'admin/home', NULL, 'Navigation'),
+    ('Add New Content', 'admin/content/add', NULL, 'Navigation'),
+    -- Patient-specific navigation items
+    ('Appointments', 'appointments', 1, 'Navigation'),
+    ('Treatment History', 'treatment/history', 2, 'Navigation'),
+    ('Services', 'appointment/list', 3, 'Navigation'),
+    ('Account', '', 4, 'Navigation'),
+    ('Logout', 'logout', 5, 'Navigation'),
+    ('My Profile', 'MyProfile', 99, 'Navigation'),
+    ('Change Password', 'change-password', 7, 'Navigation'),
+    ('Book Appointment', 'book-appointment', 8, 'Navigation'),
+	('Search for service','appointment/list', 4, 'Navigation'),
+	('Manage Payment', 'https://my.payos.vn/', 6, 'Feature');
 GO
 
 -- Insert sample RoleSystemItems
 INSERT INTO RoleSystemItems (role_id, item_id)
-VALUES
-    --Doctor Navication
-    (1, 23), -- Account (item_id = 23, item_type = 'Navigation')
-    (1, 24), -- Logout (item_id = 24, item_type = 'Navigation')
-    (1, 25), -- My Profile (item_id = 25, item_type = 'Navigation')
-    (1, 26), -- Change Password (item_id = 26, item_type = 'Navigation')
-    --Admin Navication
+VALUES 
+    (1, 1),  -- Doctor: Book Appointment
+    (1, 2),  -- Doctor: View Prescription
+    (1, 7),  -- Doctor: Teeth Whitening
+    (1, 8),  -- Doctor: Dental Checkup
+    (1, 9),  -- Doctor: Tooth Extraction
     (3, 3),  -- Admin: Manage Employees
     (3, 4),  -- Admin: Manage Patients
     (3, 5),  -- Admin: View Statistics
@@ -340,16 +355,24 @@ VALUES
     (3, 18), -- Admin: Admin Home
     (3, 19), -- Admin: Add New Content
     (4, 6),  -- Manager: Approve Doctor Shifts
+	(3, 29), -- Admin: Manage payment history
+	(4, 29), -- Manager: Manage payment history
     -- Patient-specific mappings (role_id = 5 for Patient)
     (5, 13), -- Patient: Blog
     (5, 20), -- Patient: Appointments
     (5, 21), -- Patient: Treatment History
     (5, 22), -- Patient: Services
-    (5, 23), -- Patient: Account
     (5, 24), -- Patient: Logout
     (5, 25), -- Patient: My Profile
     (5, 26), -- Patient: Change Password
-    (5, 27); -- Patient: Book Appointment
+    (5, 27), -- Patient: Book Appointment
+	(5, 28),
+    (5, 23), -- Patient: Account
+	--Guest mapping (role_id = 0 for not login)
+	(6, 13), -- Guest: Blog
+	(6, 22), -- Guest: Services
+	(6, 27), -- Guest: Book Appointment
+	(6, 28); -- Guest: Search for Service
 GO
 
 -- Insert sample Patients

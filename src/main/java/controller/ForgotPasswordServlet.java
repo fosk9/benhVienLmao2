@@ -25,64 +25,75 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String username = request.getParameter("username");
-        String userType = request.getParameter("user_type"); // nhận từ dropdown
+        String userType = request.getParameter("user_type"); // "patient" hoặc "employee"
 
         if (username == null || userType == null || username.isEmpty() || userType.isEmpty()) {
-            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin.");
+            request.setAttribute("error", "Please fill in all required fields.");
             request.getRequestDispatcher("forgot-password.jsp").forward(request, response);
             return;
         }
 
         String email = null;
+        String fullName = null;
 
         if (userType.equalsIgnoreCase("patient")) {
             Patient patient = patientDAO.getPatientByUsername(username);
             if (patient != null && patient.getEmail() != null && !patient.getEmail().isEmpty()) {
                 email = patient.getEmail();
+                fullName = patient.getFullName();
             }
         } else if (userType.equalsIgnoreCase("employee")) {
             Employee employee = employeeDAO.getEmployeeByUsername(username);
             if (employee != null && employee.getEmail() != null && !employee.getEmail().isEmpty()) {
                 email = employee.getEmail();
+                fullName = employee.getFullName();
             }
         } else {
-            request.setAttribute("error", "Loại người dùng không hợp lệ.");
+            request.setAttribute("error", "Invalid user type.");
             request.getRequestDispatcher("forgot-password.jsp").forward(request, response);
             return;
         }
 
         if (email == null) {
-            request.setAttribute("error", "Không tìm thấy tài khoản hoặc tài khoản chưa có email.");
+            request.setAttribute("error", "Account not found or email is missing.");
             request.getRequestDispatcher("forgot-password.jsp").forward(request, response);
             return;
         }
 
-        // Tạo OTP
-        String otp = generateOTP(8);
+        // ✅ Tạo OTP
+        String otp = generateOTP(6);
 
-        // Lưu OTP, username và user_type vào session
+        // ✅ Lưu OTP, thời gian tạo, username và user_type vào session
         HttpSession session = request.getSession();
         session.setAttribute("otp", otp);
         session.setAttribute("username", username);
         session.setAttribute("user_type", userType);
+        session.setAttribute("otpGeneratedTime", System.currentTimeMillis());
 
-        // Gửi email
+        // ✅ Gửi email
         SendingEmail emailSender = new SendingEmail();
         try {
-            emailSender.sendEmail(email, "HRMS - Mã xác thực OTP", "Mã OTP của bạn là: " + otp);
+            String subject = "HRMS - Your OTP for Password Reset";
+            String content = "Hello " + (fullName != null ? fullName : "") + ",\n\n"
+                    + "Your OTP for password reset is: **" + otp + "**\n"
+                    + "This code will expire in 5 minutes.\n\n"
+                    + "If you did not request this, please ignore this email.\n\n"
+                    + "Regards,\nHospital Management System";
+            emailSender.sendEmail(email, subject, content);
         } catch (Exception e) {
-            request.setAttribute("error", "Không thể gửi email. Vui lòng thử lại.");
+            request.setAttribute("error", "Failed to send OTP email. Please try again.");
             request.getRequestDispatcher("forgot-password.jsp").forward(request, response);
             return;
         }
 
-        // Điều hướng tới trang nhập OTP
+        // ✅ Chuyển sang trang xác minh OTP
         response.sendRedirect("otp-verification.jsp");
     }
 
     private String generateOTP(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random rand = new Random();
         StringBuilder otp = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -91,4 +102,3 @@ public class ForgotPasswordServlet extends HttpServlet {
         return otp.toString();
     }
 }
-
