@@ -48,8 +48,8 @@ public class EditStaffServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
         Employee manager = (Employee) request.getSession().getAttribute("account");
+
         if (manager == null || manager.getRoleId() != 4) {
             response.sendRedirect("login.jsp");
             return;
@@ -57,21 +57,71 @@ public class EditStaffServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(request.getParameter("employeeId"));
-            String fullName = request.getParameter("fullName");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
-            String gender = request.getParameter("gender");
-            Date dob = Date.valueOf(request.getParameter("dob"));
+            String fullName = request.getParameter("fullName").trim();
+            String email = request.getParameter("email").trim();
+            String phone = request.getParameter("phone").trim();
+            String gender = request.getParameter("gender").trim();
+            String dobStr = request.getParameter("dob");
             int accStatus = Integer.parseInt(request.getParameter("accStatus"));
             int roleId = Integer.parseInt(request.getParameter("roleId"));
             String currentAvatar = request.getParameter("currentAvatar");
 
+            String errorMsg = null;
+
+            // Validate full name
+            if (fullName == null || fullName.length() < 2) {
+                errorMsg = "Full name must be at least 2 characters.";
+            }
+
+            // Validate email format
+            else if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                errorMsg = "Invalid email format.";
+            }
+
+            // Validate duplicate email (excluding current ID)
+            else {
+                Employee existing = employeeDAO.getEmployeeByEmail(email);
+                if (existing != null && existing.getEmployeeId() != id) {
+                    errorMsg = "Email is already in use by another account.";
+                }
+            }
+
+            // Validate phone number
+            if (errorMsg == null && !phone.matches("^\\d{9,15}$")) {
+                errorMsg = "Phone number must be between 9-15 digits.";
+            }
+
+            // Validate gender
+            if (errorMsg == null && !(gender.equalsIgnoreCase("M")
+                    || gender.equalsIgnoreCase("F") || gender.equalsIgnoreCase("O"))) {
+                errorMsg = "Invalid gender value.";
+            }
+
+            // Validate date of birth
+            Date dob = null;
+            try {
+                dob = Date.valueOf(dobStr);
+                if (dob.after(new java.util.Date())) {
+                    errorMsg = "Date of birth cannot be in the future.";
+                }
+            } catch (Exception ex) {
+                errorMsg = "Invalid date format.";
+            }
+
+            // Validate image upload (if có file)
             Part imagePart = request.getPart("avatarFile");
-            String avatarUrl = saveImage(imagePart);
+            String avatarUrl = null;
+            try {
+                avatarUrl = saveImage(imagePart);
+            } catch (IOException ex) {
+                errorMsg = ex.getMessage();
+            }
+
             if (avatarUrl == null || avatarUrl.isEmpty()) {
                 avatarUrl = currentAvatar;
             }
 
+            // Build employee object
             Employee emp = new Employee();
             emp.setEmployeeId(id);
             emp.setFullName(fullName);
@@ -83,14 +133,31 @@ public class EditStaffServlet extends HttpServlet {
             emp.setRoleId(roleId);
             emp.setEmployeeAvaUrl(avatarUrl);
 
+            // Doctor info (if roleId == 1)
             DoctorDetail doc = null;
             if (roleId == 1) {
+                String license = request.getParameter("licenseNumber");
+                boolean isSpecialist = "true".equals(request.getParameter("isSpecialist"));
+
+                if (license == null || license.trim().isEmpty()) {
+                    errorMsg = "License number is required for doctors.";
+                }
+
                 doc = new DoctorDetail();
                 doc.setDoctorId(id);
-                doc.setLicenseNumber(request.getParameter("licenseNumber"));
-                doc.setSpecialist("true".equals(request.getParameter("isSpecialist")));
+                doc.setLicenseNumber(license);
+                doc.setSpecialist(isSpecialist);
             }
 
+            if (errorMsg != null) {
+                request.setAttribute("errorMessage", errorMsg);
+                request.setAttribute("employee", emp);
+                request.setAttribute("doctorDetails", doc);
+                request.getRequestDispatcher("/Manager/edit-staff-detail.jsp").forward(request, response);
+                return;
+            }
+
+            // ✅ VALID – Proceed to OTP
             HttpSession session = request.getSession();
             session.setAttribute("pendingUpdateEmployee", emp);
             session.setAttribute("pendingUpdateDoctor", doc);
@@ -107,10 +174,9 @@ public class EditStaffServlet extends HttpServlet {
                         + "Please enter this OTP to confirm the update:\n\n"
                         + otp + "\n\n"
                         + "If you did not request this change, please contact your manager immediately.\n\n"
-                        + "Regards,\n"
-                        + "HRMS System";
+                        + "Regards,\nHRMS System";
 
-                new SendingEmail().sendEmail(email, subject, content); // gửi dạng text thuần
+                new SendingEmail().sendEmail(email, subject, content);
                 LOGGER.info("📧 OTP email sent to: " + email);
 
                 response.sendRedirect("otp-verification.jsp?type=update&id=" + id);
@@ -122,54 +188,12 @@ public class EditStaffServlet extends HttpServlet {
                 request.getRequestDispatcher("/Manager/edit-staff-detail.jsp").forward(request, response);
             }
 
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "❌ Error during POST /staff-edit", e);
-
-            try {
-                Employee emp = new Employee();
-                emp.setEmployeeId(Integer.parseInt(request.getParameter("employeeId")));
-                emp.setFullName(request.getParameter("fullName"));
-                emp.setEmail(request.getParameter("email"));
-                emp.setPhone(request.getParameter("phone"));
-                emp.setGender(request.getParameter("gender"));
-
-                try {
-                    emp.setDob(Date.valueOf(request.getParameter("dob")));
-                } catch (Exception ex) {
-                    emp.setDob(null);
-                }
-
-                try {
-                    emp.setAccStatus(Integer.parseInt(request.getParameter("accStatus")));
-                } catch (Exception ex) {
-                    emp.setAccStatus(1);
-                }
-
-                try {
-                    emp.setRoleId(Integer.parseInt(request.getParameter("roleId")));
-                } catch (Exception ex) {
-                    emp.setRoleId(2);
-                }
-
-                DoctorDetail doctor = null;
-                if ("1".equals(request.getParameter("roleId"))) {
-                    doctor = new DoctorDetail();
-                    doctor.setDoctorId(emp.getEmployeeId());
-                    doctor.setLicenseNumber(request.getParameter("licenseNumber"));
-                    doctor.setSpecialist("true".equals(request.getParameter("isSpecialist")));
-                }
-
-                request.setAttribute("employee", emp);
-                request.setAttribute("doctorDetails", doctor);
-                request.setAttribute("errorMessage", "An error occurred while processing the form. Please check the input and try again.");
-                request.getRequestDispatcher("/Manager/edit-staff-detail.jsp").forward(request, response);
-
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "❌ Failed to forward to form after error", ex);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "A critical error occurred.");
-            }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "❌ Critical error during POST /staff-edit", ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "A server error occurred.");
         }
     }
+
 
     private String saveImage(Part imagePart) throws IOException {
         if (imagePart == null || imagePart.getSize() == 0) return null;
