@@ -178,19 +178,24 @@ public class SystemItemDAO extends DBContext<SystemItem> {
     }
 
     /**
-     * Retrieves active SystemItems by role and type.
+     * Retrieves active SystemItems by role, optionally filtering by item type.
+     * If itemType is null, fetches all types (Navigation and Feature).
      */
     public List<SystemItem> getActiveItemsByRoleAndType(int roleId, String itemType) {
         List<SystemItem> items = new ArrayList<>();
-        String sql = "SELECT si.item_id, si.item_name, si.item_url, si.display_order, si.item_type FROM SystemItems si " +
+        String sql = "SELECT si.item_id, si.item_name, si.item_url, si.display_order, si.item_type " +
+                "FROM SystemItems si " +
                 "JOIN RoleSystemItems rsi ON si.item_id = rsi.item_id " +
-                "WHERE rsi.role_id = ? AND si.item_type = ?";
+                "WHERE rsi.role_id = ?" +
+                (itemType != null ? " AND si.item_type = ?" : "");
         Connection conn = null;
         try {
             conn = getConn();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, roleId);
-                stmt.setString(2, itemType);
+                if (itemType != null) {
+                    stmt.setString(2, itemType);
+                }
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         SystemItem item = SystemItem.builder()
@@ -205,7 +210,8 @@ public class SystemItemDAO extends DBContext<SystemItem> {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.severe("Error fetching active SystemItems for role " + roleId + ": " + e.getMessage());
+            LOGGER.severe("Error fetching SystemItems for role " + roleId + ": " + e.getMessage());
+            return null; // Return null to indicate failure
         } finally {
             closeConnection(conn);
         }

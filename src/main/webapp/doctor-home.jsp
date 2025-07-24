@@ -16,6 +16,7 @@
     <jsp:include page="common-css.jsp"/>
 </head>
 <body>
+<jsp:include page="doctor-header.jsp"/>
 
 <!-- Hero Section -->
 <div class="slider-area slider-area2 mb-5">

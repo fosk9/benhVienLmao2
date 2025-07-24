@@ -293,86 +293,110 @@ CREATE TABLE LogSystem (
 );
 
 
--- Insert sample Roles
+-- Insert Roles
+-- Defines the roles used for access control in the benhVienLmao system
 INSERT INTO Roles (role_name)
-VALUES ('Doctor'),
-       ('Receptionist'),
-       ('Admin'),
-       ('Manager'),
-       ('Patient'),
-	   ('Guest');
+VALUES 
+    ('Doctor'),      -- role_id = 1
+    ('Receptionist'),-- role_id = 2
+    ('Admin'),       -- role_id = 3
+    ('Manager'),     -- role_id = 4
+    ('Patient'),     -- role_id = 5
+    ('Guest');       -- role_id = 6
 GO
 
--- Insert sample SystemItems
+-- Insert SystemItems
+-- Defines navigation and feature items accessible in the system, numbered for clarity
 INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
-VALUES
-    ('Book Appointment', 'book-appointment', NULL, 'Feature'),
-    ('View Prescription', 'view-prescription', NULL, 'Feature'),
-    ('Manage Employees', 'admin/manageEmployees', NULL, 'Navigation'),
-    ('Manage Patients', 'admin/managePatients', NULL, 'Navigation'),
-    ('View Logs', 'admin/logs', NULL, 'Feature'),	
-    ('Manage Appointment Type', 'admin/appointments', NULL, 'Feature'),
-    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),
-    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),
-    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'),
-    ('Home', 'index', 1, 'Navigation'),
-    ('About', 'about.html', 2, 'Navigation'),
-    ('Dental Services', 'services.html', 3, 'Navigation'),
-    ('Blog', 'blog', 4, 'Navigation'),
-    ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),
-    ('Contact', 'contact.html', 6, 'Navigation'),
-    ('Manage System Items', 'admin/system-items', NULL, 'Feature'),
-    ('Manage System Contents', 'admin/contents', NULL, 'Feature'),
-    ('Admin Home', 'admin/home', NULL, 'Navigation'),
-    ('Add New Content', 'admin/content/add', NULL, 'Navigation'),
-    -- Patient-specific navigation items
-    ('Appointments', 'appointments', 1, 'Navigation'),
-    ('Treatment History', 'treatment/history', 2, 'Navigation'),
-    ('Services', 'appointment/list', 3, 'Navigation'),
-    ('Account', '', 4, 'Navigation'),
-    ('Logout', 'logout', 5, 'Navigation'),
-    ('My Profile', 'MyProfile', 99, 'Navigation'),
-    ('Change Password', 'change-password', 7, 'Navigation'),
-    ('Book Appointment', 'book-appointment', 8, 'Navigation'),
-	('Search for service','appointment/list', 4, 'Navigation'),
-	('Manage Payment', 'https://my.payos.vn/', 6, 'Feature');
+VALUES 
+    -- Navigation Items (Public and General)
+    ('Home', 'index', 1, 'Navigation'),                                    -- item_id = 1
+    ('About', 'about.html', 2, 'Navigation'),                              -- item_id = 2
+    ('Dental Services', 'services.html', 3, 'Navigation'),                 -- item_id = 3
+    ('Blog', 'blog', 4, 'Navigation'),                                    -- item_id = 4
+    ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),                  -- item_id = 5
+    ('Contact', 'contact.html', 6, 'Navigation'),                          -- item_id = 6
+
+    -- Feature Items (Public and General)
+    ('Book Appointment', 'book-appointment', NULL, 'Feature'),             -- item_id = 7
+    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'), -- item_id = 8
+    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),  -- item_id = 9
+    ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'), -- item_id = 10
+    ('Search for Service', 'appointment/list', 4, 'Feature'),              -- item_id = 11
+
+    -- Doctor-Specific Items
+    ('Doctor Dashboard', 'doctor-home', 1, 'Navigation'),                  -- item_id = 12
+    ('View Prescription', 'view-prescription', NULL, 'Feature'),           -- item_id = 13
+
+    -- Admin-Specific Items
+    ('Admin Home', 'admin/home', NULL, 'Navigation'),                      -- item_id = 14
+    ('Manage Employees', 'admin/manageEmployees', NULL, 'Navigation'),     -- item_id = 15
+    ('Manage Patients', 'admin/managePatients', NULL, 'Navigation'),       -- item_id = 16
+    ('Manage System Items', 'admin/system-items', NULL, 'Feature'),        -- item_id = 17
+    ('Manage System Contents', 'admin/contents', NULL, 'Feature'),         -- item_id = 18
+    ('Add New Content', 'admin/content/add', NULL, 'Navigation'),          -- item_id = 19
+    ('View Logs', 'admin/logs', NULL, 'Feature'),                         -- item_id = 20
+    ('Manage Appointment Type', 'admin/appointments', NULL, 'Feature'),    -- item_id = 21
+    ('Manage Payment', 'https://my.payos.vn/', NULL, 'Feature'),           -- item_id = 22
+
+    -- Patient-Specific Items
+    ('Appointments', 'appointments', 1, 'Navigation'),                     -- item_id = 23
+    ('Treatment History', 'treatment/history', 2, 'Navigation'),           -- item_id = 24
+    ('Services', 'appointment/list', 3, 'Navigation'),                     -- item_id = 25
+    ('Account', '', 4, 'Navigation'),                                     -- item_id = 26
+    ('My Profile', 'MyProfile', 99, 'Navigation'),                         -- item_id = 27
+    ('Change Password', 'change-password', 7, 'Navigation'),               -- item_id = 28
+    ('Book Appointment (Patient)', 'book-appointment', 8, 'Navigation'),   -- item_id = 29
+    ('Logout', 'logout', 5, 'Navigation');                                -- item_id = 30
 GO
 
--- Insert sample RoleSystemItems
+-- Insert RoleSystemItems
+-- Maps roles to SystemItems for role-based access control
 INSERT INTO RoleSystemItems (role_id, item_id)
 VALUES 
-    (1, 1),  -- Doctor: Book Appointment
-    (1, 2),  -- Doctor: View Prescription
-    (1, 7),  -- Doctor: Teeth Whitening
-    (1, 8),  -- Doctor: Dental Checkup
-    (1, 9),  -- Doctor: Tooth Extraction
-    (3, 3),  -- Admin: Manage Employees
-    (3, 4),  -- Admin: Manage Patients
-    (3, 5),  -- Admin: View Statistics
-    (3, 6),  -- Admin: Approve Doctor Shifts
-    (3, 16), -- Admin: Manage System Items
-    (3, 17), -- Admin: Manage System Contents
-    (3, 18), -- Admin: Admin Home
-    (3, 19), -- Admin: Add New Content
-    (4, 6),  -- Manager: Approve Doctor Shifts
-	(3, 29), -- Admin: Manage payment history
-	(4, 29), -- Manager: Manage payment history
-    -- Patient-specific mappings (role_id = 5 for Patient)
-    (5, 13), -- Patient: Blog
-    (5, 20), -- Patient: Appointments
-    (5, 21), -- Patient: Treatment History
-    (5, 22), -- Patient: Services
-    (5, 24), -- Patient: Logout
-    (5, 25), -- Patient: My Profile
-    (5, 26), -- Patient: Change Password
-    (5, 27), -- Patient: Book Appointment
-	(5, 28),
-    (5, 23), -- Patient: Account
-	--Guest mapping (role_id = 0 for not login)
-	(6, 13), -- Guest: Blog
-	(6, 22), -- Guest: Services
-	(6, 27), -- Guest: Book Appointment
-	(6, 28); -- Guest: Search for Service
+    -- Doctor (role_id = 1) Permissions
+    (1, 12), -- Doctor Dashboard (doctor-home)
+    (1, 13), -- View Prescription (view-prescription)
+    (1, 27), -- My Profile (MyProfile)
+    (1, 28), -- Change Password (change-password)
+    (1, 30), -- Logout (logout)
+
+    -- Admin (role_id = 3) Permissions
+    (3, 14), -- Admin Home (admin/home)
+    (3, 15), -- Manage Employees (admin/manageEmployees)
+    (3, 16), -- Manage Patients (admin/managePatients)
+    (3, 17), -- Manage System Items (admin/system-items)
+    (3, 18), -- Manage System Contents (admin/contents)
+    (3, 19), -- Add New Content (admin/content/add)
+    (3, 20), -- View Logs (admin/logs)
+    (3, 21), -- Manage Appointment Type (admin/appointments)
+    (3, 22), -- Manage Payment[](https://my.payos.vn/)
+
+    -- Manager (role_id = 4) Permissions
+    (4, 21), -- Manage Appointment Type (admin/appointments)
+    (4, 22), -- Manage Payment[](https://my.payos.vn/)
+
+    -- Patient (role_id = 5) Permissions
+    (5, 4),  -- Blog (blog)
+    (5, 5),  -- Blog Details (blog-detail.jsp)
+    (5, 23), -- Appointments (appointments)
+    (5, 24), -- Treatment History (treatment/history)
+    (5, 25), -- Services (appointment/list)
+    (5, 26), -- Account
+    (5, 27), -- My Profile (MyProfile)
+    (5, 28), -- Change Password (change-password)
+    (5, 29), -- Book Appointment (Patient) (book-appointment)
+    (5, 30), -- Logout (logout)
+
+    -- Guest (role_id = 6) Permissions
+    (6, 4),  -- Blog (blog)
+    (6, 5),  -- Blog Details (blog-detail.jsp)
+    (6, 7),  -- Book Appointment (book-appointment)
+    (6, 8),  -- Teeth Whitening (book-appointment?appointmentTypeId=3)
+    (6, 9),  -- Dental Checkup (book-appointment?appointmentTypeId=1)
+    (6, 10), -- Tooth Extraction (book-appointment?appointmentTypeId=6)
+    (6, 11), -- Search for Service (appointment/list)
+    (6, 25); -- Services (appointment/list)
 GO
 
 -- Insert sample Patients
