@@ -76,6 +76,12 @@
                         <span>Change History</span>
                     </a>
                 </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/logout" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

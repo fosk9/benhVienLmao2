@@ -30,7 +30,6 @@ public class SendingEmail {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
             message.setSubject(subject);
             message.setText(body);
-
             Transport.send(message);
             System.out.println("✅ Email sent successfully to " + to);
             return true;
