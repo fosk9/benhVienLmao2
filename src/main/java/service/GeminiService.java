@@ -2,7 +2,6 @@ package service;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
-import com.google.genai.types.GenerationConfig;
 
 import java.util.List;
 
@@ -18,7 +17,8 @@ public class GeminiService {
                     "Tránh dùng thuật ngữ y khoa phức tạp hoặc giải thích chuyên sâu. " +
                     "Nhiệm vụ của bạn bao gồm:\n" +
                     "- Chào hỏi người dùng một cách lịch sự và thân thiện.\n" +
-                    "- Hỏi người dùng đang gặp vấn đề gì về răng miệng.\n" +
+                    "- Hỏi người dùng đang gặp vấn đề gì về răng miệng khi người dùng bắt đầu nói chuyện.\n" +
+                    "- Chỉ gợi ý dịch vụ nha khoa khi người dùng nói bị đau răng hoặc đau như nào.\n" +
                     "- Giới thiệu các dịch vụ nha khoa như: cạo vôi răng, trám răng, niềng răng, trồng răng Implant, tẩy trắng răng...\n" +
                     "- Cung cấp thông tin ước lượng chi phí và thời gian thực hiện từng dịch vụ (chỉ mang tính tham khảo).\n" +
                     "- Luôn nhấn mạnh rằng để biết chính xác, người dùng cần đến khám trực tiếp với bác sĩ.\n" +
@@ -28,8 +28,35 @@ public class GeminiService {
                     "- **Không sử dụng các hiệu ứng chữ viết như in đậm, nghiêng, markdown hoặc emoji động** vì giao diện chatbox không hỗ trợ chúng.\n";
 
     public GeminiService() {
+        try {
+            // Disable hostname verification and SSL check (NOT FOR PRODUCTION)
+            javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[]{
+                    new javax.net.ssl.X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
+            javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // In ra nếu setup SSL fail
+        }
+
+        // Tạo client Gemini như bình thường
         this.client = Client.builder().apiKey(API_KEY).build();
     }
+
 
     /**
      * Tạo câu trả lời từ Gemini dựa vào lịch sử cuộc trò chuyện và vai trò được xác định trước.
@@ -50,10 +77,8 @@ public class GeminiService {
         prompt.append("Bot:");
 
         try {
-            // Sử dụng tên model chính xác. "gemini-1.5-flash-latest" là một lựa chọn tốt và mới hơn.
-            // Lưu ý: "gemini-2.0-flash" không phải là tên model hợp lệ tại thời điểm hiện tại.
             GenerateContentResponse response = client.models.generateContent(
-                    "gemini-2.0-flash", // Sửa thành tên model hợp lệ
+                    "gemini-2.0-flash",
                     prompt.toString(),
                     null
             );
