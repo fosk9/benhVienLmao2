@@ -54,19 +54,24 @@ public class OtpVerificationServlet extends HttpServlet {
                     return;
                 }
 
-                SendingEmail sender = new SendingEmail();
-                sender.sendEmail(tempPatient.getEmail(),
-                        "Your Patient Account is Ready",
-                        "Hello " + tempPatient.getFullName() + ",\n\n"
-                                + "Your patient account has been created successfully.\n"
-                                + "Username: " + tempPatient.getUsername() + "\n"
-                                + "Password: " + rawPassword + "\n\n"
-                                + "Please log in and change your password.\n\n"
-                                + "Regards,\nHRMS Team");
+                try {
+                    new SendingEmail().sendEmail(tempPatient.getEmail(),
+                            "Your Patient Account is Ready",
+                            "Hello " + tempPatient.getFullName() + ",\n\n"
+                                    + "Your patient account has been created successfully.\n"
+                                    + "Username: " + tempPatient.getUsername() + "\n"
+                                    + "Password: " + rawPassword + "\n\n"
+                                    + "Please log in and change your password.\n\n"
+                                    + "Regards,\nHRMS Team");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    request.setAttribute("error", "Failed to send confirmation email. Please try again.");
+                    request.getRequestDispatcher("otp-verification.jsp").forward(request, response);
+                    return;
+                }
 
                 clearOtpSession(session);
 
-                // Quay về trang đặt lịch nếu có form từ trước
                 if (session.getAttribute("appointmentFormData") != null) {
                     response.sendRedirect("book-appointment");
                 } else {
@@ -80,7 +85,6 @@ public class OtpVerificationServlet extends HttpServlet {
             if (tempEmployee != null) {
                 int empId = employeeDAO.insertReturnId(tempEmployee);
 
-                // Nếu là bác sĩ → insert thêm thông tin chuyên môn
                 if (Boolean.TRUE.equals(session.getAttribute("isDoctor"))) {
                     DoctorDetail detail = DoctorDetail.builder()
                             .doctorId(empId)
@@ -90,18 +94,24 @@ public class OtpVerificationServlet extends HttpServlet {
                     doctorDetailDAO.insert(detail);
                 }
 
-                // Gửi mail tài khoản
                 String rawPassword = (String) session.getAttribute("generatedPassword");
-                new SendingEmail().sendEmail(tempEmployee.getEmail(),
-                        "Your Hospital Staff Account",
-                        "Hello " + tempEmployee.getFullName() + ",\n\n"
-                                + "Your hospital account has been created.\n"
-                                + "Username: " + tempEmployee.getEmail() + "\n"
-                                + "Password: " + rawPassword + "\n\n"
-                                + "Please log in and change your password after first login.\n\n"
-                                + "Regards,\nHR Department");
 
-                // Ghi log nếu được tạo bởi Manager
+                try {
+                    new SendingEmail().sendEmail(tempEmployee.getEmail(),
+                            "Your Hospital Staff Account",
+                            "Hello " + tempEmployee.getFullName() + ",\n\n"
+                                    + "Your hospital account has been created.\n"
+                                    + "Username: " + tempEmployee.getEmail() + "\n"
+                                    + "Password: " + rawPassword + "\n\n"
+                                    + "Please log in and change your password after first login.\n\n"
+                                    + "Regards,\nHR Department");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    request.setAttribute("error", "Failed to send confirmation email. Please try again.");
+                    request.getRequestDispatcher("otp-verification.jsp").forward(request, response);
+                    return;
+                }
+
                 Employee manager = (Employee) session.getAttribute("account");
                 if (manager != null) {
                     HistoryLogger.log(
@@ -120,8 +130,43 @@ public class OtpVerificationServlet extends HttpServlet {
             }
 
             // === CASE 3: FORGOT PASSWORD ===
+            if (session.getAttribute("forgotEmail") != null) {
+                clearOtpSession(session);
+                response.sendRedirect("reset-password.jsp");
+                return;
+            }
+
+            // === CASE 4: EMPLOYEE INFO UPDATE ===
+            Employee pendingUpdate = (Employee) session.getAttribute("pendingUpdateEmployee");
+            DoctorDetail pendingDoc = (DoctorDetail) session.getAttribute("pendingUpdateDoctor");
+            if (pendingUpdate != null) {
+                boolean success = employeeDAO.updateEmployee(pendingUpdate);
+                if (success) {
+                    if (pendingDoc != null) {
+                        doctorDetailDAO.updateDoctorDetails(pendingDoc);
+                        session.removeAttribute("pendingUpdateDoctor");
+                    }
+                    Employee manager = (Employee) session.getAttribute("account");
+                    HistoryLogger.log(
+                            manager.getEmployeeId(),
+                            manager.getFullName(),
+                            pendingUpdate.getEmployeeId(),
+                            pendingUpdate.getFullName(),
+                            "Employee",
+                            "Confirmed update for staff: " + pendingUpdate.getFullName()
+                    );
+                    clearOtpSession(session);
+                    response.sendRedirect("staff-detail?id=" + pendingUpdate.getEmployeeId() + "&msg=update_confirmed");
+                } else {
+                    request.setAttribute("error", "Failed to update employee info after OTP.");
+                    request.getRequestDispatcher("otp-verification.jsp").forward(request, response);
+                }
+                return;
+            }
+
+            // === Default fallback ===
             clearOtpSession(session);
-            response.sendRedirect("reset-password.jsp");
+            response.sendRedirect("login.jsp");
 
         } else {
             request.setAttribute("error", "Incorrect OTP code!");
@@ -132,11 +177,20 @@ public class OtpVerificationServlet extends HttpServlet {
     private void clearOtpSession(HttpSession session) {
         session.removeAttribute("otp");
         session.removeAttribute("otpGeneratedTime");
+
+        // Register
         session.removeAttribute("generatedPassword");
         session.removeAttribute("tempPatient");
         session.removeAttribute("tempEmployee");
         session.removeAttribute("licenseNumber");
         session.removeAttribute("isDoctor");
         session.removeAttribute("isSpecialist");
+
+        // Forgot Password
+        session.removeAttribute("forgotEmail");
+
+        // Update
+        session.removeAttribute("pendingUpdateEmployee");
+        session.removeAttribute("pendingUpdateDoctor");
     }
 }
