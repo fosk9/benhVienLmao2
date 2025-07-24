@@ -73,6 +73,7 @@ public class ManagerDashboardServlet extends HttpServlet {
         // === 3. Lấy danh sách nhân viên có trạng thái hôm nay ===
         List<EmployeeWithStatus> employeeList = employeeDAO.getEmployeesWithStatus(keyword, status, offset, pageSize);
         int totalEmployees = employeeDAO.countEmployeesWithStatus(keyword, status);
+        System.out.println("📋 Filtered employees: " + totalEmployees + " | Page size: " + pageSize);
         int totalPage = (int) Math.ceil((double) totalEmployees / pageSize);
 
         System.out.println("👥 Filtered staff count: " + totalEmployees + " | totalPage = " + totalPage);
