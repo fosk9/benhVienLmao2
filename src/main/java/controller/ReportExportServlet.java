@@ -7,6 +7,7 @@ import jakarta.servlet.http.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import view.ReportDAO;
+import validation.InputSanitizer;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -25,6 +26,7 @@ public class ReportExportServlet extends HttpServlet {
         String toDateStr = request.getParameter("to_date");
         String monthStr = request.getParameter("month");
         String search = request.getParameter("search");
+        search = InputSanitizer.cleanSearchQuery(search);
 
         Date fromDate = null;
         Date toDate = null;

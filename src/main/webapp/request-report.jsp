@@ -10,6 +10,7 @@
 
 </head>
 <body>
+<%@ include file="header.jsp" %>
 
 <section class="section-margin--small">
     <div class="container">
@@ -38,7 +39,18 @@
                        class="form-control"/>
             </div>
             <div class="col-12 text-end mt-3">
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="genric-btn primary circle">Filter</button>
+            </div>
+        </form>
+
+        <!-- Export Form -->
+        <form action="export-activity-report" method="post">
+            <input type="hidden" name="from_date" value="${from_date}"/>
+            <input type="hidden" name="to_date" value="${to_date}"/>
+            <input type="hidden" name="month" value="${month}"/>
+            <input type="hidden" name="search" value="${search}"/>
+            <div class="text-end mt-3">
+                <button type="submit" class="genric-btn primary circle">Export to Excel</button>
             </div>
         </form>
 
@@ -80,17 +92,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Export Form -->
-            <form action="export-activity-report" method="post">
-                <input type="hidden" name="from_date" value="${from_date}"/>
-                <input type="hidden" name="to_date" value="${to_date}"/>
-                <input type="hidden" name="month" value="${month}"/>
-                <input type="hidden" name="search" value="${search}"/>
-                <div class="text-end mt-3">
-                    <button type="submit" class="btn btn-success">Export to Excel</button>
-                </div>
-            </form>
         </c:if>
 
         <c:if test="${reportList != null and empty reportList}">
@@ -98,7 +99,7 @@
         </c:if>
     </div>
 </section>
-
+<%@ include file="footer.jsp" %>
 <%@ include file="common-scripts.jsp" %>
 </body>
 </html>
