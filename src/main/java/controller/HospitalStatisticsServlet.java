@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/report-dashboard")
-public class ReportDashboardServlet extends HttpServlet {
+@WebServlet("/hospital-statistics")
+public class HospitalStatisticsServlet extends HttpServlet {
     private final Gson gson = new Gson();
 
     @Override
@@ -46,6 +46,6 @@ public class ReportDashboardServlet extends HttpServlet {
         request.setAttribute("topDoctors", topDoctors);
         request.setAttribute("popularServices", popularServices);
 
-        request.getRequestDispatcher("report-dashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("hospital-statistics.jsp").forward(request, response);
     }
 }
