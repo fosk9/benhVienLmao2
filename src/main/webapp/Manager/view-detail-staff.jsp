@@ -493,11 +493,6 @@
                         <a href="${pageContext.request.contextPath}/view-doctor-schedule?doctorId=${employee.employeeId}" class="btn-hospital btn-secondary mr-2">
                             <i class="fas fa-calendar mr-1"></i>Manage Schedule
                         </a>
-                        <c:if test="${employee.roleId == 1}">
-                            <a href="${pageContext.request.contextPath}/doctor-appointments?doctorId=${employee.employeeId}" class="btn-hospital btn-info mr-2">
-                                <i class="fas fa-calendar-check mr-1"></i>View Appointments
-                            </a>
-                        </c:if>
                     </div>
                 </div>
             </div>

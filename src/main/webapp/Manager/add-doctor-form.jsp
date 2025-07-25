@@ -96,11 +96,6 @@
                         <h1>Add New Doctor/Staff</h1>
                         <p class="page-subtitle">Create new doctor or staff member account</p>
                     </div>
-                    <div>
-                        <a href="${pageContext.request.contextPath}/update-user-role" class="btn-hospital btn-secondary">
-                            <i class="fas fa-arrow-left mr-2"></i>Back to User Management
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

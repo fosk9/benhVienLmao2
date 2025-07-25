@@ -70,6 +70,15 @@
     .pagination .first, .pagination .last {
       font-weight: bold;
     }
+
+    .blog_item_img img {
+      width: 100%;              /* full chiều rộng container */
+      height: 250px;            /* hoặc bạn có thể dùng 300px nếu muốn ảnh cao hơn */
+      object-fit: cover;        /* cắt ảnh để fit khung mà không bị méo */
+      border-radius: 5px;       /* bo góc nếu muốn */
+      display: block;           /* tránh lỗi margin dưới ảnh */
+    }
+
   </style>
 
 </head>
@@ -107,7 +116,7 @@
               <c:forEach var="b" items="${searchResults}">
                 <article class="blog_item">
                   <div class="blog_item_img">
-                    <img class="card-img rounded-0" src="${pageContext.request.contextPath}/${b.blogImg}" alt="${b.blogName}">
+                    <img class="card-img rounded-0" style="height: auto;" src="${pageContext.request.contextPath}/${b.blogImg}" alt="${b.blogName}">
                     <a href="#" class="blog_item_date">
                       <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>
                       <p><fmt:formatDate value="${b.date}" pattern="MMM"/></p>
@@ -222,7 +231,7 @@
       </div>
     </div>
   </section>
-  <!-- About Section -->
+  <!-- About Section  -->
   <section class="about-low-area mt-60">
     <div class="container">
       <div class="about-cap-wrapper">

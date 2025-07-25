@@ -141,8 +141,8 @@
                 <div class="stat-card">
                     <div class="stat-card-content">
                         <div class="stat-info">
-                            <h3 class="stat-orange">${activeReceptionists != null ? activeReceptionists : 0}</h3>
-                            <p>Active Receptionist</p>
+                            <h3 class="stat-orange">${fn:length(scheduleList) != null ? fn:length(scheduleList) : 0}</h3>
+                            <p>Total Doctor</p>
                         </div>
                         <div class="stat-icon stat-orange">
                             <i class="fas fa-user-nurse"></i>

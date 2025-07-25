@@ -13,17 +13,22 @@ public class LogoutServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy session hiện tại
+        // Lấy session hiện tại (không tạo mới)
         HttpSession session = request.getSession(false);
 
-        // Xóa thông tin người dùng khỏi session nếu tồn tại
+        // Nếu session tồn tại, xóa rõ ràng các attribute đã được set ở LoginServlet
         if (session != null) {
-            session.removeAttribute("user");
-            session.invalidate();
+            session.removeAttribute("username");
+            session.removeAttribute("account");
+            session.removeAttribute("patientId");
+            session.removeAttribute("role");
+            session.removeAttribute("login-as");
+
+            session.invalidate(); // Hủy session
         }
 
-        // Chuyển hướng người dùng đến trang login.jsp
-        response.sendRedirect("login.jsp");
+        // Chuyển hướng người dùng đến trang login thông qua servlet
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 
     @Override
@@ -31,4 +36,3 @@ public class LogoutServlet extends HttpServlet {
         doGet(request, response);
     }
 }
-

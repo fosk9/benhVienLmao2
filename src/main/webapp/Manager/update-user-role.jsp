@@ -263,7 +263,7 @@
                 <td>
                   <c:choose>
                     <c:when test="${empty u.roleName || fn:toLowerCase(u.roleName) == 'patient'}">
-                      <span class="text-muted">Không áp dụng</span>
+                      <span class="text-muted">Can't Update Role</span>
                     </c:when>
                     <c:otherwise>
                       <select class="form-control" name="newRole_${u.userID}">
