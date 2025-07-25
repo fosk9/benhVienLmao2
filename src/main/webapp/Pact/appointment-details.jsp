@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-<jsp:include page="/Pact/header.jsp"/>
+<jsp:include page="/header.jsp"/>
 <%--<header>--%>
 <%--  <div class="header-area">--%>
 <%--    <div class="main-header header-sticky">--%>
@@ -102,5 +102,6 @@
 <script src="<c:url value='/assets/js/vendor/jquery-1.12.4.min.js'/>"></script>
 <script src="<c:url value='/assets/js/popper.min.js'/>"></script>
 <script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
+<script src="${pageContext.request.contextPath}/assets/js/header.js"></script>
 </body>
 </html>

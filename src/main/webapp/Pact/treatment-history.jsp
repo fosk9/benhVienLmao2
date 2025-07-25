@@ -141,7 +141,7 @@
     </style>
 </head>
 <body>
-<jsp:include page="/Pact/header.jsp"/>
+<jsp:include page="header.jsp"/>
 <%--<header>--%>
 <%--    <div class="header-area">--%>
 <%--        <div class="main-header header-sticky">--%>
@@ -327,5 +327,6 @@
         document.getElementById('searchForm').submit();
     }
 </script>
+<script src="${pageContext.request.contextPath}/assets/js/header.js"></script>
 </body>
 </html>

@@ -188,7 +188,7 @@ public class BookAppointmentServlet extends HttpServlet {
                             .orElse(null);
                     formData.put("typeDescription", selectedType != null ? selectedType.getDescription() : "");
                     session.setAttribute("appointmentFormData", formData);
-                    response.sendRedirect(request.getContextPath() + "/register");
+                    response.sendRedirect(request.getContextPath() + "/resend-otp");
                     return;
                 } else {
                     patientId = patient.getPatientId();

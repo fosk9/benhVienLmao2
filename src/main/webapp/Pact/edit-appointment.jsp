@@ -156,7 +156,7 @@
     </style>
 </head>
 <body>
-<jsp:include page="/Pact/header.jsp"/>
+<jsp:include page="/header.jsp"/>
 <main>
     <div class="container mt-5">
         <h2>Edit Appointment</h2>
@@ -414,5 +414,6 @@
 <script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
 <script src="<c:url value='/assets/js/select2.min.js'/>"></script>
 <script src="<c:url value='/assets/js/main.js'/>"></script>
+<script src="${pageContext.request.contextPath}/assets/js/header.js"></script>
 </body>
 </html>
