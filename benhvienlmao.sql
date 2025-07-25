@@ -293,7 +293,7 @@ CREATE TABLE LogSystem (
 );
 
 
--- Insert Roles
+
 -- Defines the roles used for access control in the benhVienLmao system
 INSERT INTO Roles (role_name)
 VALUES 
@@ -305,7 +305,6 @@ VALUES
     ('Guest');       -- role_id = 6
 GO
 
--- Insert SystemItems
 -- Defines navigation and feature items accessible in the system, numbered for clarity
 INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
 VALUES 
@@ -348,7 +347,22 @@ VALUES
     ('Change Password', 'change-password', 7, 'Navigation'),               -- item_id = 28
     ('Book Appointment (Patient)', 'book-appointment', 8, 'Navigation'),   -- item_id = 29
     ('Logout', 'logout', 5, 'Navigation');                                -- item_id = 30
-GO
+
+	--more for manager
+	('Manager Dashboard', 'manager-dashboard', NULL, 'Navigation'),        -- item_id = 31
+	('Staff Detail', 'staff-detail', NULL, 'Navigation'),                  -- item_id = 32
+	('Staff Edit', 'staff-edit', NULL, 'Navigation'),                      -- item_id = 33
+	('View Doctor Schedule', 'view-doctor-schedule', NULL, 'Navigation'),  -- item_id = 34
+	('Assign Doctor Schedule', 'assign-doctor-schedule', NULL, 'Navigation'), -- item_id = 35
+	('Add Doctor Form', 'add-doctor-form', NULL, 'Navigation'),            -- item_id = 36
+	('Update User Role', 'update-user-role', NULL, 'Navigation'),          -- item_id = 37
+	('Blog Dashboard', 'blog-dashboard', NULL, 'Navigation'),              -- item_id = 38
+	('Edit', 'edit', NULL, 'Navigation'),                                  -- item_id = 39
+	('Blog Detail', 'blog-detail', NULL, 'Navigation'),                    -- item_id = 40
+	('Blog', 'blog', NULL, 'Navigation'),                                  -- item_id = 41
+	('Add Blog', 'add-blog', NULL, 'Navigation'),                          -- item_id = 42
+	('Change History Log', 'change-history-log', NULL, 'Navigation');      -- item_id = 43
+	GO
 
 -- Insert RoleSystemItems
 -- Maps roles to SystemItems for role-based access control
@@ -375,6 +389,19 @@ VALUES
     -- Manager (role_id = 4) Permissions
     (4, 21), -- Manage Appointment Type (admin/appointments)
     (4, 22), -- Manage Payment[](https://my.payos.vn/)
+	(4, 31), -- Manager Dashboard
+	(4, 32), -- Staff Detail
+	(4, 33), -- Staff Edit
+	(4, 34), -- View Doctor Schedule
+	(4, 35), -- Assign Doctor Schedule
+	(4, 36), -- Add Doctor Form
+	(4, 37), -- Update User Role
+	(4, 38), -- Blog Dashboard
+	(4, 39), -- Edit
+	(4, 40), -- Blog Detail
+	(4, 41), -- Blog
+	(4, 42), -- Add Blog
+	(4, 43); -- Change History Log
 
     -- Patient (role_id = 5) Permissions
     (5, 4),  -- Blog (blog)
@@ -397,6 +424,7 @@ VALUES
     (6, 10), -- Tooth Extraction (book-appointment?appointmentTypeId=6)
     (6, 11), -- Search for Service (appointment/list)
     (6, 25); -- Services (appointment/list)
+
 GO
 
 -- Insert sample Patients
