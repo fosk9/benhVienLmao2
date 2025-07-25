@@ -272,6 +272,20 @@ VALUES
 (5, 2, 1, '2025-08-04', 'Evening', 'Confirmed'),
 (6, 2, 2, '2025-08-05', 'Morning', 'Confirmed');
 
+-- Appointments chưa có bác sĩ, trùng ca trực với doctor khác (để test gán doctor)
+INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
+VALUES
+    (6, NULL, 4, '2025-07-24', 'Morning', 'Pending'),     -- trùng với Doctor 1 (PendingLeave)
+    (7, NULL, 5, '2025-07-25', 'Morning', 'Pending'),     -- trùng với Doctor 2 (Working), Doctor 3 (Working)
+    (8, NULL, 6, '2025-07-23', 'Morning', 'Pending'),     -- trùng với Doctor 2 (Working), Doctor 3 (PendingLeave)
+    (9, NULL, 7, '2025-07-26', 'Morning', 'Pending'),     -- trùng với Doctor 1 (Leave)
+    (10, NULL, 8, '2025-07-29', 'Morning', 'Pending'),    -- trùng với Doctor 1 (Rejected)
+    (11, NULL, 9, '2025-08-01', 'Morning', 'Pending'),    -- trùng với Doctor 2 (Rejected)
+    (12, NULL, 10, '2025-08-04', 'Morning', 'Pending'),   -- trùng với Doctor 3 (PendingLeave)
+    (1, NULL, 11, '2025-07-27', 'Morning', 'Pending'),    -- trùng với Doctor 2 (Working)
+    (2, NULL, 12, '2025-07-28', 'Evening', 'Pending'),    -- trùng với Doctor 1 (Working), Doctor 2 (Working)
+    (3, NULL, 13, '2025-08-05', 'Morning', 'Pending');    -- trùng với Doctor 1 (PendingLeave)
+
 INSERT INTO Diagnoses (appointment_id, notes, created_at)
 VALUES (1, 'Flu', '2025-01-05'),
        (2, 'Toothache', '2025-02-10'),
