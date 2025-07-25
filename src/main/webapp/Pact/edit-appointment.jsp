@@ -12,9 +12,7 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/select2.min.css'/>">
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
     <style>
-        /* Giữ nguyên CSS cũ của bạn và thêm những cải thiện nhẹ nhàng này */
-
-        /* ===== EXISTING STYLES (giữ nguyên) ===== */
+        /* Consistent with book-appointment.jsp */
         .big-form { max-width: 600px; margin: 0 auto; font-size: 1.3rem; }
         .big-form label, .big-form input, .big-form select, .big-form button { font-size: 1.2rem; }
         .big-form .form-control { height: 50px; font-size: 1.2rem; }
@@ -31,19 +29,15 @@
         .total-price-section .price-display { font-size: 1.3rem; color: #28a745; }
         .price-warning { color: #dc3545; font-size: 1rem; margin-top: 5px; display: none; }
 
-        /* ===== SUBTLE IMPROVEMENTS (chỉ thêm vào) ===== */
+        /* Subtle improvements */
         body {
             background: linear-gradient(135deg, #f0f9f2 0%, #ffffff 50%, #f0f9f2 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
         }
-
-        /* Header cải thiện nhẹ */
         .header-area {
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
-
-        /* Form container đẹp hơn một chút */
         .big-form {
             background: white;
             padding: 40px;
@@ -51,58 +45,43 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             border: 1px solid #e9ecef;
         }
-
-        /* Form controls cải thiện nhẹ */
         .big-form .form-control {
             border: 1px solid #ced4da;
             border-radius: 6px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
         .big-form .form-control:focus {
             border-color: #28a745;
             box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
             outline: none;
         }
-
-        /* Labels đẹp hơn */
         .big-form label {
             font-weight: 600;
             color: #495057;
             margin-bottom: 8px;
         }
-
-        /* Button cải thiện nhẹ */
         .big-form .btn {
             border-radius: 6px;
             transition: all 0.3s ease;
             font-weight: 600;
         }
-
         .big-form .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
-
-        /* Select2 cải thiện */
         .select2-container--default .select2-selection--single {
             border: 1px solid #ced4da;
             border-radius: 6px;
             transition: border-color 0.3s ease;
         }
-
         .select2-container--default.select2-container--focus .select2-selection--single {
             border-color: #28a745;
             box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
         }
-
-        /* Price section cải thiện nhẹ */
         .total-price-section {
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
         }
-
-        /* Description display đẹp hơn */
         .description-display {
             background-color: #e8f5e8;
             border: 1px solid #c3e6cb;
@@ -110,10 +89,11 @@
             padding: 12px;
             margin-top: 10px;
             transition: all 0.3s ease;
-            display: none; /* Ẩn mặc định */
+            display: none; /* Hidden by default */
         }
-
-        /* Error messages cải thiện */
+        .description-display:not(:empty) {
+            display: block; /* Show when content exists */
+        }
         .error-message {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
@@ -121,7 +101,6 @@
             padding: 10px;
             margin-top: 8px;
         }
-
         .price-warning {
             background-color: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -129,63 +108,46 @@
             padding: 10px;
             margin-top: 8px;
         }
-
-        /* Form groups spacing */
         .form-group {
             margin-bottom: 25px;
         }
-
-        /* Title cải thiện nhẹ */
         h2 {
             font-weight: 700;
             text-shadow: 0 1px 3px rgba(40, 167, 69, 0.1);
         }
-
-        /* Responsive cải thiện */
         @media (max-width: 768px) {
             .big-form {
                 margin: 20px;
                 padding: 30px 25px;
             }
-
             h2 {
                 font-size: 2rem;
             }
         }
-
         @media (max-width: 576px) {
             .big-form {
                 margin: 15px;
                 padding: 25px 20px;
             }
-
             h2 {
                 font-size: 1.8rem;
             }
-
             .big-form .form-control {
                 height: 45px;
                 font-size: 1.1rem;
             }
-
             .big-form .btn {
                 padding: 12px 25px;
                 font-size: 1.1rem;
             }
         }
-
-        /* Smooth transitions cho tất cả */
         * {
             transition: all 0.3s ease;
         }
-
-        /* Focus accessibility */
         .big-form .form-control:focus,
         .big-form .btn:focus {
             outline: none;
         }
-
-        /* Loading state cho button */
         .big-form .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -195,41 +157,6 @@
 </head>
 <body>
 <jsp:include page="/Pact/header.jsp"/>
-<%--<header>--%>
-<%--    <div class="header-area">--%>
-<%--        <div class="main-header header-sticky">--%>
-<%--            <div class="container-fluid">--%>
-<%--                <div class="row align-items-center">--%>
-<%--                    <div class="col-xl-2 col-lg-2 col-md-1">--%>
-<%--                        <div class="logo">--%>
-<%--                            <a href="<c:url value='/pactHome'/>">--%>
-<%--                                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="Dental Care Logo" class="img-fluid img-optimized">--%>
-<%--                            </a>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                    <div class="col-xl-10 col-lg-10 col-md-10">--%>
-<%--                        <div class="menu-main d-flex align-items-center justify-content-end">--%>
-<%--                            <div class="main-menu f-right d-none d-lg-block">--%>
-<%--                                <nav>--%>
-<%--                                    <ul id="navigation">--%>
-<%--                                        <li><a href="<c:url value='/pactHome'/>">Home</a></li>--%>
-<%--                                        <li><a href="<c:url value='/services'/>">Services</a></li>--%>
-<%--                                        <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>--%>
-<%--                                        <li><a href="<c:url value='/appointments'/>">My Appointments</a></li>--%>
-<%--                                        <li><a href="<c:url value='/logout'/>">Logout</a></li>--%>
-<%--                                    </ul>--%>
-<%--                                </nav>--%>
-<%--                            </div>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                    <div class="col-12">--%>
-<%--                        <div class="mobile_menu d-block d-lg-none"></div>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-<%--</header>--%>
 <main>
     <div class="container mt-5">
         <h2>Edit Appointment</h2>
@@ -238,7 +165,6 @@
         </c:if>
         <form action="<c:url value='/appointments/edit'/>" method="post" class="big-form" id="appointmentForm">
             <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
-
             <div class="form-group mb-4">
                 <label for="appointmentTypeSelect">Appointment Type:</label>
                 <select class="form-control" id="appointmentTypeSelect" name="appointmentTypeId" required>
@@ -248,27 +174,24 @@
                                 data-price="${type.price != null ? type.price : ''}"
                                 data-description="${type.description != null ? type.description : ''}"
                                 data-type-name="${type.typeName != null ? type.typeName : ''}"
-                                <c:if test="${appointment.appointmentType != null && appointment.appointmentType.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
+                                <c:if test="${appointment.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
                                 ${type.typeName != null ? type.typeName : 'Unknown Type'}
                         </option>
                     </c:forEach>
                 </select>
                 <input type="hidden" id="typeName" name="typeName" value="${appointment.appointmentType != null ? appointment.appointmentType.typeName : ''}">
-                <!-- Để trống description, sẽ được JavaScript điều khiển hoàn toàn -->
-                <div class="description-display" id="typeDescription"></div>
+                <div class="description-display" id="typeDescription">${appointment.appointmentType != null && appointment.appointmentType.description != null ? appointment.appointmentType.description : ''}</div>
                 <div class="price-warning" id="priceWarning" style="display:none;">
                     <i class="fas fa-exclamation-triangle"></i>
                     Invalid price for selected appointment type. Please select another type.
                 </div>
             </div>
-
             <div class="form-group mb-4">
                 <label for="appointmentDate">Appointment Date:</label>
                 <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required
                        value="${appointment.appointmentDate != null ? appointment.appointmentDate.toString() : ''}">
                 <div class="error-message" id="dateError">Invalid appointment date: Cannot book in the past.</div>
             </div>
-
             <div class="form-group mb-4">
                 <label for="timeSlot">Time Slot:</label>
                 <select class="form-control" id="timeSlot" name="timeSlot" required>
@@ -278,29 +201,25 @@
                     <option value="Evening" <c:if test="${appointment.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
                 </select>
             </div>
-
             <div class="form-group mb-4">
                 <label>Requires Specialist:</label>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="requiresSpecialist" name="requiresSpecialist"
                            <c:if test="${appointment.requiresSpecialist}">checked</c:if>>
-                    <label class="form-check-label" for="requiresSpecialist">Yes (+50% price)</label>
+                    <label class="form-check-label" for="requiresSpecialist">Yes</label>
                 </div>
             </div>
-
             <div class="total-price-section">
-                <div class="price-display" id="priceDisplay">Total Price: <span id="priceValue">0</span> VND</div>
-                <input type="hidden" id="finalPrice" name="finalPrice" value="0">
+                <div class="price-display" id="priceDisplay">Total Price: <span id="priceValue">${appointment.appointmentType != null && appointment.appointmentType.price != null ? (appointment.requiresSpecialist ? (appointment.appointmentType.price * 1.5) : appointment.appointmentType.price).toString() : '0'}</span> VND</div>
+                <input type="hidden" id="finalPrice" name="finalPrice" value="${appointment.appointmentType != null && appointment.appointmentType.price != null ? (appointment.requiresSpecialist ? (appointment.appointmentType.price * 1.5) : appointment.appointmentType.price).toString() : '0'}">
             </div>
-
             <button type="submit" class="btn btn-primary mt-3 w-100">Update Appointment</button>
             <a href="<c:url value='/appointments'/>" class="btn btn-secondary mt-3 w-100">Cancel</a>
         </form>
     </div>
 </main>
-
 <script>
-    // Lưu trữ dữ liệu appointmentTypes từ server vào array JS
+    // Store appointmentTypes data from server
     const appointmentTypes = [
         <c:forEach var="type" items="${appointmentTypes}" varStatus="loop">
         {
@@ -311,7 +230,7 @@
         }<c:if test="${!loop.last}">,</c:if>
         </c:forEach>
     ];
-    console.logSystem("Loaded appointmentTypes:", appointmentTypes);
+    console.log("Loaded appointmentTypes:", appointmentTypes);
 
     function getTypeById(id) {
         return appointmentTypes.find(t => t.appointmentTypeId == id);
@@ -327,7 +246,6 @@
         const finalPriceInput = document.getElementById('finalPrice');
         const priceWarning = document.getElementById('priceWarning');
 
-        // Reset warning
         priceWarning.style.display = 'none';
 
         let price = 0;
@@ -336,7 +254,7 @@
 
         if (selectedId) {
             typeObj = getTypeById(selectedId);
-            console.logSystem("Selected type object:", typeObj);
+            console.log("Selected type object:", typeObj);
             if (typeObj && typeof typeObj.price === "number" && typeObj.price > 0) {
                 price = typeObj.price;
             } else {
@@ -351,8 +269,8 @@
         priceDisplay.innerText = price.toLocaleString('vi-VN');
         finalPriceInput.value = price;
 
-        // Hiển thị mô tả - LOGIC CHÍNH Ở ĐÂY
-        if (selectedId && typeObj && typeObj.description && typeObj.description.trim() !== '') {
+        // Display description
+        if (typeObj && typeObj.description && selectedId) {
             typeDescription.innerText = "Description: " + typeObj.description;
             typeDescription.style.display = 'block';
         } else {
@@ -360,17 +278,13 @@
             typeDescription.style.display = 'none';
         }
 
-        // Gán typeName vào input ẩn
+        // Set typeName in hidden input
         typeNameInput.value = typeObj && typeObj.typeName ? typeObj.typeName : "";
 
         // Show/hide warning
-        if (!valid && selectedId) {
-            priceWarning.style.display = 'block';
-        } else {
-            priceWarning.style.display = 'none';
-        }
+        priceWarning.style.display = valid ? 'none' : 'block';
 
-        console.logSystem("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
+        console.log("updatePriceAndDescription: selectedId=", selectedId, "specialist=", specialist, "price=", price, "valid=", valid);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -407,10 +321,6 @@
         }
         initSelect2IfReady();
 
-        // QUAN TRỌNG: Ẩn description ngay từ đầu
-        document.getElementById('typeDescription').style.display = 'none';
-        document.getElementById('typeDescription').innerText = '';
-
         // Bind events
         document.getElementById('appointmentTypeSelect').addEventListener('change', updatePriceAndDescription);
         document.getElementById('requiresSpecialist').addEventListener('change', updatePriceAndDescription);
@@ -418,21 +328,32 @@
         // Trigger initial update
         updatePriceAndDescription();
 
-        // Client-side validation for past dates
+        // Enhanced client-side validation for past dates
         document.getElementById('appointmentForm').addEventListener('submit', function(event) {
             const selectedDate = new Date(dateInput.value);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
+            const dateError = document.getElementById('dateError');
             if (selectedDate < today) {
                 event.preventDefault();
-                document.getElementById('dateError').style.display = 'block';
+                dateError.style.display = 'block';
             } else {
-                document.getElementById('dateError').style.display = 'none';
+                dateError.style.display = 'none';
+            }
+
+            // Validate appointment type
+            const appointmentTypeSelect = document.getElementById('appointmentTypeSelect');
+            const priceWarning = document.getElementById('priceWarning');
+            const typeObj = getTypeById(appointmentTypeSelect.value);
+            if (!appointmentTypeSelect.value || !typeObj || typeof typeObj.price !== 'number' || typeObj.price <= 0) {
+                event.preventDefault();
+                priceWarning.style.display = 'block';
+            } else {
+                priceWarning.style.display = 'none';
             }
         });
     });
 </script>
-
 <footer>
     <div class="footer-wrappr section-bg3">
         <div class="footer-area footer-padding">
@@ -488,7 +409,6 @@
 <div id="back-top">
     <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
 </div>
-
 <script src="<c:url value='/assets/js/vendor/jquery-1.12.4.min.js'/>"></script>
 <script src="<c:url value='/assets/js/popper.min.js'/>"></script>
 <script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>

@@ -350,17 +350,17 @@ VALUES
 
 	--more for manager
 	('Manager Dashboard', 'manager-dashboard', NULL, 'Navigation'),        -- item_id = 31
-	('Staff Detail', 'staff-detail', NULL, 'Navigation'),                  -- item_id = 32
-	('Staff Edit', 'staff-edit', NULL, 'Navigation'),                      -- item_id = 33
-	('View Doctor Schedule', 'view-doctor-schedule', NULL, 'Navigation'),  -- item_id = 34
+	('Staff Detail', 'staff-detail', NULL, 'Feature'),                  -- item_id = 32
+	('Staff Edit', 'staff-edit', NULL, 'Feature'),                      -- item_id = 33
+	('View Doctor Schedule', 'view-doctor-schedule', NULL, 'Feature'),  -- item_id = 34
 	('Assign Doctor Schedule', 'assign-doctor-schedule', NULL, 'Navigation'), -- item_id = 35
-	('Add Doctor Form', 'add-doctor-form', NULL, 'Navigation'),            -- item_id = 36
-	('Update User Role', 'update-user-role', NULL, 'Navigation'),          -- item_id = 37
+	('Add Staff', 'add-doctor-form', NULL, 'Navigation'),            -- item_id = 36
+	('Update Management', 'update-user-role', NULL, 'Navigation'),          -- item_id = 37
 	('Blog Dashboard', 'blog-dashboard', NULL, 'Navigation'),              -- item_id = 38
-	('Edit', 'edit', NULL, 'Navigation'),                                  -- item_id = 39
-	('Blog Detail', 'blog-detail', NULL, 'Navigation'),                    -- item_id = 40
-	('Blog', 'blog', NULL, 'Navigation'),                                  -- item_id = 41
-	('Add Blog', 'add-blog', NULL, 'Navigation'),                          -- item_id = 42
+	('Edit', 'edit', NULL, 'Feature'),                                  -- item_id = 39
+	('Blog Detail', 'blog-detail', NULL, 'Feature'),                    -- item_id = 40
+	('Blog', 'blog', NULL, 'Feature'),                                  -- item_id = 41
+	('Add Blog', 'add-blog', NULL, 'Feature'),                          -- item_id = 42
 	('Change History Log', 'change-history-log', NULL, 'Navigation');      -- item_id = 43
 	GO
 

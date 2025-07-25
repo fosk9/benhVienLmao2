@@ -14,33 +14,30 @@
     <link rel="stylesheet" href="<c:url value='/assets/css/style.css'/>">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Simplified and bold styling */
+        /* Existing styles remain unchanged */
         body {
             font-family: "Segoe UI", sans-serif;
-            background: #f8f9fa; /* Clean light background */
+            background: #f8f9fa;
             color: #333;
             margin: 0;
         }
-        /* Container styling */
         .container {
-            max-width: 1000px; /* Larger container */
+            max-width: 1000px;
             padding: 50px 20px;
         }
-        /* Header styling */
         h2 {
-            font-size: 2rem; /* Larger title */
+            font-size: 2rem;
             font-weight: 700;
             text-align: center;
             color: #28a745;
             margin: 50px 0;
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
         }
-        /* Add New Appointment button */
         .btn-add-new {
             background: #28a745;
             border: none;
             padding: 15px 35px;
-            font-size: 1rem; /* Larger button text */
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 12px;
             color: #fff;
@@ -54,35 +51,40 @@
             transform: translateY(-3px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        /* Search form styling */
+        /* Updated Search Form Styling - Horizontal Layout */
         .search-table {
             background: #fff;
-            border: 3px solid #28a745; /* Thicker border */
-            border-radius: 15px; /* Larger rounded corners */
+            border: 3px solid #28a745;
+            border-radius: 15px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 900px; /* Larger form */
+            max-width: 900px;
             margin: 0 auto 50px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px; /* Space between items */
         }
-        .search-table td {
-            padding: 15px; /* Larger padding */
+        .search-table .form-group {
+            flex: 1;
+            min-width: 200px; /* Ensure minimum width for responsiveness */
+            margin: 0;
         }
-        .search-table td:first-child {
+        .search-table label {
             color: #28a745;
             font-weight: 600;
-            font-size: 1rem; /* Larger label text */
-            text-align: right;
-            width: 35%;
-        }
-        .search-table td:last-child {
-            width: 65%;
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
         }
         .search-table .form-control, .search-table .form-select {
-            border: 2px solid #28a745; /* Thicker border */
-            font-size: 1rem; /* Larger input text */
+            border: 2px solid #28a745;
+            font-size: 1rem;
             height: 50px;
             border-radius: 12px;
             transition: border-color 0.3s;
+            width: 100%; /* Full width within flex item */
         }
         .search-table .form-control:focus, .search-table .form-select:focus {
             border-color: #218838;
@@ -90,7 +92,7 @@
         }
         .search-table .btn {
             padding: 12px 30px;
-            font-size: 1rem; /* Larger button text */
+            font-size: 1rem;
             border-radius: 12px;
             transition: transform 0.2s;
         }
@@ -111,52 +113,33 @@
         .btn-secondary:hover {
             background: #5a6268;
         }
-        /* Table styling */
+        /* Remaining styles remain unchanged */
         .table-container {
-            border-radius: 10px; /* Larger rounded corners */
+            border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             background: #fff;
-        }
-        .table {
-            margin-bottom: 0;
         }
         .table thead th {
             background: #28a745;
             color: #fff;
             font-weight: 600;
-            font-size: 1rem; /* Larger header text */
-            padding: 10px; /* Larger padding */
+            font-size: 1rem;
+            padding: 10px;
             text-align: center;
-        }
-        .table tbody tr {
-            transition: background-color 0.2s;
         }
         .table tbody tr:hover {
             background-color: #f1f8f1;
         }
         .table td {
             vertical-align: middle;
-            padding: 10px; /* Larger padding */
+            padding: 10px;
             text-align: center;
-            font-size: 1rem; /* Larger cell text */
+            font-size: 1rem;
         }
-        .table .status-unpay {
-            color: #dc3545;
-            font-weight: 600;
-        }
-        .table .status-confirmed {
-            color: #28a745;
-            font-weight: 600;
-        }
-        .table .status-cancelled {
-            color: #6c757d;
-            font-weight: 600;
-        }
-        /* Action buttons */
         .btn-action {
-            padding: 5px 15px; /* Larger buttons */
-            font-size: 1rem; /* Larger button text */
+            padding: 5px 15px;
+            font-size: 1rem;
             margin: 0 8px;
             border-radius: 10px;
             transition: transform 0.2s;
@@ -164,31 +147,9 @@
         .btn-action:hover {
             transform: translateY(-3px);
         }
-        .btn-primary, .btn-success {
-            background: #28a745;
-            border: none;
-        }
-        .btn-primary:hover, .btn-success:hover {
-            background: #218838;
-        }
-        .btn-danger {
-            background: #dc3545;
-            border: none;
-        }
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        .btn-info {
-            background: #17a2b8;
-            border: none;
-        }
-        .btn-info:hover {
-            background: #138496;
-        }
-        /* Error message styling */
         .error-message {
             color: #dc3545;
-            font-size: 1rem; /* Larger text */
+            font-size: 1rem;
             font-weight: 500;
             text-align: center;
             margin-bottom: 40px;
@@ -197,13 +158,12 @@
             border-radius: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        /* Pagination styling */
         .pagination {
             margin-top: 40px;
             justify-content: center;
         }
         .page-link {
-            font-size: 1rem; /* Larger pagination text */
+            font-size: 1rem;
             color: #28a745;
             border: 2px solid #28a745;
             padding: 12px 18px;
@@ -215,52 +175,18 @@
             color: #218838;
             transform: translateY(-3px);
         }
-        .page-item.active .page-link {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: #fff;
-        }
-        .page-item.disabled .page-link {
-            color: #6c757d;
-            border-color: #6c757d;
-        }
-        /* Header and footer enhancements */
-        .header-area {
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .footer-wrappr {
-            background: #28a745;
-            color: #fff;
-            padding: 40px 0;
-        }
-        .footer-social a {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            padding: 12px;
-            margin-right: 12px;
-            font-size: 1rem; /* Larger icons */
-            transition: background 0.3s;
-        }
-        .footer-social a:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-        .footer-copy-right p {
-            font-size: 1rem; /* Larger footer text */
-        }
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            h2 {
-                font-size: 3rem;
-            }
             .search-table {
+                flex-direction: column;
                 padding: 20px;
                 max-width: 100%;
             }
-            .search-table td:first-child {
+            .search-table .form-group {
+                min-width: 100%;
+            }
+            .search-table label {
                 font-size: 1.4rem;
-                text-align: left;
             }
             .search-table .form-control, .search-table .form-select {
                 font-size: 1.2rem;
@@ -269,22 +195,6 @@
             .search-table .btn {
                 font-size: 1.2rem;
                 padding: 10px 20px;
-            }
-            .table td, .table th {
-                font-size: 1.2rem;
-                padding: 12px;
-            }
-            .btn-action {
-                font-size: 1rem;
-                padding: 8px 15px;
-            }
-            .error-message {
-                font-size: 1.4rem;
-                padding: 15px;
-            }
-            .page-link {
-                font-size: 1.2rem;
-                padding: 8px 12px;
             }
         }
     </style>
@@ -303,127 +213,75 @@
 </div>
 <!-- Preloader End -->
 <jsp:include page="/Pact/header.jsp"/>
-<%--<header>--%>
-<%--    <div class="header-area">--%>
-<%--        <div class="main-header header-sticky">--%>
-<%--            <div class="container-fluid">--%>
-<%--                <div class="row align-items-center">--%>
-<%--                    <div class="col-xl-2 col-lg-2 col-md-1">--%>
-<%--                        <div class="logo">--%>
-<%--                            <a href="<c:url value='/pactHome'/>">--%>
-<%--                                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="Logo">--%>
-<%--                            </a>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                    <div class="col-xl-10 col-lg-10 col-md-10">--%>
-<%--                        <div class="menu-main d-flex align-items-center justify-content-end">--%>
-<%--                            <div class="main-menu f-right d-none d-lg-block">--%>
-<%--                                <nav>--%>
-<%--                                    <ul id="navigation">--%>
-<%--                                        <li><a href="<c:url value='/pactHome'/>">Home</a></li>--%>
-<%--                                        <li><a href="<c:url value='/book-appointment'/>">Book Appointment</a></li>--%>
-<%--                                        <li><a href="<c:url value='/logout'/>">Logout</a></li>--%>
-<%--                                    </ul>--%>
-<%--                                </nav>--%>
-<%--                            </div>--%>
-<%--                            <div class="header-right-btn f-right d-none d-lg-block ml-15">--%>
-<%--                                <a href="<c:url value='/book-appointment'/>" class="btn header-btn">Book Appointment</a>--%>
-<%--                            </div>--%>
-<%--                        </div>--%>
-<%--                    </div>--%>
-<%--                    <div class="col-12">--%>
-<%--                        <div class="mobile_menu d-block d-lg-none"></div>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-<%--</header>--%>
 <main>
     <div class="container">
-        <!-- Display user's appointments title -->
         <h2>${sessionScope.username != null ? sessionScope.username : 'User'}'s Appointments</h2>
-        <!-- Display error message if set -->
         <c:if test="${not empty error}">
             <div class="error-message">${error}</div>
         </c:if>
-        <!-- Add New Appointment Button -->
         <a href="<c:url value='/book-appointment'/>" class="btn-add-new"><i class="fas fa-calendar-plus me-2"></i>Book Appointment</a>
-        <!-- Search Form Start -->
+        <!-- Updated Search Form - Horizontal Layout -->
         <form action="<c:url value='/appointments'/>" method="get" id="searchForm">
-            <table class="search-table">
-                <tr>
-                    <td>Appointment Date</td>
-                    <td><input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${param.appointmentDate}"></td>
-                </tr>
-                <tr>
-                    <td>Type</td>
-                    <td>
-                        <select id="appointmentTypeId" name="appointmentTypeId" class="form-select">
-                            <option value="">All</option>
-                            <c:forEach var="type" items="${appointmentTypes}">
-                                <option value="${type.appointmentTypeId}"
-                                        <c:if test="${param.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
-                                        ${type.typeName}
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Status</td>
-                    <td>
-                        <select id="status" name="status" class="form-select">
-                            <option value="">All</option>
-                            <option value="Unpay" <c:if test="${param.status == 'Unpay'}">selected</c:if>>Unpaid</option>
-                            <option value="Confirmed" <c:if test="${param.status == 'Confirmed'}">selected</c:if>>Confirmed</option>
-                            <option value="Cancelled" <c:if test="${param.status == 'Cancelled'}">selected</c:if>>Cancelled</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Time Slot</td>
-                    <td>
-                        <select id="timeSlot" name="timeSlot" class="form-select">
-                            <option value="">All</option>
-                            <option value="Morning" <c:if test="${param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
-                            <option value="Afternoon" <c:if test="${param.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
-                            <option value="Evening" <c:if test="${param.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Request Specialist</td>
-                    <td>
-                        <select id="requiresSpecialist" name="requiresSpecialist" class="form-select">
-                            <option value="">All</option>
-                            <option value="Yes" <c:if test="${param.requiresSpecialist == 'Yes'}">selected</c:if>>Yes</option>
-                            <option value="No" <c:if test="${param.requiresSpecialist == 'No'}">selected</c:if>>No</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Sort By</td>
-                    <td>
-                        <select id="sortBy" name="sortBy" class="form-select" onchange="updateSortDir()">
-                            <option value="">Default (Newest)</option>
-                            <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'ASC'}">selected</c:if>>Date (Oldest to Newest)</option>
-                            <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'DESC'}">selected</c:if>>Date (Newest to Oldest)</option>
-                            <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'ASC'}">selected</c:if>>Type (A-Z)</option>
-                            <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'DESC'}">selected</c:if>>Type (Z-A)</option>
-                        </select>
-                        <input type="hidden" id="sortDir" name="sortDir" value="${sortDir}">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="text-center">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-search me-2"></i>Search</button>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()"><i class="fas fa-undo me-2"></i>Reset</button>
-                    </td>
-                </tr>
-            </table>
+            <div class="search-table">
+                <div class="form-group">
+                    <label for="appointmentDate">Appointment Date</label>
+                    <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" value="${param.appointmentDate}">
+                </div>
+                <div class="form-group">
+                    <label for="appointmentTypeId">Type</label>
+                    <select id="appointmentTypeId" name="appointmentTypeId" class="form-select">
+                        <option value="">All</option>
+                        <c:forEach var="type" items="${appointmentTypes}">
+                            <option value="${type.appointmentTypeId}"
+                                    <c:if test="${param.appointmentTypeId == type.appointmentTypeId}">selected</c:if>>
+                                    ${type.typeName}
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="">All</option>
+                        <option value="Unpay" <c:if test="${param.status == 'Unpay'}">selected</c:if>>Unpaid</option>
+                        <option value="Confirmed" <c:if test="${param.status == 'Confirmed'}">selected</c:if>>Confirmed</option>
+                        <option value="Cancelled" <c:if test="${param.status == 'Cancelled'}">selected</c:if>>Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="timeSlot">Time Slot</label>
+                    <select id="timeSlot" name="timeSlot" class="form-select">
+                        <option value="">All</option>
+                        <option value="Morning" <c:if test="${param.timeSlot == 'Morning'}">selected</c:if>>Morning</option>
+                        <option value="Afternoon" <c:if test="${param.timeSlot == 'Afternoon'}">selected</c:if>>Afternoon</option>
+                        <option value="Evening" <c:if test="${param.timeSlot == 'Evening'}">selected</c:if>>Evening</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="requiresSpecialist">Request Specialist</label>
+                    <select id="requiresSpecialist" name="requiresSpecialist" class="form-select">
+                        <option value="">All</option>
+                        <option value="Yes" <c:if test="${param.requiresSpecialist == 'Yes'}">selected</c:if>>Yes</option>
+                        <option value="No" <c:if test="${param.requiresSpecialist == 'No'}">selected</c:if>>No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sortBy">Sort By</label>
+                    <select id="sortBy" name="sortBy" class="form-select" onchange="updateSortDir()">
+                        <option value="">Default (Newest)</option>
+                        <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'ASC'}">selected</c:if>>Date (Oldest to Newest)</option>
+                        <option value="appointmentDate" <c:if test="${sortBy == 'appointmentDate' && sortDir == 'DESC'}">selected</c:if>>Date (Newest to Oldest)</option>
+                        <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'ASC'}">selected</c:if>>Type (A-Z)</option>
+                        <option value="typeName" <c:if test="${sortBy == 'typeName' && sortDir == 'DESC'}">selected</c:if>>Type (Z-A)</option>
+                    </select>
+                    <input type="hidden" id="sortDir" name="sortDir" value="${sortDir}">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search me-2"></i>Search</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()"><i class="fas fa-undo me-2"></i>Reset</button>
+                </div>
+            </div>
         </form>
-        <!-- Search Form End -->
         <!-- Display appointments in a table -->
         <div class="table-container">
             <table class="table table-bordered">
@@ -603,7 +461,6 @@
 <script src="<c:url value='/assets/js/jquery.slicknav.min.js'/>"></script>
 <script src="<c:url value='/assets/js/main.js'/>"></script>
 <script>
-    // Update sort direction based on sortBy selection
     function updateSortDir() {
         const sortBySelect = document.getElementById('sortBy');
         const sortDirInput = document.getElementById('sortDir');
@@ -616,7 +473,6 @@
         document.getElementById('searchForm').submit();
     }
 
-    // Reset search form to default values
     function resetForm() {
         const form = document.getElementById('searchForm');
         form.reset();
