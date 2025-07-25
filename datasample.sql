@@ -206,7 +206,7 @@ GO
 INSERT INTO Appointments (patient_id, doctor_id, appointmenttype_id, appointment_date, time_slot, status)
 VALUES
 -- Doctor 1
-(1, 1, 3, '2025-07-22', 'Morning', 'Confirmed'),
+(1, 1, 3, '2025-07-22', 'Morning', 'Completed'),
 (2, 1, 5, '2025-07-23', 'Afternoon', 'Confirmed'),
 (3, 1, 7, '2025-07-24', 'Morning', 'Confirmed'),
 (4, 1, 1, '2025-07-25', 'Evening', 'Confirmed'),
@@ -218,7 +218,7 @@ VALUES
 (10, 1, 10, '2025-07-31', 'Morning', 'Confirmed'),
 (11, 1, 11, '2025-08-01', 'Afternoon', 'Confirmed'),
 (12, 1, 12, '2025-08-02', 'Evening', 'Confirmed'),
-(1, 1, 13, '2025-08-03', 'Morning', 'Confirmed'),
+(1, 1, 13, '2025-08-03', 'Morning', 'Completed'),
 (2, 1, 14, '2025-08-04', 'Afternoon', 'Confirmed'),
 (3, 1, 1, '2025-08-05', 'Evening', 'Confirmed'),
 
@@ -232,7 +232,7 @@ VALUES
 (10, 2, 8, '2025-07-28', 'Afternoon', 'Confirmed'),
 (11, 2, 9, '2025-07-29', 'Evening', 'Confirmed'),
 (12, 2, 10, '2025-07-30', 'Morning', 'Confirmed'),
-(1, 2, 11, '2025-07-31', 'Afternoon', 'Confirmed'),
+(1, 2, 11, '2025-07-31', 'Afternoon', 'Completed'),
 (2, 2, 12, '2025-08-01', 'Evening', 'Confirmed'),
 (3, 2, 13, '2025-08-02', 'Morning', 'Confirmed'),
 (4, 2, 14, '2025-08-03', 'Afternoon', 'Confirmed'),

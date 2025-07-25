@@ -10,11 +10,11 @@
 </head>
 <body>
 
-<jsp:include page="doctor-header.jsp"/>
+<jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
     <h2 class="mb-4">Doctor Details</h2>
-    <a href="DoctorList" class="btn btn-outline-primary">Back to List</a>
+    <a href="DoctorList" class="genric-btn success circle">Back to List</a>
 
     <!-- Message Notification -->
     <c:if test="${not empty message}">
@@ -116,7 +116,7 @@
             </div>
 
             <div class="d-flex gap-3 mt-4">
-                <button type="submit" class="btn btn-success">Update Doctor Details</button>
+                <button type="submit" class="genric-btn success circle">Update Doctor Details</button>
             </div>
         </form>
     </c:if>

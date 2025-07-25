@@ -12,6 +12,8 @@ import view.PatientDAO;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "UpdateMyProfilePatientServlet", urlPatterns = {
@@ -73,47 +75,67 @@ public class UpdateMyProfilePatientServlet extends HttpServlet {
             String insuranceNumber = request.getParameter("insuranceNumber");
             String emergencyContact = request.getParameter("emergencyContact");
 
-            // Validate
+            List<String> errors = new ArrayList<>();
+            Date dob = null;
+
+            // Validate từng trường
             if (!PatientValidator.isValidFullName(fullName)) {
-                sendError("Invalid full name.", request, response, oldPatient);
-                return;
+                errors.add("Invalid full name.");
             }
 
-            Date dob;
             try {
                 dob = Date.valueOf(dobStr);
-                if (!PatientValidator.isValidDob(dob)) throw new IllegalArgumentException();
+                if (!PatientValidator.isValidDob(dob)) {
+                    errors.add("Invalid date of birth.");
+                }
             } catch (Exception ex) {
-                sendError("Invalid date of birth.", request, response, oldPatient);
-                return;
+                errors.add("Invalid date of birth.");
             }
 
             if (!PatientValidator.isValidGender(gender)) {
-                sendError("Invalid gender.", request, response, oldPatient);
-                return;
+                errors.add("Invalid gender.");
             }
 
             if (!PatientValidator.isValidPhone(phone)) {
-                sendError("Invalid phone number.", request, response, oldPatient);
-                return;
+                errors.add("Invalid phone number.");
             }
 
             if (!PatientValidator.isValidAddress(address)) {
-                sendError("Invalid address.", request, response, oldPatient);
-                return;
+                errors.add("Invalid address.");
             }
 
             if (!PatientValidator.isValidInsuranceNumber(insuranceNumber)) {
-                sendError("Invalid insurance number.", request, response, oldPatient);
-                return;
+                errors.add("Invalid insurance number.");
             }
 
             if (!PatientValidator.isValidEmergencyContact(emergencyContact)) {
-                sendError("Invalid emergency contact.", request, response, oldPatient);
+                errors.add("Invalid emergency contact.(Only numbers allowed)");
+            }
+
+            // Nếu có lỗi thì trả về form với dữ liệu nhập lại và danh sách lỗi
+            if (!errors.isEmpty()) {
+                Patient inputPatient = Patient.builder()
+                        .patientId(patientId)
+                        .username(oldPatient.getUsername())
+                        .passwordHash(oldPatient.getPasswordHash())
+                        .email(oldPatient.getEmail())
+                        .patientAvaUrl(oldPatient.getPatientAvaUrl())
+                        .fullName(fullName)
+                        .dob(dob)
+                        .gender(gender)
+                        .phone(phone)
+                        .address(address)
+                        .insuranceNumber(insuranceNumber)
+                        .emergencyContact(emergencyContact)
+                        .build();
+
+                request.setAttribute("patient", inputPatient);
+                request.setAttribute("errors", errors);
+                request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
                 return;
             }
 
-            // Build updated object
+            // Nếu không có lỗi thì cập nhật
             Patient updated = Patient.builder()
                     .patientId(patientId)
                     .username(oldPatient.getUsername())
@@ -138,7 +160,11 @@ public class UpdateMyProfilePatientServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            sendError("An error occurred while updating your profile.", request, response, oldPatient);
+            List<String> errors = new ArrayList<>();
+            errors.add("An unexpected error occurred. Please try again.");
+            request.setAttribute("errors", errors);
+            request.setAttribute("patient", oldPatient);
+            request.getRequestDispatcher("my-profile-patient.jsp").forward(request, response);
         }
     }
 

@@ -16,7 +16,7 @@
     <jsp:include page="common-css.jsp"/>
 </head>
 <body>
-<jsp:include page="doctor-header.jsp"/>
+<jsp:include page="header.jsp"/>
 
 <!-- Hero Section -->
 <div class="slider-area slider-area2 mb-5">
@@ -43,42 +43,48 @@
 <!-- Main Content -->
 <div class="container section-padding">
 
-    <!-- Doctor Details Box -->
-    <div class="card p-4 mb-4 shadow">
-        <div class="section-tittle mb-3">
-            <h2>Doctor Details</h2>
+    <div class="row">
+        <!-- Doctor Details Box -->
+        <div class="col-md-6">
+            <div class="card p-4 mb-4 shadow">
+                <div class="section-tittle mb-3">
+                    <h2>Doctor Details</h2>
+                </div>
+                <% if (doctorDetails != null) { %>
+                <ul class="unordered-list">
+                    <li><b>License Number:</b> <%= doctorDetails.getLicenseNumber() %>
+                    </li>
+                    <li><b>Specialist:</b> <%= doctorDetails.isSpecialist() ? "Yes" : "No" %>
+                    </li>
+                    <li><b>Rating:</b> <%= doctorDetails.getRating() != null ? doctorDetails.getRating() : "N/A" %>
+                    </li>
+                </ul>
+                <% } else { %>
+                <p>No doctor information available.</p>
+                <% } %>
+            </div>
         </div>
-        <% if (doctorDetails != null) { %>
-        <ul class="unordered-list">
-            <li><b>License Number:</b> <%= doctorDetails.getLicenseNumber() %>
-            </li>
-            <li><b>Specialist:</b> <%= doctorDetails.isSpecialist() ? "Yes" : "No" %>
-            </li>
-            <li><b>Rating:</b> <%= doctorDetails.getRating() != null ? doctorDetails.getRating() : "N/A" %>
-            </li>
-        </ul>
-        <% } else { %>
-        <p>No doctor information available.</p>
-        <% } %>
-    </div>
 
-    <!-- Today's Shift Box -->
-    <div class="card p-4 mb-4 shadow">
-        <div class="section-tittle mb-3">
-            <h2>Today's Shift</h2>
+        <!-- Today's Shift Box -->
+        <div class="col-md-6">
+            <div class="card p-4 mb-4 shadow">
+                <div class="section-tittle mb-3">
+                    <h2>Today's Shift</h2>
+                </div>
+                <% if (shiftToday != null) { %>
+                <ul class="unordered-list">
+                    <li><b>Date:</b> <%= shiftToday.getShiftDate() %>
+                    </li>
+                    <li><b>Time Slot:</b> <%= shiftToday.getTimeSlot() %>
+                    </li>
+                    <li><b>Status:</b> <%= shiftToday.getStatus() %>
+                    </li>
+                </ul>
+                <% } else { %>
+                <p>No shift assigned today.</p>
+                <% } %>
+            </div>
         </div>
-        <% if (shiftToday != null) { %>
-        <ul class="unordered-list">
-            <li><b>Date:</b> <%= shiftToday.getShiftDate() %>
-            </li>
-            <li><b>Time Slot:</b> <%= shiftToday.getTimeSlot() %>
-            </li>
-            <li><b>Status:</b> <%= shiftToday.getStatus() %>
-            </li>
-        </ul>
-        <% } else { %>
-        <p>No shift assigned today.</p>
-        <% } %>
     </div>
 
     <!-- Today's Appointments Box -->
