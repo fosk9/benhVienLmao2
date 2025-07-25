@@ -426,53 +426,53 @@
             </div>
         </div>
     </section>
-    <!--? Services Area Start -->
-    <div class="service-area">
-        <div class="container">
-            <div class="row">
-                <c:forEach var="feature" items="${featureItems}" varStatus="loop">
-                    <c:if test="${feature.active && feature.itemId != null}">
-                        <div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="single-cat text-center mb-50">
-                                <div class="cat-icon">
-                                    <c:choose>
-                                        <c:when test="${feature.imageUrl != null}">
-                                            <img src="${pageContext.request.contextPath}/${feature.imageUrl}"
-                                                 alt="${feature.itemName}">
-                                        </c:when>
-                                        <c:otherwise>
-                                            <img src="${pageContext.request.contextPath}/assets/img/icon/default_service.svg"
-                                                 alt="${feature.itemName}">
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                                <div class="cat-cap">
-                                    <h5>
-                                        <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}">
-                                                ${feature.itemName}
-                                        </a>
-                                    </h5>
-                                    <c:set var="serviceDescFound" value="false"/>
-                                    <c:forEach var="content" items="${pageContents}">
-                                        <c:if test="${content.contentKey == 'service_description_' + feature.itemId.toString() && content.active && content.contentValue != null}">
-                                            <c:set var="serviceDescFound" value="true"/>
-                                            <p>${content.contentValue}</p>
-                                        </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!serviceDescFound}">
-                                        <p>No description available for ${feature.itemName}.</p>
-                                    </c:if>
-                                    <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}"
-                                       class="plus-btn"><i class="ti-plus"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </c:if>
-                </c:forEach>
-            </div>
-        </div>
-    </div>
-    <!-- Services Area End -->
+<%--    <!--? Services Area Start -->--%>
+<%--    <div class="service-area">--%>
+<%--        <div class="container">--%>
+<%--            <div class="row">--%>
+<%--                <c:forEach var="feature" items="${featureItems}" varStatus="loop">--%>
+<%--                    <c:if test="${feature.active && feature.itemId != null}">--%>
+<%--                        <div class="col-lg-4 col-md-6 col-sm-6">--%>
+<%--                            <div class="single-cat text-center mb-50">--%>
+<%--                                <div class="cat-icon">--%>
+<%--                                    <c:choose>--%>
+<%--                                        <c:when test="${feature.imageUrl != null}">--%>
+<%--                                            <img src="${pageContext.request.contextPath}/${feature.imageUrl}"--%>
+<%--                                                 alt="${feature.itemName}">--%>
+<%--                                        </c:when>--%>
+<%--                                        <c:otherwise>--%>
+<%--                                            <img src="${pageContext.request.contextPath}/assets/img/icon/default_service.svg"--%>
+<%--                                                 alt="${feature.itemName}">--%>
+<%--                                        </c:otherwise>--%>
+<%--                                    </c:choose>--%>
+<%--                                </div>--%>
+<%--                                <div class="cat-cap">--%>
+<%--                                    <h5>--%>
+<%--                                        <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}">--%>
+<%--                                                ${feature.itemName}--%>
+<%--                                        </a>--%>
+<%--                                    </h5>--%>
+<%--                                    <c:set var="serviceDescFound" value="false"/>--%>
+<%--                                    <c:forEach var="content" items="${pageContents}">--%>
+<%--                                        <c:if test="${content.contentKey == 'service_description_' + feature.itemId.toString() && content.active && content.contentValue != null}">--%>
+<%--                                            <c:set var="serviceDescFound" value="true"/>--%>
+<%--                                            <p>${content.contentValue}</p>--%>
+<%--                                        </c:if>--%>
+<%--                                    </c:forEach>--%>
+<%--                                    <c:if test="${!serviceDescFound}">--%>
+<%--                                        <p>No description available for ${feature.itemName}.</p>--%>
+<%--                                    </c:if>--%>
+<%--                                    <a href="${feature.itemUrl != null ? pageContext.request.contextPath + '/' + feature.itemUrl : '#'}"--%>
+<%--                                       class="plus-btn"><i class="ti-plus"></i></a>--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </c:if>--%>
+<%--                </c:forEach>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--    <!-- Services Area End -->--%>
     <!--? video_start -->
     <div class="container">
         <div class="video-area section-bg2 d-flex align-items-center"
