@@ -50,7 +50,7 @@
             <label class="mr-1 ml-3">Records/Page:</label>
             <input type="number" name="recordsPerPage" class="form-control mr-2" min="1" value="${recordsPerPage}"/>
 
-            <button type="submit" class="btn btn-primary">Apply</button>
+            <button type="submit" class="genric-btn success circle">Apply</button>
         </form>
 
         <table class="table table-bordered table-hover align-middle text-center">
@@ -80,7 +80,7 @@
                     </td>
                     <td>
                         <a href="examination-history-details?appointmentId=${c.appointmentId}"
-                           class="btn btn-sm btn-outline-info">View</a>
+                           class="genric-btn success circle">View</a>
                     </td>
                 </tr>
             </c:forEach>

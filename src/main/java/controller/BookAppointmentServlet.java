@@ -8,10 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Appointment;
 import model.Patient;
-import util.HeaderController;
-import view.AppointmentDAO;
-import view.AppointmentTypeDAO;
-import view.PatientDAO;
+import dal.AppointmentDAO;
+import dal.AppointmentTypeDAO;
+import dal.PatientDAO;
 import model.AppointmentType;
 
 import java.io.IOException;

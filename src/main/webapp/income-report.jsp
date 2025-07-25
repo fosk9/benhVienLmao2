@@ -16,7 +16,7 @@
     <div class="container">
         <div class="section-intro text-center pb-5">
             <h2 class="section-intro__title">Activity Report</h2>
-            <p>Filter and view hospital activities before exporting to Excel</p>
+            <p>Filter and dal hospital activities before exporting to Excel</p>
         </div>
 
         <!-- Filter Form (GET) -->

@@ -1,4 +1,4 @@
-    package view;
+    package dal;
 
     import java.sql.Connection;
     import java.sql.DriverManager;

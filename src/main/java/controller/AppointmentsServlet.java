@@ -1,10 +1,10 @@
 package controller;
 
 import util.HeaderController;
-import view.AppointmentDAO;
-import view.EmployeeDAO;
-import view.AppointmentTypeDAO;
-import view.PatientDAO;
+import dal.AppointmentDAO;
+import dal.EmployeeDAO;
+import dal.AppointmentTypeDAO;
+import dal.PatientDAO;
 import model.Appointment;
 import model.Employee;
 import model.AppointmentType;

@@ -6,8 +6,8 @@ import jakarta.servlet.http.*;
 import model.Employee;
 import util.HeaderController;
 import validation.InputSanitizer;
-import view.EmployeeDAO;
-import view.SpecializationDAO;
+import dal.EmployeeDAO;
+import dal.SpecializationDAO;
 
 import java.io.IOException;
 import java.util.List;

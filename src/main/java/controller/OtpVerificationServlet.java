@@ -7,11 +7,11 @@ import model.DoctorDetail;
 import model.Employee;
 import model.Patient;
 import util.HistoryLogger;
-import view.DoctorDetailDAO;
-import view.EmployeeDAO;
-import view.PatientDAO;
+import dal.DoctorDetailDAO;
+import dal.EmployeeDAO;
+import dal.PatientDAO;
 import model.Appointment;
-import view.AppointmentDAO;
+import dal.AppointmentDAO;
 
 import java.io.IOException;
 import java.sql.Date;

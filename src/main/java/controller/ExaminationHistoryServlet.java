@@ -2,7 +2,7 @@ package controller;
 
 import dto.ExaminationHistoryDTO;
 import validation.InputSanitizer;
-import view.*;
+import dal.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;

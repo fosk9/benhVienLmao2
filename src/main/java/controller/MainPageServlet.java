@@ -9,14 +9,13 @@ import model.Blog;
 import model.AppointmentType;
 import model.SystemItem;
 import model.PageContent;
-import view.BlogDAO;
-import view.AppointmentTypeDAO;
-import view.SystemItemDAO;
-import view.PageContentDAO;
+import dal.BlogDAO;
+import dal.AppointmentTypeDAO;
+import dal.SystemItemDAO;
+import dal.PageContentDAO;
 import util.NavigationUtil;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;

@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Employee;
 import util.HeaderController;
-import view.AppointmentDAO;
+import dal.AppointmentDAO;
 
 import java.io.IOException;
 

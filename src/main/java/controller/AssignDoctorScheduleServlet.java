@@ -3,15 +3,10 @@ package controller;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.DoctorShift;
 import model.DoctorShiftView;
-import model.Employee;
-import util.HistoryLogger;
-import view.DoctorShiftDAO;
+import dal.DoctorShiftDAO;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.logging.Logger;
 

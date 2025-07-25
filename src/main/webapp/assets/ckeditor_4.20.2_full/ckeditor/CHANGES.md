@@ -1553,7 +1553,7 @@ Fixed Issues:
 * [#13027](https://dev.ckeditor.com/ticket/13027): Fixed: Keyboard navigation in dialog windows with multiple tabs not following IBM CI 162 instructions or [ARIA Authoring Practices](http://www.w3.org/TR/2013/WD-wai-aria-practices-20130307/#tabpanel).
 * [#12256](https://dev.ckeditor.com/ticket/12256): Fixed: Basic styles classes are lost when pasting from Microsoft Word if [basic styles](https://ckeditor.com/cke4/addon/basicstyles) were configured to use classes.
 * [#12729](https://dev.ckeditor.com/ticket/12729): Fixed: Incorrect structure created when merging a block into a list item on *Backspace* and *Delete*.
-* [#13031](https://dev.ckeditor.com/ticket/13031): [Firefox] Fixed: No more line breaks in source view since Firefox 36.
+* [#13031](https://dev.ckeditor.com/ticket/13031): [Firefox] Fixed: No more line breaks in source dal since Firefox 36.
 * [#13131](https://dev.ckeditor.com/ticket/13131): Fixed: The [Code Snippet](https://ckeditor.com/cke4/addon/codesnippet) plugin cannot be used without the [IFrame Editing Area](https://ckeditor.com/cke4/addon/wysiwygarea) plugin.
 * [#9086](https://dev.ckeditor.com/ticket/9086): Fixed: Invalid ARIA property used on paste area `<iframe>`.
 * [#13164](https://dev.ckeditor.com/ticket/13164): Fixed: Error when inserting a hidden field.
@@ -1719,7 +1719,7 @@ Fixed Issues:
 * [#11983](https://dev.ckeditor.com/ticket/11983): Fixed: Clicking a nested widget does not focus it. Additionally, performance of the [`widget.repository.getByElement()`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_plugins_widget_repository.html#method-getByElement) method was improved.
 * [#12000](https://dev.ckeditor.com/ticket/12000): Fixed: Nested widgets should be initialized on [`editor.setData()`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_editor.html#method-setData) and [`nestedEditable.setData()`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_plugins_widget_nestedEditable.html#method-setData).
 * [#12022](https://dev.ckeditor.com/ticket/12022): Fixed: Outer widget's drag handler is not created at all if it has any nested widgets inside.
-* [#11960](https://dev.ckeditor.com/ticket/11960): [Blink/WebKit] Fixed: The caret should be scrolled into view on *Backspace* and *Delete* (covers only the merging blocks case).
+* [#11960](https://dev.ckeditor.com/ticket/11960): [Blink/WebKit] Fixed: The caret should be scrolled into dal on *Backspace* and *Delete* (covers only the merging blocks case).
 * [#11306](https://dev.ckeditor.com/ticket/11306): [OSX][Blink/WebKit] Fixed: No widget entries in the context menu on widget right-click.
 * [#11957](https://dev.ckeditor.com/ticket/11957): Fixed: Alignment labels in the [Enhanced Image](https://ckeditor.com/cke4/addon/image2) dialog window are not translated.
 * [#11980](https://dev.ckeditor.com/ticket/11980): [Blink/WebKit] Fixed: `<span>` elements created when joining adjacent elements (non-collapsed selection).
@@ -2147,7 +2147,7 @@ Fixed Issues:
 * [#10219](https://dev.ckeditor.com/ticket/10219): Error thrown when destroying an editor instance in parallel with a `mouseup` event.
 * [#10265](https://dev.ckeditor.com/ticket/10265): Wrong loop type in the [File Browser](https://ckeditor.com/cke4/addon/filebrowser) plugin.
 * [#10249](https://dev.ckeditor.com/ticket/10249): Wrong undo/redo states at start.
-* [#10268](https://dev.ckeditor.com/ticket/10268): [Show Blocks](https://ckeditor.com/cke4/addon/showblocks) does not recover after switching to Source view.
+* [#10268](https://dev.ckeditor.com/ticket/10268): [Show Blocks](https://ckeditor.com/cke4/addon/showblocks) does not recover after switching to Source dal.
 * [#9995](https://dev.ckeditor.com/ticket/9995): HTML code in the `<textarea>` should not be modified by the [`htmlDataProcessor`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR.htmlDataProcessor.html).
 * [#10320](https://dev.ckeditor.com/ticket/10320): [Justify](https://ckeditor.com/cke4/addon/justify) plugin should add elements to Advanced Content Filter based on current [Enter mode](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html#cfg-enterMode).
 * [#10260](https://dev.ckeditor.com/ticket/10260): Fixed: Advanced Content Filter blocks [`tabSpaces`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html#cfg-tabSpaces). Unified `data-cke-*` attributes filtering.
@@ -2199,7 +2199,7 @@ New Features:
 Fixed Issues:
 
 * [#10196](https://dev.ckeditor.com/ticket/10196): Fixed context menus not opening with keyboard shortcuts when [Autogrow](https://ckeditor.com/cke4/addon/autogrow) is enabled.
-* [#10212](https://dev.ckeditor.com/ticket/10212): [IE7-10] Undo command throws errors after multiple switches between Source and WYSIWYG view.
+* [#10212](https://dev.ckeditor.com/ticket/10212): [IE7-10] Undo command throws errors after multiple switches between Source and WYSIWYG dal.
 * [#10219](https://dev.ckeditor.com/ticket/10219): [Inline editor] Error thrown after calling [`editor.destroy()`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_editor.html#method-destroy).
 
 ## CKEditor 4.0.2
@@ -2222,7 +2222,7 @@ Fixed Issues:
 * [#9966](https://dev.ckeditor.com/ticket/9966): Fixed: Unable to type square brackets with French keyboard layout. Changed [Magic Line](https://ckeditor.com/cke4/addon/magicline) keystrokes.
 * [#9507](https://dev.ckeditor.com/ticket/9507): [Firefox] Selection is moved before editable position when the editor is focused for the first time.
 * [#9947](https://dev.ckeditor.com/ticket/9947): [WebKit] Editor overflows parent container in some edge cases.
-* [#10105](https://dev.ckeditor.com/ticket/10105): Fixed: Broken [sourcearea](https://ckeditor.com/cke4/addon/sourcearea) view when an RTL language is set.
+* [#10105](https://dev.ckeditor.com/ticket/10105): Fixed: Broken [sourcearea](https://ckeditor.com/cke4/addon/sourcearea) dal when an RTL language is set.
 * [#10123](https://dev.ckeditor.com/ticket/10123): [WebKit] Fixed: Several dialog windows have broken layout since the latest WebKit release.
 * [#10152](https://dev.ckeditor.com/ticket/10152): Fixed: Invalid ARIA property used on menu items.
 

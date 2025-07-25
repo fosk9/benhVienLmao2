@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Patient;
-import view.PatientDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,7 +1,7 @@
 package test;
 
 import model.Appointment;
-import view.AppointmentDAO;
+import dal.AppointmentDAO;
 
 import java.sql.Date;
 import java.sql.Timestamp;

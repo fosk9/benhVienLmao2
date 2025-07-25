@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Patient;
 import validation.InputSanitizer;
-import view.PatientDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 import java.util.List;

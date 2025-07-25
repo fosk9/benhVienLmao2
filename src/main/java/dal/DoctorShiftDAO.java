@@ -1,4 +1,4 @@
-package view;
+package dal;
 
 import dto.PendingLeaveDTO;
 import model.DoctorScheduleSummary;

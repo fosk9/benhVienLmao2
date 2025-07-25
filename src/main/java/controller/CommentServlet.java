@@ -5,11 +5,10 @@
     import jakarta.servlet.http.*;
     import model.Comment;
     import model.Patient;
-    import view.CommentDAO;
-    import view.PatientDAO;
+    import dal.CommentDAO;
+    import dal.PatientDAO;
 
     import java.io.IOException;
-    import java.sql.Date;
 
     @WebServlet("/add-comment")
     public class CommentServlet extends HttpServlet {

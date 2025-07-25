@@ -9,11 +9,10 @@ import model.Employee;
 import model.Role;
 import model.User;
 import util.HistoryLogger;
-import view.UserDAO;
-import view.RoleDAO;
+import dal.UserDAO;
+import dal.RoleDAO;
 
 import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @WebServlet("/update-user-role")

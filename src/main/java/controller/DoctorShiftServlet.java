@@ -7,8 +7,8 @@ import model.DoctorShift;
 import model.Employee;
 import model.Patient;
 import util.HeaderController;
-import view.AppointmentDAO;
-import view.DoctorShiftDAO;
+import dal.AppointmentDAO;
+import dal.DoctorShiftDAO;
 import util.ScheduleUtils;
 
 import java.io.IOException;

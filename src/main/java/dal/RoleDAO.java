@@ -1,5 +1,5 @@
 // ===== RoleDAO.java (chuẩn hoá theo DBContext mẫu của bạn) =====
-package view;
+package dal;
 
 import model.Role;
 import java.sql.*;

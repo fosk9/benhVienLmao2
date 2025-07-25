@@ -534,7 +534,7 @@
     }).trigger('resize');
 
     $(document).ready(function() {
-        // Add any specific functionality for staff detail view
+        // Add any specific functionality for staff detail dal
         console.log('Staff detail view loaded');
     });
 </script>

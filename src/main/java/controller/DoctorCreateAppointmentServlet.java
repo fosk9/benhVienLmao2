@@ -7,8 +7,8 @@ import model.Appointment;
 import model.Employee;
 import model.Patient;
 import util.HeaderController;
-import view.AppointmentDAO;
-import view.PatientDAO;
+import dal.AppointmentDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 import java.text.ParseException;

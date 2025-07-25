@@ -105,6 +105,8 @@
                 <button type="submit" class="genric-btn success circle">Update Patient Details</button>
             </div>
         </form>
+        <hr class="my-4">
+        <a href="patient-examination-history?patientId=${patient.patientId}" class="genric-btn success circle">Examination History</a>
 
     </c:if>
 

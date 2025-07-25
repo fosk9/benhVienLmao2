@@ -4,8 +4,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import util.PasswordUtils;
-import view.EmployeeDAO;
-import view.PatientDAO;
+import dal.EmployeeDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 

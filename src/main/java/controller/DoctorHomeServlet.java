@@ -1,9 +1,9 @@
 package controller;
 
 import util.HeaderController;
-import view.AppointmentDAO;
-import view.DoctorDetailDAO;
-import view.DoctorShiftDAO;
+import dal.AppointmentDAO;
+import dal.DoctorDetailDAO;
+import dal.DoctorShiftDAO;
 import dto.AppointmentDTO;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;

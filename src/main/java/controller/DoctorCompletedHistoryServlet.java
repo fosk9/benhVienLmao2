@@ -3,7 +3,7 @@ package controller;
 import model.Appointment;
 import model.Employee;
 import util.HeaderController;
-import view.AppointmentDAO;
+import dal.AppointmentDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

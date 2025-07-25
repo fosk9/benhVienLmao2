@@ -7,12 +7,11 @@ import model.Blog;
 import model.Comment;
 import model.Patient;
 import model.Category;
-import view.BlogDAO;
-import view.CommentDAO;
-import view.PatientDAO;
+import dal.BlogDAO;
+import dal.CommentDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.List;
 
 @WebServlet("/blog-detail")

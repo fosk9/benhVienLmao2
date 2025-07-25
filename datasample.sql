@@ -3,105 +3,112 @@ GO
 
 -- Defines the roles used for access control in the benhVienLmao system
 INSERT INTO Roles (role_name)
-VALUES 
-    ('Doctor'),      -- role_id = 1
-    ('Receptionist'),-- role_id = 2
-    ('Admin'),       -- role_id = 3
-    ('Manager'),     -- role_id = 4
-    ('Patient'),     -- role_id = 5
-    ('Guest');       -- role_id = 6
+VALUES ('Doctor'),      -- role_id = 1
+       ('Receptionist'),-- role_id = 2
+       ('Admin'),       -- role_id = 3
+       ('Manager'),     -- role_id = 4
+       ('Patient'),     -- role_id = 5
+       ('Guest'); -- role_id = 6
 GO
 
 -- Defines navigation and feature items accessible in the system, numbered for clarity
 INSERT INTO SystemItems (item_name, item_url, display_order, item_type)
-VALUES 
+VALUES
     -- Navigation Items (Public and General)
-    ('Home', 'index', 1, 'Navigation'),                                    -- item_id = 1
-    ('About', 'about.html', 2, 'Navigation'),                              -- item_id = 2
-    ('Dental Services', 'services.html', 3, 'Navigation'),                 -- item_id = 3
-    ('Blog', 'blog', 4, 'Navigation'),                                    -- item_id = 4
-    ('Blog Details', 'blog-detail.jsp', 5, 'Feature'),                  -- item_id = 5
-    ('Contact', 'contact.html', 6, 'Navigation'),                          -- item_id = 6
+    ('Home', 'index', 1, 'Navigation'),                                         -- item_id = 1
+    ('About', 'about.html', 2, 'Navigation'),                                   -- item_id = 2
+    ('Dental Services', 'services.html', 3, 'Navigation'),                      -- item_id = 3
+    ('Blog', 'blog', 4, 'Navigation'),                                          -- item_id = 4
+    ('Blog Details', 'blog-detail.jsp', 5, 'Feature'),                          -- item_id = 5
+    ('Contact', 'contact.html', 6, 'Navigation'),                               -- item_id = 6
 
     -- Feature Items (Public and General)
-    ('Book Appointment', 'book-appointment', NULL, 'Feature'),             -- item_id = 7
-    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'), -- item_id = 8
-    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),  -- item_id = 9
+    ('Book Appointment', 'book-appointment', NULL, 'Feature'),                  -- item_id = 7
+    ('Teeth Whitening', 'book-appointment?appointmentTypeId=3', 1, 'Feature'),  -- item_id = 8
+    ('Dental Checkup', 'book-appointment?appointmentTypeId=1', 2, 'Feature'),   -- item_id = 9
     ('Tooth Extraction', 'book-appointment?appointmentTypeId=6', 3, 'Feature'), -- item_id = 10
-    ('Search for Service', 'appointment/list', 4, 'Feature'),              -- item_id = 11
+    ('Search for Service', 'appointment/list', 4, 'Feature'),                   -- item_id = 11
 
     -- Doctor-Specific Items
-    ('Doctor Dashboard', 'doctor-home', 1, 'Navigation'),                  -- item_id = 12
-    ('View Prescription', 'view-prescription', NULL, 'Feature'),           -- item_id = 13
+    ('Doctor Dashboard', 'doctor-home', 1, 'Navigation'),                       -- item_id = 12
+    ('View Prescription', 'dal-prescription', NULL, 'Feature'),                 -- item_id = 13
 
     -- Admin-Specific Items
-    ('Admin Home', 'admin/home', NULL, 'Navigation'),                      -- item_id = 14
-    ('Manage Employees', 'admin/manageEmployees', NULL, 'Navigation'),     -- item_id = 15
-    ('Manage Patients', 'admin/managePatients', NULL, 'Navigation'),       -- item_id = 16
-    ('Manage System Items', 'admin/system-items', NULL, 'Feature'),        -- item_id = 17
-    ('Manage System Contents', 'admin/contents', NULL, 'Feature'),         -- item_id = 18
-    ('Add New Content', 'admin/content/add', NULL, 'Navigation'),          -- item_id = 19
-    ('View Logs', 'admin/logs', NULL, 'Feature'),                         -- item_id = 20
-    ('Manage Appointment Type', 'admin/appointments', NULL, 'Feature'),    -- item_id = 21
-    ('Manage Payment', 'https://my.payos.vn/', NULL, 'Feature'),           -- item_id = 22
+    ('Admin Home', 'admin/home', NULL, 'Navigation'),                           -- item_id = 14
+    ('Manage Employees', 'admin/manageEmployees', NULL, 'Navigation'),          -- item_id = 15
+    ('Manage Patients', 'admin/managePatients', NULL, 'Navigation'),            -- item_id = 16
+    ('Manage System Items', 'admin/system-items', NULL, 'Feature'),             -- item_id = 17
+    ('Manage System Contents', 'admin/contents', NULL, 'Feature'),              -- item_id = 18
+    ('Add New Content', 'admin/content/add', NULL, 'Navigation'),               -- item_id = 19
+    ('View Logs', 'admin/logs', NULL, 'Feature'),                               -- item_id = 20
+    ('Manage Appointment Type', 'admin/appointments', NULL, 'Feature'),         -- item_id = 21
+    ('Manage Payment', 'https://my.payos.vn/', NULL, 'Feature'),                -- item_id = 22
 
     -- Patient-Specific Items
-    ('Appointments', 'appointments', 1, 'Navigation'),                     -- item_id = 23
-    ('Treatment History', 'treatment/history', 2, 'Navigation'),           -- item_id = 24
-    ('Services', 'appointment/list', 3, 'Navigation'),                     -- item_id = 25
-    ('Account', '', 4, 'Navigation'),                                     -- item_id = 26
-    ('My Profile', 'MyProfile', 99, 'Navigation'),                         -- item_id = 27
-    ('Change Password', 'change-password', 7, 'Navigation'),               -- item_id = 28
-    ('Book Appointment', 'book-appointment', 4, 'Navigation'),   -- item_id = 29
-    ('Logout', 'logout', 5, 'Navigation'),                                -- item_id = 30
+    ('Appointments', 'appointments', 1, 'Navigation'),                          -- item_id = 23
+    ('Treatment History', 'treatment/history', 2, 'Navigation'),                -- item_id = 24
+    ('Services', 'appointment/list', 3, 'Navigation'),                          -- item_id = 25
+    ('Account', '', 4, 'Navigation'),                                           -- item_id = 26
+    ('My Profile', 'MyProfile', 99, 'Navigation'),                              -- item_id = 27
+    ('Change Password', 'change-password', 7, 'Navigation'),                    -- item_id = 28
+    ('Book Appointment', 'book-appointment', 4, 'Navigation'),                  -- item_id = 29
+    ('Logout', 'logout', 5, 'Navigation'),                                      -- item_id = 30
 
-	--more for manager
-	('Manager Dashboard', 'manager-dashboard', NULL, 'Navigation'),        -- item_id = 31
-	('Staff Detail', 'staff-detail', NULL, 'Navigation'),                  -- item_id = 32
-	('Staff Edit', 'staff-edit', NULL, 'Navigation'),                      -- item_id = 33
-	('View Doctor Schedule', 'view-doctor-schedule', NULL, 'Navigation'),  -- item_id = 34
-	('Assign Doctor Schedule', 'assign-doctor-schedule', NULL, 'Navigation'), -- item_id = 35
-	('Add Doctor Form', 'add-doctor-form', NULL, 'Navigation'),            -- item_id = 36
-	('Update User Role', 'update-user-role', NULL, 'Navigation'),          -- item_id = 37
-	('Blog Dashboard', 'blog-dashboard', NULL, 'Navigation'),              -- item_id = 38
-	('Edit', 'edit', NULL, 'Navigation'),                                  -- item_id = 39
-	('Blog Detail', 'blog-detail', NULL, 'Navigation'),                    -- item_id = 40
-	('Blog', 'blog', NULL, 'Navigation'),                                  -- item_id = 41
-	('Add Blog', 'add-blog', NULL, 'Navigation'),                          -- item_id = 42
-	('Change History Log', 'change-history-log', NULL, 'Navigation'),      -- item_id = 43
+    --more for manager
+    ('Manager Dashboard', 'manager-dashboard', NULL, 'Navigation'),             -- item_id = 31
+    ('Staff Detail', 'staff-detail', NULL, 'Feature'),                          -- item_id = 32
+    ('Staff Edit', 'staff-edit', NULL, 'Feature'),                              -- item_id = 33
+    ('View Doctor Schedule', 'dal-doctor-schedule', NULL, 'Feature'),           -- item_id = 34
+    ('Assign Doctor Schedule', 'assign-doctor-schedule', NULL, 'Feature'),      -- item_id = 35
+    ('Add Doctor Form', 'add-doctor-form', NULL, 'Feature'),                    -- item_id = 36
+    ('Update User Role', 'update-user-role', NULL, 'Feature'),                  -- item_id = 37
+    ('Blog Dashboard', 'blog-dashboard', NULL, 'Feature'),                   -- item_id = 38
+    ('Edit', 'edit', NULL, 'Feature'),                                          -- item_id = 39
+    ('Blog Detail', 'blog-detail', NULL, 'Feature'),                            -- item_id = 40
+    ('Blog', 'blog', NULL, 'Navigation'),                                       -- item_id = 41
+    ('Add Blog', 'add-blog', NULL, 'Feature'),                                  -- item_id = 42
+    ('Change History Log', 'change-history-log', NULL, 'Feature'),           -- item_id = 43
 
-	('pactHome', 'pactHome', NULL, 'Feature'),--44
-	('pact logout', 'Logout', NULL, 'Feature'),--45
+    ('pactHome', 'pactHome', NULL, 'Feature'),--44
+    ('pact logout', 'Logout', NULL, 'Feature'),--45
 
-	('doctor examination note', '/examination-note', NULL, 'Feature'),--46
-	('hospital statis', 'hospital-statistics', NULL, 'Feature'),--47
-	('Patient List', '/PatientList', NULL, 'Navigation'), --48
-	('Doctor List', '/DoctorList', NULL, 'Navigation'), --49
-	('Examination history', '/examination-history', NULL, 'Navigation'), --50
-	('UpdateMy Profile Employee', '/UpdateMyProfileEmployee', NULL, 'Navigation'),--51
-	('UpdateMy Avt Employee', '/UpdateEmployeeAvatar ', NULL, 'Feature'), --52
-	('Activity report', '/export-activity-report ', NULL, 'Navigation'); --53
-	GO
+    ('doctor examination note', '/examination-note', NULL, 'Feature'),          --46
+    ('hospital statis', 'hospital-statistics', NULL, 'Feature'),                --47
+    ('Patient List', '/PatientList', NULL, 'Navigation'),                       --48
+    ('Doctor List', '/DoctorList', NULL, 'Navigation'),                         --49
+    ('Examination history', '/examination-history', NULL, 'Navigation'),        --50
+    ('UpdateMy Profile Employee', '/UpdateMyProfileEmployee', NULL, 'Feature'), --51
+    ('UpdateMy Avt Employee', '/UpdateEmployeeAvatar ', NULL, 'Feature'),       --52
+    ('Activity report', '/export-activity-report ', NULL, 'Navigation'),        --53
+    ('Schedule', '/doctor-schedule ', NULL, 'Navigation'),                      --54
+    ('Examination history', '/patient-examination-history ', NULL, 'Navigation'); --55
+
+GO
 
 -- Insert RoleSystemItems
 -- Maps roles to SystemItems for role-based access control
 INSERT INTO RoleSystemItems (role_id, item_id)
-VALUES 
+VALUES
     -- Doctor (role_id = 1) Permissions
     (1, 12), -- Doctor Dashboard (doctor-home)
-    (1, 13), -- View Prescription (view-prescription)
-    (1, 27), -- My Profile (MyProfile)
+    (1, 13), -- View Prescription (dal-prescription)
     (1, 28), -- Change Password (change-password)
+    (1, 46), -- Examination Note
+    (1, 48), -- Examination history
+    (1, 54), -- Schedule
+    (1, 49), -- Doctor List
+    (1, 50), -- Examination history
+    (1, 26), -- Account
+    (1, 27), -- My Profile (MyProfile)
     (1, 30), -- Logout (logout)
-	(1,46),
-	(1,48),
 
-	---- Res (role_id = 2) Permissions
-	(2,48),
-	(2,49),
-	(2,50),
-	(2,51),
-	(2,52),
+    ---- Res (role_id = 2) Permissions
+    (2, 48),
+    (2, 49),
+    (2, 50),
+    (2, 51),
+    (2, 52),
+
     -- Admin (role_id = 3) Permissions
     (3, 14), -- Admin Home (admin/home)
     (3, 15), -- Manage Employees (admin/manageEmployees)
@@ -116,38 +123,37 @@ VALUES
     -- Manager (role_id = 4) Permissions
     (4, 21), -- Manage Appointment Type (admin/appointments)
     (4, 22), -- Manage Payment[](https://my.payos.vn/)
-	(4, 31), -- Manager Dashboard
-	(4, 32), -- Staff Detail
-	(4, 33), -- Staff Edit
-	(4, 34), -- View Doctor Schedule
-	(4, 35), -- Assign Doctor Schedule
-	(4, 36), -- Add Doctor Form
-	(4, 37), -- Update User Role
-	(4, 38), -- Blog Dashboard
-	(4, 39), -- Edit
-	(4, 40), -- Blog Detail
-	(4, 41), -- Blog
-	(4, 42), -- Add Blog
-	(4, 43), -- Change History Log
-	(4,48),
-	(4,49),
-	(4,50),
-	(4,51),
-	(4,52),
-	(4, 53),
+    (4, 31), -- Manager Dashboard
+    (4, 32), -- Staff Detail
+    (4, 33), -- Staff Edit
+    (4, 34), -- View Doctor Schedule
+    (4, 35), -- Assign Doctor Schedule
+    (4, 36), -- Add Doctor Form
+    (4, 37), -- Update User Role
+    (4, 38), -- Blog Dashboard
+    (4, 39), -- Edit
+    (4, 40), -- Blog Detail
+    (4, 41), -- Blog
+    (4, 42), -- Add Blog
+    (4, 43), -- Change History Log
+    (4, 48),
+    (4, 49),
+    (4, 51),
+    (4, 52),
+    (4, 53),
 
     -- Patient (role_id = 5) Permissions
     (5, 4),  -- Blog (blog)
     (5, 5),  -- Blog Details (blog-detail.jsp)
     (5, 23), -- Appointments (appointments)
-    (5, 24), -- Treatment History (treatment/history)
+    (5, 55), -- Treatment History (treatment/history)
     (5, 25), -- Services (appointment/list)
     (5, 26), -- Account
     (5, 27), -- My Profile (MyProfile)
     (5, 28), -- Change Password (change-password)
     (5, 29), -- Book Appointment (Patient) (book-appointment)
     (5, 45), -- Logout (logout)
-	(5, 44), --pactHome
+    (5, 44), --pactHome
 
     -- Guest (role_id = 6) Permissions
     (6, 4),  -- Blog (blog)
@@ -267,19 +273,18 @@ VALUES
 (6, 2, 2, '2025-08-05', 'Morning', 'Confirmed');
 
 INSERT INTO Diagnoses (appointment_id, notes, created_at)
-VALUES
-    (1, 'Flu', '2025-01-05'),
-    (2, 'Toothache', '2025-02-10'),
-    (3, 'Back Pain', '2025-03-12'),
-    (4, 'Myopia', '2025-04-03'),
-    (5, 'Flu', '2025-05-09'),
-    (6, 'Fracture', '2025-06-01'),
-    (7, 'Headache', '2025-06-15'),
-    (8, 'Flu', '2025-07-02'),
-    (9, 'Toothache', '2025-07-05'),
-    (10, 'Myopia', '2025-07-10'),
-    (11, 'Flu', '2025-07-15'),
-    (12, 'Back Pain', '2025-07-20');
+VALUES (1, 'Flu', '2025-01-05'),
+       (2, 'Toothache', '2025-02-10'),
+       (3, 'Back Pain', '2025-03-12'),
+       (4, 'Myopia', '2025-04-03'),
+       (5, 'Flu', '2025-05-09'),
+       (6, 'Fracture', '2025-06-01'),
+       (7, 'Headache', '2025-06-15'),
+       (8, 'Flu', '2025-07-02'),
+       (9, 'Toothache', '2025-07-05'),
+       (10, 'Myopia', '2025-07-10'),
+       (11, 'Flu', '2025-07-15'),
+       (12, 'Back Pain', '2025-07-20');
 
 -- Insert sample Category
 INSERT INTO Category (category_name)
@@ -547,19 +552,18 @@ VALUES
 (105, 'Pham Van I', 205, 'Hoang Van K', 'employee', 'Promote to Admin', DATEADD(DAY, -10, GETDATE()));
 
 INSERT INTO Payments (appointment_id, amount, method, status, pay_content, created_at, paid_at)
-VALUES
-    (1, 100000, 'Cash', 'Paid', 'General Checkup', '2025-01-05', '2025-01-05'),
-    (2, 150000, 'Card', 'Paid', 'Dental Cleaning', '2025-02-10', '2025-02-10'),
-    (3, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-03-12', '2025-03-12'),
-    (4, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-04-03', '2025-04-03'),
-    (5, 180000, 'Card', 'Paid', 'General Checkup', '2025-05-09', '2025-05-09'),
-    (6, 500000, 'Cash', 'Paid', 'Emergency Visit', '2025-06-01', '2025-06-01'),
-    (16, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-06-15', '2025-06-15'),
-    (17, 150000, 'Card', 'Paid', 'General Checkup', '2025-07-02', '2025-07-02'),
-    (18, 180000, 'Cash', 'Paid', 'Dental Cleaning', '2025-07-05', '2025-07-05'),
-    (19, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-07-10', '2025-07-10'),
-    (20, 300000, 'Cash', 'Paid', 'Emergency Visit', '2025-07-15', '2025-07-15'),
-    (21, 400000, 'Card', 'Paid', 'Specialist Consultation', '2025-07-20', '2025-07-20');
+VALUES (1, 100000, 'Cash', 'Paid', 'General Checkup', '2025-01-05', '2025-01-05'),
+       (2, 150000, 'Card', 'Paid', 'Dental Cleaning', '2025-02-10', '2025-02-10'),
+       (3, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-03-12', '2025-03-12'),
+       (4, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-04-03', '2025-04-03'),
+       (5, 180000, 'Card', 'Paid', 'General Checkup', '2025-05-09', '2025-05-09'),
+       (6, 500000, 'Cash', 'Paid', 'Emergency Visit', '2025-06-01', '2025-06-01'),
+       (16, 200000, 'Cash', 'Paid', 'Specialist Consultation', '2025-06-15', '2025-06-15'),
+       (17, 150000, 'Card', 'Paid', 'General Checkup', '2025-07-02', '2025-07-02'),
+       (18, 180000, 'Cash', 'Paid', 'Dental Cleaning', '2025-07-05', '2025-07-05'),
+       (19, 250000, 'Momo', 'Paid', 'Eye Exam', '2025-07-10', '2025-07-10'),
+       (20, 300000, 'Cash', 'Paid', 'Emergency Visit', '2025-07-15', '2025-07-15'),
+       (21, 400000, 'Card', 'Paid', 'Specialist Consultation', '2025-07-20', '2025-07-20');
 
 
 

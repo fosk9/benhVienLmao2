@@ -7,9 +7,9 @@ import jakarta.servlet.http.*;
 import model.Employee;
 import model.EmployeeHistory;
 import model.Role;
-import view.EmployeeDAO;
-import view.EmployeeHistoryDAO;
-import view.RoleDAO;
+import dal.EmployeeDAO;
+import dal.EmployeeHistoryDAO;
+import dal.RoleDAO;
 
 import java.io.IOException;
 import java.sql.Date;

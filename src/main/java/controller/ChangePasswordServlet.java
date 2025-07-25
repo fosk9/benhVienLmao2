@@ -6,8 +6,8 @@ import jakarta.servlet.http.*;
 import model.Employee;
 import model.Patient;
 import util.PasswordUtils;
-import view.EmployeeDAO;
-import view.PatientDAO;
+import dal.EmployeeDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 

@@ -7,12 +7,11 @@ import model.DoctorShift;
 import model.Employee;
 import util.HeaderController;
 import util.HistoryLogger;
-import view.DoctorShiftDAO;
-import view.AppointmentDAO;
+import dal.DoctorShiftDAO;
+import dal.AppointmentDAO;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

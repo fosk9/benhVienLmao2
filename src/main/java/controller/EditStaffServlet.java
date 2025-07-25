@@ -6,8 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorDetail;
 import model.Employee;
-import view.DoctorDetailDAO;
-import view.EmployeeDAO;
+import dal.DoctorDetailDAO;
+import dal.EmployeeDAO;
 
 import java.io.*;
 import java.sql.Date;

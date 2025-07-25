@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import model.PageContent;
-import view.PageContentDAO;
+import dal.PageContentDAO;
 
 import java.io.File;
 import java.io.IOException;

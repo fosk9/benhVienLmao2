@@ -6,7 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
-import view.*;
+import dal.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,14 +32,24 @@ public class PatientExaminationHistoryServlet extends HttpServlet {
 
     private void handleListPage(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
-        Patient patient = (Patient) (session != null ? session.getAttribute("account") : null);
+        int patientId = -1;
 
-        if (patient == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
+        if (session != null) {
+            Object account = session.getAttribute("account");
+            if (account instanceof Patient) {
+                patientId = ((Patient) account).getPatientId();
+            }
         }
 
-        int patientId = patient.getPatientId();
+// Nếu là employee thì buộc phải có param
+        if (patientId == -1) {
+            try {
+                patientId = Integer.parseInt(req.getParameter("patientId"));
+            } catch (NumberFormatException e) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or invalid patient ID");
+                return;
+            }
+        }
 
         String search = InputSanitizer.cleanSearchQuery(req.getParameter("search"));
         String sortBy = req.getParameter("sortBy");
@@ -73,6 +83,7 @@ public class PatientExaminationHistoryServlet extends HttpServlet {
         req.setAttribute("currentPage", page);
         req.setAttribute("totalPages", totalPages);
         req.setAttribute("recordsPerPage", recordsPerPage);
+        req.setAttribute("patientId", patientId);
 
         req.getRequestDispatcher("patient-examination-history.jsp").forward(req, resp);
     }

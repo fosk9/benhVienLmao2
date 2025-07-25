@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.DoctorDetail;
 import model.Employee;
-import view.DoctorDetailDAO;
-import view.EmployeeDAO;
+import dal.DoctorDetailDAO;
+import dal.EmployeeDAO;
 
 import java.io.IOException;
 import java.util.logging.Logger;

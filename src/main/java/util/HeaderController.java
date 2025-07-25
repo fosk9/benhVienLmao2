@@ -1,6 +1,6 @@
 package util;
 
-import view.SystemItemDAO;
+import dal.SystemItemDAO;
 import model.SystemItem;
 
 import java.util.List;

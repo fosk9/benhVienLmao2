@@ -1,6 +1,6 @@
 package filter;
 
-import view.LogSystemDAO;
+import dal.LogSystemDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
 package test;
 
 import model.ChangeHistory;
-import view.ChangeHistoryDAO;
+import dal.ChangeHistoryDAO;
 
 import java.util.Date;
 import java.util.List;

@@ -8,7 +8,7 @@ import jakarta.servlet.http.*;
 import model.Patient;
 import service.CloudinaryService;
 import validation.PatientValidator;
-import view.PatientDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 import java.sql.Date;

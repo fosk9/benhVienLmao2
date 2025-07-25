@@ -1,6 +1,6 @@
 package test;
 
-import view.PatientDAO;
+import dal.PatientDAO;
 import model.Patient;
 
 public class TestPatientDAO {

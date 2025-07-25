@@ -8,7 +8,7 @@ import jakarta.servlet.http.*;
 import model.Employee;
 import service.CloudinaryService;
 import validation.EmployeeValidator;
-import view.EmployeeDAO;
+import dal.EmployeeDAO;
 
 import java.io.IOException;
 import java.sql.Date;

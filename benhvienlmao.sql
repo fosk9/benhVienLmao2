@@ -164,7 +164,7 @@ CREATE TABLE Appointments
     requires_specialist BIT      DEFAULT 0,
     status              VARCHAR(50) CHECK (status IN ('Unpay', 'Pending', 'Confirmed', 'Completed', 'Cancelled')),
     created_at          DATETIME DEFAULT GETDATE(),
-    updated_at          DATETIME,
+    updated_at          DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (patient_id) REFERENCES Patients (patient_id),
     FOREIGN KEY (doctor_id) REFERENCES Employees (employee_id),
     FOREIGN KEY (appointmenttype_id) REFERENCES AppointmentType (appointmenttype_id)

@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Patient;
 import util.PasswordUtils;
-import view.PatientDAO;
+import dal.PatientDAO;
 
 import java.io.IOException;
 import java.sql.Date;

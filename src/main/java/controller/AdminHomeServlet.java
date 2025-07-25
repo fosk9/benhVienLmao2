@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.SystemItem;
-import view.SystemItemDAO;
+import dal.SystemItemDAO;
 
 import java.io.IOException;
 import java.util.ArrayList;

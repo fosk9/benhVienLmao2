@@ -1,10 +1,8 @@
 package controller;
 
 import util.HeaderController;
-import view.PatientDAO;
-import view.SystemItemDAO;
+import dal.PatientDAO;
 import model.Patient;
-import model.SystemItem;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Servlet handling the patient's home page, displaying services and navigation.

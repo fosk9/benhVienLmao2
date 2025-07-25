@@ -1,4 +1,4 @@
-package view;
+package dal;
 
 import model.Payment;
 import java.sql.*;

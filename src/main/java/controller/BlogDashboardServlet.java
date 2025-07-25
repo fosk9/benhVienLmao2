@@ -5,11 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Blog;
 import model.Category;
-import model.Comment;
 import model.Employee;
 import util.HistoryLogger;
-import view.BlogDAO;
-import view.CommentDAO;
+import dal.BlogDAO;
 
 import java.io.IOException;
 import java.util.List;

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.LogSystem;
-import view.LogSystemDAO;
+import dal.LogSystemDAO;
 
 import java.io.IOException;
 import java.util.List;

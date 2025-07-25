@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.DoctorShift;
 import model.Employee;
-import view.AppointmentDAO;
-import view.DoctorShiftDAO;
-import view.EmployeeDAO;
+import dal.AppointmentDAO;
+import dal.DoctorShiftDAO;
+import dal.EmployeeDAO;
 
 import java.io.IOException;
 import java.sql.Timestamp;

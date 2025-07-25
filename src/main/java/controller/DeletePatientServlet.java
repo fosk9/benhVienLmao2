@@ -7,7 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import model.Patient;
-import view.PatientDAO;
+import dal.PatientDAO;
 
 
 @WebServlet(name = "DeletePatientServlet", urlPatterns = {"/DeletePatient"})

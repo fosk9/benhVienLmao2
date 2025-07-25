@@ -1,8 +1,8 @@
 package controller;
 import jakarta.servlet.ServletException;
 import model.GoogleAccount;
-import view.EmployeeDAO;
-import view.PatientDAO;
+import dal.EmployeeDAO;
+import dal.PatientDAO;
 import model.Employee;
 import model.Patient;
 

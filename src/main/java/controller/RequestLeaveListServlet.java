@@ -6,8 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.DoctorShift;
-import view.DoctorShiftDAO;
+import dal.DoctorShiftDAO;
 
 import java.io.IOException;
 import java.util.List;

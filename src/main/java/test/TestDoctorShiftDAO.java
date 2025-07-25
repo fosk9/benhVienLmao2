@@ -2,7 +2,7 @@ package test;
 
 import model.DoctorShift;
 import model.DoctorShiftView;
-import view.DoctorShiftDAO;
+import dal.DoctorShiftDAO;
 
 import java.sql.Date;
 import java.util.List;

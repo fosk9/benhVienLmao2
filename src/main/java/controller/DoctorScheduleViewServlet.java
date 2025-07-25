@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.DoctorShift;
 import util.ScheduleUtils;
-import view.DoctorShiftDAO;
+import dal.DoctorShiftDAO;
 
 import java.io.IOException;
 import java.sql.Date;

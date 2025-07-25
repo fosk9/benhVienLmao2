@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 import model.LogSystem;
-import view.LogSystemDAO;
+import dal.LogSystemDAO;
 
 import java.sql.Timestamp;
 

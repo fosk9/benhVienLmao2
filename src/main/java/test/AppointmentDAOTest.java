@@ -1,7 +1,6 @@
 package test;
 
-import view.AppointmentDAO;
-import view.DoctorShiftDAO;
+import dal.AppointmentDAO;
 
 import java.sql.Date;
 

@@ -1,7 +1,7 @@
 package test;
 
 import model.Patient;
-import view.PatientDAO;
+import dal.PatientDAO;
 
 public class PatientDAOTest {
     public static void main(String[] args) {

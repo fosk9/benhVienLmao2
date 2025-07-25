@@ -2,8 +2,8 @@ package test;
 
 import model.Blog;
 import model.Comment;
-import view.BlogDAO;
-import view.CommentDAO;
+import dal.BlogDAO;
+import dal.CommentDAO;
 
 import java.sql.Date;
 import java.util.List;

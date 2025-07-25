@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.SystemItem;
-import view.SystemItemDAO;
-import view.RoleDAO;
+import dal.SystemItemDAO;
+import dal.RoleDAO;
 import model.Role;
 
 import java.io.IOException;

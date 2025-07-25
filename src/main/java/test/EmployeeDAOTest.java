@@ -1,7 +1,7 @@
 package test;
 
 import model.Employee;
-import view.EmployeeDAO;
+import dal.EmployeeDAO;
 
 import java.sql.Date;
 

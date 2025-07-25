@@ -1,7 +1,7 @@
 package test;
 
 import model.Comment;
-import view.CommentDAO;
+import dal.CommentDAO;
 import java.util.List;
 
 public class CommentTest {

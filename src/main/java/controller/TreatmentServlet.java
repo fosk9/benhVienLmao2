@@ -2,7 +2,7 @@ package controller;
 
 import model.Treatment;
 import util.HeaderController;
-import view.TreatmentDAO;
+import dal.TreatmentDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

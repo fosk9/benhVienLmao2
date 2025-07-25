@@ -5,15 +5,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import view.AppointmentDAO;
+import dal.AppointmentDAO;
 import model.Appointment;
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
-import vn.payos.type.PaymentLinkData;
 
 @WebServlet("/payment")
 public class PaymentControllerServlet extends HttpServlet {

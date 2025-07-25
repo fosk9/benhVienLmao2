@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.AppointmentType;
-import view.AppointmentTypeDAO;
+import dal.AppointmentTypeDAO;
 
 import java.io.IOException;
 import java.math.BigDecimal;

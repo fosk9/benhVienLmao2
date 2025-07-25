@@ -1,7 +1,7 @@
 package test;
 
 import model.AppointmentType;
-import view.AppointmentTypeDAO;
+import dal.AppointmentTypeDAO;
 
 import java.math.BigDecimal;
 import java.util.List;

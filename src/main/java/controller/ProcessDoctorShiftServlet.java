@@ -6,7 +6,7 @@ import jakarta.servlet.http.*;
 import model.DoctorShift;
 import model.Employee;
 import util.HistoryLogger;
-import view.DoctorShiftDAO;
+import dal.DoctorShiftDAO;
 
 import java.io.IOException;
 import java.sql.Date;

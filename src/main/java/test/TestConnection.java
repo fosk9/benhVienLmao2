@@ -1,6 +1,6 @@
 package test;
 
-import view.DBContext;
+import dal.DBContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;

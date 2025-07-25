@@ -1,6 +1,6 @@
 package controller;
 
-import view.ChangeHistoryDAO;
+import dal.ChangeHistoryDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

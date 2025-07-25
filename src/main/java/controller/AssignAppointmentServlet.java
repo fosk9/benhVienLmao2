@@ -1,7 +1,7 @@
 package controller;
 
-import view.AppointmentDAO;
-import view.DoctorShiftDAO;
+import dal.AppointmentDAO;
+import dal.DoctorShiftDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;

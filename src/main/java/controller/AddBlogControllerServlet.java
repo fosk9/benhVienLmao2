@@ -8,7 +8,7 @@ import model.Blog;
 import model.Category;
 import model.Employee;
 import util.HistoryLogger;
-import view.BlogDAO;
+import dal.BlogDAO;
 
 
 import java.io.File;

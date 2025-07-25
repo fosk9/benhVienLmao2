@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Blog;
 import model.Category;
-import view.BlogDAO;
+import dal.BlogDAO;
 
 import java.io.IOException;
 import java.util.List;

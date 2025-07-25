@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
-import view.ReportDAO;
+import dal.ReportDAO;
 import validation.InputSanitizer;
 
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class ReportExportServlet extends HttpServlet {
         request.setAttribute("search", search);
 
         try {
-            request.getRequestDispatcher("request-report.jsp").forward(request, response);
+            request.getRequestDispatcher("income-report.jsp").forward(request, response);
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Forward error");
         }
