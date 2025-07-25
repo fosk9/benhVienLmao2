@@ -1,6 +1,6 @@
 package controller;
 
-import dto.ConsultationHistoryDTO;
+import dto.ExaminationHistoryDTO;
 import validation.InputSanitizer;
 import view.*;
 import jakarta.servlet.ServletException;
@@ -11,8 +11,8 @@ import model.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet({"/consultation-history", "/consultation-history-details"})
-public class ConsultationHistoryServlet extends HttpServlet {
+@WebServlet({"/examination-history", "/examination-history-details"})
+public class ExaminationHistoryServlet extends HttpServlet {
     private final AppointmentDAO appointmentDAO = new AppointmentDAO();
     private final DiagnosisDAO diagnosisDAO = new DiagnosisDAO();
     private final PrescriptionDAO prescriptionDAO = new PrescriptionDAO();
@@ -21,9 +21,9 @@ public class ConsultationHistoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
-        if (uri.endsWith("/consultation-history")) {
+        if (uri.endsWith("/examination-history")) {
             handleListPage(req, resp);
-        } else if (uri.endsWith("/consultation-history-details")) {
+        } else if (uri.endsWith("/examination-history-details")) {
             handleDetailPage(req, resp);
         }
     }
@@ -69,13 +69,13 @@ public class ConsultationHistoryServlet extends HttpServlet {
         AppointmentDAO dao = new AppointmentDAO();
 
         // Lấy danh sách theo search/filter/sort
-        List<ConsultationHistoryDTO> consultations = dao.searchAndSortCompletedByDoctor(
+        List<ExaminationHistoryDTO> examinations = dao.searchAndSortCompletedByDoctor(
                 doctorId, search, sortBy, sortDir, page, recordsPerPage
         );
         int totalRecords = dao.countSearchCompletedByDoctor(doctorId, search);
         int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
-        req.setAttribute("consultations", consultations);
+        req.setAttribute("examinations", examinations);
         req.setAttribute("search", search);
         req.setAttribute("sortBy", sortBy);
         req.setAttribute("sortDir", sortDir);
@@ -83,7 +83,7 @@ public class ConsultationHistoryServlet extends HttpServlet {
         req.setAttribute("totalPages", totalPages);
         req.setAttribute("recordsPerPage", recordsPerPage);
 
-        req.getRequestDispatcher("consultation-history.jsp").forward(req, resp);
+        req.getRequestDispatcher("examination-history.jsp").forward(req, resp);
     }
 
 
@@ -114,7 +114,7 @@ public class ConsultationHistoryServlet extends HttpServlet {
         req.setAttribute("prescriptions", prescriptions);
         req.setAttribute("treatments", treatments);
 
-        req.getRequestDispatcher("consultation-history-detail.jsp").forward(req, resp);
+        req.getRequestDispatcher("examination-history-detail.jsp").forward(req, resp);
     }
 
 }

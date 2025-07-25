@@ -275,7 +275,7 @@
                         <article class="blog_item">
                             <div class="blog_item_img">
                                 <img class="card-img rounded-0"
-                                     src="${pageContext.request.contextPath}/assets/img/${b.blogImg}"
+                                     src="${pageContext.request.contextPath}/${b.blogImg}"
                                      alt="${b.blogName}">
                                 <a href="#" class="blog_item_date">
                                     <h3><fmt:formatDate value="${b.date}" pattern="dd"/></h3>

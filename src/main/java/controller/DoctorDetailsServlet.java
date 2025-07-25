@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/doctor-details", "/update-doctor-details", "/delete-doctor"})
+@WebServlet(urlPatterns = {"/doctor-details", "/update-doctor-details"})
 public class DoctorDetailsServlet extends HttpServlet {
 
     private final EmployeeDAO employeeDAO = new EmployeeDAO();
@@ -39,12 +39,7 @@ public class DoctorDetailsServlet extends HttpServlet {
                 req.setAttribute("doctorDetail", doctorDetail);
                 req.getRequestDispatcher("doctor-details.jsp").forward(req, resp);
                 break;
-//
-//            case "/delete-doctor":
-//                doctorDetailDao.delete(id); // Xóa cả DoctorDetails
-//                employeeDAO.delete(id); // Xóa từ Employees
-//                resp.sendRedirect(req.getContextPath() + "/DoctorList?message=Doctor deleted successfully");
-//                break;
+
         }
     }
 

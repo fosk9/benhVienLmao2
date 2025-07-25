@@ -19,71 +19,81 @@
 <body>
 <div class="hospital-admin">
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar d-flex flex-column">
         <!-- Hospital Header -->
-        <div class="hospital-header">
-            <div class="hospital-logo">
-                <div class="hospital-icon">
+        <div class="hospital-header p-3">
+            <div class="hospital-logo d-flex align-items-center">
+                <div class="hospital-icon mr-2">
                     <a href="${pageContext.request.contextPath}/manager-dashboard">
-                        <i class="fas fa-user-tie"></i>
+                        <i class="fas fa-user-tie fa-2x"></i>
                     </a>
                 </div>
                 <div>
                     <a href="${pageContext.request.contextPath}/manager-dashboard" style="text-decoration: none;">
-                        <h2 class="hospital-title">Manager Portal</h2>
-                        <p class="hospital-subtitle">Hospital Management</p>
+                        <h4 class="hospital-title mb-0">Manager Portal</h4>
+                        <small class="hospital-subtitle text-muted">Hospital Management</small>
                     </a>
                 </div>
             </div>
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="nav-menu">
-            <ul>
-                <li>
+        <nav class="nav-menu flex-grow-1">
+            <ul class="nav flex-column px-3">
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/manager-dashboard" class="nav-link">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
+                        <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
                     </a>
                 </li>
-                <li>
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/update-user-role" class="nav-link">
-                        <i class="fas fa-users-cog"></i>
-                        <span>User Management</span>
+                        <i class="fas fa-users-cog"></i> <span>User Management</span>
                     </a>
                 </li>
-                <li>
+                <li class="nav-item">
+                    <a href="${pageContext.request.contextPath}/hospital-statistics" class="nav-link">
+                        <i class="fas fa-chart-bar"></i> <span>Revenue Report</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/add-doctor-form" class="nav-link">
-                        <i class="fas fa-users"></i>
-                        <span>Add Staff</span>
+                        <i class="fas fa-user-plus"></i> <span>Add Staff</span>
                     </a>
                 </li>
-                <li>
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/assign-doctor-schedule" class="nav-link active">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Doctor Schedules</span>
+                        <i class="fas fa-calendar-alt"></i> <span>Doctor Schedules</span>
                     </a>
                 </li>
-                <li>
+                <li class="nav-item">
+                    <a href="${pageContext.request.contextPath}/unassigned-appointments" class="nav-link">
+                        <i class="fas fa-calendar-times"></i> <span>Unassigned Appointments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="${pageContext.request.contextPath}/request-leave-list" class="nav-link">
+                        <i class="fas fa-user-clock"></i> <span>Leave Requests</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/blog-dashboard" class="nav-link">
-                        <i class="fas fa-podcast"></i>
-                        <span>Blog Dashboard</span>
+                        <i class="fas fa-podcast"></i> <span>Blog Dashboard</span>
                     </a>
                 </li>
-                <li>
+                <li class="nav-item">
                     <a href="${pageContext.request.contextPath}/change-history-log" class="nav-link">
-                        <i class="fas fa-history"></i>
-                        <span>Change History</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/logout" class="nav-link">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
+                        <i class="fas fa-history"></i> <span>Change History</span>
                     </a>
                 </li>
             </ul>
         </nav>
+
+        <!-- Logout at bottom -->
+        <div class="logout-section mt-auto px-3 pb-3">
+            <a href="${pageContext.request.contextPath}/logout" class="nav-link text-danger">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+            </a>
+        </div>
     </div>
 
     <!-- Main Content -->

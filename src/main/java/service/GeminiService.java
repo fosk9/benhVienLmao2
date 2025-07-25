@@ -58,7 +58,6 @@ public class GeminiService {
         this.client = Client.builder().apiKey(API_KEY).build();
     }
 
-
     /**
      * Tạo câu trả lời từ Gemini dựa vào lịch sử cuộc trò chuyện và vai trò được xác định trước.
      * Tin nhắn mới nhất của người dùng đã phải có trong history.

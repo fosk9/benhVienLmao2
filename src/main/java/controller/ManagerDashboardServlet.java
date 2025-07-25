@@ -92,8 +92,6 @@ public class ManagerDashboardServlet extends HttpServlet {
         request.setAttribute("totalPage", totalPage);
         request.setAttribute("keyword", keyword);
         request.setAttribute("status", status);
-
-        System.out.println("=== [ManagerDashboardServlet] Forward to manager-dashboard.jsp ===");
         request.getRequestDispatcher("Manager/manager-dashboard.jsp").forward(request, response);
     }
 }
