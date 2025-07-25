@@ -56,7 +56,7 @@ public class ApproveLeaveServlet extends HttpServlet {
             // 1. Cập nhật shift gốc thành "Leave"
             shiftDAO.updateStatusAndManager(shiftId, "Leave", managerId, now);
 
-            // 2. Gán appointment (nếu có) sang doctor mới
+                // 2. Gán appointment (nếu có) sang doctor mới
             DoctorShift originalShift = shiftDAO.select(shiftId);
             appointmentDAO.transferAppointments(
                     originalShift.getDoctorId(),

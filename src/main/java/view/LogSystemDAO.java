@@ -68,6 +68,7 @@ public class LogSystemDAO extends DBContext<LogSystem> {
             }
             if (logLevel != null && !logLevel.equals("All Levels")) {
                 ps.setString(idx++, logLevel);
+                System.out.println("FILTER LOGS logLevel: " + logLevel);
             }
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -75,6 +76,8 @@ public class LogSystemDAO extends DBContext<LogSystem> {
                     list.add(mapResultSet(rs));
                 }
             }
+
+            System.out.println("FILTER LOGS sql query string: " + sql);
 
         } catch (Exception e) {
             logError("FILTER LOGS", e);

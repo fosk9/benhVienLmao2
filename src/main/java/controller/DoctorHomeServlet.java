@@ -1,5 +1,6 @@
 package controller;
 
+import util.HeaderController;
 import view.AppointmentDAO;
 import view.DoctorDetailDAO;
 import view.DoctorShiftDAO;
@@ -22,6 +23,10 @@ public class DoctorHomeServlet extends HttpServlet {
         // Lấy thông tin bác sĩ từ session
         HttpSession session = request.getSession(false);
         Employee doctor = (Employee) session.getAttribute("account");
+
+        HeaderController headerController = new HeaderController();
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Navigation"));
+        request.setAttribute("systemItems", headerController.getNavigationItems(1, "Feature"));
 
         if (doctor == null || doctor.getRoleId() != 1) { // 1 = Doctor
             response.sendRedirect("login.jsp");

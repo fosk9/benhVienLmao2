@@ -40,13 +40,16 @@
                         <div class="logo">
                             <c:choose>
                                 <c:when test="${sessionScope.employee != null && sessionScope.employee.roleId == 1}">
-                                    <a href="${pageContext.request.contextPath}/doctor-home"><img src="assets/img/logo/logo.png" alt="Logo"></a>
+                                    <a href="${pageContext.request.contextPath}/doctor-home"><img
+                                            src="assets/img/logo/logo.png" alt="Logo"></a>
                                 </c:when>
                                 <c:when test="${sessionScope.employee != null && sessionScope.employee.roleId == 5}">
-                                    <a href="${pageContext.request.contextPath}/pactHome"><img src="assets/img/logo/logo.png" alt="Logo"></a>
+                                    <a href="${pageContext.request.contextPath}/pactHome"><img
+                                            src="assets/img/logo/logo.png" alt="Logo"></a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a href="${pageContext.request.contextPath}/index"><img src="assets/img/logo/logo.png" alt="Logo"></a>
+                                    <a href="${pageContext.request.contextPath}/index"><img
+                                            src="assets/img/logo/logo.png" alt="Logo"></a>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -60,13 +63,15 @@
                                         <c:if test="${sessionScope.employee != null}">
                                             <c:set var="roleId" value="${sessionScope.employee.roleId}"/>
                                             <jsp:useBean id="systemItemDAO" class="view.SystemItemDAO" scope="request"/>
-                                            <c:forEach var="item" items="${systemItemDAO.getActiveItemsByRoleAndType(roleId, 'Navigation')}">
+                                            <c:forEach var="item"
+                                                       items="${systemItemDAO.getActiveItemsByRoleAndType(roleId, 'Navigation')}">
                                                 <c:if test="${item.itemUrl != null && not empty item.itemUrl}">
                                                     <li>
                                                         <a href="${pageContext.request.contextPath}/${item.itemUrl}">${item.itemName}</a>
                                                         <c:if test="${item.itemName == 'Account'}">
                                                             <ul class="submenu">
-                                                                <c:forEach var="subItem" items="${systemItemDAO.getActiveItemsByRoleAndType(roleId, 'Navigation')}">
+                                                                <c:forEach var="subItem"
+                                                                           items="${systemItemDAO.getActiveItemsByRoleAndType(roleId, 'Navigation')}">
                                                                     <c:if test="${subItem.itemName == 'My Profile' || subItem.itemName == 'Change Password'}">
                                                                         <li>
                                                                             <a href="${pageContext.request.contextPath}/${subItem.itemUrl}">${subItem.itemName}</a>
@@ -81,8 +86,10 @@
                                         </c:if>
                                         <c:if test="${sessionScope.employee == null}">
                                             <c:set var="roleId" value="6"/> <!-- Guest role_id -->
-                                            <jsp:useBean id="systemItemDAOGuest" class="view.SystemItemDAO" scope="request"/>
-                                            <c:forEach var="item" items="${systemItemDAOGuest.getActiveItemsByRoleAndType(roleId, 'Navigation')}">
+                                            <jsp:useBean id="systemItemDAOGuest" class="view.SystemItemDAO"
+                                                         scope="request"/>
+                                            <c:forEach var="item"
+                                                       items="${systemItemDAOGuest.getActiveItemsByRoleAndType(roleId, 'Navigation')}">
                                                 <c:if test="${item.itemUrl != null && not empty item.itemUrl}">
                                                     <li>
                                                         <a href="${pageContext.request.contextPath}/${item.itemUrl}">${item.itemName}</a>
@@ -97,7 +104,8 @@
                                 <c:choose>
                                     <c:when test="${sessionScope.employee == null}">
                                         <a href="${pageContext.request.contextPath}/login.jsp" class="btn header-btn">Login</a>
-                                        <a href="${pageContext.request.contextPath}/register.jsp" class="btn header-btn">Register</a>
+                                        <a href="${pageContext.request.contextPath}/register.jsp"
+                                           class="btn header-btn">Register</a>
                                     </c:when>
                                     <c:otherwise>
                                         <a href="${pageContext.request.contextPath}/logout" class="btn header-btn">Logout</a>
