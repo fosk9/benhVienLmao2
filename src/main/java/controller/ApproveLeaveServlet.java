@@ -24,10 +24,18 @@ public class ApproveLeaveServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int shiftId = Integer.parseInt(request.getParameter("shiftId"));
+        String shiftIdParam = request.getParameter("shiftId");
+        if (shiftIdParam == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        int shiftId = Integer.parseInt(shiftIdParam);
 
         // 1. Get shift info
         DoctorShift shift = shiftDAO.select(shiftId);
+
+
         if (shift == null || !"PendingLeave".equals(shift.getStatus())) {
             response.sendRedirect("request-leave-list.jsp"); // hoặc thông báo lỗi
             return;
