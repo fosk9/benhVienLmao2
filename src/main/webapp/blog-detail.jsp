@@ -133,6 +133,13 @@
       margin: 0 auto;
     }
 
+     .blog_details p {
+       display: block !important;
+       -webkit-line-clamp: unset !important;
+       -webkit-box-orient: unset !important;
+       overflow: visible !important;
+     }
+
     /* Modal styles */
     .modal-img-viewer {
       display: none;

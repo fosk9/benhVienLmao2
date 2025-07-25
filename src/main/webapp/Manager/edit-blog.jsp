@@ -42,7 +42,7 @@
     <nav class="nav-menu">
       <ul>
         <li>
-          <a href="${pageContext.request.contextPath}/manager-dashboard" class="nav-link active">
+          <a href="${pageContext.request.contextPath}/manager-dashboard" class="nav-link">
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
           </a>
