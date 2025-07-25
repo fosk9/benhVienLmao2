@@ -71,7 +71,9 @@ VALUES
 	('Change History Log', 'change-history-log', NULL, 'Navigation'),      -- item_id = 43
 
 	('pactHome', 'pactHome', NULL, 'Feature'),--44
-	('pact logout', 'Logout', NULL, 'Feature');--45
+	('pact logout', 'Logout', NULL, 'Feature'),--45
+
+	('doctor examination note', '/examination-note', NULL, 'Feature'); --46
 	GO
 
 -- Insert RoleSystemItems
@@ -84,6 +86,7 @@ VALUES
     (1, 27), -- My Profile (MyProfile)
     (1, 28), -- Change Password (change-password)
     (1, 30), -- Logout (logout)
+	(1,46),
 
     -- Admin (role_id = 3) Permissions
     (3, 14), -- Admin Home (admin/home)
