@@ -55,6 +55,11 @@
             <i class="fas fa-chart-bar"></i> <span>Revenue Report</span>
           </a>
         </li>
+        <li>
+          <a href="${pageContext.request.contextPath}/export-activity-report" class="nav-link">
+            <i class="fas fa-file-invoice-dollar"></i> <span>Income Report</span>
+          </a>
+        </li>
         <li class="nav-item">
           <a href="${pageContext.request.contextPath}/add-doctor-form" class="nav-link">
             <i class="fas fa-user-plus"></i> <span>Add Staff</span>
