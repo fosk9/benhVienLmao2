@@ -108,6 +108,7 @@
                     <select name="gender" class="form-control">
                         <option value="M">Male</option>
                         <option value="F">Female</option>
+                        <option value="O">Other</option>
                     </select>
                 </div>
                 <div class="form-group col-md-6">

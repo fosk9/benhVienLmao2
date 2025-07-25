@@ -37,9 +37,9 @@
     <form action="blog" method="get"> <!-- Chỉnh sửa action cho đúng servlet -->
       <div class="form-group">
         <div class="input-group mb-3">
-          <input type="text" name="search" class="form-control" placeholder="Tìm kiếm bài viết..."
+          <input type="text" name="search" class="form-control" placeholder="Search for posts..."
                  value="${searchKeyword != null ? searchKeyword : ''}" onfocus="this.placeholder = ''"
-                 onblur="this.placeholder = 'Tìm kiếm bài viết'">
+                 onblur="this.placeholder = 'Search for posts '">
           <div class="input-group-append">
             <button class="btns" type="submit"><i class="ti-search"></i></button>
           </div>
@@ -53,7 +53,7 @@
 
   <!-- Categories Widget -->
   <aside class="single_sidebar_widget post_category_widget">
-    <h4 class="widget_title" style="color: #2d2d2d;">Danh Mục</h4>
+    <h4 class="widget_title" style="color: #2d2d2d;">Category</h4>
     <ul class="list cat-list">
       <c:forEach var="category" items="${categories}">
         <li><a href="blog?categoryId=${category.categoryId}" class="d-flex"><p>${category.categoryName}</p><p>(${category.blogCount})</p></a></li>
@@ -63,7 +63,7 @@
 
   <!-- Recent Post Widget -->
   <aside class="single_sidebar_widget popular_post_widget">
-    <h3 class="widget_title" style="color: #2d2d2d;">Bài Viết Gần Nhất</h3>
+    <h3 class="widget_title" style="color: #2d2d2d;">Recent Posts</h3>
     <c:forEach var="blog" items="${recentBlogs}">
       <div class="media post_item">
         <img src="${pageContext.request.contextPath}/${blog.blogImg}" alt="${blog.blogName}">

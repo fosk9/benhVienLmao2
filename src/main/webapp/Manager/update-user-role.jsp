@@ -219,9 +219,6 @@
       <div class="user-table-container">
         <div class="table-header">
           <h3>User List (<span id="userCount">${totalUsersByFilter}</span>)</h3>
-          <a href="add-doctor-form" class="btn btn-success">
-            <i class="fas fa-plus-circle"></i> Add Staff
-          </a>
         </div>
         <!-- UPDATE FORM - USE POST -->
         <form id="roleUpdateForm" action="update-user-role" method="post">
@@ -266,7 +263,7 @@
                 <td>
                   <c:choose>
                     <c:when test="${empty u.roleName || fn:toLowerCase(u.roleName) == 'patient'}">
-                      <span class="text-muted">Không áp dụng</span>
+                      <span class="text-muted">Can't Update Role</span>
                     </c:when>
                     <c:otherwise>
                       <select class="form-control" name="newRole_${u.userID}">

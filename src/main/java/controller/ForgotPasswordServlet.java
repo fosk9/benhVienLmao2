@@ -71,6 +71,8 @@ public class ForgotPasswordServlet extends HttpServlet {
         session.setAttribute("username", username);
         session.setAttribute("user_type", userType);
         session.setAttribute("otpGeneratedTime", System.currentTimeMillis());
+        session.setAttribute("forgotEmail", email); // Dòng quan trọng để OTP xử lý đúng
+
 
         // ✅ Gửi email
         SendingEmail emailSender = new SendingEmail();

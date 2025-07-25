@@ -14,6 +14,13 @@
       height: auto; /* Đảm bảo tỉ lệ ảnh không bị méo */
       object-fit: cover; /* Đảm bảo ảnh không bị méo và được cắt sao cho vừa */
     }
+     .blog_details p {
+       display: block !important;
+       overflow: visible !important;
+       -webkit-line-clamp: unset !important;
+       -webkit-box-orient: initial !important;
+       white-space: normal !important;
+     }
 
     .comment-user-img {
       width: 50px; /* Đặt kích thước ảnh đại diện */
@@ -132,6 +139,7 @@
       display: block;
       margin: 0 auto;
     }
+
 
     /* Modal styles */
     .modal-img-viewer {

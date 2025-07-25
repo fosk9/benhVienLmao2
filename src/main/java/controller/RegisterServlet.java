@@ -9,6 +9,7 @@ import view.PatientDAO;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Random;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
@@ -66,13 +67,22 @@ public class RegisterServlet extends HttpServlet {
         if (dobStr != null && !dobStr.isEmpty()) {
             try {
                 dob = Date.valueOf(dobStr);
+                // Kiểm tra nếu ngày sinh lớn hơn ngày hiện tại
+                Date today = Date.valueOf(LocalDate.now());
+                if (dob.after(today)) {
+                    request.setAttribute("error", "Date of birth cannot be in the future.");
+                    setRegisterAttributes(request, fullName, null, gender, email, phone, address, insuranceNumber, emergencyContact);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
             } catch (IllegalArgumentException e) {
-                request.setAttribute("error", "Invalid date of birth.");
-                setRegisterAttributes(request, fullName, dob, gender, email, phone, address, insuranceNumber, emergencyContact);
+                request.setAttribute("error", "Invalid date of birth format.");
+                setRegisterAttributes(request, fullName, null, gender, email, phone, address, insuranceNumber, emergencyContact);
                 request.getRequestDispatcher("register.jsp").forward(request, response);
                 return;
             }
         }
+
 
         // Validate input
         if (fullName == null || !fullName.matches("^[a-zA-ZÀ-ỹ\\s]+$")) {
