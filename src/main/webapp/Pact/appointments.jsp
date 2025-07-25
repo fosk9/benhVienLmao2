@@ -23,12 +23,12 @@
         }
         /* Container styling */
         .container {
-            max-width: 1400px; /* Larger container */
+            max-width: 1000px; /* Larger container */
             padding: 50px 20px;
         }
         /* Header styling */
         h2 {
-            font-size: 4.5rem; /* Larger title */
+            font-size: 2rem; /* Larger title */
             font-weight: 700;
             text-align: center;
             color: #28a745;
@@ -40,7 +40,7 @@
             background: #28a745;
             border: none;
             padding: 15px 35px;
-            font-size: 1.8rem; /* Larger button text */
+            font-size: 1rem; /* Larger button text */
             font-weight: 600;
             border-radius: 12px;
             color: #fff;
@@ -58,7 +58,7 @@
         .search-table {
             background: #fff;
             border: 3px solid #28a745; /* Thicker border */
-            border-radius: 25px; /* Larger rounded corners */
+            border-radius: 15px; /* Larger rounded corners */
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 900px; /* Larger form */
@@ -70,7 +70,7 @@
         .search-table td:first-child {
             color: #28a745;
             font-weight: 600;
-            font-size: 1.8rem; /* Larger label text */
+            font-size: 1rem; /* Larger label text */
             text-align: right;
             width: 35%;
         }
@@ -79,7 +79,7 @@
         }
         .search-table .form-control, .search-table .form-select {
             border: 2px solid #28a745; /* Thicker border */
-            font-size: 1.6rem; /* Larger input text */
+            font-size: 1rem; /* Larger input text */
             height: 50px;
             border-radius: 12px;
             transition: border-color 0.3s;
@@ -90,7 +90,7 @@
         }
         .search-table .btn {
             padding: 12px 30px;
-            font-size: 1.6rem; /* Larger button text */
+            font-size: 1rem; /* Larger button text */
             border-radius: 12px;
             transition: transform 0.2s;
         }
@@ -113,7 +113,7 @@
         }
         /* Table styling */
         .table-container {
-            border-radius: 20px; /* Larger rounded corners */
+            border-radius: 10px; /* Larger rounded corners */
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             background: #fff;
@@ -125,8 +125,8 @@
             background: #28a745;
             color: #fff;
             font-weight: 600;
-            font-size: 1.8rem; /* Larger header text */
-            padding: 20px; /* Larger padding */
+            font-size: 1rem; /* Larger header text */
+            padding: 10px; /* Larger padding */
             text-align: center;
         }
         .table tbody tr {
@@ -137,9 +137,9 @@
         }
         .table td {
             vertical-align: middle;
-            padding: 20px; /* Larger padding */
+            padding: 10px; /* Larger padding */
             text-align: center;
-            font-size: 1.6rem; /* Larger cell text */
+            font-size: 1rem; /* Larger cell text */
         }
         .table .status-unpay {
             color: #dc3545;
@@ -155,8 +155,8 @@
         }
         /* Action buttons */
         .btn-action {
-            padding: 10px 25px; /* Larger buttons */
-            font-size: 1.4rem; /* Larger button text */
+            padding: 5px 15px; /* Larger buttons */
+            font-size: 1rem; /* Larger button text */
             margin: 0 8px;
             border-radius: 10px;
             transition: transform 0.2s;
@@ -188,7 +188,7 @@
         /* Error message styling */
         .error-message {
             color: #dc3545;
-            font-size: 1.8rem; /* Larger text */
+            font-size: 1rem; /* Larger text */
             font-weight: 500;
             text-align: center;
             margin-bottom: 40px;
@@ -203,7 +203,7 @@
             justify-content: center;
         }
         .page-link {
-            font-size: 1.6rem; /* Larger pagination text */
+            font-size: 1rem; /* Larger pagination text */
             color: #28a745;
             border: 2px solid #28a745;
             padding: 12px 18px;
@@ -240,14 +240,14 @@
             border-radius: 50%;
             padding: 12px;
             margin-right: 12px;
-            font-size: 1.6rem; /* Larger icons */
+            font-size: 1rem; /* Larger icons */
             transition: background 0.3s;
         }
         .footer-social a:hover {
             background: rgba(255, 255, 255, 0.4);
         }
         .footer-copy-right p {
-            font-size: 1.6rem; /* Larger footer text */
+            font-size: 1rem; /* Larger footer text */
         }
         /* Responsive adjustments */
         @media (max-width: 768px) {

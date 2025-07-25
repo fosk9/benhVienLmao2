@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Your Consultation History</title>
+    <title>Your Examination History</title>
     <jsp:include page="common-css.jsp"/>
 </head>
 <body>
@@ -14,7 +14,7 @@
 <jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
-    <h2 class="mb-4">Your Consultation History</h2>
+    <h2 class="mb-4">Your Examination History</h2>
 
     <!-- Message Notification -->
     <c:if test="${not empty message}">

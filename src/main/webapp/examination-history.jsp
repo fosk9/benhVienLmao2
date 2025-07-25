@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Consultation History</title>
+    <title>Examination History</title>
     <jsp:include page="common-css.jsp"/>
 </head>
 <body>
@@ -14,7 +14,7 @@
 <jsp:include page="header.jsp"/>
 
 <div class="container mt-5">
-    <h2 class="mb-4">Consultation History</h2>
+    <h2 class="mb-4">Examination History</h2>
 
     <!-- Message Notification -->
     <c:if test="${not empty message}">
@@ -66,7 +66,7 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach var="c" items="${consultations}">
+            <c:forEach var="c" items="${examinations}">
                 <tr>
                     <td>${c.appointmentId}</td>
                     <td><fmt:formatDate value="${c.appointmentDate}" pattern="dd/MM/yyyy"/></td>
@@ -79,7 +79,7 @@
                         </span>
                     </td>
                     <td>
-                        <a href="consultation-history-details?appointmentId=${c.appointmentId}"
+                        <a href="examination-history-details?appointmentId=${c.appointmentId}"
                            class="btn btn-sm btn-outline-info">View</a>
                     </td>
                 </tr>
@@ -94,7 +94,7 @@
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="1" end="${totalPages}">
                     <li class="page-item ${i == currentPage ? 'active' : ''}">
-                        <c:url var="pageUrl" value="consultation-history">
+                        <c:url var="pageUrl" value="examination-history">
                             <c:param name="page" value="${i}"/>
                             <c:param name="recordsPerPage" value="${recordsPerPage}"/>
                             <c:param name="search" value="${param.search}"/>

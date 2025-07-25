@@ -11,7 +11,7 @@ import view.*;
 import java.io.IOException;
 import java.util.List;
 
-    @WebServlet({"/patient-examination-history", "/patient-examination-details"})
+@WebServlet({"/patient-examination-history", "/patient-examination-details"})
 public class PatientExaminationHistoryServlet extends HttpServlet {
 
     private final AppointmentDAO appointmentDAO = new AppointmentDAO();
