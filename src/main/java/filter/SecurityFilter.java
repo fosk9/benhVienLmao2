@@ -134,29 +134,35 @@ public class SecurityFilter implements Filter {
                 path.equals("/appointments/details") ||
                 path.equals("/otp-verification.jsp") ||
                 path.equals("/examination-note") ||
+                path.equals("/update-examination-note") ||
                 path.equals("/payment") ||
                 path.equals("/hospital-statistics") ||
                 path.equals("/unassigned-appointments") ||
                 path.equals("/request-leave-list") ||
+                path.equals("/approve-leave") ||
                 path.equals("/UpdateMyProfileEmployee") ||
                 path.equals("/UpdateEmployeeAvatar") ||
                 path.equals("/UpdateMyProfilePatient") ||
                 path.equals("/UpdatePatientAvatar") ||
+                path.equals("/PatientList") ||
                 path.equals("/PatientDetails") ||
                 path.equals("/UpdatePatientDetails") ||
+                path.equals("/DoctorList") ||
                 path.equals("/doctor-details") ||
                 path.equals("/update-doctor-details") ||
+                path.equals("/doctor-home") ||
                 path.equals("/doctor-shift-detail") ||
                 path.equals("/doctor-schedule") ||
                 path.equals("/request-doctor-leave") ||
-                path.equals("/doctor-leave-list") ||
+                path.equals("/examination-history") ||
                 path.equals("/examination-history-details") ||
+                path.equals("/patient-examination-history") ||
+                path.equals("/patient-examination-details") ||
                 path.equals("/assign-appointment") ||
-                path.equals("/update-examination-note") ||
-                path.equals("/approve-leave") ||
                 path.equals("/export-activity-report") ||
                 path.equals("/forgot-password");
     }
+
 
     /**
      * Checks if the role has access to the requested path using SystemItems.
