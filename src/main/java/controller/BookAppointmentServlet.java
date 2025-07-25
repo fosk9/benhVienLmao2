@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.Random;
 
 @WebServlet("/book-appointment")
 public class BookAppointmentServlet extends HttpServlet {
@@ -52,9 +53,6 @@ public class BookAppointmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
         List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
-        // Set navigation items for the header
-//        HeaderController headerController = new HeaderController();
-//        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
         if (appointmentTypes.isEmpty()) {
             LOGGER.severe("No appointment types available");
             request.setAttribute("errorMsg", "No appointment types available. Please contact support.");
@@ -187,8 +185,40 @@ public class BookAppointmentServlet extends HttpServlet {
                             .findFirst()
                             .orElse(null);
                     formData.put("typeDescription", selectedType != null ? selectedType.getDescription() : "");
+
+                    // Generate unique username
+                    String baseUsername = email.substring(0, email.indexOf('@'));
+                    String username = baseUsername;
+                    int count = 1;
+                    while (patientDAO.isUsernameTaken(username)) {
+                        username = baseUsername + count++;
+                    }
+
+                    // Generate random password (plain text for simplicity, assume no hash)
+                    String rawPass = generateRandomPassword(8);
+
+                    // Create tempPatient
+                    Patient tempPatient = Patient.builder()
+                            .username(username)
+                            .passwordHash(rawPass) // Assuming plain text storage
+                            .fullName("") // Default empty
+                            .email(email)
+                            .accStatus(1)
+                            .build();
+
+                    session.setAttribute("tempPatient", tempPatient);
+                    session.setAttribute("generatedPassword", rawPass);
                     session.setAttribute("appointmentFormData", formData);
-                    response.sendRedirect(request.getContextPath() + "/resend-otp");
+
+                    // Generate OTP
+                    String otp = String.format("%06d", new Random().nextInt(999999));
+                    session.setAttribute("otp", otp);
+                    session.setAttribute("otpGeneratedTime", System.currentTimeMillis());
+
+                    // Send OTP email
+                    new SendingEmail().sendEmail(email, "OTP for Registration", "Dear user,\n\nYour OTP for registration is: " + otp + ".\nIt expires in 5 minutes.\n\nBest regards,\nHospital Team");
+
+                    response.sendRedirect("otp-verification.jsp");
                     return;
                 } else {
                     patientId = patient.getPatientId();
@@ -265,5 +295,15 @@ public class BookAppointmentServlet extends HttpServlet {
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/error");
         }
+    }
+
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random rnd = new Random();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 }

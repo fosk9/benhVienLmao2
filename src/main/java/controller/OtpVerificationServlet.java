@@ -10,8 +10,13 @@ import util.HistoryLogger;
 import view.DoctorDetailDAO;
 import view.EmployeeDAO;
 import view.PatientDAO;
+import model.Appointment;
+import view.AppointmentDAO;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Map;
 
 @WebServlet(name = "OtpVerificationServlet", urlPatterns = {"/verify-otp"})
 public class OtpVerificationServlet extends HttpServlet {
@@ -70,13 +75,47 @@ public class OtpVerificationServlet extends HttpServlet {
                     return;
                 }
 
+                // Handle appointmentFormData if present
+                @SuppressWarnings("unchecked")
+                Map<String, Object> formData = (Map<String, Object>) session.getAttribute("appointmentFormData");
+                if (formData != null) {
+                    int appointmentTypeId = Integer.parseInt((String) formData.get("appointmentTypeId"));
+                    Date appointmentDate = Date.valueOf((String) formData.get("appointmentDate"));
+                    String timeSlot = (String) formData.get("timeSlot");
+                    boolean requiresSpecialist = (Boolean) formData.get("requiresSpecialist");
+
+                    Appointment appointment = Appointment.builder()
+                            .patientId(id)
+                            .appointmentTypeId(appointmentTypeId)
+                            .appointmentDate(appointmentDate)
+                            .timeSlot(timeSlot)
+                            .requiresSpecialist(requiresSpecialist)
+                            .status("Unpay")
+                            .createdAt(new Timestamp(System.currentTimeMillis()))
+                            .updatedAt(new Timestamp(System.currentTimeMillis()))
+                            .build();
+
+                    AppointmentDAO appointmentDAO = new AppointmentDAO();
+                    int aptId = appointmentDAO.insertAndReturnID(appointment);
+
+                    // Send appointment confirmation email
+                    String aptBody = "Your appointment has been booked successfully.\n"
+                            + "Appointment ID: " + aptId + "\n"
+                            + "Date: " + appointmentDate + "\n"
+                            + "Time Slot: " + timeSlot + "\n"
+                            + "Requires Specialist: " + (requiresSpecialist ? "Yes" : "No") + "\n\n"
+                            + "Please log in to view details.\n\n"
+                            + "Regards,\nHospital Team";
+                    new SendingEmail().sendEmail(tempPatient.getEmail(), "Appointment Confirmation", aptBody);
+
+                    clearOtpSession(session);
+                    response.sendRedirect("appointments/details?id=" + aptId);
+                    return;
+                }
+
                 clearOtpSession(session);
 
-                if (session.getAttribute("appointmentFormData") != null) {
-                    response.sendRedirect("book-appointment");
-                } else {
-                    response.sendRedirect("login.jsp?msg=register_success");
-                }
+                response.sendRedirect("login.jsp?msg=register_success");
                 return;
             }
 
