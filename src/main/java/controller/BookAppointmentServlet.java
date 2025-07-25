@@ -53,8 +53,8 @@ public class BookAppointmentServlet extends HttpServlet {
         AppointmentTypeDAO appointmentTypeDAO = new AppointmentTypeDAO();
         List<AppointmentType> appointmentTypes = appointmentTypeDAO.select();
         // Set navigation items for the header
-        HeaderController headerController = new HeaderController();
-        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
+//        HeaderController headerController = new HeaderController();
+//        request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
         if (appointmentTypes.isEmpty()) {
             LOGGER.severe("No appointment types available");
             request.setAttribute("errorMsg", "No appointment types available. Please contact support.");

@@ -37,8 +37,8 @@ public class AppointmentListServlet extends HttpServlet {
             request.setAttribute("appointmentTypes", appointmentTypes);
 
             // Set navigation items for the header
-            HeaderController headerController = new HeaderController();
-            request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
+//            HeaderController headerController = new HeaderController();
+//            request.setAttribute("systemItems", headerController.getNavigationItems(5, "Navigation"));
 
             // Forward to appointment-list.jsp
             request.getRequestDispatcher("/Pact/appointment-list.jsp").forward(request, response);

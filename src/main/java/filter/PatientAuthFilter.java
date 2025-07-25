@@ -8,7 +8,8 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter({ "/appointment/edit "})
+@WebFilter({ "/appointment/edit" +
+        "/pactHome" })
 public class PatientAuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

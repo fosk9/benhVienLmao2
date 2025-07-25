@@ -162,7 +162,7 @@
   </div>
 </div>
 <!-- Preloader End -->
-<jsp:include page="/Pact/header.jsp"/>
+<jsp:include page="header.jsp"/>
 <%--<header>--%>
 <%--  <!-- Header Start -->--%>
 <%--  <div class="header-area">--%>
@@ -370,5 +370,6 @@
     });
   });
 </script>
+<script src="${pageContext.request.contextPath}/assets/js/header.js"></script>
 </body>
 </html>
