@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStreamReader;
@@ -13,8 +14,8 @@ import model.GoogleAccount;
 
 public class GoogleUtils {
     //Cần thêm mã gg
-    private static final String CLIENT_ID = "";
-    private static final String CLIENT_SECRET = "";
+    private static final String CLIENT_ID = "497598502234-jmgcibueto8hc1qh61gngkr44pcu90c6.apps.googleusercontent.com";
+    private static final String CLIENT_SECRET = "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";
     private static final String REDIRECT_URI = "http://localhost:8080/benhVienLmao_war_exploded/google-login";
     private static final String TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
     private static final String USER_INFO_ENDPOINT = "https://www.googleapis.com/oauth2/v2/userinfo";
