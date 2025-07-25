@@ -163,11 +163,6 @@
     </style>
 </head>
 <body>
-<!-- Real-time Log Viewer -->
-<div class="realtime-log-container">
-    <h2>Real-time Log Viewer</h2>
-    <jsp:include page="adminLog.jsp"/>
-</div>
 
 <div class="container">
     <!-- Page title -->
