@@ -261,9 +261,6 @@
                     <tbody>
                     <c:forEach var="history" items="${changeHistoryList}">
                         <tr>
-                            <td>
-                                <input type="checkbox" class="record-checkbox" value="${history.changeId}">
-                            </td>
 
                             <td>
                                 <div class="user-info">

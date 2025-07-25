@@ -237,6 +237,43 @@ public class EmployeeDAO extends DBContext<Employee> {
         return list;
     }
 
+//    public Employee getManagerProfileById(int managerId) {
+//        String sql = """
+//        SELECT e.employee_id, e.full_name, e.email, e.phone, e.dob, e.gender,
+//               e.employee_ava_url, e.acc_status, r.role_name
+//        FROM Employees e
+//        JOIN Roles r ON e.role_id = r.role_id
+//        WHERE e.employee_id = ? AND e.role_id = 4
+//    """;
+//
+//        try (Connection conn = getConn();
+//             PreparedStatement ps = conn.prepareStatement(sql)) {
+//
+//            ps.setInt(1, managerId);
+//
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    Employee e = new Employee();
+//                    e.setEmployeeId(rs.getInt("employee_id"));
+//                    e.setFullName(rs.getString("full_name"));
+//                    e.setEmail(rs.getString("email"));
+//                    e.setPhone(rs.getString("phone"));
+//                    e.setDob(rs.getDate("dob"));
+//                    e.setGender(rs.getString("gender"));
+//                    e.setEmployeeAvaUrl(rs.getString("employee_ava_url"));
+//                    e.setAccStatus(rs.getInt("acc_status"));
+//                    return e;
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
+
+
     public int countActiveDoctorsToday(String keyword, String statusFilter) {
         String sql = """
                     SELECT COUNT(DISTINCT e.employee_id)
