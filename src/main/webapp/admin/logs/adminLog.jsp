@@ -16,10 +16,11 @@
         socket.onmessage = function(event) {
             let logArea = document.getElementById("logs");
             logArea.value += event.data + "\n";
+            logArea.scrollTop = logArea.scrollHeight; // Auto-scroll to the bottom
         };
     </script>
 </head>
 <body>
-<textarea id="logs" rows="20" cols="80" readonly></textarea>
+<textarea id="logs" rows="20" cols="40" readonly></textarea>
 </body>
 </html>

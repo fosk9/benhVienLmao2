@@ -9,6 +9,10 @@ import java.util.List;
 
 public class LogSystemDAO extends DBContext<LogSystem> {
 
+    public LogSystemDAO() {
+        super();
+    }
+
     @Override
     public List<LogSystem> select() {
         List<LogSystem> list = new ArrayList<>();
@@ -27,63 +31,84 @@ public class LogSystemDAO extends DBContext<LogSystem> {
         return list;
     }
 
+    /**
+     * Filters logs based on provided criteria.
+     * @param username Filters by user_name (LIKE search)
+     * @param fromDate Filters by created_at >= fromDate
+     * @param toDate Filters by created_at <= toDate
+     * @param role Filters by role_name
+     * @param logLevel Filters by log_level; ignored if null or empty
+     * @param sortOrder Orders by created_at ('Newest First' or 'Oldest First')
+     * @return List of filtered LogSystem entries
+     */
     public List<LogSystem> filter(String username, String fromDate, String toDate, String role, String logLevel, String sortOrder) {
-        List<LogSystem> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM LogSystem WHERE 1=1");
+        List<LogSystem> logs = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT log_id, employee_id, patient_id, user_name, role_name, action, log_level, created_at " +
+                        "FROM LogSystem WHERE 1=1"
+        );
+        List<Object> params = new ArrayList<>();
 
+        // Add filters
         if (username != null && !username.isEmpty()) {
             sql.append(" AND user_name LIKE ?");
+            params.add("%" + username + "%");
         }
         if (fromDate != null && !fromDate.isEmpty()) {
             sql.append(" AND created_at >= ?");
+            params.add(fromDate);
         }
         if (toDate != null && !toDate.isEmpty()) {
             sql.append(" AND created_at <= ?");
+            params.add(toDate + " 23:59:59");
         }
-        if (role != null && !role.equals("All Roles")) {
+        if (role != null && !role.isEmpty()) {
             sql.append(" AND role_name = ?");
+            params.add(role);
         }
-        if (logLevel != null && !logLevel.equals("All Levels")) {
+        if (logLevel != null && !logLevel.isEmpty()) {
             sql.append(" AND log_level = ?");
+            params.add(logLevel);
         }
 
-        sql.append(" ORDER BY created_at ");
-        sql.append(sortOrder.equals("Oldest First") ? "ASC" : "DESC");
+        // Add sorting
+        sql.append(" ORDER BY created_at");
+        if ("Oldest First".equals(sortOrder)) {
+            sql.append(" ASC");
+        } else {
+            sql.append(" DESC");
+        }
 
-        try (Connection con = getConn();
-             PreparedStatement ps = con.prepareStatement(sql.toString())) {
-
-            int idx = 1;
-            if (username != null && !username.isEmpty()) {
-                ps.setString(idx++, "%" + username + "%");
-            }
-            if (fromDate != null && !fromDate.isEmpty()) {
-                ps.setDate(idx++, Date.valueOf(fromDate));
-            }
-            if (toDate != null && !toDate.isEmpty()) {
-                ps.setDate(idx++, Date.valueOf(toDate));
-            }
-            if (role != null && !role.equals("All Roles")) {
-                ps.setString(idx++, role);
-            }
-            if (logLevel != null && !logLevel.equals("All Levels")) {
-                ps.setString(idx++, logLevel);
-                System.out.println("FILTER LOGS logLevel: " + logLevel);
-            }
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    list.add(mapResultSet(rs));
+        Connection conn = null;
+        try {
+            conn = getConn();
+            try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+                // Set parameters
+                for (int i = 0; i < params.size(); i++) {
+                    stmt.setObject(i + 1, params.get(i));
+                }
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        LogSystem log = LogSystem.builder()
+                                .logId(rs.getInt("log_id"))
+                                .employeeId(rs.getObject("employee_id") != null ? rs.getInt("employee_id") : null)
+                                .patientId(rs.getObject("patient_id") != null ? rs.getInt("patient_id") : null)
+                                .userName(rs.getString("user_name"))
+                                .roleName(rs.getString("role_name"))
+                                .action(rs.getString("action"))
+                                .logLevel(rs.getString("log_level"))
+                                .createdAt(rs.getTimestamp("created_at"))
+                                .build();
+                        logs.add(log);
+                    }
                 }
             }
-
-            System.out.println("FILTER LOGS sql query string: " + sql);
-
-        } catch (Exception e) {
-            logError("FILTER LOGS", e);
+        } catch (SQLException e) {
+            System.err.println("Error filtering logs: " + e.getMessage());
+        } finally {
+            closeConnection(conn);
         }
-
-        return list;
+        return logs;
     }
 
     @Override
