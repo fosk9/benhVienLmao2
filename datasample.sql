@@ -73,7 +73,14 @@ VALUES
 	('pactHome', 'pactHome', NULL, 'Feature'),--44
 	('pact logout', 'Logout', NULL, 'Feature'),--45
 
-	('doctor examination note', '/examination-note', NULL, 'Feature'); --46
+	('doctor examination note', '/examination-note', NULL, 'Feature'),--46
+	('hospital statis', 'hospital-statistics', NULL, 'Feature'),--47
+	('Patient List', '/PatientList', NULL, 'Navigation'), --48
+	('Doctor List', '/DoctorList', NULL, 'Navigation'), --49
+	('Examination history', '/examination-history', NULL, 'Navigation'), --50
+	('UpdateMy Profile Employee', '/UpdateMyProfileEmployee', NULL, 'Navigation'),--51
+	('UpdateMy Avt Employee', '/UpdateEmployeeAvatar ', NULL, 'Feature'), --52
+	('Activity report', '/export-activity-report ', NULL, 'Navigation'); --53
 	GO
 
 -- Insert RoleSystemItems
@@ -87,7 +94,14 @@ VALUES
     (1, 28), -- Change Password (change-password)
     (1, 30), -- Logout (logout)
 	(1,46),
+	(1,48),
 
+	---- Res (role_id = 2) Permissions
+	(2,48),
+	(2,49),
+	(2,50),
+	(2,51),
+	(2,52),
     -- Admin (role_id = 3) Permissions
     (3, 14), -- Admin Home (admin/home)
     (3, 15), -- Manage Employees (admin/manageEmployees)
@@ -115,6 +129,12 @@ VALUES
 	(4, 41), -- Blog
 	(4, 42), -- Add Blog
 	(4, 43), -- Change History Log
+	(4,48),
+	(4,49),
+	(4,50),
+	(4,51),
+	(4,52),
+	(4, 53),
 
     -- Patient (role_id = 5) Permissions
     (5, 4),  -- Blog (blog)
