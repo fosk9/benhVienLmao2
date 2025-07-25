@@ -15,7 +15,7 @@
 <div class="container mt-5">
 
     <h2 class="mb-4">Patient Details</h2>
-    <a href="PatientList" class="btn btn-outline-primary">Back to List</a>
+    <a href="PatientList" class="genric-btn success circle">Back to List</a>
 
     <c:if test="${not empty message}">
         <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -76,7 +76,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label>Email</label>
-                    <input type="email" class="form-control" name="email" value="${patient.email}"/>
+                    <input type="email" class="form-control" name="email" value="${patient.email}" required/>
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -86,12 +86,12 @@
 
                 <div class="col-md-6 mb-3">
                     <label>Address</label>
-                    <textarea class="form-control" name="address">${patient.address}</textarea>
+                    <textarea class="form-control" required name="address">${patient.address}</textarea>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label>Insurance Number</label>
-                    <input type="text" class="form-control" name="insuranceNumber" value="${patient.insuranceNumber}"/>
+                    <input type="text" class="form-control" name="insuranceNumber" value="${patient.insuranceNumber}" required/>
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -102,9 +102,7 @@
             </div>
 
             <div class="d-flex gap-3 mt-4">
-                <button type="submit" class="btn btn-success">Update Patient Details</button>
-                <a href="DeletePatient?id=${patient.patientId}" class="btn btn-danger"
-                   onclick="return confirm('Are you sure you want to delete this patient?');">Delete This Patient</a>
+                <button type="submit" class="genric-btn success circle">Update Patient Details</button>
             </div>
         </form>
 

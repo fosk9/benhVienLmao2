@@ -85,7 +85,7 @@ public class DoctorDetailsServlet extends HttpServlet {
             fieldErrors.put("dob", "Date of birth must be in the past and after 1900");
         }
         if (!EmployeeValidator.isValidPhone(phone)) {
-            fieldErrors.put("phone", "Invalid phone number");
+            fieldErrors.put("phone", "Invalid phone number (Begin with 0 or +84, followed by 9 digits)");
         }
         if (!DoctorDetailsValidator.isValidLicenseNumber(licenseNumber)) {
             fieldErrors.put("licenseNumber", "License number must not be empty and max 100 characters");

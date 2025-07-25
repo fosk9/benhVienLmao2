@@ -25,7 +25,7 @@
 
     <!-- Filter & Search -->
     <form method="get" class="form-inline mb-3">
-        <input type="text" name="search" class="form-control mr-2" placeholder="Search by appointment type or time slot"
+        <input type="text" name="search" class="form-control mr-2" placeholder="Appointment type or slot"
                value="${search != null ? search : ''}"/>
 
         <select name="sortBy" class="form-control mr-2">
@@ -42,7 +42,7 @@
         <label class="mr-1 ml-3">Records/Page:</label>
         <input type="number" name="recordsPerPage" class="form-control mr-2" min="1" value="${recordsPerPage}"/>
 
-        <button type="submit" class="btn btn-primary">Apply</button>
+        <button type="submit" class="genric-btn success circle">Apply</button>
     </form>
 
     <!-- Table -->
@@ -72,7 +72,7 @@
                     </td>
                     <td>
                         <a href="patient-examination-details?appointmentId=${c.appointmentId}"
-                           class="btn btn-sm btn-outline-info">View</a>
+                           class="genric-btn success circle">View</a>
                     </td>
                 </tr>
             </c:forEach>

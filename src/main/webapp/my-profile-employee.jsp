@@ -39,54 +39,67 @@
     <form method="post" action="UpdateEmployeeAvatar" enctype="multipart/form-data" class="mb-4 text-center">
         <input type="file" name="avatar" accept="image/*" required>
         <input type="hidden" name="employeeId" value="${employee.employeeId}"/>
-        <button type="submit" class="btn btn-primary mt-2">Update Avatar</button>
+        <button type="submit" class="genric-btn success circle mt-2">Update Avatar</button>
     </form>
 
     <form method="post" action="UpdateMyProfileEmployee">
         <input type="hidden" name="employeeId" value="${employee.employeeId}"/>
         <input type="hidden" name="employee_ava_url" value="${employee.employeeAvaUrl}"/>
 
-        <div class="mb-3">
-            <label>Username</label>
-            <input type="text" class="form-control" value="${employee.username}" disabled/>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label>Username</label>
+                    <input type="text" class="form-control" value="${employee.username}" disabled/>
+                </div>
+
+                <div class="mb-3">
+                    <label>Password</label>
+                    <input type="password" class="form-control" value="${employee.passwordHash}" disabled/>
+                </div>
+
+                <div class="mb-3">
+                    <label>Date of Birth</label>
+                    <input type="date" class="form-control" name="dob" value="${employee.dob}"/>
+                </div>
+
+                <div class="mb-3">
+                    <label>Phone</label>
+                    <input type="text" class="form-control" name="phone" value="${employee.phone}"/>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" class="form-control" value="${employee.email}" disabled/>
+                </div>
+
+                <div class="mb-3">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" name="fullName" value="${employee.fullName}"/>
+                </div>
+
+                <div class="mb-3">
+                    <label>Gender</label>
+                    <select class="form-select" name="gender">
+                        <option value="M" ${employee.gender == 'M' ? 'selected' : ''}>Male</option>
+                        <option value="F" ${employee.gender == 'F' ? 'selected' : ''}>Female</option>
+                        <option value="O" ${employee.gender == 'O' ? 'selected' : ''}>Other</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label>Password</label>
-            <input type="password" class="form-control" value="${employee.passwordHash}" disabled/>
+        <div class="text-center mt-4">
+            <button type="submit" class="genric-btn success circle">Update My Profile</button>
         </div>
-
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" class="form-control" value="${employee.email}" disabled/>
-        </div>
-
-        <div class="mb-3">
-            <label>Full Name</label>
-            <input type="text" class="form-control" name="fullName" value="${employee.fullName}"/>
-        </div>
-
-        <div class="mb-3">
-            <label>Date of Birth</label>
-            <input type="date" class="form-control" name="dob" value="${employee.dob}"/>
-        </div>
-
-        <div class="mb-3">
-            <label>Gender</label>
-            <select class="form-select" name="gender">
-                <option value="M" ${employee.gender == 'M' ? 'selected' : ''}>Male</option>
-                <option value="F" ${employee.gender == 'F' ? 'selected' : ''}>Female</option>
-                <option value="O" ${employee.gender == 'O' ? 'selected' : ''}>Other</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label>Phone</label>
-            <input type="text" class="form-control" name="phone" value="${employee.phone}"/>
-        </div>
-
-        <button type="submit" class="btn btn-success">Update My Profile</button>
     </form>
+
+    <!-- Extra action -->
+    <div class="text-center mt-4">
+        <a href="change-password" class="genric-btn success circle">Change Password</a>
+    </div>
 </div>
 
 <jsp:include page="footer.jsp"/>

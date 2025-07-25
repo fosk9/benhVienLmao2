@@ -115,7 +115,6 @@ public class DoctorShiftServlet extends HttpServlet {
         req.getRequestDispatcher("doctor-schedule.jsp").forward(req, resp);
     }
 
-
     private void showShiftDetail(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int shiftId = Integer.parseInt(req.getParameter("shiftId"));
         DoctorShift shift = shiftDAO.select(shiftId);
@@ -129,9 +128,11 @@ public class DoctorShiftServlet extends HttpServlet {
         );
         req.setAttribute("patients", patients); // Gửi danh sách bệnh nhân
 
+        // ✅ Thêm ngày hôm nay để so sánh trong JSP
+        req.setAttribute("today", new java.sql.Date(System.currentTimeMillis()));
+
         req.getRequestDispatcher("doctor-shift-detail.jsp").forward(req, resp);
     }
-
 
     private void handleLeaveRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int shiftId = Integer.parseInt(req.getParameter("shiftId"));

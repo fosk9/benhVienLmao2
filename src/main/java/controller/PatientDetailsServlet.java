@@ -12,7 +12,7 @@ import view.PatientDAO;
 import java.io.IOException;
 import java.sql.Date;
 
-@WebServlet(urlPatterns = {"/patient-details", "/UpdatePatientDetails"})
+@WebServlet(urlPatterns = {"/PatientDetails", "/UpdatePatientDetails"})
 public class PatientDetailsServlet extends HttpServlet {
 
     private final PatientDAO dao = new PatientDAO();

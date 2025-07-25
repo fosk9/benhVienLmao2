@@ -15,12 +15,12 @@
     <jsp:include page="common-css.jsp"/>
 </head>
 <body>
-<jsp:include page="doctor-header.jsp"/>
+<jsp:include page="header.jsp"/>
 
 <!-- Main content -->
 <main>
     <div class="container mt-100 mb-5">
-        <a href="doctor-schedule" class="btn btn-primary mt-3">← Back to Schedule</a>
+        <a href="doctor-schedule" class="genric-btn success circle mt-3">← Back to Schedule</a>
         <div class="section-top-border">
             <div class="row">
                 <div class="col-md-12">
@@ -113,7 +113,7 @@
                                         <ul class="list-unstyled mb-0">
                                             <c:forEach var="p" items="${patients}">
                                                 <li>
-                                                    <a href="patient-details?id=${p.patientId}" class="text-primary">
+                                                    <a href="PatientDetails?id=${p.patientId}" class="text-primary">
                                                         <i class="fa fa-user"></i>${p.fullName}
                                                     </a>
                                                 </li>
@@ -124,12 +124,14 @@
                             </td>
                         </tr>
                     </table>
-                    <c:if test="${shift.status != 'Leave' and shift.status != 'PendingLeave'}">
+                    <c:if test="${shift.status != 'Leave'
+                    and shift.status != 'PendingLeave'
+                    and shift.shiftDate >= today}">
                         <form action="request-doctor-leave" method="post"
                               onsubmit="return confirm('Are you sure you want to request leave for this shift?');">
                             <input type="hidden" name="shiftId" value="${shift.shiftId}">
                             <input type="hidden" name="doctorId" value="${shift.doctorId}">
-                            <button type="submit" class="btn btn-warning">Request Leave</button>
+                            <button type="submit" class="genric-btn danger circle">Request Leave</button>
                         </form>
                     </c:if>
                 </div>
