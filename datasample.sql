@@ -52,7 +52,7 @@ VALUES
     ('Account', '', 4, 'Navigation'),                                     -- item_id = 26
     ('My Profile', 'MyProfile', 99, 'Navigation'),                         -- item_id = 27
     ('Change Password', 'change-password', 7, 'Navigation'),               -- item_id = 28
-    ('Book Appointment', 'book-appointment', 8, 'Navigation'),   -- item_id = 29
+    ('Book Appointment', 'book-appointment', 4, 'Navigation'),   -- item_id = 29
     ('Logout', 'logout', 5, 'Navigation'),                                -- item_id = 30
 
 	--more for manager
@@ -68,7 +68,10 @@ VALUES
 	('Blog Detail', 'blog-detail', NULL, 'Navigation'),                    -- item_id = 40
 	('Blog', 'blog', NULL, 'Navigation'),                                  -- item_id = 41
 	('Add Blog', 'add-blog', NULL, 'Navigation'),                          -- item_id = 42
-	('Change History Log', 'change-history-log', NULL, 'Navigation');      -- item_id = 43
+	('Change History Log', 'change-history-log', NULL, 'Navigation'),      -- item_id = 43
+
+	('pactHome', 'pactHome', NULL, 'Feature'),--44
+	('pact logout', 'Logout', NULL, 'Feature');--45
 	GO
 
 -- Insert RoleSystemItems
@@ -120,7 +123,8 @@ VALUES
     (5, 27), -- My Profile (MyProfile)
     (5, 28), -- Change Password (change-password)
     (5, 29), -- Book Appointment (Patient) (book-appointment)
-    (5, 30), -- Logout (logout)
+    (5, 45), -- Logout (logout)
+	(5, 44), --pactHome
 
     -- Guest (role_id = 6) Permissions
     (6, 4),  -- Blog (blog)

@@ -48,7 +48,7 @@
         </div>
     </div>
 </div>
-<jsp:include page="/Pact/header.jsp"/>
+<jsp:include page="/header.jsp"/>
 <!-- Preloader End -->
 
 <main>
@@ -350,5 +350,6 @@
     const contextPath = "<%=request.getContextPath()%>";
 </script>
 <script src="${pageContext.request.contextPath}/assets/js/chatbot.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/header.js"></script>
 </body>
 </html>
