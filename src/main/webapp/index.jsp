@@ -77,54 +77,55 @@
     </div>
 </div>
 <!-- Preloader Start -->
-<header>
-    <!-- Header Start -->
-    <div class="header-area">
-        <div class="main-header header-sticky">
-            <div class="container-fluid">
-                <div class="row align-items-center">
-                    <!-- Logo -->
-                    <div class="col-xl-2 col-lg-2 col-md-1">
-                        <div class="logo">
-                            <a href="<c:url value='/index'/>">
-                                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="">
-                            </a>
-                        </div>
-                    </div>
-                    <!-- Navigation -->
-                    <div class="col-xl-10 col-lg-10 col-md-10">
-                        <div class="menu-main d-flex align-items-center justify-content-end">
-                            <!-- Main-menu -->
-                            <div class="main-menu f-right d-none d-lg-block">
-                                <nav>
-                                    <ul id="navigation">
-                                        <!-- Loop through navigation items -->
-                                        <c:forEach var="item" items="${systemItems}">
-                                            <li>
-                                                <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>
-                                            </li>
-                                        </c:forEach>
-                                    </ul>
-                                </nav>
-                            </div>
-                            <!-- Login/Register buttons -->
-                            <div class="header-right-btn f-right d-none d-lg-block ml-15">
-                                <a href="<c:url value='/login.jsp'/>" class="btn header-btn">Login</a>
-                                <a href="<c:url value='/register.jsp'/>" class="btn header-btn">Register</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Mobile Menu -->
-                    <div class="col-12">
-                        <div class="mobile_menu d-block d-lg-none"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Header End -->
+<jsp:include page="header.jsp"/>
+<%--<header>--%>
+<%--    <!-- Header Start -->--%>
+<%--    <div class="header-area">--%>
+<%--        <div class="main-header header-sticky">--%>
+<%--            <div class="container-fluid">--%>
+<%--                <div class="row align-items-center">--%>
+<%--                    <!-- Logo -->--%>
+<%--                    <div class="col-xl-2 col-lg-2 col-md-1">--%>
+<%--                        <div class="logo">--%>
+<%--                            <a href="<c:url value='/index'/>">--%>
+<%--                                <img src="<c:url value='/assets/img/logo/logo.png'/>" alt="">--%>
+<%--                            </a>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                    <!-- Navigation -->--%>
+<%--                    <div class="col-xl-10 col-lg-10 col-md-10">--%>
+<%--                        <div class="menu-main d-flex align-items-center justify-content-end">--%>
+<%--                            <!-- Main-menu -->--%>
+<%--                            <div class="main-menu f-right d-none d-lg-block">--%>
+<%--                                <nav>--%>
+<%--                                    <ul id="navigation">--%>
+<%--                                        <!-- Loop through navigation items -->--%>
+<%--                                        <c:forEach var="item" items="${systemItems}">--%>
+<%--                                            <li>--%>
+<%--                                                <a href="<c:url value='/${item.itemUrl}'/>">${item.itemName}</a>--%>
+<%--                                            </li>--%>
+<%--                                        </c:forEach>--%>
+<%--                                    </ul>--%>
+<%--                                </nav>--%>
+<%--                            </div>--%>
+<%--                            <!-- Login/Register buttons -->--%>
+<%--                            <div class="header-right-btn f-right d-none d-lg-block ml-15">--%>
+<%--                                <a href="<c:url value='/login.jsp'/>" class="btn header-btn">Login</a>--%>
+<%--                                <a href="<c:url value='/register.jsp'/>" class="btn header-btn">Register</a>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                    <!-- Mobile Menu -->--%>
+<%--                    <div class="col-12">--%>
+<%--                        <div class="mobile_menu d-block d-lg-none"></div>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--    <!-- Header End -->--%>
 
-</header>
+<%--</header>--%>
 <main>
     <c:if test="${not empty error}">
         <div class="container mt-3">

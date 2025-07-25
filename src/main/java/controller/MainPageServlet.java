@@ -51,22 +51,22 @@ public class MainPageServlet extends HttpServlet {
         // Fetch navigation items
         List<SystemItem> navItems = NavigationUtil.getNavigationItemsForRole(6, request); // Guest role
 
-        // Fetch feature items
-        List<SystemItem> featureItems = new ArrayList<>();
-        try {
-            featureItems = systemItemDAO.getActiveItemsByRoleAndType(6, "Feature"); // Guest role
-            LOGGER.info("Fetched " + featureItems.size() + " feature items for guest role");
-            for (SystemItem item : featureItems) {
-                LOGGER.fine("Feature Item: ID=" + item.getItemId() + ", Name=" + item.getItemName() + ", URL=" + item.getItemUrl());
-                if (item.getItemId() <= 0) {
-                    LOGGER.warning("Feature item with invalid itemId: " + item.getItemName() + " (itemId=" + item.getItemId() + ")");
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.severe("Error fetching feature items: " + e.getMessage());
-            featureItems = new ArrayList<>(); // Ensure not null
-            request.setAttribute("error", "Failed to load feature items: " + e.getMessage());
-        }
+//        // Fetch feature items
+//        List<SystemItem> featureItems = new ArrayList<>();
+//        try {
+//            featureItems = systemItemDAO.getActiveItemsByRoleAndType(6, "Feature"); // Guest role
+//            LOGGER.info("Fetched " + featureItems.size() + " feature items for guest role");
+//            for (SystemItem item : featureItems) {
+//                LOGGER.fine("Feature Item: ID=" + item.getItemId() + ", Name=" + item.getItemName() + ", URL=" + item.getItemUrl());
+//                if (item.getItemId() <= 0) {
+//                    LOGGER.warning("Feature item with invalid itemId: " + item.getItemName() + " (itemId=" + item.getItemId() + ")");
+//                }
+//            }
+//        } catch (Exception e) {
+//            LOGGER.severe("Error fetching feature items: " + e.getMessage());
+//            featureItems = new ArrayList<>(); // Ensure not null
+//            request.setAttribute("error", "Failed to load feature items: " + e.getMessage());
+//        }
 
         // Fetch page content for index page
         List<PageContent> pageContents = new ArrayList<>();
@@ -98,7 +98,7 @@ public class MainPageServlet extends HttpServlet {
         request.setAttribute("recentBlogs", recentBlogs);
         request.setAttribute("services", services);
         request.setAttribute("systemItems", navItems); // Sửa dòng này: dùng systemItems thay vì navItems
-        request.setAttribute("featureItems", featureItems);
+//        request.setAttribute("featureItems", featureItems);
         request.setAttribute("pageContents", pageContents);
 
         LOGGER.info("=== [doGet] Forwarding to index.jsp ===");

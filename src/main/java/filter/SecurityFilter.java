@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * Uses caching for performance and includes detailed logging for debugging.
  * Compatible with existing LoginServlet session attributes.
  */
-@WebFilter("/") // Apply to all URLs
+@WebFilter("/*") // Apply to all URLs
 public class SecurityFilter implements Filter {
     private static final Logger LOGGER = Logger.getLogger(SecurityFilter.class.getName());
     private SystemItemDAO systemItemDAO;
@@ -128,6 +128,9 @@ public class SecurityFilter implements Filter {
                 path.equals("/blog-detail") ||
                 path.equals("/resend-otp") ||
                 path.equals("/verify-otp") ||
+                path.equals("/reset-password") ||
+                path.equals("/change-password") ||
+                path.equals("/header-data") ||
                 path.equals("/forgot-password");
     }
 
