@@ -313,7 +313,7 @@ VALUES
     ('About', 'about.html', 2, 'Navigation'),                              -- item_id = 2
     ('Dental Services', 'services.html', 3, 'Navigation'),                 -- item_id = 3
     ('Blog', 'blog', 4, 'Navigation'),                                    -- item_id = 4
-    ('Blog Details', 'blog-detail.jsp', 5, 'Navigation'),                  -- item_id = 5
+    ('Blog Details', 'blog-detail.jsp', 5, 'Feature'),                  -- item_id = 5
     ('Contact', 'contact.html', 6, 'Navigation'),                          -- item_id = 6
 
     -- Feature Items (Public and General)
@@ -345,8 +345,8 @@ VALUES
     ('Account', '', 4, 'Navigation'),                                     -- item_id = 26
     ('My Profile', 'MyProfile', 99, 'Navigation'),                         -- item_id = 27
     ('Change Password', 'change-password', 7, 'Navigation'),               -- item_id = 28
-    ('Book Appointment (Patient)', 'book-appointment', 8, 'Navigation'),   -- item_id = 29
-    ('Logout', 'logout', 5, 'Navigation');                                -- item_id = 30
+    ('Book Appointment', 'book-appointment', 8, 'Navigation'),   -- item_id = 29
+    ('Logout', 'logout', 5, 'Navigation'),                                -- item_id = 30
 
 	--more for manager
 	('Manager Dashboard', 'manager-dashboard', NULL, 'Navigation'),        -- item_id = 31
@@ -401,7 +401,7 @@ VALUES
 	(4, 40), -- Blog Detail
 	(4, 41), -- Blog
 	(4, 42), -- Add Blog
-	(4, 43); -- Change History Log
+	(4, 43), -- Change History Log
 
     -- Patient (role_id = 5) Permissions
     (5, 4),  -- Blog (blog)
