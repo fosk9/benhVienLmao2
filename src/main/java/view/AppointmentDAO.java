@@ -1,7 +1,6 @@
 package view;
 
 import dto.AppointmentDTO;
-import dto.ConsultationHistoryDTO;
 import dto.ExaminationHistoryDTO;
 import model.Appointment;
 import model.AppointmentType;
@@ -702,10 +701,10 @@ public class AppointmentDAO extends DBContext<Appointment> {
         return completedAppointments;
     }
 
-    public List<ConsultationHistoryDTO> searchAndSortCompletedByDoctor(int doctorId, String search,
+    public List<ExaminationHistoryDTO> searchAndSortCompletedByDoctor(int doctorId, String search,
                                                                        String sortBy, String sortDir,
                                                                        int page, int recordsPerPage) {
-        List<ConsultationHistoryDTO> list = new ArrayList<>();
+        List<ExaminationHistoryDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""
                     SELECT a.appointment_id, a.appointment_date, a.time_slot,
                            t.type_name AS appointmentTypeName,
@@ -766,7 +765,7 @@ public class AppointmentDAO extends DBContext<Appointment> {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                ConsultationHistoryDTO dto = ConsultationHistoryDTO.builder()
+                ExaminationHistoryDTO dto = ExaminationHistoryDTO.builder()
                         .appointmentId(rs.getInt("appointment_id"))
                         .appointmentDate(rs.getDate("appointment_date"))
                         .timeSlot(rs.getString("time_slot"))
